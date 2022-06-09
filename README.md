@@ -1,12 +1,19 @@
-## TemplateDevEnv
+# Brachy's Inventory Tweaks
 
-### Instructions:
+This is a rewrite of the popular inventory tweaks mod.
 
-1. Click `use this template` at the top.
-2. Clone the repository you have created with this template.
-3. In the local repository, run the command `gradlew setupDecompWorkspace idea`
-4. Open the `.ipr` file in IDEA.
-5. Right-click in IDEA `build.gradle` of your project, and select `Link Gradle Project`, after completion, hit `Refresh All` in the gradle tab on the right.
-6. Instead of running `genIntellijRuns` and using generated IntelliJ tasks, just run `gradlew runClient` and `gradlew runServer`.
+### Why?
+InventoryTweaks API is very limited. It doesn't work well with modular gui libraries like ModularUI.
+### Why rewrite and not just fork?
+The code base is utter garbage. It's one of the most disgusting code bases I've ever seen (no offense).
 
-*A checkstyle is coming soon, meaning Cleanroom's projects will use a specific coding style that has to be abided at time of PR/building.*
+---
+
+## TODO's
+
+- basic sorting
+- advanced sorting of items (name, meta, mod, ore dict, nbt)
+- user customizable sort order
+- more user customization (like new row between certain sorts)
+- swap out broken tools automatically
+
