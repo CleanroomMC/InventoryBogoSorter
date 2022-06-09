@@ -1,5 +1,6 @@
 package com.cleanroommc.invtweaks.sort;
 
+import com.cleanroommc.invtweaks.api.ISortingContextBuilder;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
@@ -7,13 +8,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiInventoryContext {
+public class GuiSortingContext {
 
-    private final Container guiContainer;
+    private final Container container;
     private final List<Slot[][]> slots;
 
-    public GuiInventoryContext(Container guiContainer, List<Slot[][]> slots) {
-        this.guiContainer = guiContainer;
+    public GuiSortingContext(Container container, List<Slot[][]> slots) {
+        this.container = container;
         this.slots = slots;
     }
 
@@ -29,36 +30,17 @@ public class GuiInventoryContext {
         return null;
     }
 
-    private static int pack(int x, int y) {
-        if (x > 32767 || x < -32768 || y > 32767 || y < -32768) throw new ArithmeticException();
-        if (x < 0) x &= 1 << 15;
-        if (y < 0) y &= 1 << 15;
-        return (x << 16) | (y & 0xFFFF);
+    public Container getContainer() {
+        return container;
     }
 
-    private static int unpackX(int pack) {
-        int x = pack >> 16;
-        if ((x & (1 << 15)) == 0) {
-            x &= 32767;
-        }
-        return x;
-    }
+    public static class Builder implements ISortingContextBuilder {
 
-    private static int unpackY(int pack) {
-        int y = pack & 0xFFFF;
-        if ((y & (1 << 15)) == 0) {
-            y &= 32767;
-        }
-        return y;
-    }
-
-    public static class Builder {
-
-        private final Container guiContainer;
+        private final Container container;
         private final List<Slot[][]> slots = new ArrayList<>();
 
-        public Builder(Container guiContainer) {
-            this.guiContainer = guiContainer;
+        public Builder(Container container) {
+            this.container = container;
         }
 
         public Builder addSlotGroup(Slot[][] slotGroup) {
@@ -67,7 +49,7 @@ public class GuiInventoryContext {
         }
 
         public Builder addSlotGroup(int rowSize, int startIndex, int endIndex) {
-            return addSlotGroup(rowSize, guiContainer.inventorySlots.subList(startIndex, endIndex));
+            return addSlotGroup(rowSize, container.inventorySlots.subList(startIndex, endIndex));
         }
 
         public Builder addSlotGroup(int rowSize, List<Slot> slots) {
@@ -89,8 +71,8 @@ public class GuiInventoryContext {
             return addSlotGroup(slotGroup);
         }
 
-        public GuiInventoryContext build() {
-            return new GuiInventoryContext(guiContainer, slots);
+        public GuiSortingContext build() {
+            return new GuiSortingContext(container, slots);
         }
     }
 }

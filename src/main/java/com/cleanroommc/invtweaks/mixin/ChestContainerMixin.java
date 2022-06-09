@@ -2,7 +2,7 @@ package com.cleanroommc.invtweaks.mixin;
 
 import com.cleanroommc.invtweaks.InventoryTweaks;
 import com.cleanroommc.invtweaks.api.ISortableContainer;
-import com.cleanroommc.invtweaks.sort.GuiInventoryContext;
+import com.cleanroommc.invtweaks.api.ISortingContextBuilder;
 import net.minecraft.inventory.ContainerChest;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.Mixin;
 public class ChestContainerMixin implements ISortableContainer {
 
     @Override
-    public GuiInventoryContext buildInventoryContext(GuiInventoryContext.Builder builder) {
+    public void buildSortingContext(ISortingContextBuilder builder) {
         InventoryTweaks.LOGGER.info("Building context...");
-        return builder.addSlotGroup(9, 0, 27).build();
+        builder.addSlotGroup(9, 0, 27);
     }
 }

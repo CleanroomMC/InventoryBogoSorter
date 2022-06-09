@@ -15,12 +15,14 @@ public class SortHandler {
 
     private final Container container;
     private final ISortableContainer sortableContainer;
-    private GuiInventoryContext context;
+    private GuiSortingContext context;
 
     public SortHandler(Container container, ISortableContainer sortableContainer) {
         this.container = container;
         this.sortableContainer = sortableContainer;
-        this.context = sortableContainer.buildInventoryContext(new GuiInventoryContext.Builder(container));
+        GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
+        sortableContainer.buildSortingContext(builder);
+        this.context = builder.build();
     }
 
     public void sort(int slotId) {
