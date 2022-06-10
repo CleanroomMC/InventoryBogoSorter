@@ -26,4 +26,5 @@ public class DefaultRules {
 
     public static final NbtSortRule ENCHANTMENT = new NbtSortRule("ench", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);
     public static final NbtSortRule ENCHANTMENT_BOOK = new NbtSortRule("StoredEnchantments", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);
+    public static final NbtSortRule GT_CIRC_CONFIG = new NbtSortRule("Configuration", Constants.NBT.TAG_INT);
 }

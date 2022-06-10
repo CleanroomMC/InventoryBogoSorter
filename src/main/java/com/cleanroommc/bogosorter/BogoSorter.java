@@ -8,6 +8,7 @@ import com.cleanroommc.bogosorter.network.CSort;
 import com.cleanroommc.bogosorter.network.NetworkHandler;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -37,7 +38,7 @@ public class BogoSorter {
 
     @SubscribeEvent
     public static void onGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (event.getGui() instanceof GuiContainer) {
+        if (event.getGui() instanceof GuiContainer && !(event.getGui() instanceof GuiContainerCreative)) {
             Container container = ((GuiContainer) event.getGui()).inventorySlots;
             NetworkHandler.sendToServer(new CSlotPosUpdate(container));
         }

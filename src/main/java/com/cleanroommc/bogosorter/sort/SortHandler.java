@@ -28,6 +28,7 @@ public class SortHandler {
         nbtSortRules.add(DefaultRules.ENCHANTMENT);
         nbtSortRules.add(DefaultRules.ENCHANTMENT_BOOK);
         nbtSortRules.add(DefaultRules.POTION);
+        nbtSortRules.add(DefaultRules.GT_CIRC_CONFIG);
     }
 
     public static void updateSortRules(Collection<SortRule<ItemStack>> rules) {
