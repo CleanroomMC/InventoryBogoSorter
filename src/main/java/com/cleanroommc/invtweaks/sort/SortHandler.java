@@ -14,15 +14,28 @@ import java.util.Comparator;
 public class SortHandler {
 
     private final Container container;
-    private final ISortableContainer sortableContainer;
     private GuiSortingContext context;
 
-    public SortHandler(Container container, ISortableContainer sortableContainer) {
+    public SortHandler(Container container) {
         this.container = container;
         this.sortableContainer = sortableContainer;
         GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
         sortableContainer.buildSortingContext(builder);
         this.context = builder.build();
+    }
+
+    public void createSortContext() {
+        if (container instanceof ISortableContainer) {
+            GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
+            ((ISortableContainer) container).buildSortingContext(builder);
+            this.context = builder.build();
+            return;
+        }
+        if (InventoryTweaksAPI.isValidSortable(container)) {
+            GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
+            InventoryTweaksAPI.getBuilder(container).accept(container, builder);
+            this.context = builder.build();
+        }
     }
 
     public void sort(int slotId) {

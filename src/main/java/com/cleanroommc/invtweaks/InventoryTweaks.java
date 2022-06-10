@@ -1,6 +1,8 @@
 package com.cleanroommc.invtweaks;
 
 import com.cleanroommc.invtweaks.api.ISortableContainer;
+import com.cleanroommc.invtweaks.api.InventoryTweaksAPI;
+import com.cleanroommc.invtweaks.compat.DefaultCompat;
 import com.cleanroommc.invtweaks.network.CSlotPosUpdate;
 import com.cleanroommc.invtweaks.network.CSort;
 import com.cleanroommc.invtweaks.network.NetworkHandler;
@@ -30,6 +32,7 @@ public class InventoryTweaks {
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
         NetworkHandler.init();
+        DefaultCompat.init();
     }
 
     @SubscribeEvent
@@ -37,7 +40,6 @@ public class InventoryTweaks {
         LOGGER.info("Open GUI");
         if (isSortableContainer(event.getGui())) {
             LOGGER.info(" - is sortable");
-            ISortableContainer sortableContainer = getSortableContainer(event.getGui());
             Container container = getSortableContainer(event.getGui());
             NetworkHandler.sendToServer(new CSlotPosUpdate(container));
         }
@@ -54,7 +56,7 @@ public class InventoryTweaks {
     }
 
     public static boolean isSortableContainer(GuiScreen screen) {
-        return screen instanceof GuiContainer && ((GuiContainer) screen).inventorySlots instanceof ISortableContainer;
+        return screen instanceof GuiContainer && InventoryTweaksAPI.isValidSortable(((GuiContainer) screen).inventorySlots);
     }
 
     public static <T extends Container & ISortableContainer> T getSortableContainer(GuiScreen screen) {

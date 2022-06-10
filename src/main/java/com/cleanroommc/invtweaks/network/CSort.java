@@ -1,6 +1,6 @@
 package com.cleanroommc.invtweaks.network;
 
-import com.cleanroommc.invtweaks.api.ISortableContainer;
+import com.cleanroommc.invtweaks.api.InventoryTweaksAPI;
 import com.cleanroommc.invtweaks.sort.SortHandler;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -31,8 +31,8 @@ public class CSort implements IPacket {
     @Override
     public IPacket executeServer(NetHandlerPlayServer handler) {
         Container container = handler.player.openContainer;
-        if (!(container instanceof ISortableContainer)) return null;
-        SortHandler sortHandler = new SortHandler(container, (ISortableContainer) container);
+        if (!InventoryTweaksAPI.isValidSortable(container)) return null;
+        SortHandler sortHandler = new SortHandler(container);
         sortHandler.sort(slot);
         return null;
     }
