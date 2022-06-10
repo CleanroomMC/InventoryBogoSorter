@@ -1,6 +1,6 @@
-package com.cleanroommc.invtweaks.network;
+package com.cleanroommc.bogosorter.network;
 
-import com.cleanroommc.invtweaks.InventoryTweaks;
+import com.cleanroommc.bogosorter.BogoSorter;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class NetworkUtils {
@@ -87,7 +86,7 @@ public class NetworkUtils {
         if (bytesTest.length > 32767) {
             bytes = new byte[32767];
             System.arraycopy(bytesTest, 0, bytes, 0, 32767);
-            InventoryTweaks.LOGGER.warn("Warning! Synced string exceeds max length!");
+            BogoSorter.LOGGER.warn("Warning! Synced string exceeds max length!");
         } else {
             bytes = bytesTest;
         }

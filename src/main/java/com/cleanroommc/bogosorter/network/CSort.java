@@ -1,7 +1,7 @@
-package com.cleanroommc.invtweaks.network;
+package com.cleanroommc.bogosorter.network;
 
-import com.cleanroommc.invtweaks.api.InventoryTweaksAPI;
-import com.cleanroommc.invtweaks.sort.SortHandler;
+import com.cleanroommc.bogosorter.api.InventoryTweaksAPI;
+import com.cleanroommc.bogosorter.sort.SortHandler;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.network.NetHandlerPlayServer;

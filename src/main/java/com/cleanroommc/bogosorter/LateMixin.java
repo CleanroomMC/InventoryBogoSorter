@@ -1,4 +1,4 @@
-package com.cleanroommc.invtweaks;
+package com.cleanroommc.bogosorter;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraftforge.fml.common.Loader;
@@ -13,7 +13,7 @@ public class LateMixin implements ILateMixinLoader {
 
     @Override
     public List<String> getMixinConfigs() {
-        return modMixins.stream().map(mod -> "mixin.inventorytweaks." + mod + ".json").collect(Collectors.toList());
+        return modMixins.stream().map(mod -> "mixin.bogosorter." + mod + ".json").collect(Collectors.toList());
     }
 
     @Override

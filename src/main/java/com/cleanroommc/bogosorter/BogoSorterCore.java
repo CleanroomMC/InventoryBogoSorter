@@ -1,4 +1,4 @@
-package com.cleanroommc.invtweaks;
+package com.cleanroommc.bogosorter;
 
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@IFMLLoadingPlugin.Name("InventoryTweaks-Core")
+@IFMLLoadingPlugin.Name("BogoSorter-Core")
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
-public class InventoryTweaksCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
+public class BogoSorterCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     @Override
     public String[] getASMTransformerClass() {
@@ -40,7 +40,7 @@ public class InventoryTweaksCore implements IFMLLoadingPlugin, IEarlyMixinLoader
 
     @Override
     public List<String> getMixinConfigs() {
-        return Collections.singletonList("mixin.inventorytweaks.json");
+        return Collections.singletonList("mixin.bogosorter.json");
     }
 
 }

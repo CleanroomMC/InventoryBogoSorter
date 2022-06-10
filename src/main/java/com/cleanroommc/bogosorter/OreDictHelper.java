@@ -1,4 +1,4 @@
-package com.cleanroommc.invtweaks;
+package com.cleanroommc.bogosorter;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
@@ -11,7 +11,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = InventoryTweaks.ID)
+@Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class OreDictHelper {
 
     private static final Hash.Strategy<ItemStack> ITEM_HASH_STRATEGY = new Hash.Strategy<ItemStack>() {

@@ -1,4 +1,4 @@
-package com.cleanroommc.invtweaks.api;
+package com.cleanroommc.bogosorter.api;
 
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;

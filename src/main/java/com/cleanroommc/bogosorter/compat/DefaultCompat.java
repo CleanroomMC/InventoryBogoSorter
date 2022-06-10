@@ -1,6 +1,6 @@
-package com.cleanroommc.invtweaks.compat;
+package com.cleanroommc.bogosorter.compat;
 
-import com.cleanroommc.invtweaks.api.InventoryTweaksAPI;
+import com.cleanroommc.bogosorter.api.InventoryTweaksAPI;
 import net.minecraft.inventory.*;
 
 public class DefaultCompat {

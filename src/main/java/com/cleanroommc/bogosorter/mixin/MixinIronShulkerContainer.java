@@ -1,7 +1,7 @@
-package com.cleanroommc.invtweaks.mixin;
+package com.cleanroommc.bogosorter.mixin;
 
-import com.cleanroommc.invtweaks.api.ISortableContainer;
-import com.cleanroommc.invtweaks.api.ISortingContextBuilder;
+import com.cleanroommc.bogosorter.api.ISortableContainer;
+import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
 import cpw.mods.ironchest.common.blocks.shulker.IronShulkerBoxType;
 import cpw.mods.ironchest.common.gui.shulker.ContainerIronShulkerBox;
 import org.spongepowered.asm.mixin.Mixin;

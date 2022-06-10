@@ -1,11 +1,11 @@
-package com.cleanroommc.invtweaks;
+package com.cleanroommc.bogosorter;
 
-import com.cleanroommc.invtweaks.api.ISortableContainer;
-import com.cleanroommc.invtweaks.api.InventoryTweaksAPI;
-import com.cleanroommc.invtweaks.compat.DefaultCompat;
-import com.cleanroommc.invtweaks.network.CSlotPosUpdate;
-import com.cleanroommc.invtweaks.network.CSort;
-import com.cleanroommc.invtweaks.network.NetworkHandler;
+import com.cleanroommc.bogosorter.api.ISortableContainer;
+import com.cleanroommc.bogosorter.api.InventoryTweaksAPI;
+import com.cleanroommc.bogosorter.compat.DefaultCompat;
+import com.cleanroommc.bogosorter.network.CSlotPosUpdate;
+import com.cleanroommc.bogosorter.network.CSort;
+import com.cleanroommc.bogosorter.network.NetworkHandler;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
@@ -19,12 +19,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Mouse;
 
-@Mod(modid = InventoryTweaks.ID, name = InventoryTweaks.NAME, version = InventoryTweaks.VERSION)
-@Mod.EventBusSubscriber(modid = InventoryTweaks.ID)
-public class InventoryTweaks {
+@Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION)
+@Mod.EventBusSubscriber(modid = BogoSorter.ID)
+public class BogoSorter {
 
-    public static final String ID = "inventorytweaks";
-    public static final String NAME = "Brachy's Inventory Tweaks";
+    public static final String ID = "bogosorter";
+    public static final String NAME = "Inventory Bogo Sorter";
     public static final String VERSION = "1.0.0";
 
     public static final Logger LOGGER = LogManager.getLogger(ID);

@@ -1,6 +1,6 @@
-package com.cleanroommc.invtweaks.sort;
+package com.cleanroommc.bogosorter.sort;
 
-import com.cleanroommc.invtweaks.api.*;
+import com.cleanroommc.bogosorter.api.*;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;

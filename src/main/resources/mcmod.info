@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
+  "modid": "bogosorter",
+  "name": "Inventory Bogo Sorter",
+  "description": "A highly configurable and advanced inventory sorter mod",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["CleanroomMC"],
-  "credits": "Authors of this project",
+  "authorList": ["brachy84"],
+  "credits": "Autor of InventoryTweaks",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

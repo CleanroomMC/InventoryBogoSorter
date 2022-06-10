@@ -1,4 +1,4 @@
-package com.cleanroommc.invtweaks.api;
+package com.cleanroommc.bogosorter.api;
 
 public enum SortType {
 

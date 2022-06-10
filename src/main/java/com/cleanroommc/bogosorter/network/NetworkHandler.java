@@ -1,6 +1,6 @@
-package com.cleanroommc.invtweaks.network;
+package com.cleanroommc.bogosorter.network;
 
-import com.cleanroommc.invtweaks.InventoryTweaks;
+import com.cleanroommc.bogosorter.BogoSorter;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public class NetworkHandler {
 
-    public static final SimpleNetworkWrapper network = NetworkRegistry.INSTANCE.newSimpleChannel(InventoryTweaks.ID);
+    public static final SimpleNetworkWrapper network = NetworkRegistry.INSTANCE.newSimpleChannel(BogoSorter.ID);
     private static int packetId = 0;
 
     public static void init() {

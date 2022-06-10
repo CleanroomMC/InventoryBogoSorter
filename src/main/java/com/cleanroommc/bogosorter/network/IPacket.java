@@ -1,4 +1,4 @@
-package com.cleanroommc.invtweaks.network;
+package com.cleanroommc.bogosorter.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.network.NetHandlerPlayClient;

@@ -1,7 +1,7 @@
-package com.cleanroommc.invtweaks.mixin;
+package com.cleanroommc.bogosorter.mixin;
 
-import com.cleanroommc.invtweaks.api.ISortableContainer;
-import com.cleanroommc.invtweaks.api.ISortingContextBuilder;
+import com.cleanroommc.bogosorter.api.ISortableContainer;
+import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
 import net.minecraft.entity.passive.AbstractChestHorse;
 import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.inventory.ContainerHorseInventory;

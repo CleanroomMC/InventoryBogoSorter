@@ -1,6 +1,6 @@
-package com.cleanroommc.invtweaks.sort;
+package com.cleanroommc.bogosorter.sort;
 
-import com.cleanroommc.invtweaks.api.ISortingContextBuilder;
+import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;

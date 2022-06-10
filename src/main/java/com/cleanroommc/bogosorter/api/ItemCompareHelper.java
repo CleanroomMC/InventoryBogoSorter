@@ -1,7 +1,7 @@
-package com.cleanroommc.invtweaks.api;
+package com.cleanroommc.bogosorter.api;
 
-import com.cleanroommc.invtweaks.OreDictHelper;
-import com.cleanroommc.invtweaks.sort.SortHandler;
+import com.cleanroommc.bogosorter.OreDictHelper;
+import com.cleanroommc.bogosorter.sort.SortHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;

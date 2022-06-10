@@ -1,6 +1,6 @@
 {
-  "package": "com.cleanroommc.invtweaks.mixin",
-  "refmap": "mixins.inventorytweaks.refmap.json",
+  "package": "com.cleanroommc.bogosorter.mixin",
+  "refmap": "mixins.bogosorter.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
