@@ -48,7 +48,34 @@ public class ItemCompareHelper {
         return Integer.compare(getMeta(stack1), getMeta(stack2));
     }
 
-    public static int compareNbt(ItemStack stack1, ItemStack stack2) {
+    public static int compareCount(ItemStack stack1, ItemStack stack2) {
+        return Integer.compare(stack1.getCount(), stack2.getCount());
+    }
+
+    public static int compareOreDict(ItemStack stack1, ItemStack stack2) {
+        Set<String> ores1 = OreDictHelper.getOreDicts(stack1);
+        Set<String> ores2 = OreDictHelper.getOreDicts(stack2);
+        if (ores1.isEmpty() && ores2.isEmpty()) return 0;
+        List<String> ores3 = new ArrayList<>();
+        List<String> ores4 = new ArrayList<>();
+        for (String oreDict : ores1) {
+            if (!ores2.contains(oreDict)) {
+                ores3.add(oreDict);
+            }
+        }
+        for (String oreDict : ores2) {
+            if (!ores1.contains(oreDict)) {
+                ores4.add(oreDict);
+            }
+        }
+        if (ores3.size() != ores4.size()) {
+            return Integer.compare(ores3.size(), ores4.size());
+        }
+        if (ores3.size() != 1) return 0;
+        return ores3.get(0).compareTo(ores4.get(0));
+    }
+
+    public static int compareHasNbt(ItemStack stack1, ItemStack stack2) {
         NBTTagCompound nbt1 = stack1.getTagCompound();
         NBTTagCompound nbt2 = stack2.getTagCompound();
         if (nbt1 == null && nbt2 == null) return 0;
