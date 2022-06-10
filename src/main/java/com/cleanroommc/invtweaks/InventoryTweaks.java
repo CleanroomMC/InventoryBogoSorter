@@ -37,21 +37,20 @@ public class InventoryTweaks {
 
     @SubscribeEvent
     public static void onGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        LOGGER.info("Open GUI");
-        if (isSortableContainer(event.getGui())) {
-            LOGGER.info(" - is sortable");
-            Container container = getSortableContainer(event.getGui());
+        if (event.getGui() instanceof GuiContainer) {
+            Container container = ((GuiContainer) event.getGui()).inventorySlots;
             NetworkHandler.sendToServer(new CSlotPosUpdate(container));
         }
     }
 
     @SubscribeEvent
     public static void onMouseInput(GuiScreenEvent.MouseInputEvent.Post event) {
-        if (Mouse.getEventButton() == 2 && isSortableContainer(event.getGui())) {
+        if (Mouse.getEventButton() == 2 && event.getGui() instanceof GuiContainer) {
             Slot slot = ((GuiContainer) event.getGui()).getSlotUnderMouse();
-            LOGGER.info("About to sort. Slot: {}", slot == null ? "null" : slot.slotNumber);
             if (slot == null) return;
-            NetworkHandler.sendToServer(new CSort(slot));
+            boolean player = InventoryTweaksAPI.isPlayerSlot(((GuiContainer) event.getGui()).inventorySlots, slot.slotNumber);
+            if (!player && !isSortableContainer(event.getGui())) return;
+            NetworkHandler.sendToServer(new CSort(slot, player));
         }
     }
 

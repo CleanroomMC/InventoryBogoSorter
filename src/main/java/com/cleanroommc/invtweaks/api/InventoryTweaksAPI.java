@@ -1,6 +1,8 @@
 package com.cleanroommc.invtweaks.api;
 
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,5 +32,11 @@ public class InventoryTweaksAPI {
 
     public static boolean isValidSortable(Container container) {
         return container instanceof ISortableContainer || COMPAT_MAP.containsKey(container.getClass());
+    }
+
+    public static boolean isPlayerSlot(Container container, int slot) {
+        if (slot < 0) return false;
+        Slot slot1 = container.getSlot(slot);
+        return slot1.inventory instanceof InventoryPlayer && slot1.getSlotIndex() >= 9 && slot1.getSlotIndex() < 36;
     }
 }

@@ -1,10 +1,10 @@
 package com.cleanroommc.invtweaks.sort;
 
-import com.cleanroommc.invtweaks.InventoryTweaks;
 import com.cleanroommc.invtweaks.api.*;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -42,27 +42,37 @@ public class SortHandler {
     private final Container container;
     private GuiSortingContext context;
 
-    public SortHandler(Container container) {
+    public SortHandler(Container container, boolean player) {
         this.container = container;
-        createSortContext();
+        this.context = createSortContext(player);
     }
 
-    public void createSortContext() {
+    public GuiSortingContext createSortContext(boolean player) {
+        if (player) {
+            GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
+            List<Slot> slots = new ArrayList<>();
+            for (Slot slot : container.inventorySlots) {
+                if (slot.inventory instanceof InventoryPlayer && slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36) {
+                    slots.add(slot);
+                }
+            }
+            builder.addSlotGroup(9, slots);
+            return builder.build();
+        }
         if (container instanceof ISortableContainer) {
             GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
             ((ISortableContainer) container).buildSortingContext(builder);
-            this.context = builder.build();
-            return;
+            return builder.build();
         }
         if (InventoryTweaksAPI.isValidSortable(container)) {
             GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
             InventoryTweaksAPI.getBuilder(container).accept(container, builder);
-            this.context = builder.build();
+            return builder.build();
         }
+        return new GuiSortingContext(container, Collections.emptyList());
     }
 
     public void sort(int slotId) {
-        InventoryTweaks.LOGGER.info("Sorting for slot {}", slotId);
         Slot[][] slotGroup = context.getSlotGroup(slotId);
         if (slotGroup != null) {
             sort(slotGroup);
