@@ -1,27 +1,46 @@
 package com.cleanroommc.invtweaks.sort;
 
 import com.cleanroommc.invtweaks.InventoryTweaks;
+import com.cleanroommc.invtweaks.api.DefaultRules;
 import com.cleanroommc.invtweaks.api.ISortableContainer;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.SortedMultiset;
-import com.google.common.collect.TreeMultiset;
+import com.cleanroommc.invtweaks.api.InventoryTweaksAPI;
+import com.cleanroommc.invtweaks.api.SortRule;
+import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import java.util.Comparator;
+import java.util.*;
 
 public class SortHandler {
+
+    private static final List<SortRule> sortRules = new ArrayList<>();
+
+    static {
+        sortRules.add(DefaultRules.MOD_NAME.withPrio(0));
+        sortRules.add(DefaultRules.ID_NAME.withPrio(1));
+        sortRules.add(DefaultRules.META.withPrio(2));
+        sortRules.add(DefaultRules.NBT.withPrio(3));
+    }
+
+    public static void updateSortRules(Collection<SortRule> rules) {
+        sortRules.clear();
+        sortRules.addAll(rules);
+        sortRules.sort(Comparator.comparingInt(SortRule::getPriority));
+    }
+
+    public static void updateSortRules(SortRule... rules) {
+        updateSortRules(Arrays.asList(rules));
+    }
 
     private final Container container;
     private GuiSortingContext context;
 
     public SortHandler(Container container) {
         this.container = container;
-        this.sortableContainer = sortableContainer;
-        GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
-        sortableContainer.buildSortingContext(builder);
-        this.context = builder.build();
+        createSortContext();
     }
 
     public void createSortContext() {
@@ -47,10 +66,13 @@ public class SortHandler {
     }
 
     public void sort(Slot[][] slotGroup) {
-        SortedMultiset<ItemStack> items = gatherItems(slotGroup);
-        Multiset.Entry<ItemStack> entry = items.pollFirstEntry();
-        ItemStack item = entry.getElement();
-        int remaining = entry.getCount();
+        Object2IntMap<ItemStack> items = gatherItems(slotGroup);
+        if (items.isEmpty()) return;
+        LinkedList<ItemStack> itemList = new LinkedList<>(items.keySet());
+        itemList.sort(ITEM_COMPARATOR);
+        ItemStack item = itemList.pollFirst();
+        if (item == null) return;
+        int remaining = items.getInt(item);
         for (Slot[] slotRow : slotGroup) {
             for (Slot slot : slotRow) {
                 if (item == ItemStack.EMPTY) {
@@ -66,20 +88,19 @@ public class SortHandler {
                 slot.putStack(toInsert);
                 remaining -= limit;
                 if (remaining <= 0) {
-                    if (items.isEmpty()) {
+                    if (itemList.isEmpty()) {
                         item = ItemStack.EMPTY;
                         continue;
                     }
-                    entry = items.pollFirstEntry();
-                    item = entry.getElement();
-                    remaining = entry.getCount();
+                    item = itemList.pollFirst();
+                    remaining = items.getInt(item);
                 }
             }
         }
     }
 
-    public SortedMultiset<ItemStack> gatherItems(Slot[][] slotGroup) {
-        SortedMultiset<ItemStack> items = TreeMultiset.create(ITEM_COMPARATOR);
+    public Object2IntMap<ItemStack> gatherItems(Slot[][] slotGroup) {
+        Object2IntOpenCustomHashMap<ItemStack> items = new Object2IntOpenCustomHashMap<>(ITEM_HASH_STRATEGY);
         for (Slot[] slotRow : slotGroup) {
             for (Slot slot : slotRow) {
                 ItemStack stack = slot.getStack();
@@ -87,7 +108,7 @@ public class SortHandler {
                     int amount = stack.getCount();
                     stack = stack.copy();
                     stack.setCount(1);
-                    items.add(stack, amount);
+                    items.compute(stack, (key, value) -> value == null ? amount : value + amount);
                 }
             }
         }
@@ -95,18 +116,28 @@ public class SortHandler {
     }
 
     public static final Comparator<ItemStack> ITEM_COMPARATOR = (stack1, stack2) -> {
-        int result = InventoryTweaks.getMod(stack1).compareTo(InventoryTweaks.getMod(stack2));
-        if (result != 0) return result;
-        result = InventoryTweaks.getId(stack1).compareTo(InventoryTweaks.getId(stack2));
-        if (result != 0) return result;
-        result = Integer.compare(stack1.getMetadata(), stack2.getMetadata());
-        if (result != 0) return result;
-        if (stack1.hasTagCompound() || stack2.hasTagCompound()) {
-            if (stack1.hasTagCompound() && !stack2.hasTagCompound()) return 1;
-            if (!stack1.hasTagCompound()) return -1;
-            if (stack1.getTagCompound().equals(stack2.getTagCompound())) return 0;
-            return Integer.compare(stack1.getTagCompound().getSize(), stack2.getTagCompound().getSize());
+        int result = 0;
+        for (SortRule sortRule : sortRules) {
+            result = sortRule.compare(stack1, stack2);
+            if (result != 0) return result;
         }
         return result;
+    };
+
+    public static final Hash.Strategy<ItemStack> ITEM_HASH_STRATEGY = new Hash.Strategy<ItemStack>() {
+        @Override
+        public int hashCode(ItemStack o) {
+            return Objects.hash(o.getItem(), o.getMetadata(), o.getTagCompound());
+        }
+
+        @Override
+        public boolean equals(ItemStack a, ItemStack b) {
+            if (a == b) return true;
+            if (a == null || b == null) return false;
+            return (a.isEmpty() && b.isEmpty()) ||
+                    (a.getItem() == b.getItem() &&
+                            a.getMetadata() == b.getMetadata() &&
+                            Objects.equals(a.getTagCompound(), b.getTagCompound()));
+        }
     };
 }
