@@ -1,0 +1,11 @@
+{
+  "package": "com.cleanroommc.invtweaks.mixin",
+  "refmap": "mixins.inventorytweaks.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinIronChestContainer",
+    "MixinIronShulkerContainer"
+  ]
+}

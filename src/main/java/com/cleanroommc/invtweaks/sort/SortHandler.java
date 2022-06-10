@@ -132,7 +132,7 @@ public class SortHandler {
 
     public static final Comparator<ItemStack> ITEM_COMPARATOR = (stack1, stack2) -> {
         int result = 0;
-        for (SortRule sortRule : sortRules) {
+        for (SortRule<ItemStack> sortRule : sortRules) {
             result = sortRule.compare(stack1, stack2);
             if (result != 0) return result;
         }

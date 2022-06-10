@@ -70,7 +70,8 @@ dependencies {
 	if (project.use_mixins.toBoolean()) {
 		deobfCompile 'zone.rong:mixinbooter:4.2'
     }
-	
+
+	provided files("etc/ironchest-1.12.2-7.0.72.847.jar")
 }
 
 sourceSets {
