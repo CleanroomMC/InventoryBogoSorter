@@ -6,6 +6,7 @@ import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GuiSortingContext {
@@ -67,6 +68,14 @@ public class GuiSortingContext {
             Slot[][] slotGroup = new Slot[rows][rowSize];
             for (int i = 0; i < slots.size(); i++) {
                 slotGroup[i / rowSize][i % rowSize] = slots.get(i);
+            }
+            if (rows > slots.size() / rowSize) {
+                int nulls = 0;
+                Slot[] lastRow = slotGroup[rows - 1];
+                for (Slot slot : lastRow) {
+                    if (slot == null) nulls++;
+                }
+                slotGroup[rows - 1] = Arrays.copyOf(lastRow, lastRow.length - nulls);
             }
             return addSlotGroup(slotGroup);
         }

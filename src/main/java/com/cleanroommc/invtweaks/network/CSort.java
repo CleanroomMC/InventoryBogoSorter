@@ -10,9 +10,11 @@ import net.minecraft.network.PacketBuffer;
 public class CSort implements IPacket {
 
     private int slot;
+    private boolean player;
 
-    public CSort(Slot slot) {
+    public CSort(Slot slot, boolean player) {
         this.slot = slot.slotNumber;
+        this.player = player;
     }
 
     public CSort() {
@@ -21,18 +23,20 @@ public class CSort implements IPacket {
     @Override
     public void encode(PacketBuffer buf) {
         buf.writeVarInt(slot);
+        buf.writeBoolean(player);
     }
 
     @Override
     public void decode(PacketBuffer buf) {
         slot = buf.readVarInt();
+        player = buf.readBoolean();
     }
 
     @Override
     public IPacket executeServer(NetHandlerPlayServer handler) {
         Container container = handler.player.openContainer;
-        if (!InventoryTweaksAPI.isValidSortable(container)) return null;
-        SortHandler sortHandler = new SortHandler(container);
+        if (!player && !InventoryTweaksAPI.isValidSortable(container)) return null;
+        SortHandler sortHandler = new SortHandler(container, player);
         sortHandler.sort(slot);
         return null;
     }
