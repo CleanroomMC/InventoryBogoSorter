@@ -18,11 +18,15 @@ public class SortHandler {
 
     static {
         sortRules.add(DefaultRules.MOD_NAME);
+        sortRules.add(DefaultRules.NBT_HAS);
+        sortRules.add(DefaultRules.MATERIAL);
+        sortRules.add(DefaultRules.ORE_PREFIX);
         sortRules.add(DefaultRules.ID_NAME);
         sortRules.add(DefaultRules.META);
-        sortRules.add(DefaultRules.NBT_HAS);
         sortRules.add(DefaultRules.NBT_VALUES);
 
+        nbtSortRules.add(DefaultRules.ENCHANTMENT);
+        nbtSortRules.add(DefaultRules.ENCHANTMENT_BOOK);
         nbtSortRules.add(DefaultRules.POTION);
     }
 

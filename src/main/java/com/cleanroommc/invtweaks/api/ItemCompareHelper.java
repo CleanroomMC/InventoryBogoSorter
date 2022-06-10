@@ -231,4 +231,53 @@ public class ItemCompareHelper {
         if (!strong1 && strong2) return -1;
         return Boolean.compare(potion1.startsWith("long"), potion2.startsWith("long"));
     }
+
+    public static int compareEnchantments(NBTTagList enchantments1, NBTTagList enchantments2) {
+        int total1 = 0;
+        for (NBTBase nbtBase : enchantments1) {
+            NBTTagCompound nbt = (NBTTagCompound) nbtBase;
+            total1 += nbt.getShort("id");
+        }
+        int total2 = 0;
+        for (NBTBase nbtBase : enchantments2) {
+            NBTTagCompound nbt = (NBTTagCompound) nbtBase;
+            total2 += nbt.getShort("id");
+        }
+        int result = Integer.compare(total1, total2);
+        if (result != 0) return result;
+        total1 = 0;
+        for (NBTBase nbtBase : enchantments1) {
+            NBTTagCompound nbt = (NBTTagCompound) nbtBase;
+            total1 += nbt.getShort("lvl");
+        }
+        total2 = 0;
+        for (NBTBase nbtBase : enchantments2) {
+            NBTTagCompound nbt = (NBTTagCompound) nbtBase;
+            total2 += nbt.getShort("lvl");
+        }
+        return Integer.compare(total1, total2);
+    }
+
+    public static int compareEnchantment(NBTTagCompound enchantment1, NBTTagCompound enchantment2) {
+        int result = Integer.compare(enchantment1.getShort("id"), enchantment2.getShort("id"));
+        if (result != 0) return result;
+        return Integer.compare(enchantment1.getShort("lvl"), enchantment2.getShort("lvl"));
+    }
+
+    public static int compareMaterial(ItemStack item1, ItemStack item2) {
+        String mat1 = OreDictHelper.getMaterial(item1);
+        String mat2 = OreDictHelper.getMaterial(item2);
+        if (mat1 == null && mat2 == null) return 0;
+        if (mat1 == null) return 1;
+        return mat2 == null ? -1 : mat1.compareTo(mat2);
+    }
+
+    public static int compareOrePrefix(ItemStack item1, ItemStack item2) {
+        String prefix = OreDictHelper.getOrePrefix(item1);
+        String prefix1 = OreDictHelper.getOrePrefix(item2);
+        if (prefix == null && prefix1 == null) return 0;
+        if (prefix == null) return 1;
+        if (prefix1 == null) return -1;
+        return Integer.compare(OreDictHelper.getOrePrefixIndex(prefix), OreDictHelper.getOrePrefixIndex(prefix1));
+    }
 }

@@ -1,6 +1,7 @@
 package com.cleanroommc.invtweaks.api;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.Constants;
 
@@ -15,9 +16,14 @@ public class DefaultRules {
     public static final SortRule<ItemStack> NBT_ALL_VALUES = new SortRule<>(SortType.NBT, ItemCompareHelper::compareNbtValues);
     public static final SortRule<ItemStack> COUNT = new SortRule<>(SortType.COUNT, ItemCompareHelper::compareCount);
     public static final SortRule<ItemStack> ORE_DICT = new SortRule<>(SortType.OREDICT, ItemCompareHelper::compareOreDict);
+    public static final SortRule<ItemStack> MATERIAL = new SortRule<>(SortType.OREDICT, ItemCompareHelper::compareMaterial);
+    public static final SortRule<ItemStack> ORE_PREFIX = new SortRule<>(SortType.OREDICT, ItemCompareHelper::compareOrePrefix);
 
     public static final NbtSortRule POTION = new NbtSortRule("Potion", Constants.NBT.TAG_STRING, ItemCompareHelper::comparePotionId, nbtBase -> {
         String[] potion = ((NBTTagString) nbtBase).getString().split(":");
         return potion[potion.length - 1];
     });
+
+    public static final NbtSortRule ENCHANTMENT = new NbtSortRule("ench", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);
+    public static final NbtSortRule ENCHANTMENT_BOOK = new NbtSortRule("StoredEnchantments", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);
 }
