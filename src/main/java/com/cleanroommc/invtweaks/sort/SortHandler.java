@@ -1,10 +1,7 @@
 package com.cleanroommc.invtweaks.sort;
 
 import com.cleanroommc.invtweaks.InventoryTweaks;
-import com.cleanroommc.invtweaks.api.DefaultRules;
-import com.cleanroommc.invtweaks.api.ISortableContainer;
-import com.cleanroommc.invtweaks.api.InventoryTweaksAPI;
-import com.cleanroommc.invtweaks.api.SortRule;
+import com.cleanroommc.invtweaks.api.*;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
@@ -16,22 +13,25 @@ import java.util.*;
 
 public class SortHandler {
 
-    private static final List<SortRule> sortRules = new ArrayList<>();
+    private static final List<SortRule<ItemStack>> sortRules = new ArrayList<>();
+    private static final List<NbtSortRule> nbtSortRules = new ArrayList<>();
 
     static {
-        sortRules.add(DefaultRules.MOD_NAME.withPrio(0));
-        sortRules.add(DefaultRules.ID_NAME.withPrio(1));
-        sortRules.add(DefaultRules.META.withPrio(2));
-        sortRules.add(DefaultRules.NBT.withPrio(3));
+        sortRules.add(DefaultRules.MOD_NAME);
+        sortRules.add(DefaultRules.ID_NAME);
+        sortRules.add(DefaultRules.META);
+        sortRules.add(DefaultRules.NBT_HAS);
+        sortRules.add(DefaultRules.NBT_VALUES);
+
+        nbtSortRules.add(DefaultRules.POTION);
     }
 
-    public static void updateSortRules(Collection<SortRule> rules) {
+    public static void updateSortRules(Collection<SortRule<ItemStack>> rules) {
         sortRules.clear();
         sortRules.addAll(rules);
-        sortRules.sort(Comparator.comparingInt(SortRule::getPriority));
     }
 
-    public static void updateSortRules(SortRule... rules) {
+    public static void updateSortRules(SortRule<ItemStack>... rules) {
         updateSortRules(Arrays.asList(rules));
     }
 
@@ -69,6 +69,7 @@ public class SortHandler {
         Object2IntMap<ItemStack> items = gatherItems(slotGroup);
         if (items.isEmpty()) return;
         LinkedList<ItemStack> itemList = new LinkedList<>(items.keySet());
+        itemList.forEach(item -> item.setCount(items.getInt(item)));
         itemList.sort(ITEM_COMPARATOR);
         ItemStack item = itemList.pollFirst();
         if (item == null) return;
@@ -140,4 +141,8 @@ public class SortHandler {
                             Objects.equals(a.getTagCompound(), b.getTagCompound()));
         }
     };
+
+    public static List<NbtSortRule> getNbtSortRules() {
+        return nbtSortRules;
+    }
 }

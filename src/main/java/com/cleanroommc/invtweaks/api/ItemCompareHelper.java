@@ -1,14 +1,18 @@
 package com.cleanroommc.invtweaks.api;
 
+import com.cleanroommc.invtweaks.OreDictHelper;
+import com.cleanroommc.invtweaks.sort.SortHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ItemCompareHelper {
 
@@ -78,10 +82,9 @@ public class ItemCompareHelper {
     public static int compareHasNbt(ItemStack stack1, ItemStack stack2) {
         NBTTagCompound nbt1 = stack1.getTagCompound();
         NBTTagCompound nbt2 = stack2.getTagCompound();
-        if (nbt1 == null && nbt2 == null) return 0;
+        if ((nbt1 == null) == (nbt2 == null)) return 0;
         if (nbt1 == null) return -1;
-        if (nbt2 == null) return 1;
-        return compareNotNullNbt(nbt1, nbt2);
+        return 1;
     }
 
     public static int compareNotNullNbt(@NotNull NBTTagCompound nbt1, @NotNull NBTTagCompound nbt2) {
@@ -90,7 +93,28 @@ public class ItemCompareHelper {
         return compareNbtValues(nbt1, nbt2);
     }
 
+    public static int compareNbtValues(ItemStack itemStack1, ItemStack itemStack2) {
+        int result = compareHasNbt(itemStack1, itemStack2);
+        if (result != 0) return result;
+        return itemStack1.hasTagCompound() ? compareNbtValues(itemStack1.getTagCompound(), itemStack2.getTagCompound()) : 0;
+    }
+
     public static int compareNbtValues(@NotNull NBTTagCompound nbt1, @NotNull NBTTagCompound nbt2) {
+        int result = 0;
+        for (NbtSortRule nbtSortRule : SortHandler.getNbtSortRules()) {
+            result = nbtSortRule.compare(nbt1, nbt2);
+            if (result != 0) return result;
+        }
+        return result;
+    }
+
+    public static int compareNbtAllValues(ItemStack itemStack1, ItemStack itemStack2) {
+        int result = compareHasNbt(itemStack1, itemStack2);
+        if (result != 0) return result;
+        return itemStack1.hasTagCompound() ? compareNbtAllValues(itemStack1.getTagCompound(), itemStack2.getTagCompound()) : 0;
+    }
+
+    public static int compareNbtAllValues(@NotNull NBTTagCompound nbt1, @NotNull NBTTagCompound nbt2) {
         int total = 0;
         for (String key : nbt1.getKeySet()) {
             if (nbt2.hasKey(key)) {
@@ -104,7 +128,7 @@ public class ItemCompareHelper {
     public static int compareNbtBase(NBTBase nbt1, NBTBase nbt2) {
         if (nbt1.getId() != nbt2.getId()) return 0;
         if (nbt1.getId() == Constants.NBT.TAG_COMPOUND) {
-            return compareNbtValues((NBTTagCompound) nbt1, (NBTTagCompound) nbt2);
+            return compareNbtAllValues((NBTTagCompound) nbt1, (NBTTagCompound) nbt2);
         }
         if (nbt1 instanceof NBTPrimitive) {
             return Double.compare(((NBTPrimitive) nbt1).getDouble(), ((NBTPrimitive) nbt2).getDouble());
@@ -140,6 +164,12 @@ public class ItemCompareHelper {
         return 0;
     }
 
+    public static int compareNbtSize(ItemStack itemStack1, ItemStack itemStack2) {
+        int result = compareHasNbt(itemStack1, itemStack2);
+        if (result != 0) return result;
+        return itemStack1.hasTagCompound() ? compareNbtSize(itemStack1.getTagCompound(), itemStack2.getTagCompound()) : 0;
+    }
+
     public static int compareNbtSize(@NotNull NBTTagCompound nbt1, @NotNull NBTTagCompound nbt2) {
         if (nbt1.getSize() < nbt2.getSize()) return -1;
         if (nbt1.getSize() > nbt2.getSize()) return 1;
@@ -156,6 +186,17 @@ public class ItemCompareHelper {
             if (size1 < size2) return -1;
             if (size1 > size2) return 1;
         }
+    }
+
+    @Nullable
+    public static NBTBase findSubTag(String path, NBTBase tag) {
+        if (tag == null || path == null || path.isEmpty()) return null;
+        String[] parts = path.split("/");
+        for (String part : parts) {
+            if (tag == null || tag.getId() != 10) return null;
+            tag = ((NBTTagCompound) tag).getTag(part);
+        }
+        return tag;
     }
 
     private static List<NBTTagCompound> getAllSubTags(List<NBTTagCompound> tags) {
@@ -177,5 +218,17 @@ public class ItemCompareHelper {
             sum += nbt.getSize();
         }
         return sum;
+    }
+
+    public static int comparePotionId(String potion1, String potion2) {
+        String id1 = potion1.startsWith("strong") || potion1.startsWith("long") ? potion1.substring(potion1.indexOf('_') + 1) : potion1;
+        String id2 = potion2.startsWith("strong") || potion2.startsWith("long") ? potion2.substring(potion2.indexOf('_') + 1) : potion2;
+        int result = id1.compareTo(id2);
+        if (result != 0) return result;
+        boolean strong1 = potion1.startsWith("strong");
+        boolean strong2 = potion2.startsWith("strong");
+        if (strong1 && !strong2) return 1;
+        if (!strong1 && strong2) return -1;
+        return Boolean.compare(potion1.startsWith("long"), potion2.startsWith("long"));
     }
 }

@@ -1,33 +1,28 @@
 package com.cleanroommc.invtweaks.api;
 
-import net.minecraft.item.ItemStack;
-
 import java.util.Comparator;
 
-public class SortRule implements Comparator<ItemStack> {
+public class SortRule<T> implements Comparator<T> {
 
-    private int priority = 0;
-    private final Comparator<ItemStack> comparator;
+    private final SortType type;
+    private final Comparator<T> comparator;
+    private boolean inverted = false;
 
-    public SortRule(Comparator<ItemStack> comparator) {
+    public SortRule(SortType type, Comparator<T> comparator) {
+        this.type = type;
         this.comparator = comparator;
     }
 
-    public int getPriority() {
-        return priority;
+    public boolean isInverted() {
+        return inverted;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public SortRule withPrio(int prio) {
-        setPriority(prio);
-        return this;
+    public void setInverted(boolean inverted) {
+        this.inverted = inverted;
     }
 
     @Override
-    public int compare(ItemStack o1, ItemStack o2) {
-        return comparator.compare(o1, o2);
+    public int compare(T o1, T o2) {
+        return inverted ? comparator.compare(o2, o1) : comparator.compare(o1, o2);
     }
 }
