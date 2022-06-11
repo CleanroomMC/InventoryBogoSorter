@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.sort;
+package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
 import net.minecraft.inventory.Container;

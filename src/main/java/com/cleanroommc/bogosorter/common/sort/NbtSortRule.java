@@ -1,5 +1,8 @@
-package com.cleanroommc.bogosorter.api;
+package com.cleanroommc.bogosorter.common.sort;
 
+import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.api.SortType;
+import com.cleanroommc.bogosorter.common.sort.ItemCompareHelper;
 import net.minecraft.nbt.NBTBase;
 
 import java.util.Comparator;

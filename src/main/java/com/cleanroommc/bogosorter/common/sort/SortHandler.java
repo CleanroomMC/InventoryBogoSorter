@@ -1,7 +1,8 @@
-package com.cleanroommc.bogosorter.sort;
+package com.cleanroommc.bogosorter.common.sort;
 
-import com.cleanroommc.bogosorter.api.*;
-import it.unimi.dsi.fastutil.Hash;
+import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.api.ISortableContainer;
+import com.cleanroommc.bogosorter.api.SortRule;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -10,6 +11,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SortHandler {
 
@@ -17,18 +19,11 @@ public class SortHandler {
     private static final List<NbtSortRule> nbtSortRules = new ArrayList<>();
 
     static {
-        sortRules.add(DefaultRules.MOD_NAME);
-        sortRules.add(DefaultRules.NBT_HAS);
-        sortRules.add(DefaultRules.MATERIAL);
-        sortRules.add(DefaultRules.ORE_PREFIX);
-        sortRules.add(DefaultRules.ID_NAME);
-        sortRules.add(DefaultRules.META);
-        sortRules.add(DefaultRules.NBT_VALUES);
+        String[] itemRules = {"mod", "material", "ore_prefix", "id", "meta", "nbt_has", "nbt_rules"};
+        String[] nbtRules = {"enchantment", "enchantment_book", "potion", "gt_circ_config"};
 
-        nbtSortRules.add(DefaultRules.ENCHANTMENT);
-        nbtSortRules.add(DefaultRules.ENCHANTMENT_BOOK);
-        nbtSortRules.add(DefaultRules.POTION);
-        nbtSortRules.add(DefaultRules.GT_CIRC_CONFIG);
+        sortRules.addAll(Arrays.stream(itemRules).map(BogoSortAPI.INSTANCE::getItemSortRule).collect(Collectors.toList()));
+        nbtSortRules.addAll(Arrays.stream(nbtRules).map(BogoSortAPI.INSTANCE::getNbtSortRule).collect(Collectors.toList()));
     }
 
     public static void updateSortRules(Collection<SortRule<ItemStack>> rules) {
@@ -65,9 +60,9 @@ public class SortHandler {
             ((ISortableContainer) container).buildSortingContext(builder);
             return builder.build();
         }
-        if (InventoryTweaksAPI.isValidSortable(container)) {
+        if (BogoSortAPI.isValidSortable(container)) {
             GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
-            InventoryTweaksAPI.getBuilder(container).accept(container, builder);
+            BogoSortAPI.INSTANCE.getBuilder(container).accept(container, builder);
             return builder.build();
         }
         return new GuiSortingContext(container, Collections.emptyList());
@@ -116,7 +111,7 @@ public class SortHandler {
     }
 
     public Object2IntMap<ItemStack> gatherItems(Slot[][] slotGroup) {
-        Object2IntOpenCustomHashMap<ItemStack> items = new Object2IntOpenCustomHashMap<>(ITEM_HASH_STRATEGY);
+        Object2IntOpenCustomHashMap<ItemStack> items = new Object2IntOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         for (Slot[] slotRow : slotGroup) {
             for (Slot slot : slotRow) {
                 ItemStack stack = slot.getStack();
@@ -138,23 +133,6 @@ public class SortHandler {
             if (result != 0) return result;
         }
         return result;
-    };
-
-    public static final Hash.Strategy<ItemStack> ITEM_HASH_STRATEGY = new Hash.Strategy<ItemStack>() {
-        @Override
-        public int hashCode(ItemStack o) {
-            return Objects.hash(o.getItem(), o.getMetadata(), o.getTagCompound());
-        }
-
-        @Override
-        public boolean equals(ItemStack a, ItemStack b) {
-            if (a == b) return true;
-            if (a == null || b == null) return false;
-            return (a.isEmpty() && b.isEmpty()) ||
-                    (a.getItem() == b.getItem() &&
-                            a.getMetadata() == b.getMetadata() &&
-                            Objects.equals(a.getTagCompound(), b.getTagCompound()));
-        }
     };
 
     public static List<NbtSortRule> getNbtSortRules() {
