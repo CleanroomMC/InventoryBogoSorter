@@ -11,6 +11,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -73,7 +74,12 @@ public class SortHandler {
     public void sort(int slotId) {
         Slot[][] slotGroup = context.getSlotGroup(slotId);
         if (slotGroup != null) {
-            sortHorizontal(slotGroup);
+            if (new Random().nextFloat() < 0.005f) {
+                sortBogo(slotGroup);
+                Minecraft.getMinecraft().player.sendMessage(new TextComponentString("Get Bogo'd!"));
+            } else {
+                sortHorizontal(slotGroup);
+            }
             McUtils.syncSlotsToServer(slotGroup);
         }
     }
@@ -154,6 +160,36 @@ public class SortHandler {
         }
         if (!itemList.isEmpty()) {
             McUtils.giveItemsToPlayer(Minecraft.getMinecraft().player, prepareDropList(items, itemList));
+        }
+    }
+
+    public void sortBogo(Slot[][] slotGroup) {
+        ItemStack[][] itemGrid = new ItemStack[slotGroup.length][slotGroup[0].length];
+        for (ItemStack[] itemRow : itemGrid) {
+            Arrays.fill(itemRow, ItemStack.EMPTY);
+        }
+        List<ItemStack> items = new ArrayList<>();
+        for (Slot[] slotRow : slotGroup) {
+            for (Slot slot : slotRow) {
+                ItemStack stack = slot.getStack();
+                if (!stack.isEmpty()) {
+                    items.add(stack);
+                }
+            }
+        }
+        Random rnd = new Random();
+        for (ItemStack item : items) {
+            int slot, row;
+            do {
+                row = rnd.nextInt(itemGrid.length);
+                slot = rnd.nextInt(itemGrid[row].length);
+            } while (!itemGrid[row][slot].isEmpty());
+            itemGrid[row][slot] = item;
+        }
+        for (int r = 0; r < slotGroup.length; r++) {
+            for (int c = 0; c < slotGroup[r].length; c++) {
+                slotGroup[r][c].putStack(itemGrid[r][c]);
+            }
         }
     }
 
