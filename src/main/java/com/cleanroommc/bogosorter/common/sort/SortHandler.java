@@ -73,11 +73,11 @@ public class SortHandler {
     public void sort(int slotId) {
         Slot[][] slotGroup = context.getSlotGroup(slotId);
         if (slotGroup != null) {
-            sort(slotGroup);
+            sortVertical(slotGroup);
         }
     }
 
-    public void sort(Slot[][] slotGroup) {
+    public void sortHorizontal(Slot[][] slotGroup) {
         Object2IntMap<ItemStack> items = gatherItems(slotGroup);
         if (items.isEmpty()) return;
         LinkedList<ItemStack> itemList = new LinkedList<>(items.keySet());
@@ -88,6 +88,47 @@ public class SortHandler {
         int remaining = items.getInt(item);
         for (Slot[] slotRow : slotGroup) {
             for (Slot slot : slotRow) {
+                if (item == ItemStack.EMPTY) {
+                    slot.putStack(item);
+                    continue;
+                }
+                if (!slot.isItemValid(item)) continue;
+                int limit = Math.min(slot.getItemStackLimit(item), item.getMaxStackSize());
+                limit = Math.min(remaining, limit);
+                if (limit <= 0) continue;
+                ItemStack toInsert = item.copy();
+                toInsert.setCount(limit);
+                slot.putStack(toInsert);
+                remaining -= limit;
+                if (remaining <= 0) {
+                    if (itemList.isEmpty()) {
+                        item = ItemStack.EMPTY;
+                        continue;
+                    }
+                    item = itemList.pollFirst();
+                    remaining = items.getInt(item);
+                }
+            }
+        }
+        if (!itemList.isEmpty()) {
+            McUtils.giveItemsToPlayer(Minecraft.getMinecraft().player, prepareDropList(items, itemList));
+        }
+    }
+
+    public void sortVertical(Slot[][] slotGroup) {
+        Object2IntMap<ItemStack> items = gatherItems(slotGroup);
+        if (items.isEmpty()) return;
+        LinkedList<ItemStack> itemList = new LinkedList<>(items.keySet());
+        itemList.forEach(item -> item.setCount(items.getInt(item)));
+        itemList.sort(ITEM_COMPARATOR);
+        ItemStack item = itemList.pollFirst();
+        if (item == null) return;
+        int remaining = items.getInt(item);
+        main:
+        for (int c = 0; c < slotGroup[0].length; c++) {
+            for (Slot[] slots : slotGroup) {
+                if (c >= slots.length) break main;
+                Slot slot = slots[c];
                 if (item == ItemStack.EMPTY) {
                     slot.putStack(item);
                     continue;
