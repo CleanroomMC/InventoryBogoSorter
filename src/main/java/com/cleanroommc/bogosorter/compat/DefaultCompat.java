@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat;
 
+import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import net.minecraft.inventory.*;
@@ -27,6 +28,22 @@ public class DefaultCompat {
         if (Loader.isModLoaded("actuallyadditions")) {
             api.addCompat(ContainerGiantChest.class, (container, builder) -> {
                 builder.addSlotGroup(13, 0, 117);
+            });
+        }
+
+        if (Loader.isModLoaded("enderstorage")) {
+            api.addCompat(ContainerEnderItemStorage.class, (container, builder) -> {
+                switch (container.chestInv.getSize()) {
+                    case 0:
+                        builder.addSlotGroup(3, 0, 9);
+                        break;
+                    case 1:
+                        builder.addSlotGroup(9, 0, 27);
+                        break;
+                    case 2:
+                        builder.addSlotGroup(9, 0, 54);
+                        break;
+                }
             });
         }
     }

@@ -1,7 +1,6 @@
 package com.cleanroommc.bogosorter;
 
 import com.cleanroommc.bogosorter.common.config.BogoSortCommandTree;
-import com.cleanroommc.bogosorter.common.config.ConfigReloadCommand;
 import com.cleanroommc.bogosorter.common.config.Serializer;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
