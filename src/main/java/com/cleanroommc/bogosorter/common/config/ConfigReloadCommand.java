@@ -8,16 +8,17 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
+import org.jetbrains.annotations.NotNull;
 
 public class ConfigReloadCommand extends CommandBase {
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "reload";
     }
 
     @Override
-    public String getUsage(ICommandSender sender) {
+    public @NotNull String getUsage(@NotNull ICommandSender sender) {
         return "/bogosort reload";
     }
 
