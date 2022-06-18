@@ -21,8 +21,8 @@ import java.util.function.Function;
 public class BogoSortAPI implements IBogoSortAPI {
 
     public static final BogoSortAPI INSTANCE = new BogoSortAPI();
-    public static final SortRule<ItemStack> EMPTY_ITEM_SORT_RULE = new SortRule<>(null, (o1, o2) -> 0);
-    public static final NbtSortRule EMPTY_NBT_SORT_RULE = new NbtSortRule(null, (o1, o2) -> 0);
+    public static final SortRule<ItemStack> EMPTY_ITEM_SORT_RULE = new SortRule<>("empty", null, (o1, o2) -> 0);
+    public static final NbtSortRule EMPTY_NBT_SORT_RULE = new NbtSortRule("empty", null, (o1, o2) -> 0);
 
     private BogoSortAPI() {
     }
@@ -53,7 +53,7 @@ public class BogoSortAPI implements IBogoSortAPI {
     @Override
     public void registerItemSortingRule(String key, SortType type, Comparator<ItemStack> itemComparator) {
         validateKey(key);
-        SortRule<ItemStack> sortRule = new SortRule<>(type, itemComparator);
+        SortRule<ItemStack> sortRule = new SortRule<>(key, type, itemComparator);
         itemSortRules.put(key, sortRule);
         itemSortRuleList.add(sortRule);
     }
@@ -61,7 +61,7 @@ public class BogoSortAPI implements IBogoSortAPI {
     @Override
     public void registerNbtSortingRule(String key, String tagPath, Comparator<NBTBase> comparator) {
         validateKey(key);
-        NbtSortRule sortRule = new NbtSortRule(tagPath, comparator);
+        NbtSortRule sortRule = new NbtSortRule(key, tagPath, comparator);
         nbtSortRules.put(key, sortRule);
         nbtSortRuleList.add(sortRule);
     }
@@ -69,7 +69,7 @@ public class BogoSortAPI implements IBogoSortAPI {
     @Override
     public void registerNbtSortingRule(String key, String tagPath, int expectedType) {
         validateKey(key);
-        NbtSortRule sortRule = new NbtSortRule(tagPath, expectedType);
+        NbtSortRule sortRule = new NbtSortRule(key, tagPath, expectedType);
         nbtSortRules.put(key, sortRule);
         nbtSortRuleList.add(sortRule);
     }
@@ -77,7 +77,7 @@ public class BogoSortAPI implements IBogoSortAPI {
     @Override
     public <T> void registerNbtSortingRule(String key, String tagPath, int expectedType, Comparator<T> comparator, Function<NBTBase, T> converter) {
         validateKey(key);
-        NbtSortRule sortRule = new NbtSortRule(tagPath, expectedType, comparator, converter);
+        NbtSortRule sortRule = new NbtSortRule(key, tagPath, expectedType, comparator, converter);
         nbtSortRules.put(key, sortRule);
         nbtSortRuleList.add(sortRule);
     }
