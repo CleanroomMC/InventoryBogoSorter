@@ -3,8 +3,10 @@ package com.cleanroommc.bogosorter.common.sort;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.common.McUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -108,6 +110,9 @@ public class SortHandler {
                 }
             }
         }
+        if (!itemList.isEmpty()) {
+            McUtils.giveItemsToPlayer(Minecraft.getMinecraft().player, prepareDropList(items, itemList));
+        }
     }
 
     public Object2IntMap<ItemStack> gatherItems(Slot[][] slotGroup) {
@@ -124,6 +129,21 @@ public class SortHandler {
             }
         }
         return items;
+    }
+
+    private static List<ItemStack> prepareDropList(Object2IntMap<ItemStack> itemMap, List<ItemStack> sortedList) {
+        List<ItemStack> dropList = new ArrayList<>();
+        for (ItemStack item : sortedList) {
+            int amount = itemMap.getInt(item);
+            while (amount > 0) {
+                int maxSize = Math.min(amount, item.getMaxStackSize());
+                ItemStack newStack = item.copy();
+                newStack.setCount(maxSize);
+                amount -= maxSize;
+                dropList.add(newStack);
+            }
+        }
+        return dropList;
     }
 
     public static final Comparator<ItemStack> ITEM_COMPARATOR = (stack1, stack2) -> {

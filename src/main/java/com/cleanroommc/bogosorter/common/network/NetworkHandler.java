@@ -21,8 +21,7 @@ public class NetworkHandler {
     private static int packetId = 0;
 
     public static void init() {
-        registerC2S(CSort.class);
-        registerC2S(CSlotPosUpdate.class);
+        registerC2S(CDropItems.class);
     }
 
     private static void registerC2S(Class<? extends IPacket> clazz) {
