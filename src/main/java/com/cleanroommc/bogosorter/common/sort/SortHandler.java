@@ -29,15 +29,6 @@ public class SortHandler {
         nbtSortRules.addAll(Arrays.stream(nbtRules).map(BogoSortAPI.INSTANCE::getNbtSortRule).collect(Collectors.toList()));
     }
 
-    public static void updateSortRules(Collection<SortRule<ItemStack>> rules) {
-        sortRules.clear();
-        sortRules.addAll(rules);
-    }
-
-    public static void updateSortRules(SortRule<ItemStack>... rules) {
-        updateSortRules(Arrays.asList(rules));
-    }
-
     private final Container container;
     private GuiSortingContext context;
 
@@ -235,5 +226,9 @@ public class SortHandler {
 
     public static List<NbtSortRule> getNbtSortRules() {
         return nbtSortRules;
+    }
+
+    public static List<SortRule<ItemStack>> getItemSortRules() {
+        return sortRules;
     }
 }

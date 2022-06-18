@@ -2,7 +2,6 @@ package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.api.SortType;
-import com.cleanroommc.bogosorter.common.sort.ItemCompareHelper;
 import net.minecraft.nbt.NBTBase;
 
 import java.util.Comparator;
@@ -12,17 +11,17 @@ public class NbtSortRule extends SortRule<NBTBase> {
 
     private final String tagPath;
 
-    public NbtSortRule(String tagPath, Comparator<NBTBase> comparator) {
-        super(SortType.NBT, createComparator(tagPath, comparator));
+    public NbtSortRule(String key, String tagPath, Comparator<NBTBase> comparator) {
+        super(key, SortType.NBT, createComparator(tagPath, comparator));
         this.tagPath = tagPath;
     }
 
-    public NbtSortRule(String tagPath, int expectedType) {
-        this(tagPath, createComparator(expectedType, ItemCompareHelper::compareNbtBase, nbtBase -> nbtBase));
+    public NbtSortRule(String key, String tagPath, int expectedType) {
+        this(key, tagPath, createComparator(expectedType, ItemCompareHelper::compareNbtBase, nbtBase -> nbtBase));
     }
 
-    public <T> NbtSortRule(String tagPath, int expectedType, Comparator<T> comparator, Function<NBTBase, T> converter) {
-        this(tagPath, createComparator(expectedType, comparator, converter));
+    public <T> NbtSortRule(String key, String tagPath, int expectedType, Comparator<T> comparator, Function<NBTBase, T> converter) {
+        this(key, tagPath, createComparator(expectedType, comparator, converter));
     }
 
     private static Comparator<NBTBase> createComparator(String path, Comparator<NBTBase> comparator) {

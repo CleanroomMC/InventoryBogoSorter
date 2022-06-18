@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.compat;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import net.minecraft.inventory.*;
+import net.minecraftforge.fml.common.Loader;
 
 public class DefaultCompat {
 
@@ -23,8 +24,10 @@ public class DefaultCompat {
         });
         // for horse inventory compat see MixinContainerHorseInventory
 
-        api.addCompat(ContainerGiantChest.class, (container, builder) -> {
-            builder.addSlotGroup(13, 0, 117);
-        });
+        if (Loader.isModLoaded("actuallyadditions")) {
+            api.addCompat(ContainerGiantChest.class, (container, builder) -> {
+                builder.addSlotGroup(13, 0, 117);
+            });
+        }
     }
 }
