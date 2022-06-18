@@ -1,12 +1,12 @@
 package com.cleanroommc.bogosorter.compat;
 
-import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import net.minecraft.inventory.*;
 
 public class DefaultCompat {
 
     public static void init(IBogoSortAPI api) {
+        // vanilla
         api.addCompat(ContainerChest.class, (container, builder) -> {
             IInventory inventory = container.getLowerChestInventory();
             builder.addSlotGroup(9, 0, inventory.getSizeInventory());
