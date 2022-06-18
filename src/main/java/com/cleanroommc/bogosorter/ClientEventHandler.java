@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter;
 
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
@@ -16,22 +17,13 @@ import org.lwjgl.input.Mouse;
 public class ClientEventHandler {
 
     @SubscribeEvent
-    public static void onGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        /*if (event.getGui() instanceof GuiContainer && !(event.getGui() instanceof GuiContainerCreative)) {
-            Container container = ((GuiContainer) event.getGui()).inventorySlots;
-            NetworkHandler.sendToServer(new CSlotPosUpdate(container));
-        }*/
-    }
-
-    @SubscribeEvent
     public static void onMouseInput(GuiScreenEvent.MouseInputEvent.Post event) {
-        if (Mouse.getEventButton() == 2 && event.getGui() instanceof GuiContainer) {
+        if (Mouse.isButtonDown(2) && event.getGui() instanceof GuiContainer) {
             Slot slot = ((GuiContainer) event.getGui()).getSlotUnderMouse();
-            if (slot == null) return;
+            if (slot == null || (Minecraft.getMinecraft().player.isCreative() && !slot.getStack().isEmpty())) return;
             Container container = ((GuiContainer) event.getGui()).inventorySlots;
             boolean player = BogoSortAPI.INSTANCE.isPlayerSlot(container, slot);
             if (!player && !isSortableContainer(event.getGui())) return;
-
             SortHandler sortHandler = new SortHandler(container, player);
             sortHandler.sort(slot.slotNumber);
         }

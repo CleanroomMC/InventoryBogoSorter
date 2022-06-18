@@ -73,7 +73,8 @@ public class SortHandler {
     public void sort(int slotId) {
         Slot[][] slotGroup = context.getSlotGroup(slotId);
         if (slotGroup != null) {
-            sortVertical(slotGroup);
+            sortHorizontal(slotGroup);
+            McUtils.syncSlotsToServer(slotGroup);
         }
     }
 

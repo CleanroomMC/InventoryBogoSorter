@@ -28,13 +28,9 @@ public class CDropItems implements IPacket {
     }
 
     @Override
-    public void decode(PacketBuffer buf) {
-        try {
-            for (int i = 0, n = buf.readVarInt(); i < n; i++) {
-                items.add(buf.readItemStack());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void decode(PacketBuffer buf) throws IOException {
+        for (int i = 0, n = buf.readVarInt(); i < n; i++) {
+            items.add(buf.readItemStack());
         }
     }
 

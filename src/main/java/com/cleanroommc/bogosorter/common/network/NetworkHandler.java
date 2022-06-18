@@ -22,6 +22,7 @@ public class NetworkHandler {
 
     public static void init() {
         registerC2S(CDropItems.class);
+        registerC2S(CSlotSync.class);
     }
 
     private static void registerC2S(Class<? extends IPacket> clazz) {
