@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin;
+package com.cleanroommc.bogosorter.mixin.thermal;
 
 import cofh.thermalexpansion.gui.container.storage.ContainerStrongbox;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
