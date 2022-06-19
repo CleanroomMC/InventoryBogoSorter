@@ -14,6 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.items.SlotItemHandler;
+import net.minecraftforge.items.wrapper.PlayerInvWrapper;
+import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,8 +48,12 @@ public class SortHandler {
             GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
             List<Slot> slots = new ArrayList<>();
             for (Slot slot : container.inventorySlots) {
-                if (slot.inventory instanceof InventoryPlayer && slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36) {
-                    slots.add(slot);
+                if(slot.inventory instanceof InventoryPlayer ||
+                        (slot instanceof SlotItemHandler &&
+                                (((SlotItemHandler) slot).getItemHandler() instanceof PlayerMainInvWrapper || ((SlotItemHandler) slot).getItemHandler() instanceof PlayerInvWrapper))) {
+                    if (slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36) {
+                        slots.add(slot);
+                    }
                 }
             }
             builder.addSlotGroup(9, slots);
