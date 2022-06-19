@@ -40,6 +40,14 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     @Override
+    public <T> void addCompatSimple(Class<T> clazz, BiConsumer<T, ISortingContextBuilder> builder) {
+        if (!Container.class.isAssignableFrom(clazz)) {
+            throw new IllegalArgumentException("Class must be an instance of Container!");
+        }
+        COMPAT_MAP.put(clazz, (BiConsumer<Container, ISortingContextBuilder>) builder);
+    }
+
+    @Override
     public <T extends Container> void removeCompat(Class<T> clazz) {
         COMPAT_MAP.remove(clazz);
     }

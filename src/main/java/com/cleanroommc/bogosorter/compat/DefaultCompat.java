@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.compat;
 
 import appeng.container.implementations.ContainerSkyChest;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
+import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import net.minecraft.inventory.*;
@@ -51,6 +52,12 @@ public class DefaultCompat {
         if (Loader.isModLoaded("appliedenergistics2")) {
             api.addCompat(ContainerSkyChest.class, (container, builder) -> {
                 builder.addSlotGroup(9, 0, 36);
+            });
+        }
+
+        if(Loader.isModLoaded("draconicevolution")) {
+            api.addCompatSimple(ContainerDraconiumChest.class, (container, builder) -> {
+                builder.addSlotGroup(26, 0, 260);
             });
         }
     }

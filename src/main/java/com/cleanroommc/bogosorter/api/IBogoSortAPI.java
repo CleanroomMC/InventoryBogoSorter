@@ -27,6 +27,17 @@ public interface IBogoSortAPI {
     <T extends Container> void addCompat(Class<T> clazz, BiConsumer<T, ISortingContextBuilder> builder);
 
     /**
+     * Adds sorting compat for a container class.
+     * Is useful when you don't have access to the super class of {@link T}
+     *
+     * @param clazz   container class
+     * @param builder sorting compat builder
+     * @param <T>     container type
+     */
+    @ApiStatus.Internal
+    <T> void addCompatSimple(Class<T> clazz, BiConsumer<T, ISortingContextBuilder> builder);
+
+    /**
      * Removes sorting compat for a container class
      *
      * @param clazz container class
