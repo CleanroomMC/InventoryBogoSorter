@@ -12,10 +12,13 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SideOnly(Side.CLIENT)
 public class SortHandler {
 
     private static final List<SortRule<ItemStack>> sortRules = new ArrayList<>();

@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter;
 import com.cleanroommc.bogosorter.common.config.BogoSortCommandTree;
 import com.cleanroommc.bogosorter.common.config.Serializer;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
+import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
 import net.minecraftforge.fml.common.Mod;
@@ -33,7 +34,9 @@ public class BogoSorter {
 
     @Mod.EventHandler
     public void onPostInit(FMLPostInitializationEvent event) {
-        SERIALIZER.loadConfig();
+        if (NetworkUtils.isDedicatedClient()) {
+            SERIALIZER.loadConfig();
+        }
     }
 
     @Mod.EventHandler

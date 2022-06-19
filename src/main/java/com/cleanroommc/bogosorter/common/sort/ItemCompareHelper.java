@@ -6,6 +6,8 @@ import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,6 +100,7 @@ public class ItemCompareHelper {
         return itemStack1.hasTagCompound() ? compareNbtValues(itemStack1.getTagCompound(), itemStack2.getTagCompound()) : 0;
     }
 
+    @SideOnly(Side.CLIENT)
     public static int compareNbtValues(@NotNull NBTTagCompound nbt1, @NotNull NBTTagCompound nbt2) {
         int result = 0;
         for (NbtSortRule nbtSortRule : SortHandler.getNbtSortRules()) {

@@ -29,4 +29,9 @@ public class ConfigReloadCommand extends CommandBase {
             sender.sendMessage(new TextComponentTranslation("bogosort.command.config_relaod.success"));
         }
     }
+
+    @Override
+    public int getRequiredPermissionLevel() {
+        return 0;
+    }
 }

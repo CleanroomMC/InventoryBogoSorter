@@ -9,6 +9,8 @@ import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +24,7 @@ public class Serializer {
     public final String cfgPath = Loader.instance().getConfigDir().toString();
     public final File configJsonPath = new File(cfgPath + "\\bogosorter\\config.json");
 
+    @SideOnly(Side.CLIENT)
     public void saveConfig() {
         JsonObject json = new JsonObject();
         writeItemSortRules(json);
@@ -29,6 +32,7 @@ public class Serializer {
         saveJson(configJsonPath, json);
     }
 
+    @SideOnly(Side.CLIENT)
     public void loadConfig() {
         if (!Files.exists(configJsonPath.toPath())) {
             saveConfig();
@@ -41,6 +45,7 @@ public class Serializer {
         readRules(jsonElement.getAsJsonObject());
     }
 
+    @SideOnly(Side.CLIENT)
     public void readRules(JsonObject json) {
         SortHandler.getItemSortRules().clear();
         if (json.has("ItemSortRules")) {
@@ -68,6 +73,7 @@ public class Serializer {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     public void writeItemSortRules(JsonObject json) {
         JsonArray jsonRules = new JsonArray();
         for (SortRule<ItemStack> rule : SortHandler.getItemSortRules()) {
@@ -76,6 +82,7 @@ public class Serializer {
         json.add("ItemSortRules", jsonRules);
     }
 
+    @SideOnly(Side.CLIENT)
     public void writeNbtSortRules(JsonObject json) {
         JsonArray jsonRules = new JsonArray();
         for (NbtSortRule rule : SortHandler.getNbtSortRules()) {
