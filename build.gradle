@@ -83,6 +83,7 @@ dependencies {
 	provided 'curse.maven:thermal_expansion-69163:2926431'
 	provided 'curse.maven:actually_additions-228404:3117927'
 	provided 'curse.maven:ender_storage_1_8-245174:2755787'
+	provided 'curse.maven:ae2_extended_life-570458:3811277'
 }
 
 sourceSets {

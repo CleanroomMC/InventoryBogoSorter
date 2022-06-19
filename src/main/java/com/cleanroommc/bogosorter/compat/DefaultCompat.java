@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat;
 
+import appeng.container.implementations.ContainerSkyChest;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
@@ -44,6 +45,12 @@ public class DefaultCompat {
                         builder.addSlotGroup(9, 0, 54);
                         break;
                 }
+            });
+        }
+
+        if (Loader.isModLoaded("appliedenergistics2")) {
+            api.addCompat(ContainerSkyChest.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, 36);
             });
         }
     }
