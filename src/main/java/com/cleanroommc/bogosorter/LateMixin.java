@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class LateMixin implements ILateMixinLoader {
 
-    public static final List<String> modMixins = ImmutableList.of("ironchest", "thermalexpansion", "enderio");
+    public static final List<String> modMixins = ImmutableList.of("ironchest", "thermalexpansion", "enderio", "gregtechce");
 
     @Override
     public List<String> getMixinConfigs() {
@@ -19,6 +19,13 @@ public class LateMixin implements ILateMixinLoader {
     @Override
     public boolean shouldMixinConfigQueue(String mixinConfig) {
         String[] parts = mixinConfig.split("\\.");
-        return parts.length != 4 || Loader.isModLoaded(parts[2]);
+        return parts.length != 4 || shouldEnableModMixin(parts[2]);
+    }
+
+    public boolean shouldEnableModMixin(String mod) {
+        if ("gregtechce".equals(mod)) {
+            return BogoSorter.isGTCELoaded();
+        }
+        return Loader.isModLoaded(mod);
     }
 }

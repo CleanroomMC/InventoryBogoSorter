@@ -6,7 +6,9 @@ import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -42,5 +44,19 @@ public class BogoSorter {
     @Mod.EventHandler
     public void onServerLoad(FMLServerStartingEvent event) {
         event.registerServerCommand(new BogoSortCommandTree());
+    }
+
+    public static boolean isGTCELoaded() {
+        ModContainer modContainer = FMLCommonHandler.instance().findContainerFor("gregtech");
+        if (modContainer == null) return false;
+        int version = Integer.parseInt(modContainer.getVersion().split("\\.")[0]);
+        return version < 2;
+    }
+
+    public static boolean isGTCEuLoaded() {
+        ModContainer modContainer = FMLCommonHandler.instance().findContainerFor("gregtech");
+        if (modContainer == null) return false;
+        int version = Integer.parseInt(modContainer.getVersion().split("\\.")[0]);
+        return version >= 2;
     }
 }

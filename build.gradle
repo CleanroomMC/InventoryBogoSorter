@@ -86,6 +86,7 @@ dependencies {
 	provided 'curse.maven:ae2_extended_life-570458:3811277'
 	provided 'curse.maven:ender_io-64578:3328811'
 	provided 'curse.maven:draconic_evolution-223565:3431261'
+	deobfCompile 'curse.maven:gregtechce-293327:3478805'
 }
 
 sourceSets {
