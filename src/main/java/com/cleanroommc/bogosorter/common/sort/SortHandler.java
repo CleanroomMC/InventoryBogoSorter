@@ -1,9 +1,12 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.McUtils;
+import com.cleanroommc.bogosorter.common.network.CSlotSync;
+import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.minecraft.client.Minecraft;
@@ -17,6 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,7 +52,7 @@ public class SortHandler {
             GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
             List<Slot> slots = new ArrayList<>();
             for (Slot slot : container.inventorySlots) {
-                if(slot.inventory instanceof InventoryPlayer ||
+                if (slot.inventory instanceof InventoryPlayer ||
                         (slot instanceof SlotItemHandler &&
                                 (((SlotItemHandler) slot).getItemHandler() instanceof PlayerMainInvWrapper || ((SlotItemHandler) slot).getItemHandler() instanceof PlayerInvWrapper))) {
                     if (slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36) {
@@ -240,5 +244,39 @@ public class SortHandler {
 
     public static List<SortRule<ItemStack>> getItemSortRules() {
         return sortRules;
+    }
+
+    public void clearAllItems(Slot slot1) {
+        Slot[][] slotGroup = context.getSlotGroup(slot1.slotNumber);
+        if (slotGroup != null) {
+            List<Pair<ItemStack, Integer>> slots = new ArrayList<>();
+            for (Slot[] slotRow : slotGroup) {
+                for (Slot slot : slotRow) {
+                    if (!slot.getStack().isEmpty()) {
+                        slot.putStack(ItemStack.EMPTY);
+                        slots.add(Pair.of(ItemStack.EMPTY, slot.slotNumber));
+                    }
+                }
+            }
+            NetworkHandler.sendToServer(new CSlotSync(slots));
+        }
+    }
+
+    public void randomizeItems(Slot slot1) {
+        Slot[][] slotGroup = context.getSlotGroup(slot1.slotNumber);
+        if (slotGroup != null) {
+            List<Pair<ItemStack, Integer>> slots = new ArrayList<>();
+            Random random = new Random();
+            for (Slot[] slotRow : slotGroup) {
+                for (Slot slot : slotRow) {
+                    if (random.nextFloat() < 0.3f) {
+                        ItemStack randomItem = ClientEventHandler.allItems.get(random.nextInt(ClientEventHandler.allItems.size())).copy();
+                        slot.putStack(randomItem.copy());
+                        slots.add(Pair.of(randomItem, slot.slotNumber));
+                    }
+                }
+            }
+            NetworkHandler.sendToServer(new CSlotSync(slots));
+        }
     }
 }
