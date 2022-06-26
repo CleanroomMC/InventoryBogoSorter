@@ -31,4 +31,11 @@ public class SortRule<T> implements Comparator<T> {
     public int compare(T o1, T o2) {
         return inverted ? comparator.compare(o2, o1) : comparator.compare(o1, o2);
     }
+
+    @Override
+    public String toString() {
+        return "SortRule{" +
+                "key='" + key + '\'' +
+                '}';
+    }
 }
