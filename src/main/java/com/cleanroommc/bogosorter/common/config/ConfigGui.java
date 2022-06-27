@@ -27,32 +27,31 @@ public class ConfigGui {
     public static ModularWindow createConfigWindow(UIBuildContext buildContext) {
         buildContext.addCloseListener(BogoSorter.SERIALIZER::saveConfig);
         ModularWindow.Builder builder = ModularWindow.builder(300, 250);
-        builder.setBackground(new Rectangle().setColor(Color.withAlpha(0x505050, 175)).setCornerRadius(10))
+        builder.setBackground(ModularUITextures.VANILLA_BACKGROUND)
                 .widget(new TextWidget("SortConfig")
-                        .setDefaultColor(Color.WHITE.normal)
                         .setTextAlignment(Alignment.Center)
                         .setPos(0, 5)
                         .setSize(300, 11))
-                .widget(new Rectangle().setColor(Color.WHITE.normal).asWidget()
+                .widget(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
                         .setPos(89, 16)
-                        .setSize(1, 234))
-                .widget(new Rectangle().setColor(Color.WHITE.normal).asWidget()
-                        .setPos(0, 16)
-                        .setSize(300, 1))
+                        .setSize(1, 231))
+                .widget(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
+                        .setPos(2, 16)
+                        .setSize(294, 1))
                 .widget(new TabContainer()
+                        /*.addTabButton(new TabButton(0)
+                                .setBackground(new Rectangle().setColor(0xFFb1b1b1), new Text("General"))
+                                .setSize(89, 16)
+                                .setPos(-90, 0))*/
                         .addTabButton(new TabButton(0)
-                                .setBackground(new Rectangle().setColor(Color.BLACK.bright(3)), new Text("General").color(Color.WHITE.normal))
-                                .setSize(89, 16)
-                                .setPos(-90, 0))
+                                .setBackground(new Rectangle().setColor(0xFFb1b1b1), new Text("Item sort rules").color(Color.WHITE.normal).shadow())
+                                .setSize(86, 16)
+                                .setPos(-87, 16))
                         .addTabButton(new TabButton(1)
-                                .setBackground(new Rectangle().setColor(Color.BLACK.bright(3)), new Text("Item sort rules").color(Color.WHITE.normal))
-                                .setSize(89, 16)
-                                .setPos(-90, 16))
-                        .addTabButton(new TabButton(2)
-                                .setBackground(new Rectangle().setColor(Color.BLACK.bright(3)), new Text("NBT sort rules").color(Color.WHITE.normal))
-                                .setSize(89, 16)
-                                .setPos(-90, 32))
-                        .addPage(createGeneralConfigUI(buildContext))
+                                .setBackground(new Rectangle().setColor(0xFFb1b1b1), new Text("NBT sort rules").color(Color.WHITE.normal).shadow())
+                                .setSize(86, 16)
+                                .setPos(-87, 32))
+                        //.addPage(createGeneralConfigUI(buildContext))
                         .addPage(createItemSortConfigUI(buildContext))
                         .addPage(createNbtSortConfigUI(buildContext))
                         .setSize(210, 236)
@@ -69,7 +68,9 @@ public class ConfigGui {
         SortableListWidget<SortRule<ItemStack>> sortableListWidget = SortableListWidget.removable(BogoSortAPI.INSTANCE.getItemSortRuleList(), SortHandler.getItemSortRules());
         Map<SortRule<ItemStack>, AvailableListItem<SortRule<ItemStack>>> widgetMap = new HashMap<>();
         for (SortRule<ItemStack> sortRule : BogoSortAPI.INSTANCE.getItemSortRuleList()) {
-            AvailableListItem<SortRule<ItemStack>> listItem = new AvailableListItem<>(sortRule, new TextWidget(new Text(sortRule.getKey()).color(Color.WHITE.normal).shadow())
+            AvailableListItem<SortRule<ItemStack>> listItem = new AvailableListItem<>(sortRule, new TextWidget(Text.localised(sortRule.getKey()).color(Color.WHITE.normal).shadow())
+                    .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
+                    .setTooltipShowUpDelay(20)
                     .setSize(80, 20));
             listItem.setAvailable(!SortHandler.getItemSortRules().contains(sortRule))
                     .setMoveConsumer(clickData -> sortableListWidget.addElement(sortRule))
@@ -82,11 +83,11 @@ public class ConfigGui {
         List<Widget> orderedWidgetList = BogoSortAPI.INSTANCE.getItemSortRuleList().stream().map(widgetMap::get).collect(Collectors.toList());
 
         return new MultiChildWidget()
-                .addChild(new TextWidget(new Text("Available Sort-Rules").color(Color.WHITE.normal))
+                .addChild(new TextWidget(new Text("Available Sort-Rules"))
                         .setTextAlignment(Alignment.Center)
                         .setPos(5, 5)
                         .setSize(90, 18))
-                .addChild(new TextWidget(new Text("Configured Sort-Rules").color(Color.WHITE.normal))
+                .addChild(new TextWidget(new Text("Configured Sort-Rules"))
                         .setTextAlignment(Alignment.Center)
                         .setPos(105, 5)
                         .setSize(100, 18))
@@ -94,8 +95,10 @@ public class ConfigGui {
                         .setPos(5, 24)
                         .setSize(90, 200))
                 .addChild(sortableListWidget
-                        .setWidgetCreator(sortRule -> new TextWidget(new Text(sortRule.getKey()).color(Color.WHITE.normal).shadow())
+                        .setWidgetCreator(sortRule -> new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
                                 .setTextAlignment(Alignment.Center)
+                                .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
+                                .setTooltipShowUpDelay(20)
                                 .setBackground(ModularUITextures.BASE_BUTTON)
                                 .setSize(80, 20))
                         .setSaveFunction(list -> {
@@ -111,7 +114,9 @@ public class ConfigGui {
         SortableListWidget<NbtSortRule> sortableListWidget = SortableListWidget.removable(BogoSortAPI.INSTANCE.getNbtSortRuleList(), SortHandler.getNbtSortRules());
         Map<NbtSortRule, AvailableListItem<NbtSortRule>> widgetMap = new HashMap<>();
         for (NbtSortRule sortRule : BogoSortAPI.INSTANCE.getNbtSortRuleList()) {
-            AvailableListItem<NbtSortRule> listItem = new AvailableListItem<>(sortRule, new TextWidget(new Text(sortRule.getKey()).color(Color.WHITE.normal).shadow())
+            AvailableListItem<NbtSortRule> listItem = new AvailableListItem<>(sortRule, new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
+                    .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
+                    .setTooltipShowUpDelay(20)
                     .setSize(80, 20));
             listItem.setAvailable(!SortHandler.getNbtSortRules().contains(sortRule))
                     .setMoveConsumer(clickData -> sortableListWidget.addElement(sortRule))
@@ -124,12 +129,22 @@ public class ConfigGui {
         List<Widget> orderedWidgetList = BogoSortAPI.INSTANCE.getNbtSortRuleList().stream().map(widgetMap::get).collect(Collectors.toList());
 
         return new MultiChildWidget()
+                .addChild(new TextWidget(new Text("Available Sort-Rules"))
+                        .setTextAlignment(Alignment.Center)
+                        .setPos(5, 5)
+                        .setSize(90, 18))
+                .addChild(new TextWidget(new Text("Configured Sort-Rules"))
+                        .setTextAlignment(Alignment.Center)
+                        .setPos(105, 5)
+                        .setSize(100, 18))
                 .addChild(ListWidget.builder(new ArrayList<>(orderedWidgetList), (widget, index) -> widget)
-                        .setPos(5, 15)
+                        .setPos(5, 24)
                         .setSize(90, 200))
                 .addChild(sortableListWidget
-                        .setWidgetCreator(sortRule -> new TextWidget(new Text(sortRule.getKey()).color(Color.WHITE.normal).shadow())
+                        .setWidgetCreator(sortRule -> new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
                                 .setTextAlignment(Alignment.Center)
+                                .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
+                                .setTooltipShowUpDelay(20)
                                 .setBackground(ModularUITextures.BASE_BUTTON)
                                 .setSize(80, 20))
                         .setSaveFunction(list -> {
@@ -137,7 +152,7 @@ public class ConfigGui {
                             SortHandler.getNbtSortRules().addAll(list);
                         })
                         .setOnRemoveElement(sortRule -> widgetMap.get(sortRule).setAvailable(true))
-                        .setPos(105, 15)
+                        .setPos(105, 24)
                         .setSize(100, 200));
     }
 

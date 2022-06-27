@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.Loader;
 
 public class DefaultRules {
 
@@ -25,7 +26,9 @@ public class DefaultRules {
         api.registerNbtSortingRule("potion", "Potion", Constants.NBT.TAG_STRING, ItemCompareHelper::comparePotionId, DefaultRules::getPotionId);
         api.registerNbtSortingRule("enchantment", "ench", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);
         api.registerNbtSortingRule("enchantment_book", "StoredEnchantments", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);
-        api.registerNbtSortingRule("gt_circ_config", "Configuration", Constants.NBT.TAG_INT);
+        if (Loader.isModLoaded("gregtech")) {
+            api.registerNbtSortingRule("gt_circ_config", "Configuration", Constants.NBT.TAG_INT);
+        }
     }
 
     private static String getPotionId(NBTBase nbt) {

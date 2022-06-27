@@ -19,6 +19,14 @@ public class SortRule<T> implements Comparator<T> {
         return key;
     }
 
+    public String getNameLangKey() {
+        return "bogosort.sortrules.item." + key + ".name";
+    }
+
+    public String getDescriptionLangKey() {
+        return "bogosort.sortrules.item." + key + ".description";
+    }
+
     public boolean isInverted() {
         return inverted;
     }

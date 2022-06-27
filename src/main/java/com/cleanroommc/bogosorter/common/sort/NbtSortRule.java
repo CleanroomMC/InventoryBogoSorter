@@ -49,4 +49,14 @@ public class NbtSortRule extends SortRule<NBTBase> {
             return comparator.compare(t1, t2);
         };
     }
+
+    @Override
+    public String getNameLangKey() {
+        return "bogosort.sortrules.nbt." + getKey() + ".name";
+    }
+
+    @Override
+    public String getDescriptionLangKey() {
+        return "bogosort.sortrules.nbt." + getKey() + ".description";
+    }
 }
