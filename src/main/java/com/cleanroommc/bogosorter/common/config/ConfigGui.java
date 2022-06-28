@@ -68,7 +68,7 @@ public class ConfigGui {
         SortableListWidget<SortRule<ItemStack>> sortableListWidget = SortableListWidget.removable(BogoSortAPI.INSTANCE.getItemSortRuleList(), SortHandler.getItemSortRules());
         Map<SortRule<ItemStack>, AvailableListItem<SortRule<ItemStack>>> widgetMap = new HashMap<>();
         for (SortRule<ItemStack> sortRule : BogoSortAPI.INSTANCE.getItemSortRuleList()) {
-            AvailableListItem<SortRule<ItemStack>> listItem = new AvailableListItem<>(sortRule, new TextWidget(Text.localised(sortRule.getKey()).color(Color.WHITE.normal).shadow())
+            AvailableListItem<SortRule<ItemStack>> listItem = new AvailableListItem<>(sortRule, new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
                     .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
                     .setTooltipShowUpDelay(20)
                     .setSize(80, 20));

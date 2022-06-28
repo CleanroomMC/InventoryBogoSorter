@@ -70,7 +70,7 @@ public class ClientEventHandler {
                 return;
             }
             // random
-            if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) {
                 if (allItems.isEmpty()) {
                     for (Item item : ForgeRegistries.ITEMS) {
                         NonNullList<ItemStack> subItems = NonNullList.create();
