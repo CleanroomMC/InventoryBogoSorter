@@ -39,7 +39,6 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.KeyInputEvent event) {
-        BogoSorter.LOGGER.info("Input Event. down {}, pressed {}", configGuiKey.isKeyDown(), configGuiKey.isPressed());
         if (configGuiKey.isPressed() || configGuiKey.isKeyDown()) {
             long t = Minecraft.getSystemTime();
             if (t - time > 50) {
@@ -52,7 +51,6 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onGuiKeyInput(GuiScreenEvent.KeyboardInputEvent.Post event) {
         if (!(event.getGui() instanceof GuiContainer)) return;
-        BogoSorter.LOGGER.info("Input Event GUI. down {}", Keyboard.isKeyDown(configGuiKey.getKeyCode()));
         if (Keyboard.isKeyDown(configGuiKey.getKeyCode())) {
             long t = Minecraft.getSystemTime();
             if (t - time > 50) {

@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.common.config;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.modularui.api.ModularUITextures;
@@ -15,6 +16,7 @@ import com.cleanroommc.modularui.api.screen.UIBuildContext;
 import com.cleanroommc.modularui.api.widget.Widget;
 import com.cleanroommc.modularui.common.widget.*;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +27,10 @@ import java.util.stream.Collectors;
 public class ConfigGui {
 
     public static ModularWindow createConfigWindow(UIBuildContext buildContext) {
-        buildContext.addCloseListener(BogoSorter.SERIALIZER::saveConfig);
+        buildContext.addCloseListener(() -> {
+            BogoSorter.SERIALIZER.saveConfig();
+            MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent(SortHandler.getItemSortRules(), SortHandler.getNbtSortRules()));
+        });
         ModularWindow.Builder builder = ModularWindow.builder(300, 250);
         builder.setBackground(ModularUITextures.VANILLA_BACKGROUND)
                 .widget(new TextWidget("SortConfig")
@@ -104,6 +109,7 @@ public class ConfigGui {
                         .setSaveFunction(list -> {
                             SortHandler.getItemSortRules().clear();
                             SortHandler.getItemSortRules().addAll(list);
+
                         })
                         .setOnRemoveElement(sortRule -> widgetMap.get(sortRule).setAvailable(true))
                         .setPos(105, 24)

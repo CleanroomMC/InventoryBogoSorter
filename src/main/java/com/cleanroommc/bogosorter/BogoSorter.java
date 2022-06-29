@@ -1,11 +1,14 @@
 package com.cleanroommc.bogosorter;
 
+import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
 import com.cleanroommc.bogosorter.common.config.BogoSortCommandTree;
 import com.cleanroommc.bogosorter.common.config.Serializer;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
+import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -39,6 +42,7 @@ public class BogoSorter {
     public void onPostInit(FMLPostInitializationEvent event) {
         if (NetworkUtils.isDedicatedClient()) {
             SERIALIZER.loadConfig();
+            MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent(SortHandler.getItemSortRules(), SortHandler.getNbtSortRules()));
             ClientRegistry.registerKeyBinding(ClientEventHandler.configGuiKey);
         }
     }
