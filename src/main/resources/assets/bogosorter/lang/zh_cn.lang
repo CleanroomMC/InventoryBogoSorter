@@ -1,0 +1,35 @@
+bogosort.command.config_relaod.success=重新加载排序配置
+
+bogosort.sortrules.item.mod.name=模组名称
+bogosort.sortrules.item.id.name=注册名称
+bogosort.sortrules.item.meta.name=元数据
+bogosort.sortrules.item.nbt_size.name=nbt 标签大小
+bogosort.sortrules.item.nbt_has.name=具有 nbt 标签
+bogosort.sortrules.item.nbt_rules.name=nbt 规则
+bogosort.sortrules.item.nbt_all_values.name=所有 nbt 值
+bogosort.sortrules.item.count.name=堆叠大小
+bogosort.sortrules.item.ore_dict.name=矿物词典
+bogosort.sortrules.item.material.name=材料
+bogosort.sortrules.item.ore_prefix.name=矿物前缀
+
+bogosort.sortrules.item.mod.description=按模组名称的字母顺序对物品进行排序
+bogosort.sortrules.item.id.description=按注册表名称的字母顺序对项目进行排序（不含模组）
+bogosort.sortrules.item.meta.description=按元数据对物品进行排序
+bogosort.sortrules.item.nbt_size.description=按元数据 nbt 大小对物品进行排序
+bogosort.sortrules.item.nbt_has.description=根据是否具有 nbt 标记的物品进行排序
+bogosort.sortrules.item.nbt_rules.description=根据配置的 nbt 排序规则对物品进行排序
+bogosort.sortrules.item.nbt_all_values.description=尝试通过比较所有 nbt 标记和子标记对物品进行排序
+bogosort.sortrules.item.count.description=按堆叠大小对物品进行数字排序
+bogosort.sortrules.item.ore_dict.description=按矿石字典按数字和/或字母顺序对物品进行排序
+bogosort.sortrules.item.material.description=按材料名称的字母顺序对物品进行排序（例如铁、金、铜等）
+bogosort.sortrules.item.ore_prefix.description=按矿石前缀（例如锭，块，板，齿轮等）对物品进行排序
+
+bogosort.sortrules.nbt.potion.name=药水
+bogosort.sortrules.nbt.enchantment.name=附魔
+bogosort.sortrules.nbt.enchantment_book.name=附魔书
+bogosort.sortrules.nbt.gt_circ_config.name=GT编程电路
+
+bogosort.sortrules.nbt.potion.description=按效果和等级对药水进行排序
+bogosort.sortrules.nbt.enchantment.description=按效果和等级对附魔物品进行排序
+bogosort.sortrules.nbt.enchantment_book.description=按效果和等级对附魔书籍进行排序
+bogosort.sortrules.nbt.gt_circ_config.description=按配置对GT编程电路进行排序
