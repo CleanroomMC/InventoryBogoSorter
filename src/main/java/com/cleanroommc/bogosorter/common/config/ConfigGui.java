@@ -33,7 +33,7 @@ public class ConfigGui {
         });
         ModularWindow.Builder builder = ModularWindow.builder(300, 250);
         builder.setBackground(ModularUITextures.VANILLA_BACKGROUND)
-                .widget(new TextWidget("SortConfig")
+                .widget(new TextWidget(Text.localised("bogosort.gui.title"))
                         .setTextAlignment(Alignment.Center)
                         .setPos(0, 5)
                         .setSize(300, 11))
@@ -49,11 +49,11 @@ public class ConfigGui {
                                 .setSize(89, 16)
                                 .setPos(-90, 0))*/
                         .addTabButton(new TabButton(0)
-                                .setBackground(new Rectangle().setColor(0xFFb1b1b1), new Text("Item sort rules").color(Color.WHITE.normal).shadow())
+                                .setBackground(new Rectangle().setColor(0xFFb1b1b1), Text.localised("bogosort.gui.tab.item_sort_rules.name").color(Color.WHITE.normal).shadow())
                                 .setSize(86, 16)
                                 .setPos(-87, 16))
                         .addTabButton(new TabButton(1)
-                                .setBackground(new Rectangle().setColor(0xFFb1b1b1), new Text("NBT sort rules").color(Color.WHITE.normal).shadow())
+                                .setBackground(new Rectangle().setColor(0xFFb1b1b1), Text.localised("bogosort.gui.tab.nbt_sort_rules.name").color(Color.WHITE.normal).shadow())
                                 .setSize(86, 16)
                                 .setPos(-87, 32))
                         //.addPage(createGeneralConfigUI(buildContext))
@@ -88,11 +88,11 @@ public class ConfigGui {
         List<Widget> orderedWidgetList = BogoSortAPI.INSTANCE.getItemSortRuleList().stream().map(widgetMap::get).collect(Collectors.toList());
 
         return new MultiChildWidget()
-                .addChild(new TextWidget(new Text("Available Sort-Rules"))
+                .addChild(new TextWidget(Text.localised("bogosort.gui.available_sort_rules"))
                         .setTextAlignment(Alignment.Center)
                         .setPos(5, 5)
                         .setSize(90, 18))
-                .addChild(new TextWidget(new Text("Configured Sort-Rules"))
+                .addChild(new TextWidget(Text.localised("bogosort.gui.configured_sort_rules"))
                         .setTextAlignment(Alignment.Center)
                         .setPos(105, 5)
                         .setSize(100, 18))
@@ -135,11 +135,11 @@ public class ConfigGui {
         List<Widget> orderedWidgetList = BogoSortAPI.INSTANCE.getNbtSortRuleList().stream().map(widgetMap::get).collect(Collectors.toList());
 
         return new MultiChildWidget()
-                .addChild(new TextWidget(new Text("Available Sort-Rules"))
+                .addChild(new TextWidget(Text.localised("bogosort.gui.available_sort_rules"))
                         .setTextAlignment(Alignment.Center)
                         .setPos(5, 5)
                         .setSize(90, 18))
-                .addChild(new TextWidget(new Text("Configured Sort-Rules"))
+                .addChild(new TextWidget(Text.localised("bogosort.gui.configured_sort_rules"))
                         .setTextAlignment(Alignment.Center)
                         .setPos(105, 5)
                         .setSize(100, 18))
