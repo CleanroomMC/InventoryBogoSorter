@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class ItemCompareHelper {
 
@@ -58,26 +57,21 @@ public class ItemCompareHelper {
     }
 
     public static int compareOreDict(ItemStack stack1, ItemStack stack2) {
-        Set<String> ores1 = OreDictHelper.getOreDicts(stack1);
-        Set<String> ores2 = OreDictHelper.getOreDicts(stack2);
+        List<String> ores1 = new ArrayList<>(OreDictHelper.getOreDicts(stack1));
+        List<String> ores2 = new ArrayList<>(OreDictHelper.getOreDicts(stack2));
         if (ores1.isEmpty() && ores2.isEmpty()) return 0;
-        List<String> ores3 = new ArrayList<>();
-        List<String> ores4 = new ArrayList<>();
-        for (String oreDict : ores1) {
-            if (!ores2.contains(oreDict)) {
-                ores3.add(oreDict);
-            }
+        if (ores1.size() != ores2.size()) {
+            return Integer.compare(ores1.size(), ores2.size());
         }
-        for (String oreDict : ores2) {
-            if (!ores1.contains(oreDict)) {
-                ores4.add(oreDict);
-            }
+        if (ores1.size() > 1) {
+            ores1.sort(String::compareTo);
+            ores2.sort(String::compareTo);
         }
-        if (ores3.size() != ores4.size()) {
-            return Integer.compare(ores3.size(), ores4.size());
+        int val = 0;
+        for (int i = 0, n = ores1.size(); i < n; i++) {
+            val += ores1.get(i).compareTo(ores2.get(i));
         }
-        if (ores3.size() != 1) return 0;
-        return ores3.get(0).compareTo(ores4.get(0));
+        return MathHelper.clamp(val, -1, 1);
     }
 
     public static int compareHasNbt(ItemStack stack1, ItemStack stack2) {
