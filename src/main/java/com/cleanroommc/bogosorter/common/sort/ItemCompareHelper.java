@@ -1,13 +1,16 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.common.OreDictHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.ForgeRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,6 +57,11 @@ public class ItemCompareHelper {
 
     public static int compareCount(ItemStack stack1, ItemStack stack2) {
         return Integer.compare(stack1.getCount(), stack2.getCount());
+    }
+
+    public static int compareRegistryOrder(ItemStack stack1, ItemStack stack2) {
+        ForgeRegistry<Item> registry = (ForgeRegistry<Item>) ForgeRegistries.ITEMS;
+        return Integer.compare(registry.getID(stack1.getItem()), registry.getID(stack2.getItem()));
     }
 
     public static int compareOreDict(ItemStack stack1, ItemStack stack2) {
