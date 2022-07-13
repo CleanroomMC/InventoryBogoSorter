@@ -104,7 +104,7 @@ public class OreDictHelper {
                 "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone"
         };
 
-        String[] defaultOrePrefixOrder = {"ingot", "gem", "dust", "nugget", "block", "plate", "gear", "stick"};
+        String[] defaultOrePrefixOrder = {"ingot", "gem", "dust", "nugget", "block", "plate", "gear", "stick", "ore", "log"};
 
 
         ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
