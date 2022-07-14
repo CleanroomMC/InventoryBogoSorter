@@ -59,7 +59,7 @@ public class RefillHandler {
                 ItemStack.areItemStackTagsEqual(brokenItem, foundItem);
         } else if (brokenItem.getItem() instanceof ItemTool) {
             return ItemStack.areItemsEqualIgnoreDurability(brokenItem, foundItem);
-        } else if ((BogoSorter.LOADED_MODS.get("gtce") || BogoSorter.LOADED_MODS.get("gtceu")) && brokenItem.getItem() instanceof IToolItem) {
+        } else if (BogoSorter.isGTCELoaded() && brokenItem.getItem() instanceof IToolItem) {
             return ItemStack.areItemsEqual(brokenItem, foundItem);
         } else {
             // everything else (redstone, glowstone, etc)
