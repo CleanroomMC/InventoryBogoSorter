@@ -1,3 +1,7 @@
+key.categories.bogosorter=Inventory Bogo Sorter
+key.sort_config=Open Sort Config
+key.sort=Sort Inventory
+
 bogosort.gui.title=Sort Config
 bogosort.gui.tab.item_sort_rules.name=Item sort rules
 bogosort.gui.tab.nbt_sort_rules.name=NBT sort rules

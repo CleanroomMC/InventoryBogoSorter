@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION, dependencies = "required-after:modularui@[1.0.3,);")
+@Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION, dependencies = "required-after:modularui@[1.0.4,);")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
 
@@ -44,6 +44,7 @@ public class BogoSorter {
             SERIALIZER.loadConfig();
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent(SortHandler.getItemSortRules(), SortHandler.getNbtSortRules()));
             ClientRegistry.registerKeyBinding(ClientEventHandler.configGuiKey);
+            ClientRegistry.registerKeyBinding(ClientEventHandler.sortKey);
         }
     }
 

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class ConfigGui {
 
     public static ModularWindow createConfigWindow(UIBuildContext buildContext) {
+        buildContext.setShowJei(false);
         buildContext.addCloseListener(() -> {
             BogoSorter.SERIALIZER.saveConfig();
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent(SortHandler.getItemSortRules(), SortHandler.getNbtSortRules()));

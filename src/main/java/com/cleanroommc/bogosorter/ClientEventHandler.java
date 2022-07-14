@@ -17,6 +17,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -34,30 +35,30 @@ public class ClientEventHandler {
 
     public static final List<ItemStack> allItems = new ArrayList<>();
     public static final KeyBinding configGuiKey = new KeyBinding("key.sort_config", KeyConflictContext.IN_GAME, Keyboard.KEY_K, "key.categories.bogosorter");
+    public static final KeyBinding sortKey = new KeyBinding("key.sort", KeyConflictContext.IN_GAME, -98, "key.categories.bogosorter");
 
     private static long time = 0;
 
+    // i have to subscribe to 4 events to catch all inputs
+
     @SubscribeEvent
     public static void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (configGuiKey.isPressed() || configGuiKey.isKeyDown()) {
-            long t = Minecraft.getSystemTime();
-            if (t - time > 50) {
-                UIInfos.openClientUI(Minecraft.getMinecraft().player, ConfigGui::createConfigWindow);
-            }
-            time = t;
-        }
+        handleInput(null);
     }
 
     @SubscribeEvent
-    public static void onGuiKeyInput(GuiScreenEvent.KeyboardInputEvent.Post event) {
+    public static void onKeyInput(InputEvent.MouseInputEvent event) {
+        handleInput(null);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onGuiKeyInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
         if (!(event.getGui() instanceof GuiContainer)) return;
-        if (Keyboard.isKeyDown(configGuiKey.getKeyCode())) {
-            long t = Minecraft.getSystemTime();
-            if (t - time > 50) {
-                UIInfos.openClientUI(Minecraft.getMinecraft().player, ConfigGui::createConfigWindow);
-            }
-            time = t;
+        if (handleInput((GuiContainer) event.getGui())) {
+            event.setCanceled(true);
+            return;
         }
+
         if (FMLLaunchHandler.isDeobfuscatedEnvironment()) {
             // clear
             if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1)) {
@@ -84,15 +85,39 @@ public class ClientEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void onMouseInput(GuiScreenEvent.MouseInputEvent.Post event) {
-        if (Mouse.isButtonDown(2) && event.getGui() instanceof GuiContainer) {
-            Slot slot = getSlot(event.getGui());
-            if (slot == null || (Minecraft.getMinecraft().player.isCreative() && !slot.getStack().isEmpty())) return;
-            SortHandler sortHandler = createSortHandler(event.getGui(), slot);
-            if (sortHandler == null) return;
-            sortHandler.sort(slot.slotNumber);
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onMouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
+        if (event.getGui() instanceof GuiContainer && handleInput((GuiContainer) event.getGui())) {
+            event.setCanceled(true);
         }
+    }
+
+    // handle all inputs in one method
+    public static boolean handleInput(@Nullable GuiContainer container) {
+        if (isPressed(configGuiKey)) {
+            long t = Minecraft.getSystemTime();
+            if (t - time > 50) {
+                UIInfos.openClientUI(Minecraft.getMinecraft().player, ConfigGui::createConfigWindow);
+                return true;
+            }
+            time = t;
+        } else if (container != null && isPressed(sortKey)) {
+            Slot slot = getSlot(container);
+            if (slot == null || (Minecraft.getMinecraft().player.isCreative() && !slot.getStack().isEmpty()))
+                return false;
+            SortHandler sortHandler = createSortHandler(container, slot);
+            if (sortHandler == null) return false;
+            sortHandler.sort(slot.slotNumber);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isPressed(KeyBinding binding) {
+        if (binding.getKeyCode() >= -100 && binding.getKeyCode() < -90) {
+            return Mouse.isButtonDown(binding.getKeyCode() + 100);
+        }
+        return Keyboard.isKeyDown(binding.getKeyCode());
     }
 
     public static boolean isSortableContainer(GuiScreen screen) {
