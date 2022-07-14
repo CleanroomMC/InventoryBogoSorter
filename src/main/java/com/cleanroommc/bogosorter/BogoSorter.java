@@ -18,7 +18,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.util.HashMap;
 
 @Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION, dependencies = "required-after:modularui@[1.0.3,);")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
@@ -31,13 +30,6 @@ public class BogoSorter {
     public static final Logger LOGGER = LogManager.getLogger(ID);
 
     public static final Serializer SERIALIZER = new Serializer();
-
-    public static final HashMap<String, Boolean> LOADED_MODS = new HashMap<>();
-
-    static {
-        LOADED_MODS.put("gtce", isGTCELoaded());
-        LOADED_MODS.put("gtceu", isGTCEuLoaded());
-    }
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
