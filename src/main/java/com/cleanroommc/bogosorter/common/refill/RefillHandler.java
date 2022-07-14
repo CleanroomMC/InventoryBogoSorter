@@ -9,6 +9,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -40,9 +41,11 @@ public class RefillHandler {
             if (found.isEmpty()) continue;
             boolean matches = isMatch(brokenItem, found);
             if (matches) {
-                Minecraft.getMinecraft()
-						 .getSoundHandler()
-						 .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F));
+                if (!inventoryPlayer.player.getEntityWorld().isRemote) {
+                    Minecraft.getMinecraft()
+                             .getSoundHandler()
+                             .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F));
+                }
 
                 inventoryPlayer.mainInventory.set(hotbarIndex, found);
                 inventoryPlayer.mainInventory.set(slot, ItemStack.EMPTY);
