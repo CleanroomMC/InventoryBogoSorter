@@ -1,7 +1,11 @@
 package com.cleanroommc.bogosorter.common.refill;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import gregtech.api.items.IToolItem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemTool;
@@ -34,7 +38,7 @@ public class RefillHandler {
         for (int slot : slots) {
             ItemStack found = inventoryPlayer.mainInventory.get(slot);
             if (found.isEmpty()) continue;
-            boolean matches = matchesItemExact(brokenItem, found);
+            boolean matches = isMatch(brokenItem, found);
             if (matches) {
                 Minecraft.getMinecraft()
 						 .getSoundHandler()
@@ -47,16 +51,17 @@ public class RefillHandler {
         }
     }
 
-    public static boolean matchesItemExact(ItemStack brokenItem, ItemStack foundItem) {
+	private static boolean isMatch(ItemStack brokenItem, ItemStack foundItem) {
         if (brokenItem.getItem() instanceof ItemBlock) {
             return ItemStack.areItemsEqual(brokenItem, foundItem) &&
-                    brokenItem.getMetadata() == foundItem.getMetadata() &&
-                    ItemStack.areItemStackTagsEqual(brokenItem, foundItem);
-        }
-        if (brokenItem.getItem() instanceof ItemTool) {
+                ItemStack.areItemStackTagsEqual(brokenItem, foundItem);
+        } else if (brokenItem.getItem() instanceof ItemTool) {
+            return ItemStack.areItemsEqualIgnoreDurability(brokenItem, foundItem);
+        } else if ((BogoSorter.LOADED_MODS.get("gtce") || BogoSorter.LOADED_MODS.get("gtceu")) && brokenItem.getItem() instanceof IToolItem) {
+            return ItemStack.areItemsEqual(brokenItem, foundItem);
+        } else {
+            // everything else (redstone, glowstone, etc)
             return ItemStack.areItemsEqual(brokenItem, foundItem);
         }
-        return false;
-    }
-
+	}
 }
