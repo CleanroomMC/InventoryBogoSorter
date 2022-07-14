@@ -36,6 +36,10 @@ public class RefillHandler {
             if (found.isEmpty()) continue;
             boolean matches = matchesItemExact(brokenItem, found);
             if (matches) {
+                Minecraft.getMinecraft()
+						 .getSoundHandler()
+						 .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F));
+
                 inventoryPlayer.mainInventory.set(hotbarIndex, found);
                 inventoryPlayer.mainInventory.set(slot, ItemStack.EMPTY);
                 return;
