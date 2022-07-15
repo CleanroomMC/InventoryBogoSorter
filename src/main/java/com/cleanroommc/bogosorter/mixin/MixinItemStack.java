@@ -1,43 +1,37 @@
 package com.cleanroommc.bogosorter.mixin;
 
-import com.cleanroommc.bogosorter.BogoSorter;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
+import com.cleanroommc.bogosorter.BogoSorterConfig;
+import com.cleanroommc.bogosorter.common.refill.RefillHandler;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Random;
 
 @Mixin(ItemStack.class)
-public abstract class MixinItemStack
-{
-    @Shadow
-    private Item item;
+public abstract class MixinItemStack {
 
     @Shadow
-    private int itemDamage;
+    public abstract int getItemDamage();
 
     @Shadow
-    private int getMaxDamage() {return 0;}
+    public abstract int getMaxDamage();
 
-    @Inject(method = "damageItem", at = @At("RETURN"))
-    private void damageItem(int amount, EntityLivingBase entityIn, CallbackInfo ci) {
-        if (!(entityIn instanceof EntityPlayer)) {
-            return;
+    @Inject(method = "attemptDamageItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;setItemDamage(I)V", shift = At.Shift.AFTER))
+    private void damageItem(int amount, Random rand, EntityPlayerMP player, CallbackInfoReturnable<Boolean> cir) {
+        if (RefillHandler.shouldHandleRefill(player, getThis())) {
+            int durabilityLeft = getMaxDamage() - getItemDamage();
+            if (durabilityLeft >= 0 && durabilityLeft < BogoSorterConfig.autoRefillDamageThreshold) {
+                new RefillHandler(player.inventory.currentItem, getThis(), player, true).handleRefill();
+            }
         }
-        if (item instanceof ItemArmor) {
-            return;
-        }
+    }
 
-        if (itemDamage == getMaxDamage()){
-            BogoSorter.LOGGER.info("Last Hit");
-        }else {
-            BogoSorter.LOGGER.info("Item Damaged");
-        }
-
+    private ItemStack getThis() {
+        return (ItemStack) (Object) this;
     }
 }

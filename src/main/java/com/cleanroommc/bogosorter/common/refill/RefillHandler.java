@@ -38,27 +38,38 @@ public class RefillHandler {
 
     @SubscribeEvent
     public static void onDestroyItem(PlayerDestroyItemEvent event) {
-        Container container = event.getEntityPlayer().openContainer;
-        if (!NetworkUtils.isClient(event.getEntityPlayer()) && (container == null || container == event.getEntityPlayer().inventoryContainer) && !event.getOriginal().isEmpty()) {
+        if (shouldHandleRefill(event.getEntityPlayer(), event.getOriginal())) {
             new RefillHandler(event.getEntityPlayer().inventory.currentItem, event.getOriginal(), event.getEntityPlayer()).handleRefill();
         }
     }
 
+    public static boolean shouldHandleRefill(EntityPlayer player, ItemStack brokenItem) {
+        Container container = player.openContainer;
+        return !NetworkUtils.isClient(player) && (container == null || container == player.inventoryContainer) && !brokenItem.isEmpty();
+    }
+
     private BiPredicate<ItemStack, ItemStack> similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem() && stack.getMetadata() == stack2.getMetadata();
-    private BiPredicate<ItemStack, ItemStack> exactMatcherItemMatcher = RefillHandler::matchTags;
+    private BiPredicate<ItemStack, ItemStack> exactItemMatcher = RefillHandler::matchTags;
     private final int hotbarIndex;
     private final int[] slots;
     private final ItemStack brokenItem;
     private final EntityPlayer player;
     private final InventoryPlayer inventory;
+    private final boolean swapItems;
 
-    public RefillHandler(int hotbarIndex, ItemStack brokenItem, EntityPlayer player) {
+    public RefillHandler(int hotbarIndex, ItemStack brokenItem, EntityPlayer player, boolean swapItems) {
         this.hotbarIndex = hotbarIndex;
         this.slots = INVENTORY_PROXIMITY_MAP[hotbarIndex];
         this.brokenItem = brokenItem;
         this.player = player;
         this.inventory = player.inventory;
+        this.swapItems = swapItems;
     }
+
+    public RefillHandler(int hotbarIndex, ItemStack brokenItem, EntityPlayer player) {
+        this(hotbarIndex, brokenItem, player, false);
+    }
+
 
     public void handleRefill() {
         if (!BogoSorterConfig.enableAutoRefill) return;
@@ -69,7 +80,7 @@ public class RefillHandler {
             similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem();
             findNormalDamageable();
         } else if ((BogoSorter.isGTCELoaded() || BogoSorter.isGTCEuLoaded()) && brokenItem.getItem() instanceof IToolItem) {
-            exactMatcherItemMatcher = (stack, stack2) -> {
+            exactItemMatcher = (stack, stack2) -> {
                 if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
                 if (!stack.hasTagCompound()) return true;
                 return getToolMaterial(stack).equals(getToolMaterial(stack2));
@@ -87,7 +98,7 @@ public class RefillHandler {
             ItemStack found = inventory.mainInventory.get(slot);
             if (found.isEmpty()) continue;
             if (similarItemMatcher.test(brokenItem, found)) {
-                if (exactMatcherItemMatcher.test(brokenItem, found)) {
+                if (exactItemMatcher.test(brokenItem, found)) {
                     refillItem(found, slot);
                     return true;
                 }
@@ -151,7 +162,7 @@ public class RefillHandler {
         }
 
         inventory.mainInventory.set(hotbarIndex, refill);
-        inventory.mainInventory.set(refillIndex, ItemStack.EMPTY);
+        inventory.mainInventory.set(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
         // if the replacing item is equal to the replaced item, it will not be synced
         // this makes sure that the sync is triggered
         player.inventoryContainer.inventoryItemStacks.set(hotbarIndex + 36, ItemStack.EMPTY);

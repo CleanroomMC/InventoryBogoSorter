@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class BogoSorterConfig
 {
     @Config.Name("Enable Auto Refill")
-    public static boolean enableAutoRefill;
+    public static boolean enableAutoRefill = true;
 
     @Config.RangeInt(min = 0, max = Short.MAX_VALUE)
     @Config.Name("Auto Refill Damage Threshold")
