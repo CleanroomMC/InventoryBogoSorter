@@ -17,6 +17,7 @@ import java.util.Set;
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class RefillHandler {
 
+    // 0-8 = hotbar (prefer closer)
     private static final int[][] INVENTORY_PROXIMITY_MAP = {
             {1, 2, 3, 4, 5, 6, 7, 8, 27, 18, 9, 28, 19, 10, 29, 20, 11, 30, 21, 12, 31, 22, 13, 32, 23, 14, 33, 24, 15, 34, 25, 16, 35, 26, 17},
             {0, 2, 3, 4, 5, 6, 7, 8, 28, 19, 10, 27, 18, 9, 29, 20, 11, 30, 21, 12, 31, 22, 13, 32, 23, 14, 33, 24, 15, 34, 25, 16, 35, 26, 17},
