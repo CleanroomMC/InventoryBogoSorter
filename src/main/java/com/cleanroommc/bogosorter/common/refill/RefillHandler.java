@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.common.refill;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import gregtech.api.items.IToolItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -37,7 +38,7 @@ public class RefillHandler {
     @SubscribeEvent
     public static void onDestroyItem(PlayerDestroyItemEvent event) {
         Container container = event.getEntityPlayer().openContainer;
-        if ((container == null || container == event.getEntityPlayer().inventoryContainer) && !event.getOriginal().isEmpty()) {
+        if (!NetworkUtils.isClient(event.getEntityPlayer()) && (container == null || container == event.getEntityPlayer().inventoryContainer) && !event.getOriginal().isEmpty()) {
             new RefillHandler(event.getEntityPlayer().inventory.currentItem, event.getOriginal(), event.getEntityPlayer()).handleRefill();
         }
     }
@@ -145,9 +146,11 @@ public class RefillHandler {
                     .getSoundHandler()
                     .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F));
         }
-
         inventory.mainInventory.set(hotbarIndex, refill);
         inventory.mainInventory.set(refillIndex, ItemStack.EMPTY);
+        // if the replacing item is equal to the replaced item, it will not be synced
+        // this makes sure that the sync is triggered
+        player.inventoryContainer.inventoryItemStacks.set(hotbarIndex + 36, ItemStack.EMPTY);
     }
 
     private static boolean matchTags(ItemStack stackA, ItemStack stackB) {
