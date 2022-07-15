@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.common.refill;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.BogoSorterConfig;
 import gregtech.api.items.IToolItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -59,6 +60,8 @@ public class RefillHandler {
     }
 
     public void handleRefill() {
+        if (!BogoSorterConfig.enableAutoRefill) return;
+
         if (brokenItem.getItem() instanceof ItemBlock) {
             findItem(false);
         } else if (brokenItem.isItemStackDamageable()) {
