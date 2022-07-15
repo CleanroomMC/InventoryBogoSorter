@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.common.refill;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import gregtech.api.items.IToolItem;
 import net.minecraft.client.Minecraft;
@@ -60,12 +61,14 @@ public class RefillHandler {
     }
 
     public void handleRefill() {
+        if (!BogoSorterConfig.enableAutoRefill) return;
+
         if (brokenItem.getItem() instanceof ItemBlock) {
             findItem(false);
         } else if (brokenItem.isItemStackDamageable()) {
             similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem();
             findNormalDamageable();
-        } else if (brokenItem.getItem() instanceof IToolItem) {
+        } else if ((BogoSorter.isGTCELoaded() || BogoSorter.isGTCEuLoaded()) && brokenItem.getItem() instanceof IToolItem) {
             exactMatcherItemMatcher = (stack, stack2) -> {
                 if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
                 if (!stack.hasTagCompound()) return true;
@@ -146,6 +149,7 @@ public class RefillHandler {
                     .getSoundHandler()
                     .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F));
         }
+
         inventory.mainInventory.set(hotbarIndex, refill);
         inventory.mainInventory.set(refillIndex, ItemStack.EMPTY);
         // if the replacing item is equal to the replaced item, it will not be synced
