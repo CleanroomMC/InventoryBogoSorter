@@ -43,19 +43,32 @@ public class RefillHandler {
             findBlockItem(slots, hotbarIndex, brokenItem, inventoryPlayer);
         } else if (brokenItem.isItemStackDamageable()) {
             findNormalDamageable(slots, hotbarIndex, brokenItem, inventoryPlayer);
+        } else if(false /* TODO handle special tool like gregtech*/) {
+
+        } else {
+            findBlockItem(slots, hotbarIndex, brokenItem, inventoryPlayer);
         }
     }
 
     private static void findBlockItem(int[] slots, int hotbarIndex, ItemStack brokenItem, InventoryPlayer inventoryPlayer) {
+        ItemStack firstItemMatch = null;
+        int firstItemMatchSlot = -1;
         for (int slot : slots) {
             ItemStack found = inventoryPlayer.mainInventory.get(slot);
             if (found.isEmpty()) continue;
-            if (brokenItem.getItem() == found.getItem() &&
-                    brokenItem.getMetadata() == found.getMetadata() &&
-                    matchTags(found, brokenItem)) {
-                refillItem(found, inventoryPlayer, hotbarIndex, slot);
-                return;
+            if (brokenItem.getItem() == found.getItem() && brokenItem.getMetadata() == found.getMetadata()) {
+                if (matchTags(found, brokenItem)) {
+                    refillItem(found, inventoryPlayer, hotbarIndex, slot);
+                    return;
+                }
+                if (firstItemMatch == null) {
+                    firstItemMatch = found;
+                    firstItemMatchSlot = slot;
+                }
             }
+        }
+        if (firstItemMatch != null) {
+            refillItem(firstItemMatch, inventoryPlayer, hotbarIndex, firstItemMatchSlot);
         }
     }
 
