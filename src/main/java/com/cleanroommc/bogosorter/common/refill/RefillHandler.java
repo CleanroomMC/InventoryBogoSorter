@@ -67,7 +67,7 @@ public class RefillHandler {
         } else if (brokenItem.isItemStackDamageable()) {
             similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem();
             findNormalDamageable();
-        } else if (brokenItem.getItem() instanceof IToolItem) {
+        } else if (BogoSorter.isGTCELoaded() && brokenItem.getItem() instanceof IToolItem) {
             exactMatcherItemMatcher = (stack, stack2) -> {
                 if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
                 if (!stack.hasTagCompound()) return true;
