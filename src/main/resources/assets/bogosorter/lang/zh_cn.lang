@@ -1,3 +1,9 @@
+bogosort.gui.title=排序配置
+bogosort.gui.tab.item_sort_rules.name=物品排序规则
+bogosort.gui.tab.nbt_sort_rules.name=nbt 排序规则
+bogosort.gui.available_sort_rules=可用的排序规则
+bogosort.gui.configured_sort_rules=配置的排序规则
+
 bogosort.command.config_relaod.success=重新加载排序配置
 
 bogosort.sortrules.item.mod.name=模组名称
