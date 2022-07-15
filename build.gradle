@@ -51,7 +51,7 @@ minecraft {
 	if (project.use_mixins.toBoolean()) {
 		args << '-Dmixin.hotSwap=true'
 		args << '-Dmixin.checks.interfaces=true'
-		args << '-Dmixin.debug.export=true'
+		args << '-Dmixin.debug=true'
 	}
 	clientJvmArgs.addAll(args)
 	serverJvmArgs.addAll(args)
@@ -130,7 +130,7 @@ jar {
 			attribute_map['TweakClass'] = 'org.spongepowered.asm.launch.MixinTweaker'
 		}
 		// false for dev and true for non dev
-		attribute_map['ForceLoadAsMod'] = false
+		attribute_map['ForceLoadAsMod'] = project.gradle.startParameter.taskNames[0] == "build"
         attributes(attribute_map)
     }
 }
