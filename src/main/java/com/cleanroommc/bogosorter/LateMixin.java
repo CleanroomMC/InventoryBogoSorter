@@ -23,7 +23,7 @@ public class LateMixin implements ILateMixinLoader {
     }
 
     public boolean shouldEnableModMixin(String mod) {
-        if ("gregtechce".equals(mod)) {
+        if ("gregtechceu".equals(mod)) {
             return BogoSorter.isGTCEuLoaded();
         }
         return Loader.isModLoaded(mod);
