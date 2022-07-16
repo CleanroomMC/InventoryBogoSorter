@@ -88,7 +88,7 @@ dependencies {
 	provided 'curse.maven:ae2_extended_life-570458:3811277'
 	provided 'curse.maven:ender_io-64578:3328811'
 	provided 'curse.maven:draconic_evolution-223565:3431261'
-	provided 'curse.maven:gregtechce-557242:3859788'
+	provided 'curse.maven:gregtech_ce_unofficial-557242:3859788'
 	provided 'curse.maven:future_mc-310059:3842790'
 }
 
