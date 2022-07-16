@@ -28,7 +28,7 @@ public class DefaultRules {
         api.registerNbtSortingRule("potion", "Potion", Constants.NBT.TAG_STRING, ItemCompareHelper::comparePotionId, DefaultRules::getPotionId);
         api.registerNbtSortingRule("enchantment", "ench", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);
         api.registerNbtSortingRule("enchantment_book", "StoredEnchantments", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);
-        if ( BogoSorter.isGTCEuLoaded() ) {
+        if (Loader.isModLoaded("gregtech")) {
             api.registerNbtSortingRule("gt_circ_config", "Configuration", Constants.NBT.TAG_INT);
             api.registerNbtSortingRule("gt_item_damage", "GT.ToolStats/Dmg", Constants.NBT.TAG_INT);
         }
