@@ -4,11 +4,11 @@ buildscript {
 			name = "forge"
 			url = "https://maven.minecraftforge.net/"
 		}
-        maven { 
-			url = 'https://maven.cleanroommc.com' 
+        maven {
+			url = 'https://maven.cleanroommc.com'
 		}
-		maven { 
-			url = 'https://repo.spongepowered.org/maven' 
+		maven {
+			url = 'https://repo.spongepowered.org/maven'
 		}
     }
     dependencies {
@@ -50,7 +50,6 @@ minecraft {
 	}
 	if (project.use_mixins.toBoolean()) {
 		args << '-Dmixin.hotSwap=true'
-		args << '-Dmixin.checks.interfaces=true'
 		args << '-Dmixin.debug=true'
 	}
 	clientJvmArgs.addAll(args)
@@ -58,8 +57,8 @@ minecraft {
 }
 
 repositories {
-	maven { 
-		url = 'https://maven.cleanroommc.com' 
+	maven {
+		url = 'https://maven.cleanroommc.com'
 	}
     maven {
         url = 'https://repo.spongepowered.org/maven'
@@ -88,7 +87,7 @@ dependencies {
 	provided 'curse.maven:ae2_extended_life-570458:3811277'
 	provided 'curse.maven:ender_io-64578:3328811'
 	provided 'curse.maven:draconic_evolution-223565:3431261'
-	provided 'curse.maven:gregtechce-557242:3859788'
+	provided 'curse.maven:gregtech_ce_unofficial-557242:3859788'
 	provided 'curse.maven:future_mc-310059:3842790'
 }
 
