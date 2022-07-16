@@ -1,12 +1,9 @@
 {
-  "package": "com.cleanroommc.bogosorter.mixin.gtce",
+  "package": "com.cleanroommc.bogosorter.mixin.gtceu",
   "refmap": "mixins.bogosorter.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinChest",
-    "MixinModularUI",
-    "MixinModularUIContainer"
   ]
 }
