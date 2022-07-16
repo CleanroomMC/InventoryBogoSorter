@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class LateMixin implements ILateMixinLoader {
 
-    public static final List<String> modMixins = ImmutableList.of("ironchest", "thermalexpansion", "enderio", "gregtechce");
+    public static final List<String> modMixins = ImmutableList.of("ironchest", "thermalexpansion", "enderio", "gregtechceu");
 
     @Override
     public List<String> getMixinConfigs() {
@@ -24,7 +24,7 @@ public class LateMixin implements ILateMixinLoader {
 
     public boolean shouldEnableModMixin(String mod) {
         if ("gregtechce".equals(mod)) {
-            return BogoSorter.isGTCELoaded();
+            return BogoSorter.isGTCEuLoaded();
         }
         return Loader.isModLoaded(mod);
     }

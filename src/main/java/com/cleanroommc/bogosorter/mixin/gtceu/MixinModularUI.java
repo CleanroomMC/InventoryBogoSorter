@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin.gtce;
+package com.cleanroommc.bogosorter.mixin.gtceu;
 
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import gregtech.api.gui.ModularUI;
