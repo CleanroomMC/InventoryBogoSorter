@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin.gtce;
+package com.cleanroommc.bogosorter.mixin.gtceu;
 
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
