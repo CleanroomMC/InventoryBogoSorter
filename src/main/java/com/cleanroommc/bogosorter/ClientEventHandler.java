@@ -94,7 +94,7 @@ public class ClientEventHandler {
 
     // handle all inputs in one method
     public static boolean handleInput(@Nullable GuiContainer container) {
-        if (isPressed(configGuiKey)) {
+        if (isPressed(configGuiKey) && (container == null || !container.isFocused())) {
             long t = Minecraft.getSystemTime();
             if (t - time > 50) {
                 UIInfos.openClientUI(Minecraft.getMinecraft().player, ConfigGui::createConfigWindow);
