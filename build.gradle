@@ -4,11 +4,11 @@ buildscript {
 			name = "forge"
 			url = "https://maven.minecraftforge.net/"
 		}
-        maven { 
-			url = 'https://maven.cleanroommc.com' 
+        maven {
+			url = 'https://maven.cleanroommc.com'
 		}
-		maven { 
-			url = 'https://repo.spongepowered.org/maven' 
+		maven {
+			url = 'https://repo.spongepowered.org/maven'
 		}
     }
     dependencies {
@@ -50,16 +50,15 @@ minecraft {
 	}
 	if (project.use_mixins.toBoolean()) {
 		args << '-Dmixin.hotSwap=true'
-		args << '-Dmixin.checks.interfaces=true'
-		args << '-Dmixin.debug.export=true'
+		args << '-Dmixin.debug=true'
 	}
 	clientJvmArgs.addAll(args)
 	serverJvmArgs.addAll(args)
 }
 
 repositories {
-	maven { 
-		url = 'https://maven.cleanroommc.com' 
+	maven {
+		url = 'https://maven.cleanroommc.com'
 	}
     maven {
         url = 'https://repo.spongepowered.org/maven'
@@ -130,7 +129,7 @@ jar {
 			attribute_map['TweakClass'] = 'org.spongepowered.asm.launch.MixinTweaker'
 		}
 		// false for dev and true for non dev
-		attribute_map['ForceLoadAsMod'] = false
+		attribute_map['ForceLoadAsMod'] = project.gradle.startParameter.taskNames[0] == "build"
         attributes(attribute_map)
     }
 }

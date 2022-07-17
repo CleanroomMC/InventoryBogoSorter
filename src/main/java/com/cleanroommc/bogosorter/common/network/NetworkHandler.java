@@ -24,6 +24,7 @@ public class NetworkHandler {
         registerC2S(CDropItems.class);
         registerC2S(CSlotSync.class);
         registerS2C(SReloadConfig.class);
+        registerS2C(SRefillSound.class);
     }
 
     private static void registerC2S(Class<? extends IPacket> clazz) {
