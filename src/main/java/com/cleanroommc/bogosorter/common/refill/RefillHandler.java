@@ -2,7 +2,9 @@ package com.cleanroommc.bogosorter.common.refill;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.BogoSorterConfig;
+import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
+import com.cleanroommc.bogosorter.common.network.SRefillSound;
 import gregtech.api.items.IToolItem;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -10,6 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntListIterator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
@@ -170,17 +173,13 @@ public class RefillHandler {
     }
 
     private void refillItem(ItemStack refill, int refillIndex) {
-        if (!inventory.player.getEntityWorld().isRemote) {
-            Minecraft.getMinecraft()
-                    .getSoundHandler()
-                    .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F));
-        }
-
         inventory.mainInventory.set(hotbarIndex, refill);
         inventory.mainInventory.set(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
         // if the replacing item is equal to the replaced item, it will not be synced
         // this makes sure that the sync is triggered
         player.inventoryContainer.inventoryItemStacks.set(hotbarIndex + 36, ItemStack.EMPTY);
+        // the sound should be played for this player
+        NetworkHandler.sendToPlayer(new SRefillSound(), (EntityPlayerMP) player);
     }
 
     private static boolean matchTags(ItemStack stackA, ItemStack stackB) {
