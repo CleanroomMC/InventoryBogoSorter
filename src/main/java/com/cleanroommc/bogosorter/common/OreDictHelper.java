@@ -108,7 +108,7 @@ public class OreDictHelper {
 
 
         ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
-        String[] prefixes = Loader.isModLoaded("gregtech") ? defaultOrePrefixOrderGt : defaultOrePrefixOrder;
+        String[] prefixes = BogoSorter.isAnyGtLoaded()? defaultOrePrefixOrderGt : defaultOrePrefixOrder;
         int i = 0;
         for (String orePrefix : prefixes) {
             builder.put(orePrefix, i++);

@@ -31,8 +31,11 @@ public class BogoSorter {
 
     public static final Serializer SERIALIZER = new Serializer();
 
+    private static boolean anyGtLoaded = false;
+
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
+        anyGtLoaded = Loader.isModLoaded("gregtech");
         NetworkHandler.init();
         DefaultRules.init(BogoSortAPI.INSTANCE);
         DefaultCompat.init(BogoSortAPI.INSTANCE);
@@ -53,11 +56,15 @@ public class BogoSorter {
         event.registerServerCommand(new BogoSortCommandTree());
     }
 
+    public static boolean isAnyGtLoaded() {
+        return anyGtLoaded;
+    }
+
     public static boolean isGTCELoaded() {
-        return Loader.isModLoaded("gregtech") && GregTechVersion.MAJOR == 1;
+        return anyGtLoaded && GregTechVersion.MAJOR == 1;
     }
 
     public static boolean isGTCEuLoaded() {
-        return Loader.isModLoaded("gregtech") && GregTechVersion.MAJOR >=2;
+        return anyGtLoaded && GregTechVersion.MAJOR >=2;
     }
 }
