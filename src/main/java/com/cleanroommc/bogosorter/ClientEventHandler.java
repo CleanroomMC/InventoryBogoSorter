@@ -34,10 +34,11 @@ import java.util.List;
 public class ClientEventHandler {
 
     public static final List<ItemStack> allItems = new ArrayList<>();
-    public static final KeyBinding configGuiKey = new KeyBinding("key.sort_config", KeyConflictContext.IN_GAME, Keyboard.KEY_K, "key.categories.bogosorter");
-    public static final KeyBinding sortKey = new KeyBinding("key.sort", KeyConflictContext.IN_GAME, -98, "key.categories.bogosorter");
+    public static final KeyBinding configGuiKey = new KeyBinding("key.sort_config", KeyConflictContext.UNIVERSAL, Keyboard.KEY_K, "key.categories.bogosorter");
+    public static final KeyBinding sortKey = new KeyBinding("key.sort", KeyConflictContext.GUI, -98, "key.categories.bogosorter");
 
-    private static long time = 0;
+    private static long timeConfigGui = 0;
+    private static long timeSort = 0;
 
     // i have to subscribe to 4 events to catch all inputs
 
@@ -94,26 +95,36 @@ public class ClientEventHandler {
 
     // handle all inputs in one method
     public static boolean handleInput(@Nullable GuiContainer container) {
+        if (container != null && container.isFocused()) {
+            return false;
+        }
         if (isPressed(configGuiKey)) {
             long t = Minecraft.getSystemTime();
-            if (t - time > 50) {
+            if (t - timeConfigGui > 500) {
                 UIInfos.openClientUI(Minecraft.getMinecraft().player, ConfigGui::createConfigWindow);
+                timeConfigGui = t;
                 return true;
             }
-            time = t;
-        } else if (container != null && isPressed(sortKey)) {
-            Slot slot = getSlot(container);
-            if (slot == null || (Minecraft.getMinecraft().player.isCreative() && !slot.getStack().isEmpty()))
-                return false;
-            SortHandler sortHandler = createSortHandler(container, slot);
-            if (sortHandler == null) return false;
-            sortHandler.sort(slot.slotNumber);
-            return true;
+        } else if (container != null && isPressed(sortKey) && (sortKey.getKeyCode() != 98 || Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty())) {
+            long t = Minecraft.getSystemTime();
+            if (t - timeSort > 500) {
+                Slot slot = getSlot(container);
+                if (slot == null || (Minecraft.getMinecraft().player.isCreative() && !slot.getStack().isEmpty()))
+                    return false;
+                SortHandler sortHandler = createSortHandler(container, slot);
+                if (sortHandler == null) return false;
+                sortHandler.sort(slot.slotNumber);
+                timeSort = t;
+                return true;
+            }
         }
         return false;
     }
 
     public static boolean isPressed(KeyBinding binding) {
+        if (!binding.getKeyModifier().isActive()) {
+            return false;
+        }
         if (binding.getKeyCode() >= -100 && binding.getKeyCode() < -90) {
             return Mouse.isButtonDown(binding.getKeyCode() + 100);
         }
