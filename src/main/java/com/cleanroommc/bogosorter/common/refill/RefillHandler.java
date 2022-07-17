@@ -4,6 +4,9 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import gregtech.api.items.IToolItem;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,15 +54,16 @@ public class RefillHandler {
     private BiPredicate<ItemStack, ItemStack> similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem() && stack.getMetadata() == stack2.getMetadata();
     private BiPredicate<ItemStack, ItemStack> exactItemMatcher = RefillHandler::matchTags;
     private final int hotbarIndex;
-    private final int[] slots;
+    private final IntList slots;
     private final ItemStack brokenItem;
     private final EntityPlayer player;
     private final InventoryPlayer inventory;
     private final boolean swapItems;
+    private boolean isDamageable = false;
 
     public RefillHandler(int hotbarIndex, ItemStack brokenItem, EntityPlayer player, boolean swapItems) {
         this.hotbarIndex = hotbarIndex;
-        this.slots = INVENTORY_PROXIMITY_MAP[hotbarIndex];
+        this.slots = new IntArrayList(INVENTORY_PROXIMITY_MAP[hotbarIndex]);
         this.brokenItem = brokenItem;
         this.player = player;
         this.inventory = player.inventory;
@@ -78,6 +82,7 @@ public class RefillHandler {
             return findItem(false);
         } else if (brokenItem.isItemStackDamageable()) {
             similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem();
+            isDamageable = true;
             return findNormalDamageable();
         } else if ((BogoSorter.isGTCELoaded() || BogoSorter.isGTCEuLoaded()) && brokenItem.getItem() instanceof IToolItem) {
             exactItemMatcher = (stack, stack2) -> {
@@ -85,6 +90,7 @@ public class RefillHandler {
                 if (!stack.hasTagCompound()) return true;
                 return getToolMaterial(stack).equals(getToolMaterial(stack2));
             };
+            isDamageable = true;
             return findNormalDamageable();
         } else {
             return findItem(true);
@@ -94,9 +100,14 @@ public class RefillHandler {
     private boolean findItem(boolean exactOnly) {
         ItemStack firstItemMatch = null;
         int firstItemMatchSlot = -1;
-        for (int slot : slots) {
+        IntListIterator slotsIterator = slots.iterator();
+        while (slotsIterator.hasNext()) {
+            int slot = slotsIterator.next();
             ItemStack found = inventory.mainInventory.get(slot);
-            if (found.isEmpty()) continue;
+            if (found.isEmpty() || (isDamageable && !DamageHelper.isToolUsable(found))) {
+                slotsIterator.remove();
+                continue;
+            }
             if (similarItemMatcher.test(brokenItem, found)) {
                 if (exactItemMatcher.test(brokenItem, found)) {
                     refillItem(found, slot);
@@ -119,14 +130,15 @@ public class RefillHandler {
         if (findItem(false)) {
             return true;
         }
+        if (slots.isEmpty()) return false;
 
         Set<String> brokenToolClasses = brokenItem.getItem().getToolClasses(brokenItem);
         if (brokenToolClasses.isEmpty())
             return false;
+
         // try match tool type
         for (int slot : slots) {
             ItemStack found = inventory.mainInventory.get(slot);
-            if (found.isEmpty()) continue;
             Set<String> toolTypes = found.getItem().getToolClasses(found);
             if (brokenToolClasses.equals(toolTypes)) {
                 refillItem(found, slot);
