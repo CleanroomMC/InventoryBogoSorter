@@ -35,7 +35,7 @@ public class ClientEventHandler {
 
     public static final List<ItemStack> allItems = new ArrayList<>();
     public static final KeyBinding configGuiKey = new KeyBinding("key.sort_config", KeyConflictContext.IN_GAME, Keyboard.KEY_K, "key.categories.bogosorter");
-    public static final KeyBinding sortKey = new KeyBinding("key.sort", KeyConflictContext.IN_GAME, -98, "key.categories.bogosorter");
+    public static final KeyBinding sortKey = new KeyBinding("key.sort", KeyConflictContext.GUI, -98, "key.categories.bogosorter");
 
     private static long time = 0;
 
