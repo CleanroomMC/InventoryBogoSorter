@@ -71,23 +71,23 @@ public class RefillHandler {
     }
 
 
-    public void handleRefill() {
-        if (!BogoSorterConfig.enableAutoRefill) return;
+    public boolean handleRefill() {
+        if (!BogoSorterConfig.enableAutoRefill) return false;
 
         if (brokenItem.getItem() instanceof ItemBlock) {
-            findItem(false);
+            return findItem(false);
         } else if (brokenItem.isItemStackDamageable()) {
             similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem();
-            findNormalDamageable();
+            return findNormalDamageable();
         } else if ((BogoSorter.isGTCELoaded() || BogoSorter.isGTCEuLoaded()) && brokenItem.getItem() instanceof IToolItem) {
             exactItemMatcher = (stack, stack2) -> {
                 if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
                 if (!stack.hasTagCompound()) return true;
                 return getToolMaterial(stack).equals(getToolMaterial(stack2));
             };
-            findNormalDamageable();
+            return findNormalDamageable();
         } else {
-            findItem(true);
+            return findItem(true);
         }
     }
 
@@ -115,13 +115,14 @@ public class RefillHandler {
         return false;
     }
 
-    private void findNormalDamageable() {
+    private boolean findNormalDamageable() {
         if (findItem(false)) {
-            return;
+            return true;
         }
 
         Set<String> brokenToolClasses = brokenItem.getItem().getToolClasses(brokenItem);
-        if (brokenToolClasses.isEmpty()) return;
+        if (brokenToolClasses.isEmpty())
+            return false;
         // try match tool type
         for (int slot : slots) {
             ItemStack found = inventory.mainInventory.get(slot);
@@ -129,7 +130,7 @@ public class RefillHandler {
             Set<String> toolTypes = found.getItem().getToolClasses(found);
             if (brokenToolClasses.equals(toolTypes)) {
                 refillItem(found, slot);
-                return;
+                return true;
             }
         }
 
@@ -143,15 +144,17 @@ public class RefillHandler {
             if (tools > brokenTools) {
                 if (toolTypes.containsAll(brokenToolClasses)) {
                     refillItem(found, slot);
-                    return;
+                    return true;
                 }
             } else {
                 if (brokenToolClasses.containsAll(toolTypes)) {
                     refillItem(found, slot);
-                    return;
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
     private void refillItem(ItemStack refill, int refillIndex) {
