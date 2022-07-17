@@ -79,7 +79,7 @@ public class SortHandler {
     public void sort(int slotId) {
         Slot[][] slotGroup = context.getSlotGroup(slotId);
         if (slotGroup != null) {
-            if (new Random().nextFloat() < 0.005f) {
+            if (new Random().nextFloat() < 0.0005f) {
                 sortBogo(slotGroup);
                 Minecraft.getMinecraft().player.sendMessage(new TextComponentString("Get Bogo'd!"));
             } else {
