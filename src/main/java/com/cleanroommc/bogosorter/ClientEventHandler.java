@@ -25,7 +25,6 @@ import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,18 +97,20 @@ public class ClientEventHandler {
         if (container != null && container.isFocused()) {
             return false;
         }
-        if (isPressed(configGuiKey)) {
+        boolean c = configGuiKey.isPressed(), s = sortKey.isPressed();
+        if (c) {
             long t = Minecraft.getSystemTime();
             if (t - timeConfigGui > 500) {
                 UIInfos.openClientUI(Minecraft.getMinecraft().player, ConfigGui::createConfigWindow);
                 timeConfigGui = t;
                 return true;
             }
-        } else if (container != null && isPressed(sortKey) && (sortKey.getKeyCode() != 98 || Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty())) {
+        }
+        if (container != null && s) {
             long t = Minecraft.getSystemTime();
             if (t - timeSort > 500) {
                 Slot slot = getSlot(container);
-                if (slot == null || (Minecraft.getMinecraft().player.isCreative() && !slot.getStack().isEmpty()))
+                if (slot == null || !canSort(slot))
                     return false;
                 SortHandler sortHandler = createSortHandler(container, slot);
                 if (sortHandler == null) return false;
@@ -121,14 +122,11 @@ public class ClientEventHandler {
         return false;
     }
 
-    public static boolean isPressed(KeyBinding binding) {
-        if (!binding.getKeyModifier().isActive()) {
-            return false;
-        }
-        if (binding.getKeyCode() >= -100 && binding.getKeyCode() < -90) {
-            return Mouse.isButtonDown(binding.getKeyCode() + 100);
-        }
-        return Keyboard.isKeyDown(binding.getKeyCode());
+    private static boolean canSort(Slot slot) {
+        return !Minecraft.getMinecraft().player.isCreative() ||
+                sortKey.getKeyModifier().isActive() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyModifier().isActive() ||
+                sortKey.getKeyCode() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyCode() ||
+                slot.getStack().isEmpty();
     }
 
     public static boolean isSortableContainer(GuiScreen screen) {

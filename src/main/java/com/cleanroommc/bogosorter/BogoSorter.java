@@ -8,7 +8,9 @@ import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
+import com.cleanroommc.modularui.api.KeyBindAPI;
 import gregtech.GregTechVersion;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -37,6 +39,8 @@ public class BogoSorter {
     public void onPreInit(FMLPreInitializationEvent event) {
         anyGtLoaded = Loader.isModLoaded("gregtech");
         NetworkHandler.init();
+        OreDictHelper.init();
+        SERIALIZER.loadOrePrefixConfig();
         DefaultRules.init(BogoSortAPI.INSTANCE);
         DefaultCompat.init(BogoSortAPI.INSTANCE);
     }
@@ -48,6 +52,9 @@ public class BogoSorter {
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent(SortHandler.getItemSortRules(), SortHandler.getNbtSortRules()));
             ClientRegistry.registerKeyBinding(ClientEventHandler.configGuiKey);
             ClientRegistry.registerKeyBinding(ClientEventHandler.sortKey);
+            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.configGuiKey);
+            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.sortKey);
+            KeyBindAPI.setCompatible(ClientEventHandler.sortKey, Minecraft.getMinecraft().gameSettings.keyBindPickBlock);
         }
     }
 
@@ -60,11 +67,13 @@ public class BogoSorter {
         return anyGtLoaded;
     }
 
+    @SuppressWarnings("all")
     public static boolean isGTCELoaded() {
         return anyGtLoaded && GregTechVersion.MAJOR == 1;
     }
 
+    @SuppressWarnings("all")
     public static boolean isGTCEuLoaded() {
-        return anyGtLoaded && GregTechVersion.MAJOR >=2;
+        return anyGtLoaded && GregTechVersion.MAJOR >= 2;
     }
 }
