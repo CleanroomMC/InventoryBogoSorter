@@ -44,6 +44,8 @@ public class RefillHandler {
 
     @SubscribeEvent
     public static void onDestroyItem(PlayerDestroyItemEvent event) {
+        if (!BogoSorterConfig.enableAutoRefill) return;
+
         if (shouldHandleRefill(event.getEntityPlayer(), event.getOriginal())) {
             new RefillHandler(event.getEntityPlayer().inventory.currentItem, event.getOriginal(), event.getEntityPlayer()).handleRefill();
         }
