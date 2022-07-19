@@ -147,12 +147,16 @@ public class OreDictHelper {
                 "pipeHugeRestrictive", "wireGtSingle", "wireGtDouble", "wireGtQuadruple", "wireGtOctal", "wireGtHex", "cableGtSingle", "cableGtDouble",
                 "cableGtQuadruple", "cableGtOctal", "cableGtHex", "frameGt", "oreGranite", "oreDiorite", "oreAndesite", "oreBlackgranite", "oreRedgranite",
                 "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone");
-        addOrePrefix("thermalfoundation", "gear", "stick", "plate");
-        addOrePrefix("thaumcraft", "cluster", "oreCluster");
+        addOrePrefix("thermalfoundation", "gear", "stick", "plate", "fuel", "crystal", "rod", "coin");
+        addOrePrefix("thaumcraft", "cluster", "oreCrystal");
+        addOrePrefix("ic2", "plate", "plateDense", "crushed", "crushedPurified");
+        addOrePrefix("immersiveengineering", "plate", "wire", "blockSheetmetal");
+        addOrePrefix("enderio", "ball");
 
         String[] defaultOrePrefixOrder = {
-                "ingot", "ingotHot", "gemChipped", "gemFlawed", "gem", "gemFlawless", "gemExquisite", "dustTiny", "dustSmall", "dust", "nugget", "block",
-                "plate", "plateDouble", "plateDense", "gear", "bolt", "stick", "stickLong", "ring", "screw", "round", "foil", "wireFine", "springSmall", "spring",
+                "ingot", "ingotHot", "gemChipped", "gemFlawed", "gem", "gemFlawless", "gemExquisite", "dustTiny", "dustSmall", "dust", "nugget", "block", "blockSheetmetal",
+                "plate", "plateDouble", "plateDense", "gear", "bolt", "stick", "stickLong", "ring", "screw", "round", "foil", "wireFine", "wire", "springSmall", "spring",
+                "ball", "crystal", "coin", "fuel",
                 "turbineBlade", "rotor", "lens", "dustImpure", "dustPure", "crushed", "crushedCentrifuged", "crushedPurified", "shard", "clump", "reduced",
                 "crystalline", "dirtyGravel", "cleanGravel", "toolHeadSword", "toolHeadPickaxe", "toolHeadShovel", "toolHeadAxe", "toolHeadHoe", "toolHeadSense",
                 "toolHeadFile", "toolHeadHammer", "toolHeadSaw", "toolHeadBuzzSaw", "toolHeadScrewdriver", "toolHeadDrill", "toolHeadChainsaw", "toolHeadWrench",
@@ -160,7 +164,7 @@ public class OreDictHelper {
                 "pipeSmallItem", "pipeNormalItem", "pipeLargeItem", "pipeHugeItem", "pipeSmallRestrictive", "pipeNormalRestrictive", "pipeLargeRestrictive",
                 "pipeHugeRestrictive", "wireGtSingle", "wireGtDouble", "wireGtQuadruple", "wireGtOctal", "wireGtHex", "cableGtSingle", "cableGtDouble",
                 "cableGtQuadruple", "cableGtOctal", "cableGtHex", "frameGt", "glass", "ore", "oreGranite", "oreDiorite", "oreAndesite", "oreBlackgranite", "oreRedgranite",
-                "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone", "log"
+                "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone", "oreCrystal", "log", "rod", "dye"
         };
 
         ORE_PREFIXES.clear();
