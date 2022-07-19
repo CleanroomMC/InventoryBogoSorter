@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.common.config;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.google.gson.*;
@@ -15,7 +16,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class Serializer {
 
@@ -23,6 +23,7 @@ public class Serializer {
     public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     public final String cfgPath = Loader.instance().getConfigDir().toString();
     public final File configJsonPath = new File(cfgPath + "\\bogosorter\\config.json");
+    public final File orePrefixJsonPath = new File(cfgPath + "\\bogosorter\\orePrefix.json");
 
     @SideOnly(Side.CLIENT)
     public void saveConfig() {
@@ -43,6 +44,26 @@ public class Serializer {
             return;
         }
         readRules(jsonElement.getAsJsonObject());
+    }
+
+    public void loadOrePrefixConfig() {
+        if (!Files.exists(orePrefixJsonPath.toPath())) {
+            saveOrePrefixes();
+            return;
+        }
+        JsonElement jsonElement = loadJson(orePrefixJsonPath);
+        if (jsonElement == null || !jsonElement.isJsonObject()) {
+            BogoSorter.LOGGER.error("Error loading ore prefix config!");
+            return;
+        }
+        JsonObject json = jsonElement.getAsJsonObject();
+        if (json.has("reload") && json.get("reload").getAsBoolean()) {
+            saveOrePrefixes();
+            return;
+        }
+        if (json.has("orePrefixes")) {
+            OreDictHelper.loadFromJson(json.getAsJsonArray("orePrefixes"));
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -91,25 +112,16 @@ public class Serializer {
         json.add("NbtSortRules", jsonRules);
     }
 
-    /**
-     * Tries to extract <code>JsonObject</code> from file on given path
-     *
-     * @param filePath path to file
-     * @return <code>JsonObject</code> if extraction succeeds; otherwise <code>null</code>
-     */
-    public static JsonObject tryExtractFromFile(Path filePath) {
-        try (InputStream fileStream = Files.newInputStream(filePath)) {
-            InputStreamReader streamReader = new InputStreamReader(fileStream);
-            return jsonParser.parse(streamReader).getAsJsonObject();
-        } catch (IOException exception) {
-            BogoSorter.LOGGER.error("Failed to read file on path {}", filePath, exception);
-        } catch (JsonParseException exception) {
-            BogoSorter.LOGGER.error("Failed to extract json from file", exception);
-        } catch (Exception exception) {
-            BogoSorter.LOGGER.error("Failed to extract json from file on path {}", filePath, exception);
+    public void saveOrePrefixes() {
+        JsonObject json = new JsonObject();
+        json.addProperty("_comment", "Setting this to true will recreate this entire file on next start");
+        json.addProperty("reload", false);
+        JsonArray orePrefixes = new JsonArray();
+        json.add("orePrefixes", orePrefixes);
+        for (String orePrefix : OreDictHelper.getOrePrefixesList()) {
+            orePrefixes.add(orePrefix);
         }
-
-        return null;
+        saveJson(orePrefixJsonPath, json);
     }
 
     public static JsonElement loadJson(File file) {

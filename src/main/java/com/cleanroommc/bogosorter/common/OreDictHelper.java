@@ -3,13 +3,16 @@ package com.cleanroommc.bogosorter.common;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.*;
 
@@ -19,7 +22,9 @@ public class OreDictHelper {
     private static final Map<ItemStack, Set<String>> ORE_DICTS = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_HASH_STRATEGY);
     private static final Map<ItemStack, String> MATERIALS = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_HASH_STRATEGY);
     private static final Map<ItemStack, String> PREFIXES = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_HASH_STRATEGY);
-    private static final Map<String, Integer> ORE_PREFIXES;
+    private static final Map<String, Integer> ORE_PREFIXES = new HashMap<>();
+    private static final List<String> ORE_PREFIXES_LIST = new ArrayList<>();
+    private static final Map<String, String[]> orePrefixOwnerMap = new Object2ObjectOpenHashMap<>();
 
     @SubscribeEvent
     public static void onItemRegistration(OreDictionary.OreRegisterEvent event) {
@@ -89,9 +94,63 @@ public class OreDictHelper {
         return result.toString();
     }
 
-    static {
+    public static List<String> getOrePrefixesList() {
+        return ORE_PREFIXES_LIST;
+    }
 
-        String[] defaultOrePrefixOrderGt = {
+    private static void addOrePrefix(String[] owner, String... orePrefixes) {
+        for (String prefix : orePrefixes) {
+            if (orePrefixOwnerMap.containsKey(prefix)) {
+                orePrefixOwnerMap.put(prefix, ArrayUtils.addAll(orePrefixOwnerMap.get(prefix), owner));
+            } else {
+                orePrefixOwnerMap.put(prefix, owner);
+            }
+        }
+    }
+
+    private static void addOrePrefix(String owner, String... orePrefixes) {
+        addOrePrefix(new String[]{owner}, orePrefixes);
+    }
+
+    private static boolean isPrefixLoaded(String prefix) {
+        String[] owners = orePrefixOwnerMap.get(prefix);
+        if (owners == null || owners.length == 0) return true;
+        for (String owner : owners) {
+            if (Loader.isModLoaded(owner)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void loadFromJson(JsonArray json) {
+        ORE_PREFIXES.clear();
+        ORE_PREFIXES_LIST.clear();
+        int i = 0;
+        for (JsonElement jsonElement : json) {
+            if (!jsonElement.isJsonPrimitive() && jsonElement.isJsonNull()) {
+                String orePrefix = jsonElement.getAsString();
+                ORE_PREFIXES.put(orePrefix, i++);
+                ORE_PREFIXES_LIST.add(orePrefix);
+            }
+        }
+    }
+
+    public static void init() {
+        addOrePrefix("gregtech", "ingotHot", "gemChipped", "gemFlawed", "gemFlawless", "gemExquisite", "dustTiny", "dustSmall",
+                "plateDouble", "plateDense", "gear", "bolt", "stick", "stickLong", "ring", "screw", "round", "foil", "wireFine", "springSmall", "spring",
+                "turbineBlade", "rotor", "lens", "dustImpure", "dustPure", "crushed", "crushedCentrifuged", "crushedPurified", "shard", "clump", "reduced",
+                "crystalline", "dirtyGravel", "cleanGravel", "toolHeadSword", "toolHeadPickaxe", "toolHeadShovel", "toolHeadAxe", "toolHeadHoe", "toolHeadSense",
+                "toolHeadFile", "toolHeadHammer", "toolHeadSaw", "toolHeadBuzzSaw", "toolHeadScrewdriver", "toolHeadDrill", "toolHeadChainsaw", "toolHeadWrench",
+                "pipeTinyFluid", "pipeSmallFluid", "pipeNormalFluid", "pipeLargeFluid", "pipeHugeFluid", "pipeQuadrupleFluid", "pipeNonupleFluid", "pipeTinyItem",
+                "pipeSmallItem", "pipeNormalItem", "pipeLargeItem", "pipeHugeItem", "pipeSmallRestrictive", "pipeNormalRestrictive", "pipeLargeRestrictive",
+                "pipeHugeRestrictive", "wireGtSingle", "wireGtDouble", "wireGtQuadruple", "wireGtOctal", "wireGtHex", "cableGtSingle", "cableGtDouble",
+                "cableGtQuadruple", "cableGtOctal", "cableGtHex", "frameGt", "oreGranite", "oreDiorite", "oreAndesite", "oreBlackgranite", "oreRedgranite",
+                "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone");
+        addOrePrefix("thermalfoundation", "gear", "stick", "plate");
+        addOrePrefix("thaumcraft", "cluster", "oreCluster");
+
+        String[] defaultOrePrefixOrder = {
                 "ingot", "ingotHot", "gemChipped", "gemFlawed", "gem", "gemFlawless", "gemExquisite", "dustTiny", "dustSmall", "dust", "nugget", "block",
                 "plate", "plateDouble", "plateDense", "gear", "bolt", "stick", "stickLong", "ring", "screw", "round", "foil", "wireFine", "springSmall", "spring",
                 "turbineBlade", "rotor", "lens", "dustImpure", "dustPure", "crushed", "crushedCentrifuged", "crushedPurified", "shard", "clump", "reduced",
@@ -100,19 +159,18 @@ public class OreDictHelper {
                 "pipeTinyFluid", "pipeSmallFluid", "pipeNormalFluid", "pipeLargeFluid", "pipeHugeFluid", "pipeQuadrupleFluid", "pipeNonupleFluid", "pipeTinyItem",
                 "pipeSmallItem", "pipeNormalItem", "pipeLargeItem", "pipeHugeItem", "pipeSmallRestrictive", "pipeNormalRestrictive", "pipeLargeRestrictive",
                 "pipeHugeRestrictive", "wireGtSingle", "wireGtDouble", "wireGtQuadruple", "wireGtOctal", "wireGtHex", "cableGtSingle", "cableGtDouble",
-                "cableGtQuadruple", "cableGtOctal", "cableGtHex", "frameGt", "ore", "oreGranite", "oreDiorite", "oreAndesite", "oreBlackgranite", "oreRedgranite",
-                "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone"
+                "cableGtQuadruple", "cableGtOctal", "cableGtHex", "frameGt", "glass", "ore", "oreGranite", "oreDiorite", "oreAndesite", "oreBlackgranite", "oreRedgranite",
+                "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone", "log"
         };
 
-        String[] defaultOrePrefixOrder = {"ingot", "gem", "dust", "nugget", "block", "plate", "gear", "stick", "ore", "log"};
-
-
-        ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
-        String[] prefixes = BogoSorter.isAnyGtLoaded()? defaultOrePrefixOrderGt : defaultOrePrefixOrder;
+        ORE_PREFIXES.clear();
+        ORE_PREFIXES_LIST.clear();
         int i = 0;
-        for (String orePrefix : prefixes) {
-            builder.put(orePrefix, i++);
+        for (String orePrefix : defaultOrePrefixOrder) {
+            if (isPrefixLoaded(orePrefix)) {
+                ORE_PREFIXES.put(orePrefix, i++);
+                ORE_PREFIXES_LIST.add(orePrefix);
+            }
         }
-        ORE_PREFIXES = builder.build();
     }
 }
