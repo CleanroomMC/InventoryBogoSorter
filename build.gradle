@@ -75,7 +75,7 @@ dependencies {
 		deobfCompile 'com.cleanroommc:assetmover:0.2'
 	}
 	if (project.use_mixins.toBoolean()) {
-		deobfCompile 'zone.rong:mixinbooter:4.2'
+		deobfCompile 'zone.rong:mixinbooter:5.0'
     }
 
 	//deobfCompile 'curse.maven:modularui-624243:3873836'
@@ -89,6 +89,7 @@ dependencies {
 	provided 'curse.maven:draconic_evolution-223565:3431261'
 	provided 'curse.maven:gregtech_ce_unofficial-557242:3859788'
 	provided 'curse.maven:future_mc-310059:3842790'
+	provided 'curse.maven:tinkers_construct-74072:2902483'
 }
 
 sourceSets {
