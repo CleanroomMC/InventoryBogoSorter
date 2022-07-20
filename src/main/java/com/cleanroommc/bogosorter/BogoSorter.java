@@ -35,10 +35,12 @@ public class BogoSorter {
     public static final Serializer SERIALIZER = new Serializer();
 
     private static boolean anyGtLoaded = false;
+    private static boolean tconstructLoaded = false;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
         anyGtLoaded = Loader.isModLoaded("gregtech");
+        tconstructLoaded = Loader.isModLoaded("tconstruct");
         NetworkHandler.init();
         OreDictHelper.init();
         SERIALIZER.loadOrePrefixConfig();
@@ -76,5 +78,9 @@ public class BogoSorter {
     @SuppressWarnings("all")
     public static boolean isGTCEuLoaded() {
         return anyGtLoaded && GregTechVersion.MAJOR >= 2;
+    }
+
+    public static boolean isTConstructLoaded() {
+        return tconstructLoaded;
     }
 }

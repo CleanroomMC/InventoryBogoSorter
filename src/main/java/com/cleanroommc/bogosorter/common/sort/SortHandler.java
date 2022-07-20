@@ -235,9 +235,9 @@ public class SortHandler {
             result = sortRule.compare(stack1, stack2);
             if (result != 0) return result;
         }
-        result = BogoSortAPI.INSTANCE.getItemSortRule("registry_order").compare(stack1, stack2);
+        result = ItemCompareHelper.compareRegistryOrder(stack1, stack2);
         if (result != 0) return result;
-        result = BogoSortAPI.INSTANCE.getItemSortRule("meta").compare(stack1, stack2);
+        result = ItemCompareHelper.compareMeta(stack1, stack2);
         return result;
     };
 

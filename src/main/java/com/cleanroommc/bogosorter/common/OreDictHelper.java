@@ -5,14 +5,19 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.google.common.base.Joiner;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import gregtech.api.items.toolitem.ToolMetaItem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.NotNull;
+import slimeknights.tconstruct.library.tinkering.IMaterialItem;
 
 import java.util.*;
 
@@ -72,7 +77,31 @@ public class OreDictHelper {
     }
 
     public static String getMaterial(ItemStack item) {
+        if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof ToolMetaItem) {
+            return getGtToolMaterial(item);
+        }
+        if (BogoSorter.isTConstructLoaded() && item.getItem() instanceof IMaterialItem) {
+            return ((IMaterialItem) item.getItem()).getMaterialID(item);
+        }
         return MATERIALS.get(item);
+    }
+
+    @Optional.Method(modid = "gregtech")
+    @NotNull
+    public static String getGtToolMaterial(ItemStack itemStack) {
+        NBTTagCompound statsTag = itemStack.getSubCompound("GT.ToolStats");
+        if (statsTag == null) {
+            return "";
+        }
+        String toolMaterialName;
+        if (statsTag.hasKey("Material")) {
+            toolMaterialName = statsTag.getString("Material");
+        } else if (statsTag.hasKey("PrimaryMaterial")) {
+            toolMaterialName = statsTag.getString("PrimaryMaterial");
+        } else {
+            return "";
+        }
+        return toolMaterialName;
     }
 
     public static String getOrePrefix(ItemStack item) {
@@ -164,7 +193,7 @@ public class OreDictHelper {
                 "pipeSmallItem", "pipeNormalItem", "pipeLargeItem", "pipeHugeItem", "pipeSmallRestrictive", "pipeNormalRestrictive", "pipeLargeRestrictive",
                 "pipeHugeRestrictive", "wireGtSingle", "wireGtDouble", "wireGtQuadruple", "wireGtOctal", "wireGtHex", "cableGtSingle", "cableGtDouble",
                 "cableGtQuadruple", "cableGtOctal", "cableGtHex", "frameGt", "glass", "ore", "oreGranite", "oreDiorite", "oreAndesite", "oreBlackgranite", "oreRedgranite",
-                "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone", "oreCrystal", "log", "rod", "dye"
+                "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone", "oreCrystal", "log", "rod"
         };
 
         ORE_PREFIXES.clear();

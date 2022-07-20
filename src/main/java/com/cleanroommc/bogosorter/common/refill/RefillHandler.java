@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.common.refill;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.BogoSorterConfig;
+import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.network.SRefillSound;
@@ -9,20 +10,15 @@ import gregtech.api.items.IToolItem;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -91,7 +87,7 @@ public class RefillHandler {
             exactItemMatcher = (stack, stack2) -> {
                 if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
                 if (!stack.hasTagCompound()) return true;
-                return getToolMaterial(stack).equals(getToolMaterial(stack2));
+                return OreDictHelper.getGtToolMaterial(stack).equals(OreDictHelper.getGtToolMaterial(stack2));
             };
             isDamageable = true;
             return findNormalDamageable();
@@ -188,23 +184,5 @@ public class RefillHandler {
         } else {
             return (stackA.getTagCompound() == null || stackA.getTagCompound().equals(stackB.getTagCompound())) && stackA.areCapsCompatible(stackB);
         }
-    }
-
-    // copy pasted and changed from gtce since i get errors when i try to use their method
-    @NotNull
-    private static String getToolMaterial(ItemStack itemStack) {
-        NBTTagCompound statsTag = itemStack.getSubCompound("GT.ToolStats");
-        if (statsTag == null) {
-            return "";
-        }
-        String toolMaterialName;
-        if (statsTag.hasKey("Material")) {
-            toolMaterialName = statsTag.getString("Material");
-        } else if (statsTag.hasKey("PrimaryMaterial")) {
-            toolMaterialName = statsTag.getString("PrimaryMaterial");
-        } else {
-            return "";
-        }
-        return toolMaterialName;
     }
 }
