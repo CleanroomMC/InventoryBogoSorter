@@ -15,6 +15,7 @@ public class BogoSorterConfig
     @Config.RangeInt(min = 0, max = Short.MAX_VALUE)
     @Config.Name("Auto Refill Damage Threshold")
     @Config.Comment({"Damage threshold of when to trigger the auto refill.",
+            "Set to 0 to only refill on break/last item",
             "Example: 5 = Trigger when an item has 5 uses left"})
     public static int autoRefillDamageThreshold = 1;
 

@@ -23,6 +23,8 @@ public abstract class MixinItemStack {
 
     @Inject(method = "attemptDamageItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;setItemDamage(I)V", shift = At.Shift.AFTER))
     private void damageItem(int amount, Random rand, EntityPlayerMP player, CallbackInfoReturnable<Boolean> cir) {
+        if (!BogoSorterConfig.enableAutoRefill || BogoSorterConfig.autoRefillDamageThreshold == 0) return;
+
         if (RefillHandler.shouldHandleRefill(player, getThis())) {
             int durabilityLeft = getMaxDamage() - getItemDamage();
             if (durabilityLeft >= 0 && durabilityLeft < BogoSorterConfig.autoRefillDamageThreshold) {

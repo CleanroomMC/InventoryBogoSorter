@@ -23,6 +23,8 @@ public abstract class MixinToolMetaItem {
 
     @Inject(method = "damageItem", at = @At(value = "INVOKE", target = "Ljava/lang/Math;min(II)I"))
     private void damageItem(ItemStack stack, EntityLivingBase entity, int vanillaDamage, boolean allowPartial, boolean simulate, CallbackInfoReturnable<Integer> cir) {
+        if (!BogoSorterConfig.enableAutoRefill || BogoSorterConfig.autoRefillDamageThreshold == 0) return;
+
         if (!simulate && entity instanceof EntityPlayer) {
             EntityPlayer player = ((EntityPlayer) entity);
 
