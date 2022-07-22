@@ -1,7 +1,8 @@
 package com.cleanroommc.bogosorter.mixin;
 
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.BogoSorterConfig;
+import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
+import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.refill.RefillHandler;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,10 +29,10 @@ public abstract class MixinEntityLivingBase
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void onItemUseFinish(CallbackInfo ci, ItemStack activeItemStackCopy, ItemStack itemstack){
-        if (!BogoSorterConfig.enableAutoRefill) return;
+
         if (!(getThis() instanceof EntityPlayer)) return;
         EntityPlayer player = (EntityPlayer) getThis();
-
+        if (!PlayerConfig.get(player).enableAutoRefill) return;
         //  used in cases where a modded item returns itself with a different durability (AA coffee, Botania Vials, etc)
         if (ItemStack.areItemsEqualIgnoreDurability(activeItemStackCopy, itemstack)){
             return;

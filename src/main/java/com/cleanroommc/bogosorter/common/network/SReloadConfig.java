@@ -1,8 +1,8 @@
 package com.cleanroommc.bogosorter.common.network;
 
-import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
-import com.cleanroommc.bogosorter.common.sort.SortHandler;
+import com.cleanroommc.bogosorter.common.config.PlayerConfig;
+import com.cleanroommc.bogosorter.common.config.Serializer;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,8 +21,9 @@ public class SReloadConfig implements IPacket {
 
     @Override
     public IPacket executeClient(NetHandlerPlayClient handler) {
-        BogoSorter.SERIALIZER.loadConfig();
-        MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent(SortHandler.getItemSortRules(), SortHandler.getNbtSortRules()));
+        Serializer.loadConfig();
+        PlayerConfig.syncToServer();
+        MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
         return null;
     }
 }

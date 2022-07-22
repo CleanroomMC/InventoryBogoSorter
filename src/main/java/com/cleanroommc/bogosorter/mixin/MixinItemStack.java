@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.mixin;
 
-import com.cleanroommc.bogosorter.BogoSorterConfig;
+import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
+import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.refill.RefillHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -23,11 +24,12 @@ public abstract class MixinItemStack {
 
     @Inject(method = "attemptDamageItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;setItemDamage(I)V", shift = At.Shift.AFTER))
     private void damageItem(int amount, Random rand, EntityPlayerMP player, CallbackInfoReturnable<Boolean> cir) {
-        if (!BogoSorterConfig.enableAutoRefill || BogoSorterConfig.autoRefillDamageThreshold == 0) return;
+        PlayerConfig playerConfig = PlayerConfig.get(player);
+        if (!playerConfig.enableAutoRefill || playerConfig.autoRefillDamageThreshold <= 0) return;
 
         if (RefillHandler.shouldHandleRefill(player, getThis())) {
             int durabilityLeft = getMaxDamage() - getItemDamage();
-            if (durabilityLeft >= 0 && durabilityLeft < BogoSorterConfig.autoRefillDamageThreshold) {
+            if (durabilityLeft >= 0 && durabilityLeft < playerConfig.autoRefillDamageThreshold) {
                 new RefillHandler(player.inventory.currentItem, getThis(), player, true).handleRefill();
             }
         }

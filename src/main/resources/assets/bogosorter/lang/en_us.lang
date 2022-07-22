@@ -3,6 +3,7 @@ key.sort_config=Open Sort Config
 key.sort=Sort Inventory
 
 bogosort.gui.title=Sort Config
+bogosort.gui.tab.general.name=General
 bogosort.gui.tab.item_sort_rules.name=Item sort rules
 bogosort.gui.tab.nbt_sort_rules.name=NBT sort rules
 bogosort.gui.available_sort_rules=Available Sort-Rules
@@ -40,8 +41,10 @@ bogosort.sortrules.nbt.potion.name=Potions
 bogosort.sortrules.nbt.enchantment.name=Enchantments
 bogosort.sortrules.nbt.enchantment_book.name=Ench. books
 bogosort.sortrules.nbt.gt_circ_config.name=GT programmable circuit
+bogosort.sortrules.nbt.gt_item_damage.name=GT tool damage
 
 bogosort.sortrules.nbt.potion.description=Sorts potions by effect and level
 bogosort.sortrules.nbt.enchantment.description=Sorts enchanted items by effect and level
 bogosort.sortrules.nbt.enchantment_book.description=Sorts enchanted books by effect and level
 bogosort.sortrules.nbt.gt_circ_config.description=Sorts GregTech programmable circuits by their configuration
+bogosort.sortrules.nbt.gt_item_damage.description=Sorts GregTech tools by their damage

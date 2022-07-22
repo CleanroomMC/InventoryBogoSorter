@@ -126,7 +126,7 @@ public class ClientEventHandler {
         return !Minecraft.getMinecraft().player.isCreative() ||
                 sortKey.getKeyModifier().isActive() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyModifier().isActive() ||
                 sortKey.getKeyCode() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyCode() ||
-                slot.getStack().isEmpty();
+                (slot.getStack().isEmpty() && Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty());
     }
 
     public static boolean isSortableContainer(GuiScreen screen) {

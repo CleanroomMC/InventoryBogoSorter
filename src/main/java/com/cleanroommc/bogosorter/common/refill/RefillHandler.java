@@ -1,8 +1,8 @@
 package com.cleanroommc.bogosorter.common.refill;
 
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
+import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.network.SRefillSound;
@@ -40,7 +40,7 @@ public class RefillHandler {
 
     @SubscribeEvent
     public static void onDestroyItem(PlayerDestroyItemEvent event) {
-        if (!BogoSorterConfig.enableAutoRefill) return;
+        if (!PlayerConfig.get(event.getEntityPlayer()).enableAutoRefill) return;
 
         if (shouldHandleRefill(event.getEntityPlayer(), event.getOriginal())) {
             new RefillHandler(event.getEntityPlayer().inventory.currentItem, event.getOriginal(), event.getEntityPlayer()).handleRefill();
@@ -59,6 +59,7 @@ public class RefillHandler {
     private final ItemStack brokenItem;
     private final EntityPlayer player;
     private final InventoryPlayer inventory;
+    private final PlayerConfig playerConfig;
     private final boolean swapItems;
     private boolean isDamageable = false;
 
@@ -68,6 +69,7 @@ public class RefillHandler {
         this.brokenItem = brokenItem;
         this.player = player;
         this.inventory = player.inventory;
+        this.playerConfig = PlayerConfig.get(player);
         this.swapItems = swapItems;
     }
 
@@ -77,7 +79,6 @@ public class RefillHandler {
 
 
     public boolean handleRefill() {
-        if (!BogoSorterConfig.enableAutoRefill) return false;
 
         if (brokenItem.getItem() instanceof ItemBlock) {
             return findItem(false);
@@ -105,7 +106,7 @@ public class RefillHandler {
         while (slotsIterator.hasNext()) {
             int slot = slotsIterator.next();
             ItemStack found = inventory.mainInventory.get(slot);
-            if (found.isEmpty() || (isDamageable && !DamageHelper.isToolUsable(found))) {
+            if (found.isEmpty() || (isDamageable && DamageHelper.getDurability(found) <= playerConfig.autoRefillDamageThreshold)) {
                 slotsIterator.remove();
                 continue;
             }

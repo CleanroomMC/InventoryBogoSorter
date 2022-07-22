@@ -5,6 +5,7 @@ import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.McUtils;
+import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.network.CSlotSync;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -23,21 +24,9 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
 public class SortHandler {
-
-    private static final List<SortRule<ItemStack>> sortRules = new ArrayList<>();
-    private static final List<NbtSortRule> nbtSortRules = new ArrayList<>();
-
-    static {
-        String[] itemRules = {"mod", "material", "ore_prefix", "id", "meta", "nbt_has", "nbt_rules"};
-        String[] nbtRules = {"enchantment", "enchantment_book", "potion", "gt_circ_config"};
-
-        sortRules.addAll(Arrays.stream(itemRules).map(BogoSortAPI.INSTANCE::getItemSortRule).collect(Collectors.toList()));
-        nbtSortRules.addAll(Arrays.stream(nbtRules).map(BogoSortAPI.INSTANCE::getNbtSortRule).collect(Collectors.toList()));
-    }
 
     private final Container container;
     private GuiSortingContext context;
@@ -231,7 +220,7 @@ public class SortHandler {
 
     public static final Comparator<ItemStack> ITEM_COMPARATOR = (stack1, stack2) -> {
         int result = 0;
-        for (SortRule<ItemStack> sortRule : sortRules) {
+        for (SortRule<ItemStack> sortRule : BogoSorterConfig.sortRules) {
             result = sortRule.compare(stack1, stack2);
             if (result != 0) return result;
         }
@@ -240,14 +229,6 @@ public class SortHandler {
         result = ItemCompareHelper.compareMeta(stack1, stack2);
         return result;
     };
-
-    public static List<NbtSortRule> getNbtSortRules() {
-        return nbtSortRules;
-    }
-
-    public static List<SortRule<ItemStack>> getItemSortRules() {
-        return sortRules;
-    }
 
     public void clearAllItems(Slot slot1) {
         Slot[][] slotGroup = context.getSlotGroup(slot1.slotNumber);

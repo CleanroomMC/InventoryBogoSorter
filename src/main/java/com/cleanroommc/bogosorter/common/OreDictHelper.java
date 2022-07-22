@@ -2,9 +2,8 @@ package com.cleanroommc.bogosorter.common;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.google.common.base.Joiner;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import gregtech.api.items.toolitem.ToolMetaItem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -27,8 +26,7 @@ public class OreDictHelper {
     private static final Map<ItemStack, Set<String>> ORE_DICTS = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_HASH_STRATEGY);
     private static final Map<ItemStack, String> MATERIALS = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_HASH_STRATEGY);
     private static final Map<ItemStack, String> PREFIXES = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_HASH_STRATEGY);
-    private static final Map<String, Integer> ORE_PREFIXES = new HashMap<>();
-    private static final List<String> ORE_PREFIXES_LIST = new ArrayList<>();
+
     private static final Map<String, String[]> orePrefixOwnerMap = new Object2ObjectOpenHashMap<>();
 
     @SubscribeEvent
@@ -37,7 +35,7 @@ public class OreDictHelper {
 
         String oreName = event.getName();
         //and try to transform registration name into OrePrefix + Material pair
-        if (!ORE_PREFIXES.containsKey(oreName)) {
+        if (!BogoSorterConfig.ORE_PREFIXES.containsKey(oreName)) {
             String material = null;
             String prefix = null;
             //split ore dict name to parts
@@ -61,11 +59,11 @@ public class OreDictHelper {
             for (int i = 0; i < splits.size(); i++) {
                 buffer.append(splits.get(i));
                 String tryPrefix = buffer.toString();
-                if (!ORE_PREFIXES.containsKey(tryPrefix)) continue;
+                if (!BogoSorterConfig.ORE_PREFIXES.containsKey(tryPrefix)) continue;
                 prefix = tryPrefix;
                 material = Joiner.on("").join(splits.subList(i + 1, splits.size())); //BasalticMineralSand
             }
-            if (prefix != null && ORE_PREFIXES.containsKey(prefix)) {
+            if (prefix != null && BogoSorterConfig.ORE_PREFIXES.containsKey(prefix)) {
                 MATERIALS.put(event.getOre(), material);
                 PREFIXES.put(event.getOre(), prefix);
             }
@@ -109,7 +107,7 @@ public class OreDictHelper {
     }
 
     public static int getOrePrefixIndex(String prefix) {
-        return ORE_PREFIXES.getOrDefault(prefix, Integer.MAX_VALUE);
+        return BogoSorterConfig.ORE_PREFIXES.getOrDefault(prefix, Integer.MAX_VALUE);
     }
 
     public static String toLowerCaseUnderscore(String string) {
@@ -121,10 +119,6 @@ public class OreDictHelper {
             result.append(Character.toLowerCase(string.charAt(i)));
         }
         return result.toString();
-    }
-
-    public static List<String> getOrePrefixesList() {
-        return ORE_PREFIXES_LIST;
     }
 
     private static void addOrePrefix(String[] owner, String... orePrefixes) {
@@ -150,19 +144,6 @@ public class OreDictHelper {
             }
         }
         return false;
-    }
-
-    public static void loadFromJson(JsonArray json) {
-        ORE_PREFIXES.clear();
-        ORE_PREFIXES_LIST.clear();
-        int i = 0;
-        for (JsonElement jsonElement : json) {
-            if (!jsonElement.isJsonPrimitive() && jsonElement.isJsonNull()) {
-                String orePrefix = jsonElement.getAsString();
-                ORE_PREFIXES.put(orePrefix, i++);
-                ORE_PREFIXES_LIST.add(orePrefix);
-            }
-        }
     }
 
     public static void init() {
@@ -196,13 +177,13 @@ public class OreDictHelper {
                 "oreMarble", "oreBasalt", "oreSand", "oreRedSand", "oreNetherrack", "oreEndstone", "oreCrystal", "log", "rod"
         };
 
-        ORE_PREFIXES.clear();
-        ORE_PREFIXES_LIST.clear();
+        BogoSorterConfig.ORE_PREFIXES.clear();
+        BogoSorterConfig.ORE_PREFIXES_LIST.clear();
         int i = 0;
         for (String orePrefix : defaultOrePrefixOrder) {
             if (isPrefixLoaded(orePrefix)) {
-                ORE_PREFIXES.put(orePrefix, i++);
-                ORE_PREFIXES_LIST.add(orePrefix);
+                BogoSorterConfig.ORE_PREFIXES.put(orePrefix, i++);
+                BogoSorterConfig.ORE_PREFIXES_LIST.add(orePrefix);
             }
         }
     }

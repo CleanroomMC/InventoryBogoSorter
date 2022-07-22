@@ -1,7 +1,7 @@
 package com.cleanroommc.bogosorter.common.refill;
 
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.BogoSorterConfig;
+import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import gregtech.api.items.IToolItem;
 import net.minecraft.item.ItemStack;
 
@@ -37,10 +37,6 @@ public class DamageHelper {
             return item.getMaxDamage() + 1;
         }
         return item.getMaxDamage() - item.getItemDamage() + 1;
-    }
-
-    public static boolean isToolUsable(ItemStack item) {
-        return getDurability(item) > BogoSorterConfig.autoRefillDamageThreshold;
     }
 
     public static boolean isUnbreakable(ItemStack item) {

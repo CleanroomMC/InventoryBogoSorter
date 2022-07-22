@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.common.OreDictHelper;
+import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
@@ -105,7 +106,7 @@ public class ItemCompareHelper {
     @SideOnly(Side.CLIENT)
     public static int compareNbtValues(@NotNull NBTTagCompound nbt1, @NotNull NBTTagCompound nbt2) {
         int result = 0;
-        for (NbtSortRule nbtSortRule : SortHandler.getNbtSortRules()) {
+        for (NbtSortRule nbtSortRule : BogoSorterConfig.nbtSortRules) {
             result = nbtSortRule.compare(nbt1, nbt2);
             if (result != 0) return result;
         }

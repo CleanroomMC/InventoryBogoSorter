@@ -3,11 +3,11 @@ package com.cleanroommc.bogosorter;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
 import com.cleanroommc.bogosorter.common.config.BogoSortCommandTree;
+import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.config.Serializer;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
-import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
 import com.cleanroommc.modularui.api.KeyBindAPI;
 import gregtech.GregTechVersion;
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION, dependencies = "required-after:modularui@[1.0.4,);")
+@Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION, dependencies = "required-after:modularui@[1.0.5,);required-after:mixinbooter@[5.0,)")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
 
@@ -31,8 +31,6 @@ public class BogoSorter {
     public static final String VERSION = "1.0.4";
 
     public static final Logger LOGGER = LogManager.getLogger(ID);
-
-    public static final Serializer SERIALIZER = new Serializer();
 
     private static boolean anyGtLoaded = false;
     private static boolean tconstructLoaded = false;
@@ -43,16 +41,18 @@ public class BogoSorter {
         tconstructLoaded = Loader.isModLoaded("tconstruct");
         NetworkHandler.init();
         OreDictHelper.init();
-        SERIALIZER.loadOrePrefixConfig();
         DefaultRules.init(BogoSortAPI.INSTANCE);
         DefaultCompat.init(BogoSortAPI.INSTANCE);
+        if (NetworkUtils.isDedicatedClient()) {
+            Serializer.loadConfig();
+            MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
+            PlayerConfig.syncToServer();
+        }
     }
 
     @Mod.EventHandler
     public void onPostInit(FMLPostInitializationEvent event) {
         if (NetworkUtils.isDedicatedClient()) {
-            SERIALIZER.loadConfig();
-            MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent(SortHandler.getItemSortRules(), SortHandler.getNbtSortRules()));
             ClientRegistry.registerKeyBinding(ClientEventHandler.configGuiKey);
             ClientRegistry.registerKeyBinding(ClientEventHandler.sortKey);
             KeyBindAPI.forceCheckKeyBind(ClientEventHandler.configGuiKey);
