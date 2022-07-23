@@ -93,6 +93,8 @@ public class ClientEventHandler {
         }
     }
 
+    private static GuiScreen previousScreen;
+
     // handle all inputs in one method
     public static boolean handleInput(@Nullable GuiContainer container) {
         if (container != null && container.isFocused()) {
@@ -102,9 +104,11 @@ public class ClientEventHandler {
         if (c) {
             long t = Minecraft.getSystemTime();
             if (t - timeConfigGui > 500) {
-                if (Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().currentScreen instanceof ModularGui){
-                    Minecraft.getMinecraft().displayGuiScreen(null);
+                if (ConfigGui.wasOpened){
+                    Minecraft.getMinecraft().displayGuiScreen(previousScreen);
+                    previousScreen = null;
                 } else {
+                    previousScreen = Minecraft.getMinecraft().currentScreen;
                     UIInfos.openClientUI(Minecraft.getMinecraft().player, ConfigGui::createConfigWindow);
                 }
                 timeConfigGui = t;

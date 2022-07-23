@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 public class ConfigGui {
 
+    public static boolean wasOpened = false;
     public static final UITexture TOGGLE_BUTTON = UITexture.fullImage("bogosorter:gui/toggle_config");
 
     public static ModularWindow createConfigWindow(UIBuildContext buildContext) {
@@ -34,6 +35,7 @@ public class ConfigGui {
             Serializer.saveConfig();
             PlayerConfig.syncToServer();
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
+            wasOpened = false;
         });
         ModularWindow.Builder builder = ModularWindow.builder(300, 250);
         builder.setBackground(ModularUITextures.VANILLA_BACKGROUND)
@@ -69,6 +71,7 @@ public class ConfigGui {
                         .setSize(210, 236)
                         .setPos(90, 17));
 
+        wasOpened = true;
         return builder.build();
     }
 
