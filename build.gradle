@@ -79,7 +79,7 @@ dependencies {
     }
 
 	//deobfCompile 'curse.maven:modularui-624243:3873836'
-	compile files('etc/modularui-1.0.5.jar') // for testing purpose
+	compile files('etc/modularui-1.0.6.jar') // for testing purpose
 	provided 'curse.maven:iron_chests-228756:2747935'
 	provided 'curse.maven:thermal_expansion-69163:2926431'
 	provided 'curse.maven:actually_additions-228404:3117927'
