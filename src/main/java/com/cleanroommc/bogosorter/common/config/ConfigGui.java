@@ -81,7 +81,7 @@ public class ConfigGui {
         return new Scrollable()
                 .setVerticalScroll()
                 .widget(new Rectangle().setColor(0xFF606060).asWidget()
-                        .setSize(1, 200)
+                        .setSize(1, 220)
                         .setPos(32, 0))
                 .widget(new MultiChildWidget()
                         .addChild(new CycleButtonWidget()
