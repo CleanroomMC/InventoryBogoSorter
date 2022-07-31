@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.mixin.gtceu;
 
-import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.refill.RefillHandler;
 import gregtech.api.items.toolitem.ToolMetaItem;

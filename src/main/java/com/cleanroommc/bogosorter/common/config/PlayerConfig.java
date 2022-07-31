@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class PlayerConfig {
     public boolean enableAutoRefill = true;
     public int autoRefillDamageThreshold = 1;
 
-    public static PlayerConfig get(EntityPlayer player) {
+    public static PlayerConfig get(@NotNull EntityPlayer player) {
         if (player instanceof EntityPlayerSP) {
             return CLIENT;
         }
