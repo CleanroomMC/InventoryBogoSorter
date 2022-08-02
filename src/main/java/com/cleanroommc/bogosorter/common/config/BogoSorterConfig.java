@@ -24,7 +24,7 @@ public class BogoSorterConfig {
 
     @SideOnly(Side.CLIENT)
     public static void save(JsonObject json) {
-        PlayerConfig playerConfig = PlayerConfig.CLIENT;
+        PlayerConfig playerConfig = PlayerConfig.getClient();
         JsonObject general = new JsonObject();
         general.addProperty("enableAutoRefill", playerConfig.enableAutoRefill);
         general.addProperty("refillDmgThreshold", playerConfig.autoRefillDamageThreshold);
@@ -46,7 +46,7 @@ public class BogoSorterConfig {
 
     @SideOnly(Side.CLIENT)
     public static void load(JsonObject json) {
-        PlayerConfig playerConfig = PlayerConfig.CLIENT;
+        PlayerConfig playerConfig = PlayerConfig.getClient();
         if (json.has("General")) {
             JsonObject general = json.getAsJsonObject("General");
             playerConfig.enableAutoRefill = general.get("enableAutoRefill").getAsBoolean();

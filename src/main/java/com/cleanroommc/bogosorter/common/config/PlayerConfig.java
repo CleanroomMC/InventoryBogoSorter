@@ -2,8 +2,8 @@ package com.cleanroommc.bogosorter.common.config;
 
 import com.cleanroommc.bogosorter.common.network.CConfigSync;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
+import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
@@ -16,20 +16,24 @@ import java.util.Map;
 public class PlayerConfig {
 
     private static final Map<EntityPlayerMP, PlayerConfig> playerConfig = new Object2ObjectOpenHashMap<>();
-    @SideOnly(Side.CLIENT)
-    public static final PlayerConfig CLIENT = new PlayerConfig();
+    private static final PlayerConfig CLIENT = new PlayerConfig();
 
     public boolean enableAutoRefill = true;
     public int autoRefillDamageThreshold = 1;
 
     public static PlayerConfig get(@NotNull EntityPlayer player) {
-        if (player instanceof EntityPlayerSP) {
+        if (NetworkUtils.isDedicatedClient()) {
             return CLIENT;
         }
         if (player instanceof EntityPlayerMP) {
             return playerConfig.computeIfAbsent((EntityPlayerMP) player, key -> new PlayerConfig());
         }
         throw new IllegalStateException("Could net get player config for " + player.getName());
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static PlayerConfig getClient() {
+        return CLIENT;
     }
 
     public void writePacket(PacketBuffer buffer) {

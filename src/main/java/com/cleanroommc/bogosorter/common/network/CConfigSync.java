@@ -14,7 +14,7 @@ public class CConfigSync implements IPacket {
     @Override
     public void encode(PacketBuffer buf) throws IOException {
         packet = new PacketBuffer(Unpooled.buffer());
-        PlayerConfig.CLIENT.writePacket(packet);
+        PlayerConfig.getClient().writePacket(packet);
         NetworkUtils.writePacketBuffer(buf, packet);
     }
 

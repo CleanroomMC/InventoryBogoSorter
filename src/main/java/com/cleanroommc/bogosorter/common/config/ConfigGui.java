@@ -77,7 +77,7 @@ public class ConfigGui {
 
     private static Widget createGeneralConfigUI(UIBuildContext buildContext) {
         TextFieldWidget dmgThresholdField = new TextFieldWidget();
-        dmgThresholdField.setText(String.valueOf(PlayerConfig.CLIENT.autoRefillDamageThreshold));
+        dmgThresholdField.setText(String.valueOf(PlayerConfig.getClient().autoRefillDamageThreshold));
         return new Scrollable()
                 .setVerticalScroll()
                 .widget(new Rectangle().setColor(0xFF606060).asWidget()
@@ -85,7 +85,7 @@ public class ConfigGui {
                         .setPos(32, 0))
                 .widget(new MultiChildWidget()
                         .addChild(new CycleButtonWidget()
-                                .setToggle(() -> PlayerConfig.CLIENT.enableAutoRefill, val -> PlayerConfig.CLIENT.enableAutoRefill = val)
+                                .setToggle(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val)
                                 .setTexture(TOGGLE_BUTTON)
                                 .setSize(14, 14)
                                 .setPos(8, 0))
@@ -96,8 +96,8 @@ public class ConfigGui {
                         .setPos(0, 0))
                 .widget(new MultiChildWidget()
                         .addChild(dmgThresholdField
-                                .setGetterInt(() -> PlayerConfig.CLIENT.autoRefillDamageThreshold)
-                                .setSetterInt(val -> PlayerConfig.CLIENT.autoRefillDamageThreshold = val)
+                                .setGetterInt(() -> PlayerConfig.getClient().autoRefillDamageThreshold)
+                                .setSetterInt(val -> PlayerConfig.getClient().autoRefillDamageThreshold = val)
                                 .setNumbers(1, Short.MAX_VALUE)
                                 .setTextAlignment(Alignment.Center)
                                 .setSize(30, 14))
