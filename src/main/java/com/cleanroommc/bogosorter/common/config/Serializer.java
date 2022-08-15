@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.common.config;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
+import com.google.common.base.Joiner;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import net.minecraftforge.fml.common.Loader;
@@ -11,14 +12,20 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Serializer {
 
     public static final JsonParser jsonParser = new JsonParser();
     public static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     public static final String cfgPath = Loader.instance().getConfigDir().toString();
-    public static final File configJsonPath = new File(cfgPath + "\\bogosorter\\config.json");
-    public static final File orePrefixJsonPath = new File(cfgPath + "\\bogosorter\\orePrefix.json");
+    public static final File configJsonPath = new File(cfgPath + path("", "bogosorter", "config.json"));
+    public static final File orePrefixJsonPath = new File(cfgPath + path("", "bogosorter", "orePrefix.json"));
+
+    private static String path(String... path) {
+        return Joiner.on(File.separatorChar).join(path);
+    }
 
     private Serializer() {
     }
