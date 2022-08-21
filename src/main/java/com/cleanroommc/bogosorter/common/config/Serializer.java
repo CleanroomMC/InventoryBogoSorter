@@ -1,7 +1,6 @@
 package com.cleanroommc.bogosorter.common.config;
 
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.google.common.base.Joiner;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
@@ -12,8 +11,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Serializer {
 

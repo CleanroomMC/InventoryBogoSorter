@@ -16,6 +16,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -43,7 +44,8 @@ public class RefillHandler {
         if (!PlayerConfig.get(event.getEntityPlayer()).enableAutoRefill) return;
 
         if (shouldHandleRefill(event.getEntityPlayer(), event.getOriginal())) {
-            new RefillHandler(event.getEntityPlayer().inventory.currentItem, event.getOriginal(), event.getEntityPlayer()).handleRefill();
+            int index = event.getHand() == EnumHand.MAIN_HAND ? event.getEntityPlayer().inventory.currentItem : 40;
+            new RefillHandler(index, event.getOriginal(), event.getEntityPlayer()).handleRefill();
         }
     }
 
@@ -65,7 +67,7 @@ public class RefillHandler {
 
     public RefillHandler(int hotbarIndex, ItemStack brokenItem, EntityPlayer player, boolean swapItems) {
         this.hotbarIndex = hotbarIndex;
-        this.slots = new IntArrayList(INVENTORY_PROXIMITY_MAP[hotbarIndex]);
+        this.slots = new IntArrayList(INVENTORY_PROXIMITY_MAP[hotbarIndex == 40 ? player.inventory.currentItem : hotbarIndex]);
         this.brokenItem = brokenItem;
         this.player = player;
         this.inventory = player.inventory;
@@ -76,7 +78,6 @@ public class RefillHandler {
     public RefillHandler(int hotbarIndex, ItemStack brokenItem, EntityPlayer player) {
         this(hotbarIndex, brokenItem, player, false);
     }
-
 
     public boolean handleRefill() {
 
@@ -172,11 +173,21 @@ public class RefillHandler {
     }
 
     private void refillItem(ItemStack refill, int refillIndex) {
-        inventory.mainInventory.set(hotbarIndex, refill);
-        inventory.mainInventory.set(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
-        // if the replacing item is equal to the replaced item, it will not be synced
-        // this makes sure that the sync is triggered
-        player.inventoryContainer.inventoryItemStacks.set(hotbarIndex + 36, ItemStack.EMPTY);
+        if(hotbarIndex == 40) {
+            // offhand
+            inventory.offHandInventory.set(0, refill);
+            inventory.mainInventory.set(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
+            // if the replacing item is equal to the replaced item, it will not be synced
+            // this makes sure that the sync is triggered
+            player.inventoryContainer.inventoryItemStacks.set(40, ItemStack.EMPTY);
+        } else {
+            inventory.mainInventory.set(hotbarIndex, refill);
+            inventory.mainInventory.set(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
+            // if the replacing item is equal to the replaced item, it will not be synced
+            // this makes sure that the sync is triggered
+            player.inventoryContainer.inventoryItemStacks.set(hotbarIndex + 36, ItemStack.EMPTY);
+        }
+
         // the sound should be played for this player
         NetworkHandler.sendToPlayer(new SRefillSound(), (EntityPlayerMP) player);
     }
