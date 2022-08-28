@@ -22,6 +22,7 @@ public class NetworkHandler {
 
     public static void init() {
         registerC2S(CDropItems.class);
+        registerC2S(CDropSlots.class);
         registerC2S(CSlotSync.class);
         registerC2S(CConfigSync.class);
         registerS2C(SReloadConfig.class);

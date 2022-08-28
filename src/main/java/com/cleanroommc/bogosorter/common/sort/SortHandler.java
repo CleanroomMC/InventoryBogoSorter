@@ -2,7 +2,6 @@ package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.ClientEventHandler;
-import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.McUtils;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
@@ -11,16 +10,12 @@ import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.PlayerInvWrapper;
-import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -29,44 +24,27 @@ import java.util.*;
 public class SortHandler {
 
     private final Container container;
-    private GuiSortingContext context;
+    private final GuiSortingContext context;
 
     public SortHandler(Container container, boolean player) {
-        this.container = container;
-        this.context = createSortContext(player);
+        this(container, GuiSortingContext.create(container, player));
     }
 
-    public GuiSortingContext createSortContext(boolean player) {
-        if (player) {
-            GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
-            List<Slot> slots = new ArrayList<>();
-            for (Slot slot : container.inventorySlots) {
-                if (slot.inventory instanceof InventoryPlayer ||
-                        (slot instanceof SlotItemHandler &&
-                                (((SlotItemHandler) slot).getItemHandler() instanceof PlayerMainInvWrapper || ((SlotItemHandler) slot).getItemHandler() instanceof PlayerInvWrapper))) {
-                    if (slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36) {
-                        slots.add(slot);
-                    }
-                }
-            }
-            builder.addSlotGroup(9, slots);
-            return builder.build();
-        }
-        if (container instanceof ISortableContainer) {
-            GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
-            ((ISortableContainer) container).buildSortingContext(builder);
-            return builder.build();
-        }
-        if (BogoSortAPI.isValidSortable(container)) {
-            GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
-            BogoSortAPI.INSTANCE.getBuilder(container).accept(container, builder);
-            return builder.build();
-        }
-        return new GuiSortingContext(container, Collections.emptyList());
+    public SortHandler(Container container, GuiSortingContext sortingContext) {
+        this.container = container;
+        this.context = sortingContext;
     }
 
     public void sort(int slotId) {
+        sort(slotId, true);
+    }
+
+    public void sort(int slotId, boolean sync) {
         Slot[][] slotGroup = context.getSlotGroup(slotId);
+        sort(slotGroup, sync);
+    }
+
+    public static void sort(Slot[][] slotGroup, boolean sync) {
         if (slotGroup != null) {
             if (new Random().nextFloat() < 0.0005f) {
                 sortBogo(slotGroup);
@@ -74,11 +52,13 @@ public class SortHandler {
             } else {
                 sortHorizontal(slotGroup);
             }
-            McUtils.syncSlotsToServer(slotGroup);
+            if (sync) {
+                McUtils.syncSlotsToServer(slotGroup);
+            }
         }
     }
 
-    public void sortHorizontal(Slot[][] slotGroup) {
+    public static void sortHorizontal(Slot[][] slotGroup) {
         Object2IntMap<ItemStack> items = gatherItems(slotGroup);
         if (items.isEmpty()) return;
         LinkedList<ItemStack> itemList = new LinkedList<>(items.keySet());
@@ -116,7 +96,7 @@ public class SortHandler {
         }
     }
 
-    public void sortVertical(Slot[][] slotGroup) {
+    public static void sortVertical(Slot[][] slotGroup) {
         Object2IntMap<ItemStack> items = gatherItems(slotGroup);
         if (items.isEmpty()) return;
         LinkedList<ItemStack> itemList = new LinkedList<>(items.keySet());
@@ -157,7 +137,7 @@ public class SortHandler {
         }
     }
 
-    public void sortBogo(Slot[][] slotGroup) {
+    public static void sortBogo(Slot[][] slotGroup) {
         ItemStack[][] itemGrid = new ItemStack[slotGroup.length][slotGroup[0].length];
         for (ItemStack[] itemRow : itemGrid) {
             Arrays.fill(itemRow, ItemStack.EMPTY);
@@ -187,7 +167,7 @@ public class SortHandler {
         }
     }
 
-    public Object2IntMap<ItemStack> gatherItems(Slot[][] slotGroup) {
+    public static Object2IntMap<ItemStack> gatherItems(Slot[][] slotGroup) {
         Object2IntOpenCustomHashMap<ItemStack> items = new Object2IntOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         for (Slot[] slotRow : slotGroup) {
             for (Slot slot : slotRow) {

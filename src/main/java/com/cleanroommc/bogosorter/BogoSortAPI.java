@@ -117,7 +117,7 @@ public class BogoSortAPI implements IBogoSortAPI {
         return container instanceof ISortableContainer || INSTANCE.COMPAT_MAP.containsKey(container.getClass());
     }
 
-    public boolean isPlayerSlot(Container container, Slot slot) {
+    public static boolean isPlayerSlot(Slot slot) {
         if (slot == null) return false;
         if (slot.inventory instanceof InventoryPlayer) {
             return slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36;

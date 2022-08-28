@@ -100,6 +100,24 @@ public class ClientEventHandler {
         if (container != null && container.isFocused()) {
             return false;
         }
+        if (container != null) {
+            if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && Keyboard.isKeyDown(Keyboard.KEY_SPACE) && ShortcutHandler.moveAllItems(container)) {
+                return true;
+            }
+            if (Mouse.isButtonDown(0)) {
+                if (GuiScreen.isCtrlKeyDown() && ShortcutHandler.moveSingleItem(container)) {
+                    return true;
+                }
+            }
+            if (isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop)) {
+                if (GuiScreen.isAltKeyDown() && ShortcutHandler.dropItems(container, true)) {
+                    return true;
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && ShortcutHandler.dropItems(container, false)) {
+                    return true;
+                }
+            }
+        }
         boolean c = configGuiKey.isPressed(), s = sortKey.isPressed();
         if (c) {
             long t = Minecraft.getSystemTime();
@@ -138,6 +156,10 @@ public class ClientEventHandler {
                 (slot.getStack().isEmpty() && Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty());
     }
 
+    private static boolean isKeyDown(KeyBinding key) {
+        return key.getKeyModifier().isActive() && (key.getKeyCode() < 0 ? Mouse.isButtonDown(key.getKeyCode() + 100) : Keyboard.isKeyDown(key.getKeyCode()));
+    }
+
     public static boolean isSortableContainer(GuiScreen screen) {
         return screen instanceof GuiContainer && BogoSortAPI.isValidSortable(((GuiContainer) screen).inventorySlots);
     }
@@ -158,7 +180,7 @@ public class ClientEventHandler {
         if (slot != null && guiScreen instanceof GuiContainer) {
 
             Container container = ((GuiContainer) guiScreen).inventorySlots;
-            boolean player = BogoSortAPI.INSTANCE.isPlayerSlot(container, slot);
+            boolean player = BogoSortAPI.INSTANCE.isPlayerSlot(slot);
 
             if (!player && !isSortableContainer(guiScreen)) return null;
 
