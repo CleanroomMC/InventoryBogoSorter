@@ -2,13 +2,13 @@ package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
-import moze_intel.projecte.api.ProjectEAPI;
 import moze_intel.projecte.utils.EMCHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
@@ -54,8 +54,9 @@ public class ItemCompareHelper {
         return getId(stack1).compareTo(getId(stack2));
     }
 
+    @SuppressWarnings("all")
     public static int compareDisplayName(ItemStack stack1, ItemStack stack2) {
-        return stack1.getDisplayName().compareTo(stack2.getDisplayName());
+        return TextFormatting.getTextWithoutFormattingCodes(stack1.getDisplayName()).compareTo(TextFormatting.getTextWithoutFormattingCodes(stack2.getDisplayName()));
     }
 
     public static int compareMeta(ItemStack stack1, ItemStack stack2) {
