@@ -4,17 +4,27 @@ import appeng.container.implementations.ContainerSkyChest;
 import blusunrize.immersiveengineering.common.gui.ContainerCrate;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
+import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
+import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import forestry.storage.gui.ContainerBackpack;
+import gregtech.api.gui.Widget;
+import gregtech.api.gui.impl.ModularUIContainer;
 import ic2.core.block.storage.box.*;
 import ic2.core.gui.dynamic.DynamicContainer;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
 import t145.metalchests.containers.ContainerMetalChest;
 import thedarkcolour.futuremc.container.ContainerBarrel;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class DefaultCompat {
 
@@ -121,6 +131,28 @@ public class DefaultCompat {
         if (Loader.isModLoaded("metalchests")) {
             api.addCompat(ContainerMetalChest.class, (container, builder) -> {
                 builder.addSlotGroup(container.type.getColumns(), 0, container.type.getInventorySize());
+            });
+        }
+
+        if (BogoSorter.isGTCEuLoaded()) {
+            api.addCompat(ModularUIContainer.class, (container, builder) -> {
+                Map<String, List<Slot>> sortableSlots = new Object2ObjectOpenHashMap<>();
+
+                for (Widget widget : container.getModularUI().getFlatVisibleWidgetCollection()) {
+                    if (widget instanceof SortableSlotWidget) {
+                        SortableSlotWidget sortableSlotWidget = (SortableSlotWidget) widget;
+                        if (sortableSlotWidget.getSortArea() != null) {
+                            sortableSlots.computeIfAbsent(sortableSlotWidget.getSortArea(), (key) -> new ArrayList<>()).add(sortableSlotWidget.getHandle());
+                        }
+                    }
+                }
+
+                for (Map.Entry<String, List<Slot>> entry : sortableSlots.entrySet()) {
+                    int rowSize = ((IModularSortable) (Object) container.getModularUI()).getRowSize(entry.getKey());
+                    if (rowSize > 0) {
+                        builder.addSlotGroup(rowSize, entry.getValue());
+                    }
+                }
             });
         }
     }

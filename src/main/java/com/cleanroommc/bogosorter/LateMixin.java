@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter;
 
 import com.google.common.collect.ImmutableList;
+import gregtech.GregTechVersion;
 import net.minecraftforge.fml.common.Loader;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
@@ -22,9 +23,10 @@ public class LateMixin implements ILateMixinLoader {
         return parts.length != 4 || shouldEnableModMixin(parts[2]);
     }
 
+    @SuppressWarnings("all")
     public boolean shouldEnableModMixin(String mod) {
         if ("gregtechceu".equals(mod)) {
-            return BogoSorter.isGTCEuLoaded();
+            return Loader.isModLoaded("gregtech") && GregTechVersion.MAJOR >= 2;
         }
         return Loader.isModLoaded(mod);
     }

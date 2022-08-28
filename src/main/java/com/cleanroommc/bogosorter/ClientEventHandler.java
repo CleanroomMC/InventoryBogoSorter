@@ -4,7 +4,6 @@ import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.common.config.ConfigGui;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.modularui.api.UIInfos;
-import com.cleanroommc.modularui.common.internal.wrapper.ModularGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -26,6 +25,7 @@ import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +104,7 @@ public class ClientEventHandler {
         if (c) {
             long t = Minecraft.getSystemTime();
             if (t - timeConfigGui > 500) {
-                if (ConfigGui.wasOpened){
+                if (ConfigGui.wasOpened) {
                     Minecraft.getMinecraft().displayGuiScreen(previousScreen);
                     previousScreen = null;
                 } else {
