@@ -7,10 +7,13 @@ import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import forestry.storage.gui.ContainerBackpack;
+import ic2.core.block.storage.box.*;
+import ic2.core.gui.dynamic.DynamicContainer;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
+import t145.metalchests.containers.ContainerMetalChest;
 import thedarkcolour.futuremc.container.ContainerBarrel;
 
 public class DefaultCompat {
@@ -96,6 +99,28 @@ public class DefaultCompat {
                     builder.addSlotGroup(9, 36, container.inventorySlots.size());
 
                 }
+            });
+        }
+
+        if (Loader.isModLoaded("ic2")) {
+            api.addCompat(DynamicContainer.class, (container, builder) -> {
+                if (container.base instanceof TileEntityStorageBox) {
+                    if (container.base instanceof TileEntityWoodenStorageBox) {
+                        builder.addSlotGroup(9, 0, 27);
+                    } else if (container.base instanceof TileEntityBronzeStorageBox || container.base instanceof TileEntityIronStorageBox) {
+                        builder.addSlotGroup(9, 0, 45);
+                    } else if (container.base instanceof TileEntitySteelStorageBox) {
+                        builder.addSlotGroup(9, 0, 63);
+                    } else if (container.base instanceof TileEntityIridiumStorageBox) {
+                        builder.addSlotGroup(18, 0, 126);
+                    }
+                }
+            });
+        }
+
+        if (Loader.isModLoaded("metalchests")) {
+            api.addCompat(ContainerMetalChest.class, (container, builder) -> {
+                builder.addSlotGroup(container.type.getColumns(), 0, container.type.getInventorySize());
             });
         }
     }

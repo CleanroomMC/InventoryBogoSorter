@@ -93,6 +93,8 @@ dependencies {
 	provided 'curse.maven:projecte-226410:2702991'
 	provided 'curse.maven:immersive_engineering-231951:2974106'
 	provided 'curse.maven:forestry-59751:2918418'
+	provided 'curse.maven:industrial_craft-242638:3838713'
+	provided 'curse.maven:metalchests-290145:2751488'
 }
 
 sourceSets {
