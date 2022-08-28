@@ -23,6 +23,7 @@ bogosort.sortrules.item.count.name=Stack size
 bogosort.sortrules.item.ore_dict.name=Ore dict
 bogosort.sortrules.item.material.name=Material
 bogosort.sortrules.item.ore_prefix.name=Ore prefix
+bogosort.sortrules.item.emc.name=EMC Value
 
 bogosort.sortrules.item.mod.description=Sorts items alphabetically by its mod name
 bogosort.sortrules.item.id.description=Sorts items alphabetically by its registry name (without mod)
@@ -36,6 +37,7 @@ bogosort.sortrules.item.count.description=Sorts items numerically by its stack s
 bogosort.sortrules.item.ore_dict.description=Sorts items numerically and/or alphabetically by its ore dicts
 bogosort.sortrules.item.material.description=Sorts items alphabetically by its material name (f.e. Iron, Gold, Copper...)
 bogosort.sortrules.item.ore_prefix.description=Sorts items by their ore prefix (f.e. ingot, nugget, plate, gear...)
+bogosort.sortrules.item.emc.description==Sorts items numerically by its EMC value
 
 bogosort.sortrules.nbt.potion.name=Potions
 bogosort.sortrules.nbt.enchantment.name=Enchantments

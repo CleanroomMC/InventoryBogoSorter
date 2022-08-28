@@ -90,6 +90,8 @@ dependencies {
 	provided 'curse.maven:gregtech_ce_unofficial-557242:3859788'
 	provided 'curse.maven:future_mc-310059:3842790'
 	provided 'curse.maven:tinkers_construct-74072:2902483'
+	provided 'curse.maven:projecte-226410:2702991'
+	provided 'curse.maven:immersive_engineering-231951:2974106'
 }
 
 sourceSets {

@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.compat;
 
 import appeng.container.implementations.ContainerSkyChest;
+import blusunrize.immersiveengineering.common.gui.ContainerCrate;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
@@ -65,6 +66,12 @@ public class DefaultCompat {
         if (Loader.isModLoaded("futuremc")) {
             api.addCompatSimple(ContainerBarrel.class, (container, builder) -> {
                 builder.addSlotGroup(9, 0, 27);
+            });
+        }
+
+        if (Loader.isModLoaded("immersiveengineering")) {
+            api.addCompat(ContainerCrate.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, container.slotCount);
             });
         }
     }

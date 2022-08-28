@@ -25,6 +25,10 @@ public class DefaultRules {
         api.registerItemSortingRule("material", SortType.OREDICT, ItemCompareHelper::compareMaterial);
         api.registerItemSortingRule("ore_prefix", SortType.OREDICT, ItemCompareHelper::compareOrePrefix);
 
+        if (Loader.isModLoaded("projecte")) {
+            api.registerItemSortingRule("emc", null, ItemCompareHelper::compareEMC);
+        }
+
         api.registerNbtSortingRule("potion", "Potion", Constants.NBT.TAG_STRING, ItemCompareHelper::comparePotionId, DefaultRules::getPotionId);
         api.registerNbtSortingRule("enchantment", "ench", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);
         api.registerNbtSortingRule("enchantment_book", "StoredEnchantments", Constants.NBT.TAG_LIST, ItemCompareHelper::compareEnchantments, nbtBase -> (NBTTagList) nbtBase);

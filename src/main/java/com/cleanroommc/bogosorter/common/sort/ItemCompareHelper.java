@@ -2,6 +2,8 @@ package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
+import moze_intel.projecte.api.ProjectEAPI;
+import moze_intel.projecte.utils.EMCHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
@@ -38,6 +40,10 @@ public class ItemCompareHelper {
 
     public static NBTTagCompound getNbt(ItemStack item) {
         return item.getTagCompound();
+    }
+
+    public static long getEmcValue(ItemStack item) {
+        return EMCHelper.getEmcValue(item);
     }
 
     public static int compareMod(ItemStack stack1, ItemStack stack2) {
@@ -284,5 +290,9 @@ public class ItemCompareHelper {
         if (prefix == null) return 1;
         if (prefix1 == null) return -1;
         return Integer.compare(OreDictHelper.getOrePrefixIndex(prefix), OreDictHelper.getOrePrefixIndex(prefix1));
+    }
+
+    public static int compareEMC(ItemStack item1, ItemStack item2) {
+        return Long.compare(getEmcValue(item2), getEmcValue(item1));
     }
 }
