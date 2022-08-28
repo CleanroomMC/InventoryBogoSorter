@@ -24,6 +24,10 @@ bogosort.sortrules.item.count.name=Stack size
 bogosort.sortrules.item.ore_dict.name=Ore dict
 bogosort.sortrules.item.material.name=Material
 bogosort.sortrules.item.ore_prefix.name=Ore prefix
+bogosort.sortrules.item.burn_time.name=Burn Time
+bogosort.sortrules.item.is_block.name=Is Block
+bogosort.sortrules.item.hunger.name=Hunger
+bogosort.sortrules.item.saturation.name=Saturation
 bogosort.sortrules.item.emc.name=EMC Value
 
 bogosort.sortrules.item.mod.description=Sorts items alphabetically by its mod name
@@ -39,6 +43,10 @@ bogosort.sortrules.item.count.description=Sorts items numerically by its stack s
 bogosort.sortrules.item.ore_dict.description=Sorts items numerically and/or alphabetically by its ore dicts
 bogosort.sortrules.item.material.description=Sorts items alphabetically by its material name (f.e. Iron, Gold, Copper...)
 bogosort.sortrules.item.ore_prefix.description=Sorts items by their ore prefix (f.e. ingot, nugget, plate, gear...)
+bogosort.sortrules.item.burn_time.description=Sorts items numerically by its fuel burn time
+bogosort.sortrules.item.is_block.description=Sorts items based on if the item is a block or not
+bogosort.sortrules.item.hunger.description=Sorts items numerically by its hunger refill value
+bogosort.sortrules.item.saturation.description=Sorts items numerically by its saturation refill value
 bogosort.sortrules.item.emc.description==Sorts items numerically by its EMC value
 
 bogosort.sortrules.nbt.potion.name=Potions

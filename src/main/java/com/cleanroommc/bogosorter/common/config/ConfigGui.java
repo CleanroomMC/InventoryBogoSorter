@@ -116,7 +116,7 @@ public class ConfigGui {
         for (SortRule<ItemStack> sortRule : BogoSortAPI.INSTANCE.getItemSortRuleList()) {
             AvailableListItem<SortRule<ItemStack>> listItem = new AvailableListItem<>(sortRule, new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
                     .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
-                    .setTooltipShowUpDelay(20)
+                    .setTooltipShowUpDelay(10)
                     .setSize(80, 20));
             listItem.setAvailable(!BogoSorterConfig.sortRules.contains(sortRule))
                     .setMoveConsumer(clickData -> sortableListWidget.addElement(sortRule))
@@ -144,7 +144,7 @@ public class ConfigGui {
                         .setWidgetCreator(sortRule -> new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
                                 .setTextAlignment(Alignment.Center)
                                 .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
-                                .setTooltipShowUpDelay(20)
+                                .setTooltipShowUpDelay(10)
                                 .setBackground(ModularUITextures.BASE_BUTTON)
                                 .setSize(80, 20))
                         .setSaveFunction(list -> {
@@ -163,7 +163,7 @@ public class ConfigGui {
         for (NbtSortRule sortRule : BogoSortAPI.INSTANCE.getNbtSortRuleList()) {
             AvailableListItem<NbtSortRule> listItem = new AvailableListItem<>(sortRule, new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
                     .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
-                    .setTooltipShowUpDelay(20)
+                    .setTooltipShowUpDelay(10)
                     .setSize(80, 20));
             listItem.setAvailable(!BogoSorterConfig.nbtSortRules.contains(sortRule))
                     .setMoveConsumer(clickData -> sortableListWidget.addElement(sortRule))
@@ -191,7 +191,7 @@ public class ConfigGui {
                         .setWidgetCreator(sortRule -> new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
                                 .setTextAlignment(Alignment.Center)
                                 .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
-                                .setTooltipShowUpDelay(20)
+                                .setTooltipShowUpDelay(10)
                                 .setBackground(ModularUITextures.BASE_BUTTON)
                                 .setSize(80, 20))
                         .setSaveFunction(list -> {

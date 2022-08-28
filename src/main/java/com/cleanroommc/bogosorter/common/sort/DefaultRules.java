@@ -25,6 +25,10 @@ public class DefaultRules {
         api.registerItemSortingRule("ore_dict", SortType.OREDICT, ItemCompareHelper::compareOreDict);
         api.registerItemSortingRule("material", SortType.OREDICT, ItemCompareHelper::compareMaterial);
         api.registerItemSortingRule("ore_prefix", SortType.OREDICT, ItemCompareHelper::compareOrePrefix);
+        api.registerItemSortingRule("burn_time", null, ItemCompareHelper::compareBurnTime);
+        api.registerItemSortingRule("is_block", null, ItemCompareHelper::compareIsBlock);
+        api.registerItemSortingRule("hunger", null, ItemCompareHelper::compareHunger);
+        api.registerItemSortingRule("saturation", null, ItemCompareHelper::compareSaturation);
 
         if (Loader.isModLoaded("projecte")) {
             api.registerItemSortingRule("emc", null, ItemCompareHelper::compareEMC);

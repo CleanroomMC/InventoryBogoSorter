@@ -2,8 +2,13 @@ package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
+import gregtech.api.items.metaitem.FoodUseManager;
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.items.metaitem.stats.IFoodBehavior;
 import moze_intel.projecte.utils.EMCHelper;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
@@ -40,6 +45,34 @@ public class ItemCompareHelper {
 
     public static NBTTagCompound getNbt(ItemStack item) {
         return item.getTagCompound();
+    }
+
+    public static float getSaturation(ItemStack item) {
+        if (item.getItem() instanceof ItemFood) {
+            return ((ItemFood) item.getItem()).getSaturationModifier(item);
+        }
+        if (item.getItem() instanceof MetaItem) {
+            MetaItem<?>.MetaValueItem valueItem = ((MetaItem<?>) item.getItem()).getItem(item);
+            if (valueItem.getUseManager() instanceof FoodUseManager) {
+                IFoodBehavior stats = ((FoodUseManager) valueItem.getUseManager()).getFoodStats();
+                return stats.getSaturation(item, null);
+            }
+        }
+        return Float.MIN_VALUE;
+    }
+
+    public static int getHunger(ItemStack item) {
+        if (item.getItem() instanceof ItemFood) {
+            return ((ItemFood) item.getItem()).getHealAmount(item);
+        }
+        if (item.getItem() instanceof MetaItem) {
+            MetaItem<?>.MetaValueItem valueItem = ((MetaItem<?>) item.getItem()).getItem(item);
+            if (valueItem.getUseManager() instanceof FoodUseManager) {
+                IFoodBehavior stats = ((FoodUseManager) valueItem.getUseManager()).getFoodStats();
+                return stats.getFoodLevel(item, null);
+            }
+        }
+        return Integer.MIN_VALUE;
     }
 
     public static long getEmcValue(ItemStack item) {
@@ -295,5 +328,21 @@ public class ItemCompareHelper {
 
     public static int compareEMC(ItemStack item1, ItemStack item2) {
         return Long.compare(getEmcValue(item2), getEmcValue(item1));
+    }
+
+    public static int compareIsBlock(ItemStack item1, ItemStack item2) {
+        return Boolean.compare(item2.getItem() instanceof ItemBlock, item1.getItem() instanceof ItemBlock);
+    }
+
+    public static int compareBurnTime(ItemStack item1, ItemStack item2) {
+        return Integer.compare(item2.getItem().getItemBurnTime(item2), item1.getItem().getItemBurnTime(item1));
+    }
+
+    public static int compareSaturation(ItemStack item1, ItemStack item2) {
+        return Float.compare(getSaturation(item2), getSaturation(item1));
+    }
+
+    public static int compareHunger(ItemStack item1, ItemStack item2) {
+        return Integer.compare(getHunger(item2), getHunger(item1));
     }
 }
