@@ -92,6 +92,7 @@ dependencies {
 	provided 'curse.maven:tinkers_construct-74072:2902483'
 	provided 'curse.maven:projecte-226410:2702991'
 	provided 'curse.maven:immersive_engineering-231951:2974106'
+	provided 'curse.maven:forestry-59751:2918418'
 }
 
 sourceSets {

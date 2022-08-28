@@ -6,6 +6,7 @@ import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
+import forestry.storage.gui.ContainerBackpack;
 import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
 import thedarkcolour.futuremc.container.ContainerBarrel;
@@ -72,6 +73,17 @@ public class DefaultCompat {
         if (Loader.isModLoaded("immersiveengineering")) {
             api.addCompat(ContainerCrate.class, (container, builder) -> {
                 builder.addSlotGroup(9, 0, container.slotCount);
+            });
+        }
+
+        if (Loader.isModLoaded("forestry")) {
+            api.addCompat(ContainerBackpack.class, (container, builder) -> {
+                if (container.inventorySlots.size() == 51) {
+                    builder.addSlotGroup(5, 36, container.inventorySlots.size());
+                } else {
+                    builder.addSlotGroup(9, 36, container.inventorySlots.size());
+
+                }
             });
         }
     }
