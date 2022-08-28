@@ -7,6 +7,8 @@ import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import forestry.storage.gui.ContainerBackpack;
+import moze_intel.projecte.gameObjs.container.CondenserContainer;
+import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
 import thedarkcolour.futuremc.container.ContainerBarrel;
@@ -67,6 +69,16 @@ public class DefaultCompat {
         if (Loader.isModLoaded("futuremc")) {
             api.addCompatSimple(ContainerBarrel.class, (container, builder) -> {
                 builder.addSlotGroup(9, 0, 27);
+            });
+        }
+
+        if (Loader.isModLoaded("projecte")) {
+            api.addCompat(CondenserContainer.class, (container, builder) -> {
+                builder.addSlotGroup(13, 1, 92);
+            });
+            api.addCompat(CondenserMK2Container.class, (container, builder) -> {
+                builder.addSlotGroup(6, 1, 43);
+                builder.addSlotGroup(6, 43, 85);
             });
         }
 
