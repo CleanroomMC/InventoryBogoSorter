@@ -29,6 +29,7 @@ public class DefaultRules {
         api.registerItemSortingRule("is_block", null, ItemCompareHelper::compareIsBlock);
         api.registerItemSortingRule("hunger", null, ItemCompareHelper::compareHunger);
         api.registerItemSortingRule("saturation", null, ItemCompareHelper::compareSaturation);
+        api.registerItemSortingRule("color", null, ItemCompareHelper::compareColor);
 
         if (Loader.isModLoaded("projecte")) {
             api.registerItemSortingRule("emc", null, ItemCompareHelper::compareEMC);

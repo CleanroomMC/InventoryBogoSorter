@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
+import com.cleanroommc.bogosorter.common.sort.color.ItemColorHelper;
 import gregtech.api.items.metaitem.FoodUseManager;
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.items.metaitem.stats.IFoodBehavior;
@@ -344,5 +345,9 @@ public class ItemCompareHelper {
 
     public static int compareHunger(ItemStack item1, ItemStack item2) {
         return Integer.compare(getHunger(item2), getHunger(item1));
+    }
+
+    public static int compareColor(ItemStack item1, ItemStack item2) {
+        return Integer.compare(ItemColorHelper.getItemColorHue(item1), ItemColorHelper.getItemColorHue(item2));
     }
 }
