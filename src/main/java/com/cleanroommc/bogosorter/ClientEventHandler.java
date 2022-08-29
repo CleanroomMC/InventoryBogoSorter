@@ -39,6 +39,15 @@ public class ClientEventHandler {
 
     private static long timeConfigGui = 0;
     private static long timeSort = 0;
+    private static long timeShortcut = 0;
+
+    private static void shortcutAction() {
+        timeShortcut = Minecraft.getSystemTime();
+    }
+
+    private static boolean canDoShortcutAction() {
+        return Minecraft.getSystemTime() - timeShortcut > 500;
+    }
 
     // i have to subscribe to 4 events to catch all inputs
 
@@ -100,20 +109,28 @@ public class ClientEventHandler {
         if (container != null && container.isFocused()) {
             return false;
         }
-        if (container != null) {
+        if (container != null && canDoShortcutAction()) {
             if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && Keyboard.isKeyDown(Keyboard.KEY_SPACE) && ShortcutHandler.moveAllItems(container)) {
+                shortcutAction();
                 return true;
             }
-            if (Mouse.isButtonDown(0)) {
-                if (GuiScreen.isCtrlKeyDown() && ShortcutHandler.moveSingleItem(container)) {
+            if (GuiScreen.isCtrlKeyDown()) {
+                if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1) && ShortcutHandler.moveSingleItem(container, false)) {
+                    shortcutAction();
+                    return true;
+                }
+                if (Mouse.isButtonDown(1) && !Mouse.isButtonDown(0) && ShortcutHandler.moveSingleItem(container, true)) {
+                    shortcutAction();
                     return true;
                 }
             }
             if (isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop)) {
                 if (GuiScreen.isAltKeyDown() && ShortcutHandler.dropItems(container, true)) {
+                    shortcutAction();
                     return true;
                 }
                 if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && ShortcutHandler.dropItems(container, false)) {
+                    shortcutAction();
                     return true;
                 }
             }

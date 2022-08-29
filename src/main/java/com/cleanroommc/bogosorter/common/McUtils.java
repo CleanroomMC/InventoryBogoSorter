@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class McUtils {
@@ -111,6 +112,21 @@ public class McUtils {
                 syncSlots.add(Pair.of(slot.getStack(), slot.slotNumber));
             }
         }
+        NetworkHandler.sendToServer(new CSlotSync(syncSlots));
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void syncSlotsToServer(Iterable<Slot> slots) {
+        List<Pair<ItemStack, Integer>> syncSlots = new ArrayList<>();
+        for (Slot slot : slots) {
+            syncSlots.add(Pair.of(slot.getStack(), slot.slotNumber));
+        }
+        NetworkHandler.sendToServer(new CSlotSync(syncSlots));
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void syncSlotToServer(Slot slot) {
+        List<Pair<ItemStack, Integer>> syncSlots = Collections.singletonList(Pair.of(slot.getStack(), slot.slotNumber));
         NetworkHandler.sendToServer(new CSlotSync(syncSlots));
     }
 }

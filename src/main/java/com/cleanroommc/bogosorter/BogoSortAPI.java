@@ -131,6 +131,20 @@ public class BogoSortAPI implements IBogoSortAPI {
         return false;
     }
 
+    public static boolean isPlayerOrHotbarSlot(Slot slot) {
+        if (slot == null) return false;
+        if (slot.inventory instanceof InventoryPlayer) {
+            return slot.getSlotIndex() >= 0 && slot.getSlotIndex() < 36;
+        }
+        if (slot instanceof SlotItemHandler) {
+            IItemHandler iItemHandler = ((SlotItemHandler) slot).getItemHandler();
+            if (iItemHandler instanceof PlayerMainInvWrapper || iItemHandler instanceof PlayerInvWrapper) {
+                return slot.getSlotIndex() >= 0 && slot.getSlotIndex() < 36;
+            }
+        }
+        return false;
+    }
+
     public static final Hash.Strategy<ItemStack> ITEM_META_NBT_HASH_STRATEGY = new Hash.Strategy<ItemStack>() {
         @Override
         public int hashCode(ItemStack o) {
