@@ -40,7 +40,10 @@ public class CShortcut implements IPacket {
         Slot slot = container.getSlot(slotNumber);
         switch (type) {
             case MOVE_ALL:
-                ShortcutHandler.moveAllItems(container, slot);
+                ShortcutHandler.moveAllItems(container, slot, false);
+                break;
+            case MOVE_ALL_SAME:
+                ShortcutHandler.moveAllItems(container, slot, true);
                 break;
             case MOVE_SINGLE:
                 ShortcutHandler.moveSingleItem(container, slot, false);
@@ -54,6 +57,6 @@ public class CShortcut implements IPacket {
     }
 
     public enum Type {
-        MOVE_ALL, MOVE_SINGLE, MOVE_SINGLE_EMPTY
+        MOVE_ALL, MOVE_ALL_SAME, MOVE_SINGLE, MOVE_SINGLE_EMPTY
     }
 }

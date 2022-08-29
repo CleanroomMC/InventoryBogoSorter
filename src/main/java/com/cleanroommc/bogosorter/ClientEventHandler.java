@@ -110,9 +110,15 @@ public class ClientEventHandler {
             return false;
         }
         if (container != null && canDoShortcutAction()) {
-            if ((Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) && Keyboard.isKeyDown(Keyboard.KEY_SPACE) && ShortcutHandler.moveAllItems(container)) {
-                shortcutAction();
-                return true;
+            if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1)) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !GuiScreen.isAltKeyDown() && ShortcutHandler.moveAllItems(container, false)) {
+                    shortcutAction();
+                    return true;
+                }
+                if (!Keyboard.isKeyDown(Keyboard.KEY_SPACE) && GuiScreen.isAltKeyDown() && ShortcutHandler.moveAllItems(container, true)) {
+                    shortcutAction();
+                    return true;
+                }
             }
             if (GuiScreen.isCtrlKeyDown()) {
                 if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1) && ShortcutHandler.moveSingleItem(container, false)) {
@@ -125,11 +131,11 @@ public class ClientEventHandler {
                 }
             }
             if (isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop)) {
-                if (GuiScreen.isAltKeyDown() && ShortcutHandler.dropItems(container, true)) {
+                if (!Keyboard.isKeyDown(Keyboard.KEY_SPACE) && GuiScreen.isAltKeyDown() && ShortcutHandler.dropItems(container, true)) {
                     shortcutAction();
                     return true;
                 }
-                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && ShortcutHandler.dropItems(container, false)) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !GuiScreen.isAltKeyDown() && ShortcutHandler.dropItems(container, false)) {
                     shortcutAction();
                     return true;
                 }

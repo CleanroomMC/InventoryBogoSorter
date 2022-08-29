@@ -4,7 +4,6 @@ import com.cleanroommc.bogosorter.common.network.CDropSlots;
 import com.cleanroommc.bogosorter.common.network.CShortcut;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
-import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -19,7 +18,6 @@ import java.util.List;
 public class ShortcutHandler {
 
     public static boolean moveSingleItem(GuiContainer guiContainer, boolean emptySlot) {
-        Container container = guiContainer.inventorySlots;
         Slot slot = guiContainer.getSlotUnderMouse();
         if (slot == null || slot.getStack().isEmpty()) return false;
         NetworkHandler.sendToServer(new CShortcut(emptySlot ? CShortcut.Type.MOVE_SINGLE_EMPTY : CShortcut.Type.MOVE_SINGLE, slot.slotNumber));
@@ -61,17 +59,19 @@ public class ShortcutHandler {
         return toInsert.isEmpty();
     }
 
-    public static boolean moveAllItems(GuiContainer guiContainer) {
+    public static boolean moveAllItems(GuiContainer guiContainer, boolean sameItemOnly) {
         Container container = guiContainer.inventorySlots;
         Slot slot = guiContainer.getSlotUnderMouse();
-        if (slot == null || !BogoSortAPI.isValidSortable(container)) return false;
-        NetworkHandler.sendToServer(new CShortcut(CShortcut.Type.MOVE_ALL, slot.slotNumber));
+        if (slot == null || !BogoSortAPI.isValidSortable(container) || (sameItemOnly && slot.getStack().isEmpty()))
+            return false;
+        NetworkHandler.sendToServer(new CShortcut(sameItemOnly ? CShortcut.Type.MOVE_ALL_SAME : CShortcut.Type.MOVE_ALL, slot.slotNumber));
         return true;
     }
 
-    public static boolean moveAllItems(Container container, Slot slot) {
+    public static boolean moveAllItems(Container container, Slot slot, boolean sameItemOnly) {
         if (slot == null || !BogoSortAPI.isValidSortable(container)) return false;
-
+        ItemStack stack = slot.getStack().copy();
+        if (sameItemOnly && stack.isEmpty()) return false;
         GuiSortingContext sortingContext = GuiSortingContext.create(container);
 
         Slot[][] slots = sortingContext.getSlotGroup(slot.slotNumber);
@@ -80,9 +80,9 @@ public class ShortcutHandler {
 
         for (Slot[] slotRow : slots) {
             for (Slot slot1 : slotRow) {
-                ItemStack stack = slot1.getStack();
-                if (stack.isEmpty()) continue;
-                ItemStack remainder = insertToSlots(otherSlots, stack);
+                ItemStack stackInSlot = slot1.getStack();
+                if (stackInSlot.isEmpty() || (sameItemOnly && !ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))) continue;
+                ItemStack remainder = insertToSlots(otherSlots, stackInSlot);
                 slot1.putStack(remainder);
             }
         }
