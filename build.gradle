@@ -95,6 +95,7 @@ dependencies {
 	provided 'curse.maven:forestry-59751:2918418'
 	provided 'curse.maven:industrial_craft-242638:3838713'
 	provided 'curse.maven:metalchests-290145:2751488'
+	provided 'curse.maven:travelers_backpack-321117:3150850'
 }
 
 sourceSets {

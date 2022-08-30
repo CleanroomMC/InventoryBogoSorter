@@ -8,8 +8,11 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
+import com.tiviacz.travelersbackpack.gui.container.ContainerTravelersBackpack;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
+import forestry.core.gui.ContainerNaturalistInventory;
 import forestry.storage.gui.ContainerBackpack;
+import forestry.storage.gui.ContainerNaturalistBackpack;
 import gregtech.api.gui.Widget;
 import gregtech.api.gui.impl.ModularUIContainer;
 import ic2.core.block.storage.box.*;
@@ -110,6 +113,24 @@ public class DefaultCompat {
 
                 }
             });
+            api.addCompat(ContainerNaturalistBackpack.class, (container, builder) -> {
+                Slot[][] slotGroup = new Slot[25][5];
+                for (int i = 0; i < 25; i++) {
+                    for (int j = 0; j < 5; j++) {
+                        slotGroup[i][j] = container.getSlot(i * 5 + j + 36);
+                    }
+                }
+                builder.addSlotGroup(slotGroup);
+            });
+            api.addCompat(ContainerNaturalistInventory.class, (container, builder) -> {
+                Slot[][] slotGroup = new Slot[25][5];
+                for (int i = 0; i < 25; i++) {
+                    for (int j = 0; j < 5; j++) {
+                        slotGroup[i][j] = container.getSlot(i * 5 + j + 36);
+                    }
+                }
+                builder.addSlotGroup(slotGroup);
+            });
         }
 
         if (Loader.isModLoaded("ic2")) {
@@ -153,6 +174,27 @@ public class DefaultCompat {
                         builder.addSlotGroup(rowSize, entry.getValue());
                     }
                 }
+            });
+        }
+
+        if (Loader.isModLoaded("travelersbackpack")) {
+            api.addCompat(ContainerTravelersBackpack.class, (container, builder) -> {
+                Slot[][] slotGroup = new Slot[6][];
+                for (int i = 0; i < 3; i++) {
+                    Slot[] slotRow = new Slot[8];
+                    slotGroup[i] = slotRow;
+                    for (int j = 0; j < 8; j++) {
+                        slotRow[j] = container.getSlot(i * 8 + j + 10);
+                    }
+                }
+                for (int i = 3; i < 6; i++) {
+                    Slot[] slotRow = new Slot[5];
+                    slotGroup[i] = slotRow;
+                    for (int j = 0; j < 5; j++) {
+                        slotRow[j] = container.getSlot((i - 3) * 5 + j + 34);
+                    }
+                }
+                builder.addSlotGroup(slotGroup);
             });
         }
     }
