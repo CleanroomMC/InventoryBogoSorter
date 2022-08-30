@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter;
 import com.cleanroommc.bogosorter.api.*;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -27,9 +28,9 @@ public class BogoSortAPI implements IBogoSortAPI {
     private BogoSortAPI() {
     }
 
-    private final Map<Class<?>, BiConsumer<Container, ISortingContextBuilder>> COMPAT_MAP = new HashMap<>();
-    private final Map<String, SortRule<ItemStack>> itemSortRules = new HashMap<>();
-    private final Map<String, NbtSortRule> nbtSortRules = new HashMap<>();
+    private final Map<Class<?>, BiConsumer<Container, ISortingContextBuilder>> COMPAT_MAP = new Object2ObjectOpenHashMap<>();
+    private final Map<String, SortRule<ItemStack>> itemSortRules = new Object2ObjectOpenHashMap<>();
+    private final Map<String, NbtSortRule> nbtSortRules = new Object2ObjectOpenHashMap<>();
     // lists for fast iteration
     private final List<SortRule<ItemStack>> itemSortRuleList = new ArrayList<>();
     private final List<NbtSortRule> nbtSortRuleList = new ArrayList<>();
