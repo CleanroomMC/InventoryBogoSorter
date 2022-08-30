@@ -8,6 +8,7 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
+import com.cleanroommc.bogosorter.mixin.colossalchests.ContainerColossalChestAccessor;
 import com.tiviacz.travelersbackpack.gui.container.ContainerTravelersBackpack;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import forestry.core.gui.ContainerNaturalistInventory;
@@ -22,6 +23,8 @@ import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
+import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
+import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
 import t145.metalchests.containers.ContainerMetalChest;
 import thedarkcolour.futuremc.container.ContainerBarrel;
 
@@ -195,6 +198,24 @@ public class DefaultCompat {
                     }
                 }
                 builder.addSlotGroup(slotGroup);
+            });
+        }
+
+        if (Loader.isModLoaded("colossalchests")) {
+            api.addCompat(ContainerColossalChest.class, (container, builder) -> {
+                List<Slot> chestSlots = ((ContainerColossalChestAccessor) container).getChestSlots();
+                int size = chestSlots.size();
+                int rows = size / 9;
+                Slot[][] slotGroup = new Slot[rows][9];
+                for (int i = 0; i < rows; i++) {
+                    for (int j = 0; j < 9; j++) {
+                        slotGroup[i][j] = chestSlots.get(i * 9 + j);
+                    }
+                }
+                builder.addSlotGroup(slotGroup);
+            });
+            api.addCompat(ContainerUncolossalChest.class, (container, builder) -> {
+                builder.addSlotGroup(5, 0, 5);
             });
         }
     }

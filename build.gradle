@@ -96,6 +96,8 @@ dependencies {
 	provided 'curse.maven:industrial_craft-242638:3838713'
 	provided 'curse.maven:metalchests-290145:2751488'
 	provided 'curse.maven:travelers_backpack-321117:3150850'
+	provided 'curse.maven:colossal_chests-237875:2718588'
+	provided 'curse.maven:cyclops-core-232758:3159497'
 }
 
 sourceSets {
