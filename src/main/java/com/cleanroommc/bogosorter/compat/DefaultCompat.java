@@ -21,6 +21,7 @@ import ic2.core.block.storage.box.*;
 import ic2.core.gui.dynamic.DynamicContainer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import jds.bibliocraft.containers.ContainerFramedChest;
+import mods.railcraft.common.gui.containers.ContainerRCChest;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.minecraft.inventory.*;
@@ -236,6 +237,12 @@ public class DefaultCompat {
         if (Loader.isModLoaded("bibliocraft")) {
             api.addCompat(ContainerFramedChest.class, (container, builder) -> {
                 builder.addSlotGroup(9, 0, container.getMainTile().getIsDouble() ? 27 * 2 : 27);
+            });
+        }
+
+        if (Loader.isModLoaded("railcraft")) {
+            api.addCompat(ContainerRCChest.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, container.getInv().getSizeInventory());
             });
         }
     }
