@@ -9,6 +9,7 @@ import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.mixin.colossalchests.ContainerColossalChestAccessor;
+import com.lothrazar.cyclicmagic.item.storagesack.ContainerStorage;
 import com.tiviacz.travelersbackpack.gui.container.ContainerTravelersBackpack;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import forestry.core.gui.ContainerNaturalistInventory;
@@ -216,6 +217,18 @@ public class DefaultCompat {
             });
             api.addCompat(ContainerUncolossalChest.class, (container, builder) -> {
                 builder.addSlotGroup(5, 0, 5);
+            });
+        }
+
+        if (Loader.isModLoaded("quark")) {
+            api.addCompat(vazkii.quark.oddities.inventory.ContainerBackpack.class, (container, builder) -> {
+                builder.addSlotGroup(9, 46, 46 + 27);
+            });
+        }
+
+        if (Loader.isModLoaded("cyclicmagic")) {
+            api.addCompat(ContainerStorage.class, (container, builder) -> {
+                builder.addSlotGroup(11, 0, 77);
             });
         }
     }
