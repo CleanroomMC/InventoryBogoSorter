@@ -20,6 +20,7 @@ import gregtech.api.gui.impl.ModularUIContainer;
 import ic2.core.block.storage.box.*;
 import ic2.core.gui.dynamic.DynamicContainer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import jds.bibliocraft.containers.ContainerFramedChest;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.minecraft.inventory.*;
@@ -229,6 +230,12 @@ public class DefaultCompat {
         if (Loader.isModLoaded("cyclicmagic")) {
             api.addCompat(ContainerStorage.class, (container, builder) -> {
                 builder.addSlotGroup(11, 0, 77);
+            });
+        }
+
+        if (Loader.isModLoaded("bibliocraft")) {
+            api.addCompat(ContainerFramedChest.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, container.getMainTile().getIsDouble() ? 27 * 2 : 27);
             });
         }
     }

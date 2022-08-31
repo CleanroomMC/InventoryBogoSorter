@@ -100,6 +100,7 @@ dependencies {
 	provided 'curse.maven:cyclops_core-232758:3159497'
 	provided 'curse.maven:quark-243121:2924091'
 	provided 'curse.maven:cyclic-239286:3722420'
+	provided 'curse.maven:bibliocraft-228027:3647708'
 }
 
 sourceSets {
