@@ -8,6 +8,8 @@ bogosort.gui.tab.item_sort_rules.name=Item sort rules
 bogosort.gui.tab.nbt_sort_rules.name=NBT sort rules
 bogosort.gui.available_sort_rules=Available Sort-Rules
 bogosort.gui.configured_sort_rules=Configured Sort-Rules
+bogosort.gui.enable_refill=Enable auto hotbar refill
+bogosort.gui.refill_threshold=Auto refill damage threshold
 
 bogosort.command.config_relaod.success=Reloaded sorting config
 
