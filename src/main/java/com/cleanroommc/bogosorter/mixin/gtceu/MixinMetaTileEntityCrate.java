@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.mixin.gtceu;
 
-import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import gregtech.api.gui.GuiTextures;
@@ -30,7 +29,7 @@ public class MixinMetaTileEntityCrate {
     @Overwrite
     public ModularUI createUI(EntityPlayer entityPlayer) {
         int factor = inventorySize / 9 > 8 ? 18 : 9;
-        ModularUI.Builder builder = ModularUI.builder(GuiTextures.BACKGROUND, 176 + (factor == 18 ? 176 : 0), 8 + this.inventorySize / factor * 18 + 104).label(5, 5, getThis().getMetaFullName());
+        ModularUI.Builder builder = ModularUI.builder(GuiTextures.BACKGROUND, 176 + (factor == 18 ? 176 : 0), 8 + this.inventorySize / factor * 18 + 104).label(5, 5, bogosorter$getThis().getMetaFullName());
 
         for (int i = 0; i < this.inventorySize; ++i) {
             builder.widget(new SortableSlotWidget(inventory, i, 7 * (factor == 18 ? 2 : 1) + i % factor * 18, 18 + i / factor * 18)
@@ -39,12 +38,12 @@ public class MixinMetaTileEntityCrate {
         }
 
         builder.bindPlayerInventory(entityPlayer.inventory, GuiTextures.SLOT, 7 + (factor == 18 ? 88 : 0), 18 + this.inventorySize / factor * 18 + 11);
-        ModularUI modularUI = builder.build(getThis().getHolder(), entityPlayer);
+        ModularUI modularUI = builder.build(bogosorter$getThis().getHolder(), entityPlayer);
         ((IModularSortable) (Object) modularUI).addSortArea("chest", factor);
         return modularUI;
     }
 
-    public MetaTileEntityCrate getThis() {
+    private MetaTileEntityCrate bogosorter$getThis() {
         return (MetaTileEntityCrate) (Object) (this);
     }
 }

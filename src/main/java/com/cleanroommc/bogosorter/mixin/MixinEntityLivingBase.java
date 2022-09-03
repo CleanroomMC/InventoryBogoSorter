@@ -28,8 +28,8 @@ public abstract class MixinEntityLivingBase {
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void onItemUseFinish(CallbackInfo ci, ItemStack activeItemStackCopy, ItemStack itemstack) {
-        if (!(getThis() instanceof EntityPlayer)) return;
-        EntityPlayer player = (EntityPlayer) getThis();
+        if (!(bogosorter$getThis() instanceof EntityPlayer)) return;
+        EntityPlayer player = (EntityPlayer) bogosorter$getThis();
         if (!PlayerConfig.get(player).enableAutoRefill) return;
         //  used in cases where a modded item returns itself with a different durability (AA coffee, Botania Vials, etc)
         if (ItemStack.areItemsEqualIgnoreDurability(activeItemStackCopy, itemstack)) {
@@ -47,7 +47,7 @@ public abstract class MixinEntityLivingBase {
         }
     }
 
-    private EntityLivingBase getThis() {
+    private EntityLivingBase bogosorter$getThis() {
         return (EntityLivingBase) (Object) this;
     }
 }

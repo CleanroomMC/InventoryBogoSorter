@@ -27,15 +27,15 @@ public abstract class MixinItemStack {
         PlayerConfig playerConfig = PlayerConfig.get(player);
         if (!playerConfig.enableAutoRefill || playerConfig.autoRefillDamageThreshold <= 0) return;
 
-        if (RefillHandler.shouldHandleRefill(player, getThis())) {
+        if (RefillHandler.shouldHandleRefill(player, bogosorter$getThis())) {
             int durabilityLeft = getMaxDamage() - getItemDamage();
             if (durabilityLeft >= 0 && durabilityLeft < playerConfig.autoRefillDamageThreshold) {
-                new RefillHandler(player.inventory.currentItem, getThis(), player, true).handleRefill();
+                new RefillHandler(player.inventory.currentItem, bogosorter$getThis(), player, true).handleRefill();
             }
         }
     }
 
-    private ItemStack getThis() {
+    private ItemStack bogosorter$getThis() {
         return (ItemStack) (Object) this;
     }
 }
