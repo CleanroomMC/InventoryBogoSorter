@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter;
 
 import com.cleanroommc.bogosorter.api.*;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
+import com.cleanroommc.bogosorter.mixin.ItemStackAccessor;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -147,9 +148,10 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     public static final Hash.Strategy<ItemStack> ITEM_META_NBT_HASH_STRATEGY = new Hash.Strategy<ItemStack>() {
+
         @Override
         public int hashCode(ItemStack o) {
-            return Objects.hash(o.getItem(), o.getMetadata(), o.getTagCompound());
+            return Objects.hash(o.getItem(), o.getMetadata(), o.getTagCompound(), getItemAccessor(o).getCapNBT());
         }
 
         @Override
@@ -159,11 +161,13 @@ public class BogoSortAPI implements IBogoSortAPI {
             return (a.isEmpty() && b.isEmpty()) ||
                     (a.getItem() == b.getItem() &&
                             a.getMetadata() == b.getMetadata() &&
-                            Objects.equals(a.getTagCompound(), b.getTagCompound()));
+                            Objects.equals(a.getTagCompound(), b.getTagCompound()) &&
+                            Objects.equals(getItemAccessor(a).getCapNBT(), getItemAccessor(b).getCapNBT()));
         }
     };
 
     public static final Hash.Strategy<ItemStack> ITEM_META_HASH_STRATEGY = new Hash.Strategy<ItemStack>() {
+
         @Override
         public int hashCode(ItemStack o) {
             return Objects.hash(o.getItem(), o.getMetadata());
@@ -177,4 +181,8 @@ public class BogoSortAPI implements IBogoSortAPI {
                     (a.getItem() == b.getItem() && a.getMetadata() == b.getMetadata());
         }
     };
+
+    public static ItemStackAccessor getItemAccessor(ItemStack itemStack) {
+        return (ItemStackAccessor) (Object) itemStack;
+    }
 }
