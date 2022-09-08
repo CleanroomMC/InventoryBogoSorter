@@ -29,6 +29,7 @@ import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
+import net.dries007.tfc.objects.container.ContainerChestTFC;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
 import t145.metalchests.containers.ContainerMetalChest;
@@ -275,6 +276,12 @@ public class DefaultCompat {
             api.addCompat(ContainerPouch.class, (container, builder) -> {
                 IInventory inventory = container.getItemInventory();
                 builder.addSlotGroup(9, 0, inventory.getSizeInventory());
+            });
+        }
+
+        if (Loader.isModLoaded("tfc")) {
+            api.addCompat(ContainerChestTFC.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, container.getLowerChestInventory().getSizeInventory());
             });
         }
     }
