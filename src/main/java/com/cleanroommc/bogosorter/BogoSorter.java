@@ -14,8 +14,10 @@ import gregtech.GregTechVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -34,11 +36,18 @@ public class BogoSorter {
 
     private static boolean anyGtLoaded = false;
     private static boolean tconstructLoaded = false;
+    private static boolean anyIc2Loaded = false;
+    private static boolean ic2ClassicLoaded = false;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
         anyGtLoaded = Loader.isModLoaded("gregtech");
         tconstructLoaded = Loader.isModLoaded("tconstruct");
+        anyIc2Loaded = Loader.isModLoaded("ic2");
+        if (anyIc2Loaded) {
+            ModContainer container = Loader.instance().getIndexedModList().get("ic2");
+            ic2ClassicLoaded = container.getName().endsWith("Classic");
+        }
         NetworkHandler.init();
         OreDictHelper.init();
         DefaultRules.init(BogoSortAPI.INSTANCE);
@@ -82,5 +91,17 @@ public class BogoSorter {
 
     public static boolean isTConstructLoaded() {
         return tconstructLoaded;
+    }
+
+    public static boolean isAnyIc2Loaded() {
+        return anyIc2Loaded;
+    }
+
+    public static boolean isIc2ClassicLoaded() {
+        return anyIc2Loaded && ic2ClassicLoaded;
+    }
+
+    public static boolean isIc2ExpLoaded() {
+        return anyIc2Loaded && !ic2ClassicLoaded;
     }
 }

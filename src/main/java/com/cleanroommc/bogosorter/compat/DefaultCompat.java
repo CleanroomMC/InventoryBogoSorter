@@ -17,8 +17,10 @@ import forestry.storage.gui.ContainerBackpack;
 import forestry.storage.gui.ContainerNaturalistBackpack;
 import gregtech.api.gui.Widget;
 import gregtech.api.gui.impl.ModularUIContainer;
+import ic2.core.block.personal.container.ContainerPersonalChest;
 import ic2.core.block.storage.box.*;
 import ic2.core.gui.dynamic.DynamicContainer;
+import ic2.core.inventory.slots.SlotGhoest;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import jds.bibliocraft.containers.ContainerFramedChest;
 import mods.railcraft.common.gui.containers.ContainerRCChest;
@@ -139,7 +141,7 @@ public class DefaultCompat {
             });
         }
 
-        if (Loader.isModLoaded("ic2")) {
+        if (BogoSorter.isIc2ExpLoaded()) {
             api.addCompat(DynamicContainer.class, (container, builder) -> {
                 if (container.base instanceof TileEntityStorageBox) {
                     if (container.base instanceof TileEntityWoodenStorageBox) {
@@ -151,6 +153,15 @@ public class DefaultCompat {
                     } else if (container.base instanceof TileEntityIridiumStorageBox) {
                         builder.addSlotGroup(18, 0, 126);
                     }
+                }
+            });
+        }
+
+        if (BogoSorter.isIc2ClassicLoaded()) {
+            api.addCompat(ContainerPersonalChest.class, (container, builder) -> {
+                // make sure player can edit this chest
+                if (!(container.inventorySlots.get(0) instanceof SlotGhoest)) {
+                    builder.addSlotGroup(9, 0, 54);
                 }
             });
         }
