@@ -106,6 +106,7 @@ dependencies {
 	provided 'curse.maven:energy_control-373450:3829524'
 	provided 'curse.maven:mrtjpcore-229002:2735197'
 	provided 'curse.maven:project_red_exploration-229049:2745551'
+	provided 'curse.maven:betweenlands-243363:3540287'
 }
 
 sourceSets {

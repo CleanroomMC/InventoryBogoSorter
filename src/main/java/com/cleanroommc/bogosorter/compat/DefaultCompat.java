@@ -33,6 +33,7 @@ import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
 import t145.metalchests.containers.ContainerMetalChest;
 import thedarkcolour.futuremc.container.ContainerBarrel;
+import thebetweenlands.common.inventory.container.ContainerPouch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -267,6 +268,13 @@ public class DefaultCompat {
         if (Loader.isModLoaded("projectred-exploration")) {
             api.addCompat(mrtjp.projectred.exploration.ContainerBackpack.class, (container, builder) -> {
                 builder.addSlotGroup(9, 0, 27);
+            });
+        }
+
+        if (Loader.isModLoaded("thebetweenlands")) {
+            api.addCompat(ContainerPouch.class, (container, builder) -> {
+                IInventory inventory = container.getItemInventory();
+                builder.addSlotGroup(9, 0, inventory.getSizeInventory());
             });
         }
     }
