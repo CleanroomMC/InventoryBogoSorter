@@ -102,7 +102,7 @@ dependencies {
 	provided 'curse.maven:cyclic-239286:3722420'
 	provided 'curse.maven:bibliocraft-228027:3647708'
 	provided 'curse.maven:railcraft-51195:2687757'
-	compile 'curse.maven:ic2_classic-242942:3093607'
+	provided 'curse.maven:ic2_classic-242942:3093607'
 }
 
 sourceSets {
