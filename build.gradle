@@ -104,6 +104,8 @@ dependencies {
 	provided 'curse.maven:railcraft-51195:2687757'
 	provided 'curse.maven:ic2_classic-242942:3093607'
 	provided 'curse.maven:energy_control-373450:3829524'
+	provided 'curse.maven:mrtjpcore-229002:2735197'
+	provided 'curse.maven:project_red_exploration-229049:2745551'
 }
 
 sourceSets {

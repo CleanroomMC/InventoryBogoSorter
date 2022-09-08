@@ -263,5 +263,11 @@ public class DefaultCompat {
                 builder.addSlotGroup(9, 0, 54);
             });
         }
+
+        if (Loader.isModLoaded("projectred-exploration")) {
+            api.addCompat(mrtjp.projectred.exploration.ContainerBackpack.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, 27);
+            });
+        }
     }
 }
