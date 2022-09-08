@@ -103,6 +103,7 @@ dependencies {
 	provided 'curse.maven:bibliocraft-228027:3647708'
 	provided 'curse.maven:railcraft-51195:2687757'
 	provided 'curse.maven:ic2_classic-242942:3093607'
+	provided 'curse.maven:energy_control-373450:3829524'
 }
 
 sourceSets {

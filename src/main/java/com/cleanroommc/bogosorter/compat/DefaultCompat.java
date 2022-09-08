@@ -11,6 +11,7 @@ import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.mixin.colossalchests.ContainerColossalChestAccessor;
 import com.lothrazar.cyclicmagic.item.storagesack.ContainerStorage;
 import com.tiviacz.travelersbackpack.gui.container.ContainerTravelersBackpack;
+import com.zuxelus.energycontrol.containers.ContainerCardHolder;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import forestry.core.gui.ContainerNaturalistInventory;
 import forestry.storage.gui.ContainerBackpack;
@@ -254,6 +255,12 @@ public class DefaultCompat {
         if (Loader.isModLoaded("railcraft")) {
             api.addCompat(ContainerRCChest.class, (container, builder) -> {
                 builder.addSlotGroup(9, 0, container.getInv().getSizeInventory());
+            });
+        }
+
+        if (Loader.isModLoaded("energycontrol")) {
+            api.addCompat(ContainerCardHolder.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, 54);
             });
         }
     }
