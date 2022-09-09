@@ -1,12 +1,13 @@
 package com.cleanroommc.bogosorter.common.config;
 
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.google.common.base.Joiner;
+import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +22,7 @@ public class Serializer {
     public static final File orePrefixJsonPath = new File(cfgPath + path("", "bogosorter", "orePrefix.json"));
 
     private static String path(String... path) {
-        return Joiner.on(File.separatorChar).join(path);
+        return StringUtils.join(path, File.separatorChar);
     }
 
     private Serializer() {
@@ -36,21 +37,23 @@ public class Serializer {
 
     @SideOnly(Side.CLIENT)
     public static void loadConfig() {
-        if (!Files.exists(configJsonPath.toPath())) {
-            saveConfig();
+        if (NetworkUtils.isDedicatedClient()) {
+            if (!Files.exists(configJsonPath.toPath())) {
+                saveConfig();
+            }
+            JsonElement jsonElement = loadJson(configJsonPath);
+            if (jsonElement == null || !jsonElement.isJsonObject()) {
+                BogoSorter.LOGGER.error("Error loading config!");
+            } else {
+                BogoSorterConfig.load(jsonElement.getAsJsonObject());
+            }
         }
-        JsonElement jsonElement = loadJson(configJsonPath);
-        if (jsonElement == null || !jsonElement.isJsonObject()) {
-            BogoSorter.LOGGER.error("Error loading config!");
-            return;
-        }
-        BogoSorterConfig.load(jsonElement.getAsJsonObject());
 
         if (!Files.exists(orePrefixJsonPath.toPath())) {
             saveOrePrefixes();
             return;
         }
-        jsonElement = loadJson(orePrefixJsonPath);
+        JsonElement jsonElement = loadJson(orePrefixJsonPath);
         if (jsonElement == null || !jsonElement.isJsonObject()) {
             BogoSorter.LOGGER.error("Error loading ore prefix config!");
             return;

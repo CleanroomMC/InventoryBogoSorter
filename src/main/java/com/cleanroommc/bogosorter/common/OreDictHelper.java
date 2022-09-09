@@ -3,10 +3,10 @@ package com.cleanroommc.bogosorter.common;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
-import com.google.common.base.Joiner;
 import gregtech.api.items.toolitem.ToolMetaItem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.Loader;
@@ -15,10 +15,14 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import slimeknights.tconstruct.library.tinkering.IMaterialItem;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class OreDictHelper {
@@ -31,7 +35,7 @@ public class OreDictHelper {
 
     @SubscribeEvent
     public static void onItemRegistration(OreDictionary.OreRegisterEvent event) {
-        ORE_DICTS.computeIfAbsent(event.getOre(), key -> new HashSet<>()).add(event.getName());
+        ORE_DICTS.computeIfAbsent(event.getOre(), key -> new ObjectOpenHashSet<>()).add(event.getName());
 
         String oreName = event.getName();
         //and try to transform registration name into OrePrefix + Material pair
@@ -61,7 +65,7 @@ public class OreDictHelper {
                 String tryPrefix = buffer.toString();
                 if (!BogoSorterConfig.ORE_PREFIXES.containsKey(tryPrefix)) continue;
                 prefix = tryPrefix;
-                material = Joiner.on("").join(splits.subList(i + 1, splits.size())); //BasalticMineralSand
+                material = StringUtils.join(splits.subList(i + 1, splits.size()), StringUtils.EMPTY); //BasalticMineralSand
             }
             if (prefix != null && BogoSorterConfig.ORE_PREFIXES.containsKey(prefix)) {
                 MATERIALS.put(event.getOre(), material);
@@ -107,7 +111,7 @@ public class OreDictHelper {
     }
 
     public static int getOrePrefixIndex(String prefix) {
-        return BogoSorterConfig.ORE_PREFIXES.getOrDefault(prefix, Integer.MAX_VALUE);
+        return BogoSorterConfig.ORE_PREFIXES.containsKey(prefix) ? BogoSorterConfig.ORE_PREFIXES.getInt(prefix) : Integer.MAX_VALUE;
     }
 
     public static String toLowerCaseUnderscore(String string) {

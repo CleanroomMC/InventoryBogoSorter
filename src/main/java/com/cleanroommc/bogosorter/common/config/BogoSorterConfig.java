@@ -7,11 +7,14 @@ import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class BogoSorterConfig {
@@ -19,7 +22,7 @@ public class BogoSorterConfig {
     public static final List<SortRule<ItemStack>> sortRules = new ArrayList<>();
     public static final List<NbtSortRule> nbtSortRules = new ArrayList<>();
 
-    public static final Map<String, Integer> ORE_PREFIXES = new HashMap<>();
+    public static final Object2IntOpenHashMap<String> ORE_PREFIXES = new Object2IntOpenHashMap<>();
     public static final List<String> ORE_PREFIXES_LIST = new ArrayList<>();
 
     @SideOnly(Side.CLIENT)

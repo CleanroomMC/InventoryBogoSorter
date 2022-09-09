@@ -14,7 +14,6 @@ import gregtech.GregTechVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModContainer;
@@ -52,8 +51,8 @@ public class BogoSorter {
         OreDictHelper.init();
         DefaultRules.init(BogoSortAPI.INSTANCE);
         DefaultCompat.init(BogoSortAPI.INSTANCE);
+        Serializer.loadConfig();
         if (NetworkUtils.isDedicatedClient()) {
-            Serializer.loadConfig();
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
             PlayerConfig.syncToServer();
         }
