@@ -11,6 +11,7 @@ import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.mixin.colossalchests.ContainerColossalChestAccessor;
 import com.lothrazar.cyclicmagic.item.storagesack.ContainerStorage;
 import com.tiviacz.travelersbackpack.gui.container.ContainerTravelersBackpack;
+import com.zuxelus.energycontrol.containers.ContainerCardHolder;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import forestry.core.gui.ContainerNaturalistInventory;
 import forestry.storage.gui.ContainerBackpack;
@@ -23,14 +24,17 @@ import ic2.core.gui.dynamic.DynamicContainer;
 import ic2.core.inventory.slots.SlotGhoest;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import jds.bibliocraft.containers.ContainerFramedChest;
+import micdoodle8.mods.galacticraft.core.inventory.ContainerParaChest;
 import mods.railcraft.common.gui.containers.ContainerRCChest;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
+import net.dries007.tfc.objects.container.ContainerChestTFC;
 import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
 import t145.metalchests.containers.ContainerMetalChest;
+import thebetweenlands.common.inventory.container.ContainerPouch;
 import thedarkcolour.futuremc.container.ContainerBarrel;
 
 import java.util.ArrayList;
@@ -254,6 +258,41 @@ public class DefaultCompat {
         if (Loader.isModLoaded("railcraft")) {
             api.addCompat(ContainerRCChest.class, (container, builder) -> {
                 builder.addSlotGroup(9, 0, container.getInv().getSizeInventory());
+            });
+        }
+
+        if (Loader.isModLoaded("energycontrol")) {
+            api.addCompat(ContainerCardHolder.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, 54);
+            });
+        }
+
+        if (Loader.isModLoaded("projectred-exploration")) {
+            api.addCompat(mrtjp.projectred.exploration.ContainerBackpack.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, 27);
+            });
+        }
+
+        if (Loader.isModLoaded("thebetweenlands")) {
+            api.addCompat(ContainerPouch.class, (container, builder) -> {
+                IInventory inventory = container.getItemInventory();
+                builder.addSlotGroup(9, 0, inventory.getSizeInventory());
+            });
+        }
+
+        if (Loader.isModLoaded("tfc")) {
+            api.addCompat(ContainerChestTFC.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, container.getLowerChestInventory().getSizeInventory());
+            });
+        }
+
+        if (Loader.isModLoaded("galacticraftcore")) {
+            api.addCompat(ContainerParaChest.class, (container, builder) -> {
+                int slot = container.getparachestInventory().getSizeInventory() - 3;
+
+                if (slot > 0) {
+                    builder.addSlotGroup(9, 0, slot);
+                }
             });
         }
     }
