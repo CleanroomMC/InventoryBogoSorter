@@ -98,7 +98,7 @@ public class BogoSorterConfig {
             ORE_PREFIXES_LIST.clear();
             int i = 0;
             for (JsonElement jsonElement : json.getAsJsonArray("orePrefixes")) {
-                if (!jsonElement.isJsonPrimitive() && jsonElement.isJsonNull()) {
+                if (jsonElement.isJsonPrimitive()) {
                     String orePrefix = jsonElement.getAsString();
                     ORE_PREFIXES.put(orePrefix, i++);
                     ORE_PREFIXES_LIST.add(orePrefix);

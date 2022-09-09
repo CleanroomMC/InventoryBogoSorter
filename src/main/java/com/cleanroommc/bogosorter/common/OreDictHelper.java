@@ -147,7 +147,7 @@ public class OreDictHelper {
     }
 
     public static void init() {
-        addOrePrefix("gregtech", "ingotHot", "gemChipped", "gemFlawed", "gemFlawless", "gemExquisite", "dustTiny", "dustSmall",
+        addOrePrefix("gregtech", "ingotHot", "gemChipped", "gemFlawed", "gemFlawless", "gemExquisite", "dustTiny", "dustSmall", "plate",
                 "plateDouble", "plateDense", "gear", "bolt", "stick", "stickLong", "ring", "screw", "round", "foil", "wireFine", "springSmall", "spring",
                 "turbineBlade", "rotor", "lens", "dustImpure", "dustPure", "crushed", "crushedCentrifuged", "crushedPurified", "shard", "clump", "reduced",
                 "crystalline", "dirtyGravel", "cleanGravel", "toolHeadSword", "toolHeadPickaxe", "toolHeadShovel", "toolHeadAxe", "toolHeadHoe", "toolHeadSense",
