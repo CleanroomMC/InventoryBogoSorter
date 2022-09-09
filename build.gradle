@@ -108,6 +108,7 @@ dependencies {
 	provided 'curse.maven:project_red_exploration-229049:2745551'
 	provided 'curse.maven:betweenlands-243363:3540287'
 	provided 'curse.maven:terrafirmacraft-302973:3645502'
+	provided 'curse.maven:galacticraft_legacy-564236:3919260'
 }
 
 sourceSets {

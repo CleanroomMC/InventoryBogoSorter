@@ -27,6 +27,8 @@ import jds.bibliocraft.containers.ContainerFramedChest;
 import mods.railcraft.common.gui.containers.ContainerRCChest;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
+import micdoodle8.mods.galacticraft.core.inventory.ContainerRocketInventory;
+import micdoodle8.mods.galacticraft.core.inventory.ContainerParaChest;
 import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
 import net.dries007.tfc.objects.container.ContainerChestTFC;
@@ -282,6 +284,23 @@ public class DefaultCompat {
         if (Loader.isModLoaded("tfc")) {
             api.addCompat(ContainerChestTFC.class, (container, builder) -> {
                 builder.addSlotGroup(9, 0, container.getLowerChestInventory().getSizeInventory());
+            });
+        }
+
+        if (Loader.isModLoaded("galacticraftcore")) {
+/*
+            api.addCompat(ContainerRocketInventory.class, (container, builder) -> {
+                int slot = container.getLowerChestInventory().getSizeInventory();
+                System.out.println("ContainerRocketInventory: " + slot);
+                builder.addSlotGroup(9, 0, slot);
+            });
+*/
+            api.addCompat(ContainerParaChest.class, (container, builder) -> {
+                int slot = container.getparachestInventory().getSizeInventory() - 3;
+
+                if (slot > 0) {
+                    builder.addSlotGroup(9, 0, slot);
+                }
             });
         }
     }
