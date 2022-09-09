@@ -7,6 +7,7 @@ import com.cleanroommc.bogosorter.common.McUtils;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.network.CSlotSync;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
+import com.cleanroommc.modularui.api.widget.Interactable;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.minecraft.client.Minecraft;
@@ -55,6 +56,7 @@ public class SortHandler {
             if (sync) {
                 McUtils.syncSlotsToServer(slotGroup);
             }
+            Interactable.playButtonClickSound();
         }
     }
 
