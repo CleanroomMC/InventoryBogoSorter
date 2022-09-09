@@ -24,19 +24,18 @@ import ic2.core.gui.dynamic.DynamicContainer;
 import ic2.core.inventory.slots.SlotGhoest;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import jds.bibliocraft.containers.ContainerFramedChest;
+import micdoodle8.mods.galacticraft.core.inventory.ContainerParaChest;
 import mods.railcraft.common.gui.containers.ContainerRCChest;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
-import micdoodle8.mods.galacticraft.core.inventory.ContainerRocketInventory;
-import micdoodle8.mods.galacticraft.core.inventory.ContainerParaChest;
+import net.dries007.tfc.objects.container.ContainerChestTFC;
 import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
-import net.dries007.tfc.objects.container.ContainerChestTFC;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
 import t145.metalchests.containers.ContainerMetalChest;
-import thedarkcolour.futuremc.container.ContainerBarrel;
 import thebetweenlands.common.inventory.container.ContainerPouch;
+import thedarkcolour.futuremc.container.ContainerBarrel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -288,13 +287,6 @@ public class DefaultCompat {
         }
 
         if (Loader.isModLoaded("galacticraftcore")) {
-/*
-            api.addCompat(ContainerRocketInventory.class, (container, builder) -> {
-                int slot = container.getLowerChestInventory().getSizeInventory();
-                System.out.println("ContainerRocketInventory: " + slot);
-                builder.addSlotGroup(9, 0, slot);
-            });
-*/
             api.addCompat(ContainerParaChest.class, (container, builder) -> {
                 int slot = container.getparachestInventory().getSizeInventory() - 3;
 
