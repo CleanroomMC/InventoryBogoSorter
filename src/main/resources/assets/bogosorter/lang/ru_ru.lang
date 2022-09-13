@@ -1,0 +1,66 @@
+key.categories.bogosorter=Инвентарь Bogo Sorter
+key.sort_config=Открыть конфигурацию сортировки
+key.sort=Сортировать инвентарь
+
+bogosort.gui.title=Конфигурация сортировки
+bogosort.gui.tab.general.name=Общие
+bogosort.gui.tab.item_sort_rules.name=Правила сортировки предметов
+bogosort.gui.tab.nbt_sort_rules.name=Правила сортировки NBT
+bogosort.gui.available_sort_rules=Доступные правила сортировки
+bogosort.gui.configured_sort_rules=Настроенные правила сортировки
+bogosort.gui.enable_refill=Включить автопополнение панели быстрого доступа
+bogosort.gui.refill_threshold=Порог урона автопополнения
+
+bogosort.command.config_relaod.success=Перезагружен конфиг сортировки
+
+bogosort.sortrules.item.mod.name=Имя мода
+bogosort.sortrules.item.id.name=Имя реестра
+bogosort.sortrules.item.meta.name=Мета-значение
+bogosort.sortrules.item.registry_order.name=Порядок реестра
+bogosort.sortrules.item.display_name.name=Отображаемое имя
+bogosort.sortrules.item.nbt_size.name=Размер тега NBT
+bogosort.sortrules.item.nbt_has.name=Имеет тег NBT
+bogosort.sortrules.item.nbt_rules.name=Правила NBT
+bogosort.sortrules.item.nbt_all_values.name=Все значения NBT
+bogosort.sortrules.item.count.name=Размер стека
+bogosort.sortrules.item.ore_dict.name=Рудный словарь
+bogosort.sortrules.item.material.name=Материал
+bogosort.sortrules.item.ore_prefix.name=Префикс руды
+bogosort.sortrules.item.burn_time.name=Время записи
+bogosort.sortrules.item.is_block.name=Блок
+bogosort.sortrules.item.hunger.name=Голод
+bogosort.sortrules.item.saturation.name=Насыщенность
+bogosort.sortrules.item.emc.name=Значение EMC
+bogosort.sortrules.item.color.name=Цвет
+
+bogosort.sortrules.item.mod.description=Сортирует предметы в алфавитном порядке по имени мода
+bogosort.sortrules.item.id.description=Сортирует элементы в алфавитном порядке по имени в реестре (без мода)
+bogosort.sortrules.item.meta.description=Сортирует элементы численно по их мета-значению
+bogosort.sortrules.item.registry_order.description=Сортирует элементы по порядку в реестре
+bogosort.sortrules.item.display_name.description=Сортирует элементы в алфавитном порядке по отображаемому имени
+bogosort.sortrules.item.nbt_size.description=Сортирует элементы численно по размеру мета-значения NBT-тега
+bogosort.sortrules.item.nbt_has.description=Сортирует предметы по признаку наличия или отсутствия тега NBT
+bogosort.sortrules.item.nbt_rules.description=Сортирует элементы на основе настроенных правил сортировки NBT
+bogosort.sortrules.item.nbt_all_values.description=Пытается отсортировать элементы, сравнивая все теги и подтеги nbt
+bogosort.sortrules.item.count.description=Сортирует предметы по размеру стопки
+bogosort.sortrules.item.ore_dict.description=Сортирует предметы в числовом и/или алфавитном порядке по их рудным словарям
+bogosort.sortrules.item.material.description=Сортирует предметы в алфавитном порядке по названию материала (например, железо, золото, медь...)
+bogosort.sortrules.item.ore_prefix.description=Сортирует предметы по их префиксу руды (например, слиток, самородок, пластина, снаряжение...)
+bogosort.sortrules.item.burn_time.description=Сортирует предметы по времени сжигания топлива
+bogosort.sortrules.item.is_block.description=Сортирует предметы по тому, является ли предмет блоком или нет
+bogosort.sortrules.item.hunger.description=Сортирует предметы в числовом порядке по значению восполнения голода
+bogosort.sortrules.item.saturation.description=Сортирует предметы в числовом порядке по значению насыщения
+bogosort.sortrules.item.emc.description==Сортировка элементов по их значению EMC
+bogosort.sortrules.item.color.description==Сортирует элементы в числовом порядке по значению оттенка цвета
+
+bogosort.sortrules.nbt.potion.name=Зелья
+bogosort.sortrules.nbt.enchantment.name=Чары
+bogosort.sortrules.nbt.enchantment_book.name=Зачаровать. книги
+bogosort.sortrules.nbt.gt_circ_config.name=Программируемая схема GT
+bogosort.sortrules.nbt.gt_item_damage.name=Урон инструмента GT
+
+bogosort.sortrules.nbt.potion.description=Сортирует зелья по эффекту и уровню
+bogosort.sortrules.nbt.enchantment.description=Сортирует зачарованные предметы по эффекту и уровню
+bogosort.sortrules.nbt.enchantment_book.description=Сортирует зачарованные книги по эффекту и уровню
+bogosort.sortrules.nbt.gt_circ_config.description=Сортирует программируемые схемы GregTech по их конфигурации
+bogosort.sortrules.nbt.gt_item_damage.description=Сортирует инструменты GregTech по их повреждению
