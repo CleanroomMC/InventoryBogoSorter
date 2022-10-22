@@ -1,9 +1,17 @@
 package com.cleanroommc.bogosorter;
 
 import com.cleanroommc.bogosorter.api.ISortableContainer;
+import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.config.ConfigGui;
+import com.cleanroommc.bogosorter.common.network.CSort;
+import com.cleanroommc.bogosorter.common.network.NetworkHandler;
+import com.cleanroommc.bogosorter.common.sort.ClientSortData;
+import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.modularui.api.UIInfos;
+import com.cleanroommc.modularui.api.widget.Interactable;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -28,6 +36,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = BogoSorter.ID, value = Side.CLIENT)
@@ -162,9 +171,12 @@ public class ClientEventHandler {
                 Slot slot = getSlot(container);
                 if (slot == null || !canSort(slot))
                     return false;
-                SortHandler sortHandler = createSortHandler(container, slot);
-                if (sortHandler == null) return false;
-                sortHandler.sort(slot.slotNumber);
+                if (!sort(container, slot)) {
+                    return false;
+                }
+                //SortHandler sortHandler = createSortHandler(container, slot);
+                //if (sortHandler == null) return false;
+                //sortHandler.sort(slot.slotNumber);
                 timeSort = t;
                 return true;
             }
@@ -199,6 +211,40 @@ public class ClientEventHandler {
         return null;
     }
 
+    public static boolean sort(GuiScreen guiScreen, @Nullable Slot slot) {
+        if (slot != null && guiScreen instanceof GuiContainer) {
+
+            Container container = ((GuiContainer) guiScreen).inventorySlots;
+            boolean player = BogoSortAPI.INSTANCE.isPlayerSlot(slot);
+
+            if (!player && !isSortableContainer(guiScreen)) return false;
+
+            List<SortRule<ItemStack>> sortRules = BogoSorterConfig.sortRules;
+            boolean color = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("color"));
+            boolean name = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("display_name"));
+            NetworkHandler.sendToServer(new CSort(createSortData(container, slot, player, color, name), BogoSorterConfig.sortRules, slot.slotNumber, player));
+            Interactable.playButtonClickSound();
+            return true;
+        }
+        return false;
+    }
+
+    public static List<ClientSortData> createSortData(Container container, Slot slot, boolean player, boolean color, boolean name) {
+        if (!color && !name) return Collections.emptyList();
+        GuiSortingContext context = GuiSortingContext.create(container, player);
+        Slot[][] slots = context.getSlotGroup(slot.slotNumber);
+        if (slots == null) {
+            return Collections.emptyList();
+        }
+        List<ClientSortData> data = new ArrayList<>();
+        for (Slot[] slotRow : slots) {
+            for (Slot slot1 : slotRow) {
+                data.add(ClientSortData.of(slot1, color, name));
+            }
+        }
+        return data;
+    }
+
     public static SortHandler createSortHandler(GuiScreen guiScreen, @Nullable Slot slot) {
         if (slot != null && guiScreen instanceof GuiContainer) {
 
@@ -207,7 +253,7 @@ public class ClientEventHandler {
 
             if (!player && !isSortableContainer(guiScreen)) return null;
 
-            return new SortHandler(container, player);
+            return new SortHandler(Minecraft.getMinecraft().player, container, player, null, Int2ObjectMaps.emptyMap());
         }
         return null;
     }

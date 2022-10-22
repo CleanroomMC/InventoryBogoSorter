@@ -35,7 +35,6 @@ public class Serializer {
         saveJson(configJsonPath, json);
     }
 
-    @SideOnly(Side.CLIENT)
     public static void loadConfig() {
         if (NetworkUtils.isDedicatedClient()) {
             if (!Files.exists(configJsonPath.toPath())) {

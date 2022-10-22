@@ -89,8 +89,8 @@ public class ItemCompareHelper {
     }
 
     @SuppressWarnings("all")
-    public static int compareDisplayName(ItemStack stack1, ItemStack stack2) {
-        return TextFormatting.getTextWithoutFormattingCodes(stack1.getDisplayName()).compareTo(TextFormatting.getTextWithoutFormattingCodes(stack2.getDisplayName()));
+    public static int compareDisplayName(ItemSortContainer stack1, ItemSortContainer stack2) {
+        return TextFormatting.getTextWithoutFormattingCodes(stack1.getName()).compareTo(TextFormatting.getTextWithoutFormattingCodes(stack2.getName()));
     }
 
     public static int compareMeta(ItemStack stack1, ItemStack stack2) {
@@ -347,7 +347,7 @@ public class ItemCompareHelper {
         return Integer.compare(getHunger(item2), getHunger(item1));
     }
 
-    public static int compareColor(ItemStack item1, ItemStack item2) {
-        return Integer.compare(ItemColorHelper.getItemColorHue(item1), ItemColorHelper.getItemColorHue(item2));
+    public static int compareColor(ItemSortContainer item1, ItemSortContainer item2) {
+        return Integer.compare(item1.getColorHue(), item2.getColorHue());
     }
 }

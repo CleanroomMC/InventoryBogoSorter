@@ -1,9 +1,12 @@
 package com.cleanroommc.bogosorter;
 
 import com.cleanroommc.bogosorter.api.*;
+import com.cleanroommc.bogosorter.common.sort.ClientItemSortRule;
+import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.mixin.ItemStackAccessor;
 import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -32,6 +35,8 @@ public class BogoSortAPI implements IBogoSortAPI {
     private final Map<Class<?>, BiConsumer<Container, ISortingContextBuilder>> COMPAT_MAP = new Object2ObjectOpenHashMap<>();
     private final Map<String, SortRule<ItemStack>> itemSortRules = new Object2ObjectOpenHashMap<>();
     private final Map<String, NbtSortRule> nbtSortRules = new Object2ObjectOpenHashMap<>();
+    private final Int2ObjectOpenHashMap<SortRule<ItemStack>> itemSortRules2 = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectOpenHashMap<NbtSortRule> nbtSortRules2 = new Int2ObjectOpenHashMap<>();
     // lists for fast iteration
     private final List<SortRule<ItemStack>> itemSortRuleList = new ArrayList<>();
     private final List<NbtSortRule> nbtSortRuleList = new ArrayList<>();
@@ -66,6 +71,16 @@ public class BogoSortAPI implements IBogoSortAPI {
         SortRule<ItemStack> sortRule = new SortRule<>(key, type, itemComparator);
         itemSortRules.put(key, sortRule);
         itemSortRuleList.add(sortRule);
+        itemSortRules2.put(sortRule.getSyncId(), sortRule);
+    }
+
+    @Override
+    public void registerClientItemSortingRule(String key, SortType type, Comparator<ItemSortContainer> itemComparator) {
+        validateKey(key);
+        ClientItemSortRule sortRule = new ClientItemSortRule(key, type, itemComparator);
+        itemSortRules.put(key, sortRule);
+        itemSortRuleList.add(sortRule);
+        itemSortRules2.put(sortRule.getSyncId(), sortRule);
     }
 
     @Override
@@ -74,6 +89,7 @@ public class BogoSortAPI implements IBogoSortAPI {
         NbtSortRule sortRule = new NbtSortRule(key, tagPath, comparator);
         nbtSortRules.put(key, sortRule);
         nbtSortRuleList.add(sortRule);
+        nbtSortRules2.put(sortRule.getSyncId(), sortRule);
     }
 
     @Override
@@ -82,6 +98,7 @@ public class BogoSortAPI implements IBogoSortAPI {
         NbtSortRule sortRule = new NbtSortRule(key, tagPath, expectedType);
         nbtSortRules.put(key, sortRule);
         nbtSortRuleList.add(sortRule);
+        nbtSortRules2.put(sortRule.getSyncId(), sortRule);
     }
 
     @Override
@@ -90,6 +107,7 @@ public class BogoSortAPI implements IBogoSortAPI {
         NbtSortRule sortRule = new NbtSortRule(key, tagPath, expectedType, comparator, converter);
         nbtSortRules.put(key, sortRule);
         nbtSortRuleList.add(sortRule);
+        nbtSortRules2.put(sortRule.getSyncId(), sortRule);
     }
 
     public <T extends Container> BiConsumer<T, ISortingContextBuilder> getBuilder(Container container) {
@@ -109,6 +127,14 @@ public class BogoSortAPI implements IBogoSortAPI {
 
     public SortRule<ItemStack> getItemSortRule(String key) {
         return itemSortRules.getOrDefault(key, EMPTY_ITEM_SORT_RULE);
+    }
+
+    public SortRule<ItemStack> getItemSortRule(int syncId) {
+        return itemSortRules2.get(syncId);
+    }
+
+    public NbtSortRule getNbtSortRule(int syncId) {
+        return nbtSortRules2.get(syncId);
     }
 
     public NbtSortRule getNbtSortRule(String key) {

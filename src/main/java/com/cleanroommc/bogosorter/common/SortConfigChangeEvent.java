@@ -6,6 +6,8 @@ import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;
@@ -24,7 +26,8 @@ public class SortConfigChangeEvent extends Event {
         this.configuredNbtSortRules = Collections.unmodifiableList(BogoSorterConfig.nbtSortRules);
     }
 
+    @SideOnly(Side.CLIENT)
     public Comparator<ItemStack> getItemComparator() {
-        return SortHandler.ITEM_COMPARATOR;
+        return SortHandler.getClientItemComparator();
     }
 }

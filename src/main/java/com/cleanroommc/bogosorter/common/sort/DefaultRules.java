@@ -16,7 +16,7 @@ public class DefaultRules {
         api.registerItemSortingRule("id", SortType.ID, ItemCompareHelper::compareId);
         api.registerItemSortingRule("meta", SortType.META, ItemCompareHelper::compareMeta);
         api.registerItemSortingRule("registry_order", SortType.META, ItemCompareHelper::compareRegistryOrder);
-        api.registerItemSortingRule("display_name", null, ItemCompareHelper::compareDisplayName);
+        api.registerClientItemSortingRule("display_name", null, ItemCompareHelper::compareDisplayName);
         api.registerItemSortingRule("nbt_size", SortType.NBT, ItemCompareHelper::compareNbtSize);
         api.registerItemSortingRule("nbt_has", SortType.NBT, ItemCompareHelper::compareHasNbt);
         api.registerItemSortingRule("nbt_rules", SortType.NBT, ItemCompareHelper::compareNbtValues);
@@ -29,7 +29,7 @@ public class DefaultRules {
         api.registerItemSortingRule("is_block", null, ItemCompareHelper::compareIsBlock);
         api.registerItemSortingRule("hunger", null, ItemCompareHelper::compareHunger);
         api.registerItemSortingRule("saturation", null, ItemCompareHelper::compareSaturation);
-        api.registerItemSortingRule("color", null, ItemCompareHelper::compareColor);
+        api.registerClientItemSortingRule("color", null, ItemCompareHelper::compareColor);
 
         if (Loader.isModLoaded("projecte")) {
             api.registerItemSortingRule("emc", null, ItemCompareHelper::compareEMC);

@@ -26,6 +26,7 @@ public class NetworkHandler {
         registerC2S(CSlotSync.class);
         registerC2S(CShortcut.class);
         registerC2S(CConfigSync.class);
+        registerC2S(CSort.class);
         registerS2C(SReloadConfig.class);
         registerS2C(SRefillSound.class);
     }

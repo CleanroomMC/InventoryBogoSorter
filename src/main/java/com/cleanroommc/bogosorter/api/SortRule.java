@@ -4,15 +4,19 @@ import java.util.Comparator;
 
 public class SortRule<T> implements Comparator<T> {
 
+    private static int nextId = 0;
+
     private final SortType type;
     private final String key;
     private final Comparator<T> comparator;
     private boolean inverted = false;
+    private final int syncId;
 
     public SortRule(String key, SortType type, Comparator<T> comparator) {
         this.type = type;
         this.key = key;
         this.comparator = comparator;
+        this.syncId = nextId++;
     }
 
     public String getKey() {
@@ -33,6 +37,10 @@ public class SortRule<T> implements Comparator<T> {
 
     public void setInverted(boolean inverted) {
         this.inverted = inverted;
+    }
+
+    public int getSyncId() {
+        return syncId;
     }
 
     @Override

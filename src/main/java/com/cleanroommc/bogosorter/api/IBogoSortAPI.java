@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.api;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -52,6 +53,8 @@ public interface IBogoSortAPI {
      * @param itemComparator comparator
      */
     void registerItemSortingRule(String key, SortType type, Comparator<ItemStack> itemComparator);
+
+    void registerClientItemSortingRule(String key, SortType type, Comparator<ItemSortContainer> itemComparator);
 
     /**
      * Registers a sorting rule for NBT tags

@@ -7,10 +7,9 @@ import com.cleanroommc.bogosorter.common.McUtils;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.network.CSlotSync;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
-import com.cleanroommc.modularui.api.widget.Interactable;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
-import net.minecraft.client.Minecraft;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -21,19 +20,37 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
-@SideOnly(Side.CLIENT)
 public class SortHandler {
 
+    private final EntityPlayer player;
     private final Container container;
     private final GuiSortingContext context;
+    private final List<SortRule<ItemStack>> sortRules;
+    private final Comparator<ItemSortContainer> containerComparator;
+    private final Int2ObjectMap<ClientSortData> clientSortData;
 
-    public SortHandler(Container container, boolean player) {
-        this(container, GuiSortingContext.create(container, player));
+    public SortHandler(EntityPlayer entityPlayer, Container container, boolean player, List<SortRule<ItemStack>> sortRules, Int2ObjectMap<ClientSortData> clientSortData) {
+        this(entityPlayer, container, GuiSortingContext.create(container, player), sortRules, clientSortData);
     }
 
-    public SortHandler(Container container, GuiSortingContext sortingContext) {
+    public SortHandler(EntityPlayer player, Container container, GuiSortingContext sortingContext, List<SortRule<ItemStack>> sortRules, Int2ObjectMap<ClientSortData> clientSortData) {
+        this.player = player;
         this.container = container;
         this.context = sortingContext;
+        this.sortRules = sortRules;
+        this.containerComparator = (container1, container2) -> {
+            int result;
+            for (SortRule<ItemStack> sortRule : sortRules) {
+                result = sortRule instanceof ClientItemSortRule ? ((ClientItemSortRule) sortRule).compareClient(container1, container2) :
+                        sortRule.compare(container1.getItemStack(), container2.getItemStack());
+                if (result != 0) return result;
+            }
+            result = ItemCompareHelper.compareRegistryOrder(container1.getItemStack(), container2.getItemStack());
+            if (result != 0) return result;
+            result = ItemCompareHelper.compareMeta(container1.getItemStack(), container2.getItemStack());
+            return result;
+        };
+        this.clientSortData = clientSortData;
     }
 
     public void sort(int slotId) {
@@ -45,33 +62,43 @@ public class SortHandler {
         sort(slotGroup, sync);
     }
 
-    public static void sort(Slot[][] slotGroup, boolean sync) {
+    public void sort(Slot[][] slotGroup, boolean sync) {
         if (slotGroup != null) {
             if (new Random().nextFloat() < 0.0005f) {
                 sortBogo(slotGroup);
-                Minecraft.getMinecraft().player.sendMessage(new TextComponentString("Get Bogo'd!"));
+                this.player.sendMessage(new TextComponentString("Get Bogo'd!"));
             } else {
                 sortHorizontal(slotGroup);
             }
             if (sync) {
-                McUtils.syncSlotsToServer(slotGroup);
+                container.detectAndSendChanges();
+                //McUtils.syncSlotsToServer(slotGroup);
             }
-            Interactable.playButtonClickSound();
         }
     }
 
-    public static void sortHorizontal(Slot[][] slotGroup) {
-        Object2IntMap<ItemStack> items = gatherItems(slotGroup);
-        if (items.isEmpty()) return;
-        LinkedList<ItemStack> itemList = new LinkedList<>(items.keySet());
-        itemList.forEach(item -> item.setCount(items.getInt(item)));
-        itemList.sort(ITEM_COMPARATOR);
-        ItemStack item = itemList.pollFirst();
-        if (item == null) return;
-        int remaining = items.getInt(item);
+    public void sortHorizontal(Slot[][] slotGroup) {
+        LinkedList<ItemSortContainer> itemList = gatherItems(slotGroup);
+        if (itemList.isEmpty()) return;
+        //itemList.forEach(item -> item.setCount(items.getInt(item)));
+        itemList.sort(containerComparator);
+        ItemSortContainer itemSortContainer = itemList.pollFirst();
+        if (itemSortContainer == null) return;
+        //int remaining = items.getInt(item);
         for (Slot[] slotRow : slotGroup) {
             for (Slot slot : slotRow) {
-                if (item == ItemStack.EMPTY) {
+                if (itemSortContainer == null) {
+                    slot.putStack(ItemStack.EMPTY);
+                    continue;
+                }
+                if (!itemSortContainer.canMakeStack()) {
+                    itemSortContainer = itemList.pollFirst();
+                    if (itemSortContainer == null) continue;
+                }
+                int max = slot.getItemStackLimit(itemSortContainer.getItemStack());
+                if (max <= 0) continue;
+                slot.putStack(itemSortContainer.makeStack(max));
+                /*if (item == ItemStack.EMPTY) {
                     slot.putStack(item);
                     continue;
                 }
@@ -90,20 +117,20 @@ public class SortHandler {
                     }
                     item = itemList.pollFirst();
                     remaining = items.getInt(item);
-                }
+                }*/
             }
         }
         if (!itemList.isEmpty()) {
-            McUtils.giveItemsToPlayer(Minecraft.getMinecraft().player, prepareDropList(items, itemList));
+            McUtils.giveItemsToPlayer(this.player, prepareDropList(itemList));
         }
     }
 
-    public static void sortVertical(Slot[][] slotGroup) {
-        Object2IntMap<ItemStack> items = gatherItems(slotGroup);
+    public void sortVertical(Slot[][] slotGroup) {
+        /*Object2IntMap<ItemStack> items = gatherItems(slotGroup);
         if (items.isEmpty()) return;
         LinkedList<ItemStack> itemList = new LinkedList<>(items.keySet());
         itemList.forEach(item -> item.setCount(items.getInt(item)));
-        itemList.sort(ITEM_COMPARATOR);
+        itemList.sort(comparator);
         ItemStack item = itemList.pollFirst();
         if (item == null) return;
         int remaining = items.getInt(item);
@@ -136,7 +163,7 @@ public class SortHandler {
         }
         if (!itemList.isEmpty()) {
             McUtils.giveItemsToPlayer(Minecraft.getMinecraft().player, prepareDropList(items, itemList));
-        }
+        }*/
     }
 
     public static void sortBogo(Slot[][] slotGroup) {
@@ -169,48 +196,51 @@ public class SortHandler {
         }
     }
 
-    public static Object2IntMap<ItemStack> gatherItems(Slot[][] slotGroup) {
-        Object2IntOpenCustomHashMap<ItemStack> items = new Object2IntOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
+    public LinkedList<ItemSortContainer> gatherItems(Slot[][] slotGroup) {
+        //Object2IntOpenCustomHashMap<ItemStack> items = new Object2IntOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
+        LinkedList<ItemSortContainer> list = new LinkedList<>();
+        Object2ObjectOpenCustomHashMap<ItemStack, ItemSortContainer> items = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         for (Slot[] slotRow : slotGroup) {
             for (Slot slot : slotRow) {
                 ItemStack stack = slot.getStack();
                 if (!stack.isEmpty()) {
-                    int amount = stack.getCount();
-                    stack = stack.copy();
-                    stack.setCount(1);
-                    items.compute(stack, (key, value) -> value == null ? amount : value + amount);
+                    ItemSortContainer container1 = items.get(stack);
+                    if (container1 == null) {
+                        container1 = new ItemSortContainer(stack, clientSortData.get(slot.slotNumber));
+                        items.put(stack, container1);
+                        list.add(container1);
+                    }
+                    container1.grow(stack.getCount());
                 }
             }
         }
-        return items;
+        return list;
     }
 
-    private static List<ItemStack> prepareDropList(Object2IntMap<ItemStack> itemMap, List<ItemStack> sortedList) {
+    private static List<ItemStack> prepareDropList(List<ItemSortContainer> sortedList) {
         List<ItemStack> dropList = new ArrayList<>();
-        for (ItemStack item : sortedList) {
-            int amount = itemMap.getInt(item);
-            while (amount > 0) {
-                int maxSize = Math.min(amount, item.getMaxStackSize());
-                ItemStack newStack = item.copy();
-                newStack.setCount(maxSize);
-                amount -= maxSize;
-                dropList.add(newStack);
+        for (ItemSortContainer itemSortContainer : sortedList) {
+            while (itemSortContainer.canMakeStack()) {
+                dropList.add(itemSortContainer.makeStack(Integer.MAX_VALUE));
             }
         }
         return dropList;
     }
 
-    public static final Comparator<ItemStack> ITEM_COMPARATOR = (stack1, stack2) -> {
-        int result = 0;
-        for (SortRule<ItemStack> sortRule : BogoSorterConfig.sortRules) {
-            result = sortRule.compare(stack1, stack2);
+    @SideOnly(Side.CLIENT)
+    public static Comparator<ItemStack> getClientItemComparator() {
+        return (stack1, stack2) -> {
+            int result = 0;
+            for (SortRule<ItemStack> sortRule : BogoSorterConfig.sortRules) {
+                result = sortRule.compare(stack1, stack2);
+                if (result != 0) return result;
+            }
+            result = ItemCompareHelper.compareRegistryOrder(stack1, stack2);
             if (result != 0) return result;
-        }
-        result = ItemCompareHelper.compareRegistryOrder(stack1, stack2);
-        if (result != 0) return result;
-        result = ItemCompareHelper.compareMeta(stack1, stack2);
-        return result;
-    };
+            result = ItemCompareHelper.compareMeta(stack1, stack2);
+            return result;
+        };
+    }
 
     public void clearAllItems(Slot slot1) {
         Slot[][] slotGroup = context.getSlotGroup(slot1.slotNumber);
