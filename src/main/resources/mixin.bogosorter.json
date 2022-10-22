@@ -5,9 +5,11 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "ContainerAccessor",
     "ItemStackAccessor",
     "MixinContainerHorseInventory",
     "MixinEntityLivingBase",
-    "MixinItemStack"
+    "MixinItemStack",
+    "PlayerInteractionManagerMixin"
   ]
 }
