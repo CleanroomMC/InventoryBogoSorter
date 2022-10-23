@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.core.visitor;
 
+import com.cleanroommc.bogosorter.BogoSorter;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -61,6 +62,7 @@ public class PIMVisitor extends ClassVisitor implements Opcodes {
                 visitVarInsn(ALOAD, 4);
                 visitOnDestroy(this);
                 inject = false;
+                BogoSorter.LOGGER.info("Applied PIM processRightClick ASM");
             }
         }
 
@@ -84,10 +86,11 @@ public class PIMVisitor extends ClassVisitor implements Opcodes {
             super.visitMethodInsn(opcode, owner, name, desc, itf);
             if (opcode == INVOKESTATIC && FEF_CLASS.equals(owner) && ON_DESTROY_ITEM_FUNC.equals(name)) {
                 visitVarInsn(ALOAD, 0);
-                visitFieldInsn(GETFIELD, PIM_CLASS, "player", "L" + PLAYER_MP_CLASS + ";");
+                visitFieldInsn(GETFIELD, PIM_CLASS, DEOBF ? "player" : "field_73090_b", "L" + PLAYER_MP_CLASS + ";");
                 visitVarInsn(ALOAD, 9);
-                visitFieldInsn(GETSTATIC, HAND_CLASS, "MAIN_HAND", "L" + HAND_CLASS + ";");
+                visitFieldInsn(GETSTATIC, HAND_CLASS, DEOBF ? "MAIN_HAND" : "field_184828_bq", "L" + HAND_CLASS + ";");
                 visitOnDestroy(this);
+                BogoSorter.LOGGER.info("Applied PIM tryHarvestBlock ASM");
             }
         }
     }

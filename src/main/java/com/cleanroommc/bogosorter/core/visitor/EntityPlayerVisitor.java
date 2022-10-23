@@ -1,5 +1,7 @@
 package com.cleanroommc.bogosorter.core.visitor;
 
+import com.cleanroommc.bogosorter.BogoSorter;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -7,9 +9,10 @@ import org.objectweb.asm.Opcodes;
 public class EntityPlayerVisitor extends ClassVisitor implements Opcodes {
 
     public static final String CLASS_NAME = "net.minecraft.entity.player.EntityPlayer";
-    private static final String METHOD_NAME = "damageShield";
-    private static final String INTERACT_ON_FUNC = "interactOn";
-    private static final String ATTACK_ENTITY_FUNC = "attackTargetEntityWithCurrentItem";
+    public static final boolean DEOBF = FMLLaunchHandler.isDeobfuscatedEnvironment();
+    private static final String METHOD_NAME = DEOBF ? "damageShield" : "func_184590_k";
+    private static final String INTERACT_ON_FUNC = DEOBF ? "interactOn" : "func_190775_a";
+    private static final String ATTACK_ENTITY_FUNC = DEOBF ? "attackTargetEntityWithCurrentItem" : "func_71059_n";
     private static final String FEF_CLASS = "net/minecraftforge/event/ForgeEventFactory";
     private static final String ON_DESTROY_ITEM_FUNC = "onPlayerDestroyItem";
 
@@ -46,6 +49,7 @@ public class EntityPlayerVisitor extends ClassVisitor implements Opcodes {
                 visitVarInsn(ALOAD, 2);
                 visitVarInsn(ALOAD, 4);
                 PIMVisitor.visitOnDestroy(this);
+                BogoSorter.LOGGER.info("Applied EntityPlayer damageShield ASM");
             }
         }
     }
@@ -65,6 +69,7 @@ public class EntityPlayerVisitor extends ClassVisitor implements Opcodes {
                 visitVarInsn(ALOAD, 5);
                 visitVarInsn(ALOAD, 2);
                 PIMVisitor.visitOnDestroy(this);
+                BogoSorter.LOGGER.info("Applied EntityPlayer interactOn ASM");
             }
         }
     }
@@ -81,8 +86,9 @@ public class EntityPlayerVisitor extends ClassVisitor implements Opcodes {
             if (opcode == INVOKEVIRTUAL && PIMVisitor.PLAYER_CLASS.equals(owner) && PIMVisitor.SET_HELD_ITEM_FUNC.equals(name)) {
                 visitVarInsn(ALOAD, 0);
                 visitVarInsn(ALOAD, 25);
-                visitFieldInsn(GETSTATIC, PIMVisitor.HAND_CLASS, "MAIN_HAND", "L" + PIMVisitor.HAND_CLASS + ";");
+                visitFieldInsn(GETSTATIC, PIMVisitor.HAND_CLASS, DEOBF ? "MAIN_HAND" : "field_184828_bq", "L" + PIMVisitor.HAND_CLASS + ";");
                 PIMVisitor.visitOnDestroy(this);
+                BogoSorter.LOGGER.info("Applied EntityPlayer attackTargetEntityWithCurrentItem ASM");
             }
         }
     }
