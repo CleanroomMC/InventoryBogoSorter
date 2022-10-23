@@ -9,6 +9,7 @@ import com.cleanroommc.bogosorter.common.network.CSlotSync;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -19,28 +20,33 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SortHandler {
+
+    public static final Map<EntityPlayer, List<SortRule<ItemStack>>> cacheItemSortRules = new Object2ObjectOpenHashMap<>();
+    public static final Map<EntityPlayer, List<NbtSortRule>> cacheNbtSortRules = new Object2ObjectOpenHashMap<>();
+    public static final AtomicReference<List<NbtSortRule>> currentNbtSortRules = new AtomicReference<>(Collections.emptyList());
 
     private final EntityPlayer player;
     private final Container container;
     private final GuiSortingContext context;
-    private final List<SortRule<ItemStack>> sortRules;
     private final Comparator<ItemSortContainer> containerComparator;
     private final Int2ObjectMap<ClientSortData> clientSortData;
+    private final List<SortRule<ItemStack>> itemSortRules;
 
-    public SortHandler(EntityPlayer entityPlayer, Container container, boolean player, List<SortRule<ItemStack>> sortRules, Int2ObjectMap<ClientSortData> clientSortData) {
-        this(entityPlayer, container, GuiSortingContext.create(container, player), sortRules, clientSortData);
+    public SortHandler(EntityPlayer entityPlayer, Container container, boolean player, Int2ObjectMap<ClientSortData> clientSortData) {
+        this(entityPlayer, container, GuiSortingContext.create(container, player), clientSortData);
     }
 
-    public SortHandler(EntityPlayer player, Container container, GuiSortingContext sortingContext, List<SortRule<ItemStack>> sortRules, Int2ObjectMap<ClientSortData> clientSortData) {
+    public SortHandler(EntityPlayer player, Container container, GuiSortingContext sortingContext, Int2ObjectMap<ClientSortData> clientSortData) {
         this.player = player;
         this.container = container;
         this.context = sortingContext;
-        this.sortRules = sortRules;
+        this.itemSortRules = cacheItemSortRules.getOrDefault(player, Collections.emptyList());
         this.containerComparator = (container1, container2) -> {
             int result;
-            for (SortRule<ItemStack> sortRule : sortRules) {
+            for (SortRule<ItemStack> sortRule : itemSortRules) {
                 result = sortRule instanceof ClientItemSortRule ? ((ClientItemSortRule) sortRule).compareClient(container1, container2) :
                         sortRule.compare(container1.getItemStack(), container2.getItemStack());
                 if (result != 0) return result;
@@ -72,7 +78,6 @@ public class SortHandler {
             }
             if (sync) {
                 container.detectAndSendChanges();
-                //McUtils.syncSlotsToServer(slotGroup);
             }
         }
     }
@@ -80,11 +85,13 @@ public class SortHandler {
     public void sortHorizontal(Slot[][] slotGroup) {
         LinkedList<ItemSortContainer> itemList = gatherItems(slotGroup);
         if (itemList.isEmpty()) return;
-        //itemList.forEach(item -> item.setCount(items.getInt(item)));
+
+        currentNbtSortRules.set(cacheNbtSortRules.getOrDefault(player, Collections.emptyList()));
         itemList.sort(containerComparator);
+        currentNbtSortRules.set(Collections.emptyList());
+
         ItemSortContainer itemSortContainer = itemList.pollFirst();
         if (itemSortContainer == null) return;
-        //int remaining = items.getInt(item);
         for (Slot[] slotRow : slotGroup) {
             for (Slot slot : slotRow) {
                 if (itemSortContainer == null) {
@@ -98,26 +105,6 @@ public class SortHandler {
                 int max = slot.getItemStackLimit(itemSortContainer.getItemStack());
                 if (max <= 0) continue;
                 slot.putStack(itemSortContainer.makeStack(max));
-                /*if (item == ItemStack.EMPTY) {
-                    slot.putStack(item);
-                    continue;
-                }
-                if (!slot.isItemValid(item)) continue;
-                int limit = Math.min(slot.getItemStackLimit(item), item.getMaxStackSize());
-                limit = Math.min(remaining, limit);
-                if (limit <= 0) continue;
-                ItemStack toInsert = item.copy();
-                toInsert.setCount(limit);
-                slot.putStack(toInsert);
-                remaining -= limit;
-                if (remaining <= 0) {
-                    if (itemList.isEmpty()) {
-                        item = ItemStack.EMPTY;
-                        continue;
-                    }
-                    item = itemList.pollFirst();
-                    remaining = items.getInt(item);
-                }*/
             }
         }
         if (!itemList.isEmpty()) {
@@ -125,45 +112,38 @@ public class SortHandler {
         }
     }
 
+    // TODO untested
     public void sortVertical(Slot[][] slotGroup) {
-        /*Object2IntMap<ItemStack> items = gatherItems(slotGroup);
-        if (items.isEmpty()) return;
-        LinkedList<ItemStack> itemList = new LinkedList<>(items.keySet());
-        itemList.forEach(item -> item.setCount(items.getInt(item)));
-        itemList.sort(comparator);
-        ItemStack item = itemList.pollFirst();
-        if (item == null) return;
-        int remaining = items.getInt(item);
+        LinkedList<ItemSortContainer> itemList = gatherItems(slotGroup);
+        if (itemList.isEmpty()) return;
+
+        currentNbtSortRules.set(cacheNbtSortRules.getOrDefault(player, Collections.emptyList()));
+        itemList.sort(containerComparator);
+        currentNbtSortRules.set(Collections.emptyList());
+
+        ItemSortContainer itemSortContainer = itemList.pollFirst();
+        if (itemSortContainer == null) return;
         main:
         for (int c = 0; c < slotGroup[0].length; c++) {
             for (Slot[] slots : slotGroup) {
                 if (c >= slots.length) break main;
                 Slot slot = slots[c];
-                if (item == ItemStack.EMPTY) {
-                    slot.putStack(item);
+                if (itemSortContainer == null) {
+                    slot.putStack(ItemStack.EMPTY);
                     continue;
                 }
-                if (!slot.isItemValid(item)) continue;
-                int limit = Math.min(slot.getItemStackLimit(item), item.getMaxStackSize());
-                limit = Math.min(remaining, limit);
-                if (limit <= 0) continue;
-                ItemStack toInsert = item.copy();
-                toInsert.setCount(limit);
-                slot.putStack(toInsert);
-                remaining -= limit;
-                if (remaining <= 0) {
-                    if (itemList.isEmpty()) {
-                        item = ItemStack.EMPTY;
-                        continue;
-                    }
-                    item = itemList.pollFirst();
-                    remaining = items.getInt(item);
+                if (!itemSortContainer.canMakeStack()) {
+                    itemSortContainer = itemList.pollFirst();
+                    if (itemSortContainer == null) continue;
                 }
+                int max = slot.getItemStackLimit(itemSortContainer.getItemStack());
+                if (max <= 0) continue;
+                slot.putStack(itemSortContainer.makeStack(max));
             }
         }
         if (!itemList.isEmpty()) {
-            McUtils.giveItemsToPlayer(Minecraft.getMinecraft().player, prepareDropList(items, itemList));
-        }*/
+            McUtils.giveItemsToPlayer(this.player, prepareDropList(itemList));
+        }
     }
 
     public static void sortBogo(Slot[][] slotGroup) {
@@ -197,7 +177,6 @@ public class SortHandler {
     }
 
     public LinkedList<ItemSortContainer> gatherItems(Slot[][] slotGroup) {
-        //Object2IntOpenCustomHashMap<ItemStack> items = new Object2IntOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         LinkedList<ItemSortContainer> list = new LinkedList<>();
         Object2ObjectOpenCustomHashMap<ItemStack, ItemSortContainer> items = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         for (Slot[] slotRow : slotGroup) {

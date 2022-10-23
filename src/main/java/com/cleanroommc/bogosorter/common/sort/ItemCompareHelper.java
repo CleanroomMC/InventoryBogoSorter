@@ -1,8 +1,6 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.common.OreDictHelper;
-import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
-import com.cleanroommc.bogosorter.common.sort.color.ItemColorHelper;
 import gregtech.api.items.metaitem.FoodUseManager;
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.items.metaitem.stats.IFoodBehavior;
@@ -17,8 +15,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.ForgeRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -144,10 +140,9 @@ public class ItemCompareHelper {
         return itemStack1.hasTagCompound() ? compareNbtValues(itemStack1.getTagCompound(), itemStack2.getTagCompound()) : 0;
     }
 
-    @SideOnly(Side.CLIENT)
     public static int compareNbtValues(@NotNull NBTTagCompound nbt1, @NotNull NBTTagCompound nbt2) {
         int result = 0;
-        for (NbtSortRule nbtSortRule : BogoSorterConfig.nbtSortRules) {
+        for (NbtSortRule nbtSortRule : SortHandler.currentNbtSortRules.get()) {
             result = nbtSortRule.compare(nbt1, nbt2);
             if (result != 0) return result;
         }

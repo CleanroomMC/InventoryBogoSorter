@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.common.network;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.sort.ClientSortData;
+import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.item.ItemStack;
@@ -17,12 +18,14 @@ public class CSort implements IPacket {
 
     private List<ClientSortData> clientSortDataList;
     private List<SortRule<ItemStack>> sortRules;
+    private List<NbtSortRule> nbtSortRules;
     private int hover;
     private boolean player;
 
-    public CSort(List<ClientSortData> clientSortDataList, List<SortRule<ItemStack>> sortRules, int hover, boolean player) {
+    public CSort(List<ClientSortData> clientSortDataList, List<SortRule<ItemStack>> sortRules, List<NbtSortRule> nbtSortRules, int hover, boolean player) {
         this.clientSortDataList = clientSortDataList;
         this.sortRules = sortRules;
+        this.nbtSortRules = nbtSortRules;
         this.hover = hover;
         this.player = player;
     }
@@ -42,6 +45,10 @@ public class CSort implements IPacket {
         for (SortRule<ItemStack> sortRule : sortRules) {
             buf.writeVarInt(sortRule.getSyncId());
         }
+        buf.writeVarInt(nbtSortRules.size());
+        for (NbtSortRule sortRule : nbtSortRules) {
+            buf.writeVarInt(sortRule.getSyncId());
+        }
     }
 
     @Override
@@ -56,15 +63,21 @@ public class CSort implements IPacket {
         for (int i = 0, n = buf.readVarInt(); i < n; i++) {
             sortRules.add(BogoSortAPI.INSTANCE.getItemSortRule(buf.readVarInt()));
         }
+        nbtSortRules = new ArrayList<>();
+        for (int i = 0, n = buf.readVarInt(); i < n; i++) {
+            nbtSortRules.add(BogoSortAPI.INSTANCE.getNbtSortRule(buf.readVarInt()));
+        }
     }
 
     @Override
     public IPacket executeServer(NetHandlerPlayServer handler) {
+        SortHandler.cacheItemSortRules.put(handler.player, sortRules);
+        SortHandler.cacheNbtSortRules.put(handler.player, nbtSortRules);
         Int2ObjectOpenHashMap<ClientSortData> map = new Int2ObjectOpenHashMap<>();
         for(ClientSortData sortData : clientSortDataList) {
             map.put(sortData.getSlotNumber(), sortData);
         }
-        SortHandler sortHandler = new SortHandler(handler.player, handler.player.openContainer, player, sortRules, map);
+        SortHandler sortHandler = new SortHandler(handler.player, handler.player.openContainer, player, map);
         sortHandler.sort(hover);
         return null;
     }

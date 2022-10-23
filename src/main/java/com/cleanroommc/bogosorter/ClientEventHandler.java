@@ -174,9 +174,6 @@ public class ClientEventHandler {
                 if (!sort(container, slot)) {
                     return false;
                 }
-                //SortHandler sortHandler = createSortHandler(container, slot);
-                //if (sortHandler == null) return false;
-                //sortHandler.sort(slot.slotNumber);
                 timeSort = t;
                 return true;
             }
@@ -222,7 +219,7 @@ public class ClientEventHandler {
             List<SortRule<ItemStack>> sortRules = BogoSorterConfig.sortRules;
             boolean color = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("color"));
             boolean name = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("display_name"));
-            NetworkHandler.sendToServer(new CSort(createSortData(container, slot, player, color, name), BogoSorterConfig.sortRules, slot.slotNumber, player));
+            NetworkHandler.sendToServer(new CSort(createSortData(container, slot, player, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.slotNumber, player));
             Interactable.playButtonClickSound();
             return true;
         }
@@ -253,7 +250,7 @@ public class ClientEventHandler {
 
             if (!player && !isSortableContainer(guiScreen)) return null;
 
-            return new SortHandler(Minecraft.getMinecraft().player, container, player, null, Int2ObjectMaps.emptyMap());
+            return new SortHandler(Minecraft.getMinecraft().player, container, player, Int2ObjectMaps.emptyMap());
         }
         return null;
     }
