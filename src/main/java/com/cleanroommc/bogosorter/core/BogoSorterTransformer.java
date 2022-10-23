@@ -10,7 +10,7 @@ public class BogoSorterTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] classBytes) {
-        switch (name) {
+        switch (transformedName) {
             case PIMVisitor.CLASS_NAME: {
                 ClassWriter classWriter = new ClassWriter(0);
                 new ClassReader(classBytes).accept(new PIMVisitor(classWriter), 0);
