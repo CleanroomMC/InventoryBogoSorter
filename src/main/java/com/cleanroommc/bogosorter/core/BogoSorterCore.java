@@ -35,7 +35,7 @@ public class BogoSorterCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     @Override
     public String getAccessTransformerClass() {
-        return null;
+        return "com.cleanroommc.bogosorter.core.BogoSorterTransformer";
     }
 
     @Override

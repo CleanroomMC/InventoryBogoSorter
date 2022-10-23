@@ -4,7 +4,7 @@ import com.cleanroommc.bogosorter.api.*;
 import com.cleanroommc.bogosorter.common.sort.ClientItemSortRule;
 import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
-import com.cleanroommc.bogosorter.mixin.ItemStackAccessor;
+import com.cleanroommc.bogosorter.core.mixin.ItemStackAccessor;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;

@@ -6,7 +6,6 @@ import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.network.SRefillSound;
-import com.cleanroommc.bogosorter.mixin.ContainerAccessor;
 import gregtech.api.items.IToolItem;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -15,7 +14,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -39,28 +37,29 @@ public class RefillHandler {
             {7, 6, 5, 4, 3, 2, 1, 0, 35, 26, 17, 34, 25, 16, 33, 24, 15, 32, 23, 14, 31, 22, 13, 30, 21, 12, 29, 20, 11, 28, 19, 10, 27, 18, 9},
     };
 
-    /*@SubscribeEvent
-    public static void onDestroyItem(PlayerDestroyItemEvent event) {
-        if (!PlayerConfig.get(event.getEntityPlayer()).enableAutoRefill) return;
-
-        if (shouldHandleRefill(event.getEntityPlayer(), event.getOriginal())) {
-            int index = event.getHand() == EnumHand.MAIN_HAND ? event.getEntityPlayer().inventory.currentItem : 40;
-            new RefillHandler(index, event.getOriginal(), event.getEntityPlayer()).handleRefill();
-        }
-    }*/
-
-    public static void onDestroyItem(EntityPlayer player, EnumHand hand, ItemStack original) {
+    /**
+     * Called via asm
+     */
+    public static void onDestroyItem(EntityPlayer player, ItemStack brokenItem, EnumHand hand) {
         if (!PlayerConfig.get(player).enableAutoRefill) return;
 
-        if (shouldHandleRefill(player, original)) {
+        if (shouldHandleRefill(player, brokenItem)) {
             int index = hand == EnumHand.MAIN_HAND ? player.inventory.currentItem : 40;
-            new RefillHandler(index, original, player).handleRefill();
+            handle(index, brokenItem, player, false);
         }
     }
 
+    public static boolean handle(int hotbarIndex, ItemStack brokenItem, EntityPlayer player, boolean swap) {
+        return new RefillHandler(hotbarIndex, brokenItem, player, swap).handleRefill();
+    }
+
     public static boolean shouldHandleRefill(EntityPlayer player, ItemStack brokenItem) {
+        return shouldHandleRefill(player, brokenItem, false);
+    }
+
+    public static boolean shouldHandleRefill(EntityPlayer player, ItemStack brokenItem, boolean allowClient) {
         Container container = player.openContainer;
-        return !NetworkUtils.isClient(player) && (container == null || container == player.inventoryContainer) && !brokenItem.isEmpty();
+        return (allowClient || !NetworkUtils.isClient(player)) && (container == null || container == player.inventoryContainer) && !brokenItem.isEmpty();
     }
 
     private BiPredicate<ItemStack, ItemStack> similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem() && stack.getMetadata() == stack2.getMetadata();
@@ -182,28 +181,13 @@ public class RefillHandler {
     }
 
     private void refillItem(ItemStack refill, int refillIndex) {
-        refill = refill.copy();
         setAndSyncSlot(hotbarIndex, refill);
         setAndSyncSlot(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
-        /*if (hotbarIndex == 40) {
-            // offhand
-            //inventory.offHandInventory.set(0, refill);
-            inventory.mainInventory.set(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
-            // if the replacing item is equal to the replaced item, it will not be synced
-            // this makes sure that the sync is triggered
-            player.inventoryContainer.inventoryItemStacks.set(40, refill);
-            //player.inventoryContainer.inventoryItemStacks.set(40, ItemStack.EMPTY);
-        } else {
-            inventory.mainInventory.set(hotbarIndex, refill);
-            inventory.mainInventory.set(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
-            // if the replacing item is equal to the replaced item, it will not be synced
-            // this makes sure that the sync is triggered
-            player.inventoryContainer.inventoryItemStacks.set(hotbarIndex, refill);
-            //player.inventoryContainer.inventoryItemStacks.set(hotbarIndex + 36, ItemStack.EMPTY);
-        }*/
 
         // the sound should be played for this player
-        NetworkHandler.sendToPlayer(new SRefillSound(), (EntityPlayerMP) player);
+        if (!NetworkUtils.isClient(player)) {
+            NetworkHandler.sendToPlayer(new SRefillSound(), (EntityPlayerMP) player);
+        }
     }
 
     private void setAndSyncSlot(int index, ItemStack item) {
@@ -214,10 +198,6 @@ public class RefillHandler {
             inventory.armorInventory.set(index - 36, item);
         } else {
             inventory.offHandInventory.set(0, item);
-        }
-        player.inventoryContainer.inventoryItemStacks.set(index, item);
-        for (IContainerListener listener : ((ContainerAccessor) player.inventoryContainer).getListeners()) {
-            listener.sendSlotContents(player.inventoryContainer, index, item);
         }
     }
 
