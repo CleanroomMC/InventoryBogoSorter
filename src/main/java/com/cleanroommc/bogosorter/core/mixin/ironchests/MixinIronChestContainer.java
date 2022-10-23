@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin.ironchests;
+package com.cleanroommc.bogosorter.core.mixin.ironchests;
 
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;

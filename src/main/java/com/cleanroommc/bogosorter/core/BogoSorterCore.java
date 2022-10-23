@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter;
+package com.cleanroommc.bogosorter.core;
 
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;

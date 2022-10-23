@@ -1,5 +1,5 @@
 {
-  "package": "com.cleanroommc.bogosorter.mixin.galacticraftcore",
+  "package": "com.cleanroommc.bogosorter.core.mixin.galacticraftcore",
   "refmap": "mixins.bogosorter.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.8",

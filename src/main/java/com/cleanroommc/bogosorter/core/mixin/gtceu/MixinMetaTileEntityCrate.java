@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin.gtceu;
+package com.cleanroommc.bogosorter.core.mixin.gtceu;
 
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;

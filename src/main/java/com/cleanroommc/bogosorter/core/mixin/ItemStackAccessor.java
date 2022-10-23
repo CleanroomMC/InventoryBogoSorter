@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin;
+package com.cleanroommc.bogosorter.core.mixin;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin;
+package com.cleanroommc.bogosorter.core.mixin;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
@@ -36,8 +36,8 @@ public abstract class MixinEntityLivingBase {
             return;
         }
 
-        if (RefillHandler.shouldHandleRefill(player, activeItemStackCopy)) {
-            boolean didSwap = new RefillHandler(player.inventory.currentItem, activeItemStackCopy, player).handleRefill();
+        if (RefillHandler.shouldHandleRefill(player, activeItemStackCopy, true)) {
+            boolean didSwap = RefillHandler.handle(player.inventory.currentItem, activeItemStackCopy, player, false);//new RefillHandler(player.inventory.currentItem, activeItemStackCopy, player).handleRefill();
             if (didSwap && !itemstack.isEmpty()) {
                 if (!player.inventory.addItemStackToInventory(itemstack)) {
                     BogoSorter.LOGGER.info("Dropping item that does not fit");

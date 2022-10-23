@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin.colossalchests;
+package com.cleanroommc.bogosorter.core.mixin.colossalchests;
 
 import net.minecraft.inventory.Slot;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;

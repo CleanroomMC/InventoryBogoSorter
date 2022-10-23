@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin.galacticraftcore;
+package com.cleanroommc.bogosorter.core.mixin.galacticraftcore;
 
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;

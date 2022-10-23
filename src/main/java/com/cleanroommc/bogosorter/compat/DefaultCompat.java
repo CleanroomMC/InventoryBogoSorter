@@ -8,7 +8,7 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
-import com.cleanroommc.bogosorter.mixin.colossalchests.ContainerColossalChestAccessor;
+import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
 import com.lothrazar.cyclicmagic.item.storagesack.ContainerStorage;
 import com.tiviacz.travelersbackpack.gui.container.ContainerTravelersBackpack;
 import com.zuxelus.energycontrol.containers.ContainerCardHolder;

@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin.enderio;
+package com.cleanroommc.bogosorter.core.mixin.enderio;
 
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;

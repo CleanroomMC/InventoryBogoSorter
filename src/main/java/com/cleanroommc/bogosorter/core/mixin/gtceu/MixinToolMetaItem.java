@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.mixin.gtceu;
+package com.cleanroommc.bogosorter.core.mixin.gtceu;
 
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.refill.RefillHandler;
@@ -31,7 +31,8 @@ public abstract class MixinToolMetaItem {
             if (RefillHandler.shouldHandleRefill(player, stack) && stack.hasTagCompound() && stack.getTagCompound().hasKey("GT.ToolStats")) {
                 int durabilityLeft = getMaxItemDamage(stack) - getItemDamage(stack);
                 if (durabilityLeft > 0 && durabilityLeft <= playerConfig.autoRefillDamageThreshold) {
-                    new RefillHandler(player.inventory.currentItem, stack, player, true).handleRefill();
+                    RefillHandler.handle(player.inventory.currentItem, stack, player, true);
+                    //new RefillHandler(player.inventory.currentItem, stack, player, true).handleRefill();
                 }
             }
         }
