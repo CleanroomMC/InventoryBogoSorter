@@ -98,13 +98,14 @@ public class SortHandler {
                     slot.putStack(ItemStack.EMPTY);
                     continue;
                 }
-                if (!itemSortContainer.canMakeStack()) {
-                    itemSortContainer = itemList.pollFirst();
-                    if (itemSortContainer == null) continue;
-                }
+
                 int max = slot.getItemStackLimit(itemSortContainer.getItemStack());
                 if (max <= 0) continue;
                 slot.putStack(itemSortContainer.makeStack(max));
+
+                if (!itemSortContainer.canMakeStack()) {
+                    itemSortContainer = itemList.pollFirst();
+                }
             }
         }
         if (!itemList.isEmpty()) {
