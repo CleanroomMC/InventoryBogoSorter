@@ -110,11 +110,17 @@ public class BogoSorterConfig {
         }
     }
 
-    static {
+    public static void loadDefaultRules() {
         String[] itemRules = {"mod", "material", "ore_prefix", "id", "meta", "nbt_has", "nbt_rules"};
         String[] nbtRules = {"enchantment", "enchantment_book", "potion", "gt_circ_config", "gt_item_damage"};
 
-        sortRules.addAll(Arrays.stream(itemRules).map(BogoSortAPI.INSTANCE::getItemSortRule).collect(Collectors.toList()));
-        nbtSortRules.addAll(Arrays.stream(nbtRules).map(BogoSortAPI.INSTANCE::getNbtSortRule).collect(Collectors.toList()));
+        sortRules.addAll(Arrays.stream(itemRules)
+                .map(BogoSortAPI.INSTANCE::getItemSortRule)
+                .filter(rule -> rule != BogoSortAPI.EMPTY_ITEM_SORT_RULE)
+                .collect(Collectors.toList()));
+        nbtSortRules.addAll(Arrays.stream(nbtRules)
+                .map(BogoSortAPI.INSTANCE::getNbtSortRule)
+                .filter(rule -> rule != BogoSortAPI.EMPTY_NBT_SORT_RULE)
+                .collect(Collectors.toList()));
     }
 }

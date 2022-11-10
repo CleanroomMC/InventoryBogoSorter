@@ -40,6 +40,7 @@ public class Serializer {
     public static void loadConfig() {
         if (NetworkUtils.isDedicatedClient()) {
             if (!Files.exists(configJsonPath.toPath())) {
+                BogoSorterConfig.loadDefaultRules();
                 saveConfig();
             }
             JsonElement jsonElement = loadJson(configJsonPath);
