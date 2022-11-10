@@ -1,24 +1,17 @@
 package com.cleanroommc.bogosorter.common;
 
 import com.cleanroommc.bogosorter.common.network.CDropItems;
-import com.cleanroommc.bogosorter.common.network.CSlotSync;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class McUtils {
@@ -102,31 +95,5 @@ public class McUtils {
         }
 
         return stack;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static void syncSlotsToServer(Slot[][] slotGroup) {
-        List<Pair<ItemStack, Integer>> syncSlots = new ArrayList<>();
-        for (Slot[] slotRow : slotGroup) {
-            for (Slot slot : slotRow) {
-                syncSlots.add(Pair.of(slot.getStack(), slot.slotNumber));
-            }
-        }
-        NetworkHandler.sendToServer(new CSlotSync(syncSlots));
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static void syncSlotsToServer(Iterable<Slot> slots) {
-        List<Pair<ItemStack, Integer>> syncSlots = new ArrayList<>();
-        for (Slot slot : slots) {
-            syncSlots.add(Pair.of(slot.getStack(), slot.slotNumber));
-        }
-        NetworkHandler.sendToServer(new CSlotSync(syncSlots));
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static void syncSlotToServer(Slot slot) {
-        List<Pair<ItemStack, Integer>> syncSlots = Collections.singletonList(Pair.of(slot.getStack(), slot.slotNumber));
-        NetworkHandler.sendToServer(new CSlotSync(syncSlots));
     }
 }
