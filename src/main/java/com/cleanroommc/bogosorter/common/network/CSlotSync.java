@@ -26,6 +26,7 @@ public class CSlotSync implements IPacket {
         buf.writeVarInt(content.size());
         for (Pair<ItemStack, Integer> pair : content) {
             buf.writeItemStack(pair.getKey());
+            buf.writeCompoundTag(pair.getKey().getTagCompound());
             buf.writeVarInt(pair.getValue());
         }
     }
@@ -33,7 +34,9 @@ public class CSlotSync implements IPacket {
     @Override
     public void decode(PacketBuffer buf) throws IOException {
         for (int i = 0, n = buf.readVarInt(); i < n; i++) {
-            content.add(Pair.of(buf.readItemStack(), buf.readVarInt()));
+            ItemStack stack = buf.readItemStack();
+            stack.setTagCompound(buf.readCompoundTag());
+            content.add(Pair.of(stack, buf.readVarInt()));
         }
     }
 
