@@ -36,13 +36,17 @@ public class BogoSorterConfig {
 
         JsonArray jsonRules = new JsonArray();
         for (SortRule<ItemStack> rule : sortRules) {
-            jsonRules.add(rule.getKey());
+            if (rule != BogoSortAPI.EMPTY_ITEM_SORT_RULE) {
+                jsonRules.add(rule.getKey());
+            }
         }
         json.add("ItemSortRules", jsonRules);
 
         jsonRules = new JsonArray();
         for (NbtSortRule rule : nbtSortRules) {
-            jsonRules.add(rule.getKey());
+            if (rule != BogoSortAPI.EMPTY_NBT_SORT_RULE) {
+                jsonRules.add(rule.getKey());
+            }
         }
         json.add("NbtSortRules", jsonRules);
     }
