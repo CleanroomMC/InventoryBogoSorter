@@ -94,7 +94,7 @@ public class ItemCompareHelper {
     }
 
     public static int compareCount(ItemStack stack1, ItemStack stack2) {
-        return Integer.compare(stack1.getCount(), stack2.getCount());
+        return Integer.compare(stack2.getCount(), stack1.getCount());
     }
 
     public static int compareRegistryOrder(ItemStack stack1, ItemStack stack2) {
