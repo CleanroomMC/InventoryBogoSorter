@@ -26,8 +26,18 @@ import java.util.function.Function;
 public class BogoSortAPI implements IBogoSortAPI {
 
     public static final BogoSortAPI INSTANCE = new BogoSortAPI();
-    public static final SortRule<ItemStack> EMPTY_ITEM_SORT_RULE = new SortRule<>("empty", null, (o1, o2) -> 0);
-    public static final NbtSortRule EMPTY_NBT_SORT_RULE = new NbtSortRule("empty", null, (o1, o2) -> 0);
+    public static final SortRule<ItemStack> EMPTY_ITEM_SORT_RULE = new SortRule<ItemStack>("empty", null, (o1, o2) -> 0) {
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+    };
+    public static final NbtSortRule EMPTY_NBT_SORT_RULE = new NbtSortRule("empty", null, (o1, o2) -> 0) {
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+    };
 
     private BogoSortAPI() {
     }

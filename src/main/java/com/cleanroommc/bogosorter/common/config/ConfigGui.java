@@ -28,6 +28,7 @@ public class ConfigGui {
 
     public static boolean wasOpened = false;
     public static final UITexture TOGGLE_BUTTON = UITexture.fullImage("bogosorter:gui/toggle_config");
+    public static final UITexture ARROW_DOWN_UP = UITexture.fullImage("bogosorter:gui/arrow_down_up");
 
     public static ModularWindow createConfigWindow(UIBuildContext buildContext) {
         buildContext.setShowJei(false);
@@ -141,16 +142,10 @@ public class ConfigGui {
                         .setPos(5, 24)
                         .setSize(90, 200))
                 .addChild(sortableListWidget
-                        .setWidgetCreator(sortRule -> new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
-                                .setTextAlignment(Alignment.Center)
-                                .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
-                                .setTooltipShowUpDelay(10)
-                                .setBackground(ModularUITextures.BASE_BUTTON)
-                                .setSize(80, 20))
+                        .setWidgetCreator(ConfigGui::makeSortRuleWidget)
                         .setSaveFunction(list -> {
                             BogoSorterConfig.sortRules.clear();
                             BogoSorterConfig.sortRules.addAll(list);
-
                         })
                         .setOnRemoveElement(sortRule -> widgetMap.get(sortRule).setAvailable(true))
                         .setPos(105, 24)
@@ -188,12 +183,7 @@ public class ConfigGui {
                         .setPos(5, 24)
                         .setSize(90, 200))
                 .addChild(sortableListWidget
-                        .setWidgetCreator(sortRule -> new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
-                                .setTextAlignment(Alignment.Center)
-                                .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
-                                .setTooltipShowUpDelay(10)
-                                .setBackground(ModularUITextures.BASE_BUTTON)
-                                .setSize(80, 20))
+                        .setWidgetCreator(ConfigGui::makeSortRuleWidget)
                         .setSaveFunction(list -> {
                             BogoSorterConfig.nbtSortRules.clear();
                             BogoSorterConfig.nbtSortRules.addAll(list);
@@ -201,6 +191,24 @@ public class ConfigGui {
                         .setOnRemoveElement(sortRule -> widgetMap.get(sortRule).setAvailable(true))
                         .setPos(105, 24)
                         .setSize(100, 200));
+    }
+
+    private static Widget makeSortRuleWidget(SortRule<?> sortRule) {
+        return new Row()
+                .addChild(new CycleButtonWidget()
+                        .setToggle(sortRule::isInverted, sortRule::setInverted)
+                        .setTexture(ARROW_DOWN_UP)
+                        .addTooltip(0, Text.localised("bogosort.gui.descending"))
+                        .addTooltip(1, Text.localised("bogosort.gui.ascending"))
+                        .setBackground(ModularUITextures.BASE_BUTTON)
+                        .setSize(14, 20))
+                .addChild(new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
+                        .setTextAlignment(Alignment.Center)
+                        .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
+                        .setTooltipShowUpDelay(10)
+                        .setBackground(ModularUITextures.BASE_BUTTON)
+                        .setSize(66, 20))
+                .setSize(80, 20);
     }
 
     private static Widget createOrePrefixConfigUI(UIBuildContext buildContext) {

@@ -10,6 +10,8 @@ bogosort.gui.available_sort_rules=Available Sort-Rules
 bogosort.gui.configured_sort_rules=Configured Sort-Rules
 bogosort.gui.enable_refill=Enable auto hotbar refill
 bogosort.gui.refill_threshold=Auto refill damage threshold
+bogosort.gui.ascending=Ascending
+bogosort.gui.descending=Descending
 
 bogosort.command.config_relaod.success=Reloaded sorting config
 

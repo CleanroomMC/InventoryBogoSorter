@@ -4,6 +4,7 @@ import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
+import com.cleanroommc.modularui.common.internal.JsonHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,7 +38,10 @@ public class BogoSorterConfig {
         JsonArray jsonRules = new JsonArray();
         for (SortRule<ItemStack> rule : sortRules) {
             if (rule != BogoSortAPI.EMPTY_ITEM_SORT_RULE) {
-                jsonRules.add(rule.getKey());
+                JsonObject ruleJson= new JsonObject();
+                ruleJson.addProperty("name", rule.getKey());
+                ruleJson.addProperty("inverted", rule.isInverted());
+                jsonRules.add(ruleJson);
             }
         }
         json.add("ItemSortRules", jsonRules);
@@ -45,7 +49,10 @@ public class BogoSorterConfig {
         jsonRules = new JsonArray();
         for (NbtSortRule rule : nbtSortRules) {
             if (rule != BogoSortAPI.EMPTY_NBT_SORT_RULE) {
-                jsonRules.add(rule.getKey());
+                JsonObject ruleJson= new JsonObject();
+                ruleJson.addProperty("name", rule.getKey());
+                ruleJson.addProperty("inverted", rule.isInverted());
+                jsonRules.add(ruleJson);
             }
         }
         json.add("NbtSortRules", jsonRules);
@@ -63,10 +70,19 @@ public class BogoSorterConfig {
         if (json.has("ItemSortRules")) {
             JsonArray sortRules = json.getAsJsonArray("ItemSortRules");
             for (JsonElement jsonElement : sortRules) {
-                SortRule<ItemStack> rule = BogoSortAPI.INSTANCE.getItemSortRule(jsonElement.getAsString());
-                if (rule == null) {
-                    BogoSorter.LOGGER.error("Could not find item sort rule with key '{}'.", jsonElement.getAsString());
+                String key;
+                boolean inverted = false;
+                if (jsonElement.isJsonObject()) {
+                    key = JsonHelper.getString(jsonElement.getAsJsonObject(), "", "key", "name");
+                    inverted = JsonHelper.getBoolean(jsonElement.getAsJsonObject(), false, "inverted", "ascending", "asc");
                 } else {
+                    key = jsonElement.getAsString();
+                }
+                SortRule<ItemStack> rule = BogoSortAPI.INSTANCE.getItemSortRule(key);
+                if (rule.isEmpty()) {
+                    BogoSorter.LOGGER.error("Could not find item sort rule with key '{}'.", key);
+                } else {
+                    rule.setInverted(inverted);
                     BogoSorterConfig.sortRules.add(rule);
                 }
             }
@@ -75,11 +91,20 @@ public class BogoSorterConfig {
         if (json.has("NbtSortRules")) {
             JsonArray sortRules = json.getAsJsonArray("NbtSortRules");
             for (JsonElement jsonElement : sortRules) {
-                NbtSortRule rule = BogoSortAPI.INSTANCE.getNbtSortRule(jsonElement.getAsString());
-                if (rule == null) {
-                    BogoSorter.LOGGER.error("Could not find nbt sort rule with key '{}'.", jsonElement.getAsString());
+                String key;
+                boolean inverted = false;
+                if (jsonElement.isJsonObject()) {
+                    key = JsonHelper.getString(jsonElement.getAsJsonObject(), "", "key", "name");
+                    inverted = JsonHelper.getBoolean(jsonElement.getAsJsonObject(), false, "inverted", "ascending", "asc");
                 } else {
-                    nbtSortRules.add(rule);
+                    key = jsonElement.getAsString();
+                }
+                NbtSortRule rule = BogoSortAPI.INSTANCE.getNbtSortRule(key);
+                if (rule.isEmpty()) {
+                    BogoSorter.LOGGER.error("Could not find nbt sort rule with key '{}'.", key);
+                } else {
+                    rule.setInverted(inverted);
+                    BogoSorterConfig.nbtSortRules.add(rule);
                 }
             }
         }

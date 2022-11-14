@@ -38,7 +38,7 @@ public class AvailableListItem<T> extends Widget implements IWidgetParent {
                         setAvailable(false);
                     }
                 })
-                .setBackground(ModularUITextures.BASE_BUTTON, ModularUITextures.ARROW_RIGHT);
+                .setBackground(ModularUITextures.BASE_BUTTON, ModularUITextures.ARROW_RIGHT.withFixedSize(10, 10, 0, 5));
         children.add(content);
         children.add(moveButton);
     }

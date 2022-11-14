@@ -43,6 +43,10 @@ public class SortRule<T> implements Comparator<T> {
         return syncId;
     }
 
+    public boolean isEmpty() {
+        return false;
+    }
+
     @Override
     public int compare(T o1, T o2) {
         return inverted ? comparator.compare(o2, o1) : comparator.compare(o1, o2);

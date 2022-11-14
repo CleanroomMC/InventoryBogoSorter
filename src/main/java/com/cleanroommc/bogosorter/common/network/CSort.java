@@ -44,15 +44,17 @@ public class CSort implements IPacket {
         buf.writeVarInt(sortRules.size());
         for (SortRule<ItemStack> sortRule : sortRules) {
             buf.writeVarInt(sortRule.getSyncId());
+            buf.writeBoolean(sortRule.isInverted());
         }
         buf.writeVarInt(nbtSortRules.size());
         for (NbtSortRule sortRule : nbtSortRules) {
             buf.writeVarInt(sortRule.getSyncId());
+            buf.writeBoolean(sortRule.isInverted());
         }
     }
 
     @Override
-    public void decode(PacketBuffer buf) throws IOException {
+    public void decode(PacketBuffer buf) {
         hover = buf.readVarInt();
         player = buf.readBoolean();
         clientSortDataList = new ArrayList<>();
@@ -61,11 +63,15 @@ public class CSort implements IPacket {
         }
         sortRules = new ArrayList<>();
         for (int i = 0, n = buf.readVarInt(); i < n; i++) {
-            sortRules.add(BogoSortAPI.INSTANCE.getItemSortRule(buf.readVarInt()));
+            SortRule<ItemStack> sortRule = BogoSortAPI.INSTANCE.getItemSortRule(buf.readVarInt());
+            sortRule.setInverted(buf.readBoolean());
+            sortRules.add(sortRule);
         }
         nbtSortRules = new ArrayList<>();
         for (int i = 0, n = buf.readVarInt(); i < n; i++) {
-            nbtSortRules.add(BogoSortAPI.INSTANCE.getNbtSortRule(buf.readVarInt()));
+            NbtSortRule sortRule = BogoSortAPI.INSTANCE.getNbtSortRule(buf.readVarInt());
+            sortRule.setInverted(buf.readBoolean());
+            nbtSortRules.add(sortRule);
         }
     }
 
