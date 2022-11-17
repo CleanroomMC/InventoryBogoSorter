@@ -76,10 +76,15 @@ public class ItemColorHelper {
     }
 
     private static int getItemColors(ItemStack itemStack) {
-        final ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-        final int renderColor = itemColors.colorMultiplier(itemStack, 0);
-        final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
-        return getColors(textureAtlasSprite, renderColor);
+        try {
+            final ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
+            final int renderColor = itemColors.colorMultiplier(itemStack, 0);
+            final TextureAtlasSprite textureAtlasSprite = getTextureAtlasSprite(itemStack);
+            return getColors(textureAtlasSprite, renderColor);
+        } catch (Exception ignored) {
+            // this will crash for most if not all eu2 items and there is nothing I can do about it except this
+            return 0;
+        }
     }
 
     private static int getBlockColors(ItemStack itemStack, Block block) {
