@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.common.sort;
 
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import gregtech.api.items.metaitem.FoodUseManager;
 import gregtech.api.items.metaitem.MetaItem;
@@ -48,7 +49,7 @@ public class ItemCompareHelper {
         if (item.getItem() instanceof ItemFood) {
             return ((ItemFood) item.getItem()).getSaturationModifier(item);
         }
-        if (item.getItem() instanceof MetaItem) {
+        if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof MetaItem) {
             MetaItem<?>.MetaValueItem valueItem = ((MetaItem<?>) item.getItem()).getItem(item);
             if (valueItem.getUseManager() instanceof FoodUseManager) {
                 IFoodBehavior stats = ((FoodUseManager) valueItem.getUseManager()).getFoodStats();
@@ -62,7 +63,7 @@ public class ItemCompareHelper {
         if (item.getItem() instanceof ItemFood) {
             return ((ItemFood) item.getItem()).getHealAmount(item);
         }
-        if (item.getItem() instanceof MetaItem) {
+        if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof MetaItem) {
             MetaItem<?>.MetaValueItem valueItem = ((MetaItem<?>) item.getItem()).getItem(item);
             if (valueItem.getUseManager() instanceof FoodUseManager) {
                 IFoodBehavior stats = ((FoodUseManager) valueItem.getUseManager()).getFoodStats();
