@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter;
 
+import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
 import com.cleanroommc.bogosorter.common.config.BogoSortCommandTree;
@@ -55,6 +56,7 @@ public class BogoSorter {
         if (NetworkUtils.isDedicatedClient()) {
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
             PlayerConfig.syncToServer();
+            MinecraftForge.EVENT_BUS.register(HotbarSwap.class);
         }
     }
 

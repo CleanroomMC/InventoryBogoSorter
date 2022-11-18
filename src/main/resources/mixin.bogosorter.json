@@ -9,5 +9,8 @@
     "MixinContainerHorseInventory",
     "MixinEntityLivingBase",
     "MixinItemStack"
+  ],
+  "client": [
+    "MixinMinecraft"
   ]
 }

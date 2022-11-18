@@ -27,6 +27,7 @@ public class NetworkHandler {
         registerC2S(CShortcut.class);
         registerC2S(CConfigSync.class);
         registerC2S(CSort.class);
+        registerC2S(CHotbarSwap.class);
         registerS2C(SReloadConfig.class);
         registerS2C(SRefillSound.class);
     }

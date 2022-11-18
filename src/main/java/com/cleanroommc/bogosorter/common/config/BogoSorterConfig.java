@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.common.config;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.modularui.common.internal.JsonHelper;
 import com.google.gson.JsonArray;
@@ -32,6 +33,7 @@ public class BogoSorterConfig {
         JsonObject general = new JsonObject();
         general.addProperty("enableAutoRefill", playerConfig.enableAutoRefill);
         general.addProperty("refillDmgThreshold", playerConfig.autoRefillDamageThreshold);
+        general.addProperty("enableHotbarSwap", HotbarSwap.isEnabled());
 
         json.add("General", general);
 
@@ -65,6 +67,7 @@ public class BogoSorterConfig {
             JsonObject general = json.getAsJsonObject("General");
             playerConfig.enableAutoRefill = general.get("enableAutoRefill").getAsBoolean();
             playerConfig.autoRefillDamageThreshold = general.get("refillDmgThreshold").getAsShort();
+            HotbarSwap.setEnabled(JsonHelper.getBoolean(general, true, "enableHotbarSwap"));
         }
         sortRules.clear();
         if (json.has("ItemSortRules")) {

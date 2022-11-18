@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.common.config;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.modularui.api.ModularUITextures;
@@ -82,7 +83,7 @@ public class ConfigGui {
         return new Scrollable()
                 .setVerticalScroll()
                 .widget(new Rectangle().setColor(0xFF606060).asWidget()
-                        .setSize(1, 220)
+                        .setSize(1, 30)
                         .setPos(32, 0))
                 .widget(new MultiChildWidget()
                         .addChild(new CycleButtonWidget()
@@ -107,6 +108,23 @@ public class ConfigGui {
                                 .setSize(160, 14)
                                 .setPos(35, 0))
                         .setPos(0, 18))
+                .widget(new MultiChildWidget()
+                        .addChild(new TextWidget(Text.localised("bogosort.gui.hotbar_scrolling"))
+                                .setTextAlignment(Alignment.CenterLeft)
+                                .addTooltip(Text.localised("bogosort.gui.hotbar_scrolling.tooltip"))
+                                .setTooltipShowUpDelay(10)
+                                .setSize(160, 14)
+                                .setPos(5, 0))
+                        .addChild(new CycleButtonWidget()
+                                .setToggle(HotbarSwap::isEnabled, HotbarSwap::setEnabled)
+                                .setTexture(TOGGLE_BUTTON)
+                                .setSize(14, 14)
+                                .setPos(8, 16))
+                        .addChild(new TextWidget(Text.localised("bogosort.gui.enabled"))
+                                .setTextAlignment(Alignment.CenterLeft)
+                                .setSize(160, 14)
+                                .setPos(35, 16))
+                        .setPos(0, 40))
                 .setSize(200, 220)
                 .setPos(5, 5);
     }
