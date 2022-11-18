@@ -38,18 +38,21 @@ public class CShortcut implements IPacket {
         Container container = handler.player.openContainer;
         if (container == null) throw new IllegalStateException("Expected open container on server");
         Slot slot = container.getSlot(slotNumber);
+        if (!slot.canTakeStack(handler.player)) {
+            return null;
+        }
         switch (type) {
             case MOVE_ALL:
-                ShortcutHandler.moveAllItems(container, slot, false);
+                ShortcutHandler.moveAllItems(handler.player, container, slot, false);
                 break;
             case MOVE_ALL_SAME:
-                ShortcutHandler.moveAllItems(container, slot, true);
+                ShortcutHandler.moveAllItems(handler.player, container, slot, true);
                 break;
             case MOVE_SINGLE:
-                ShortcutHandler.moveSingleItem(container, slot, false);
+                ShortcutHandler.moveSingleItem(handler.player, container, slot, false);
                 break;
             case MOVE_SINGLE_EMPTY:
-                ShortcutHandler.moveSingleItem(container, slot, true);
+                ShortcutHandler.moveSingleItem(handler.player, container, slot, true);
                 break;
         }
         container.detectAndSendChanges();

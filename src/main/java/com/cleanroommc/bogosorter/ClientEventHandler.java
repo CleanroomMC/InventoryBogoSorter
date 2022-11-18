@@ -55,7 +55,7 @@ public class ClientEventHandler {
     }
 
     private static boolean canDoShortcutAction() {
-        return Minecraft.getSystemTime() - timeShortcut > 500;
+        return Minecraft.getSystemTime() - timeShortcut > 50;
     }
 
     // i have to subscribe to 4 events to catch all inputs

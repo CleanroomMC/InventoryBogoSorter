@@ -7,6 +7,7 @@ import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -24,7 +25,7 @@ public class ShortcutHandler {
         return true;
     }
 
-    public static boolean moveSingleItem(Container container, Slot slot, boolean emptySlot) {
+    public static boolean moveSingleItem(EntityPlayer player, Container container, Slot slot, boolean emptySlot) {
         if (slot == null || slot.getStack().isEmpty()) return false;
         ItemStack stack = slot.getStack();
         ItemStack toInsert = stack.copy();
@@ -40,9 +41,9 @@ public class ShortcutHandler {
             toInsert = emptySlot ? insertToSlots(otherSlots, toInsert, true) : insertToSlots(otherSlots, toInsert);
         } else {
             List<Slot> otherSlots = new ArrayList<>();
-            boolean player = BogoSortAPI.isPlayerOrHotbarSlot(slot);
+            boolean isPlayer = BogoSortAPI.isPlayerOrHotbarSlot(slot);
             for (Slot slot1 : container.inventorySlots) {
-                if (player != BogoSortAPI.isPlayerOrHotbarSlot(slot1)) {
+                if (isPlayer != BogoSortAPI.isPlayerOrHotbarSlot(slot1)) {
                     otherSlots.add(slot1);
                 }
             }
@@ -54,9 +55,13 @@ public class ShortcutHandler {
             }
         }
         if (toInsert.isEmpty()) {
-            stack.shrink(1);
+            toInsert = stack.copy();
+            toInsert.setCount(1);
+            slot.decrStackSize(1);
+            slot.onTake(player, toInsert);
+            return true;
         }
-        return toInsert.isEmpty();
+        return false;
     }
 
     public static boolean moveAllItems(GuiContainer guiContainer, boolean sameItemOnly) {
@@ -68,7 +73,7 @@ public class ShortcutHandler {
         return true;
     }
 
-    public static boolean moveAllItems(Container container, Slot slot, boolean sameItemOnly) {
+    public static boolean moveAllItems(EntityPlayer player, Container container, Slot slot, boolean sameItemOnly) {
         if (slot == null || !BogoSortAPI.isValidSortable(container)) return false;
         ItemStack stack = slot.getStack().copy();
         if (sameItemOnly && stack.isEmpty()) return false;
@@ -81,9 +86,17 @@ public class ShortcutHandler {
         for (Slot[] slotRow : slots) {
             for (Slot slot1 : slotRow) {
                 ItemStack stackInSlot = slot1.getStack();
-                if (stackInSlot.isEmpty() || (sameItemOnly && !ItemHandlerHelper.canItemStacksStack(stack, stackInSlot))) continue;
-                ItemStack remainder = insertToSlots(otherSlots, stackInSlot);
-                slot1.putStack(remainder);
+                ItemStack copy = stackInSlot.copy();
+                if (stackInSlot.isEmpty() || (sameItemOnly && !ItemHandlerHelper.canItemStacksStack(stack, stackInSlot)))
+                    continue;
+                ItemStack remainder = insertToSlots(otherSlots, copy);
+                int inserted = stackInSlot.getCount() - remainder.getCount();
+                if (inserted > 0) {
+                    copy = stackInSlot.copy();
+                    stackInSlot.setCount(inserted);
+                    slot1.decrStackSize(inserted);
+                    slot1.onTake(player, copy);
+                }
             }
         }
         return true;
