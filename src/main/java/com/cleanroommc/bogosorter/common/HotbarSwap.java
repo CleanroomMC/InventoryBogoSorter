@@ -21,16 +21,25 @@ public class HotbarSwap {
 
     private static final ResourceLocation WIDGETS_TEX_PATH = new ResourceLocation("textures/gui/widgets.png");
 
-    private boolean show;
-    private int verticalIndex = 0;
+    private static boolean enabled = true;
+    private static boolean show;
+    private static int verticalIndex = 0;
 
-    public boolean doCancelHotbarSwap() {
+    public static boolean doCancelHotbarSwap() {
         return show;
     }
 
+    public static void setEnabled(boolean enabled) {
+        HotbarSwap.enabled = enabled;
+    }
+
+    public static boolean isEnabled() {
+        return enabled;
+    }
+
     @SubscribeEvent
-    public void render(RenderGameOverlayEvent.Post event) {
-        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && show) {
+    public static void render(RenderGameOverlayEvent.Post event) {
+        if (enabled && event.getType() == RenderGameOverlayEvent.ElementType.ALL && show) {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
             EntityPlayer player = Minecraft.getMinecraft().player;
@@ -60,8 +69,10 @@ public class HotbarSwap {
     }
 
     @SubscribeEvent
-    public void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (Minecraft.getMinecraft().world == null || Minecraft.getMinecraft().player == null) return;
+    public static void onKeyInput(InputEvent.KeyInputEvent event) {
+        if (!enabled || Minecraft.getMinecraft().world == null || Minecraft.getMinecraft().player == null) {
+            return;
+        }
         if (show) {
             if (!GuiScreen.isAltKeyDown()) {
                 // swap items on server
@@ -83,7 +94,8 @@ public class HotbarSwap {
     }
 
     @SubscribeEvent
-    public void onMouseInput(InputEvent.MouseInputEvent event) {
+    public static void onMouseInput(InputEvent.MouseInputEvent event) {
+        if (!enabled) return;
         if (show) {
             int scroll = Mouse.getEventDWheel();
             if (scroll != 0) {
@@ -98,7 +110,7 @@ public class HotbarSwap {
         }
     }
 
-    private void renderHotbarItem(int x, int y, float partialTicks, EntityPlayer player, ItemStack stack) {
+    private static void renderHotbarItem(int x, int y, float partialTicks, EntityPlayer player, ItemStack stack) {
         if (!stack.isEmpty()) {
             RenderItem renderer = Minecraft.getMinecraft().getRenderItem();
             float f = (float) stack.getAnimationsToGo() - partialTicks;

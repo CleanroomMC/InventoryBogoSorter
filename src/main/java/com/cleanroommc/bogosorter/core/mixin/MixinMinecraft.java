@@ -1,6 +1,6 @@
 package com.cleanroommc.bogosorter.core.mixin;
 
-import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.common.HotbarSwap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -17,7 +17,7 @@ public class MixinMinecraft {
 
     @Redirect(method = "runTickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/InventoryPlayer;changeCurrentItem(I)V"))
     public void mouseInput(InventoryPlayer instance, int direction) {
-        if (BogoSorter.hotbarSwap == null || !BogoSorter.hotbarSwap.doCancelHotbarSwap()) {
+        if (!HotbarSwap.doCancelHotbarSwap()) {
             player.inventory.changeCurrentItem(direction);
         }
     }

@@ -12,6 +12,9 @@ bogosort.gui.enable_refill=Enable auto hotbar refill
 bogosort.gui.refill_threshold=Auto refill damage threshold
 bogosort.gui.ascending=Ascending
 bogosort.gui.descending=Descending
+bogosort.gui.hotbar_scrolling=Hotbar column scrolling
+bogosort.gui.hotbar_scrolling.tooltip=Scroll though inventory column by holding ALT
+bogosort.gui.enabled=Enabled
 
 bogosort.command.config_relaod.success=Reloaded sorting config
 
