@@ -10,7 +10,7 @@ import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
-import com.cleanroommc.modularui.api.KeyBindAPI;
+import com.cleanroommc.modularui.keybind.KeyBindAPI;
 import gregtech.GregTechVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION, dependencies = "required-after:modularui@[1.0.6,);required-after:mixinbooter@[4.2,)")
+@Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION, dependencies = "required-after:modularui@[2.0.0,);required-after:mixinbooter@[4.2,)")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
 

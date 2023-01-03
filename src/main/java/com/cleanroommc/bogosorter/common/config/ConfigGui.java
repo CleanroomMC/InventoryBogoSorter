@@ -1,235 +1,152 @@
 package com.cleanroommc.bogosorter.common.config;
 
-import com.cleanroommc.bogosorter.BogoSortAPI;
-import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
-import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
-import com.cleanroommc.modularui.api.ModularUITextures;
-import com.cleanroommc.modularui.api.drawable.Text;
-import com.cleanroommc.modularui.api.drawable.UITexture;
-import com.cleanroommc.modularui.api.drawable.shapes.Rectangle;
-import com.cleanroommc.modularui.api.math.Alignment;
-import com.cleanroommc.modularui.api.math.Color;
-import com.cleanroommc.modularui.api.screen.ModularWindow;
-import com.cleanroommc.modularui.api.screen.UIBuildContext;
-import com.cleanroommc.modularui.api.widget.Widget;
-import com.cleanroommc.modularui.common.widget.*;
-import com.cleanroommc.modularui.common.widget.textfield.TextFieldWidget;
-import net.minecraft.item.ItemStack;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.api.layout.CrossAxisAlignment;
+import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.drawable.Rectangle;
+import com.cleanroommc.modularui.drawable.UITexture;
+import com.cleanroommc.modularui.screen.GuiContext;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.ModularScreen;
+import com.cleanroommc.modularui.utils.Alignment;
+import com.cleanroommc.modularui.utils.Color;
+import com.cleanroommc.modularui.widget.ParentWidget;
+import com.cleanroommc.modularui.widget.ScrollWidget;
+import com.cleanroommc.modularui.widgets.CycleButtonWidget;
+import com.cleanroommc.modularui.widgets.TabButton;
+import com.cleanroommc.modularui.widgets.TabContainer;
+import com.cleanroommc.modularui.widgets.TextWidget;
+import com.cleanroommc.modularui.widgets.layout.Column;
+import com.cleanroommc.modularui.widgets.layout.Row;
+import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-public class ConfigGui {
+public class ConfigGui extends ModularScreen {
 
     public static boolean wasOpened = false;
     public static final UITexture TOGGLE_BUTTON = UITexture.fullImage("bogosorter:gui/toggle_config");
     public static final UITexture ARROW_DOWN_UP = UITexture.fullImage("bogosorter:gui/arrow_down_up");
 
-    public static ModularWindow createConfigWindow(UIBuildContext buildContext) {
-        buildContext.setShowJei(false);
-        buildContext.addCloseListener(() -> {
-            Serializer.saveConfig();
-            PlayerConfig.syncToServer();
-            MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
-            wasOpened = false;
-        });
-        ModularWindow.Builder builder = ModularWindow.builder(300, 250);
-        builder.setBackground(ModularUITextures.VANILLA_BACKGROUND)
-                .widget(new TextWidget(Text.localised("bogosort.gui.title"))
-                        .setTextAlignment(Alignment.Center)
-                        .setPos(0, 5)
-                        .setSize(300, 11))
-                .widget(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
-                        .setPos(89, 16)
-                        .setSize(1, 231))
-                .widget(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
-                        .setPos(3, 16)
-                        .setSize(294, 1))
-                .widget(new TabContainer()
-                        .addTabButton(new TabButton(0)
-                                .setBackground(false, new Rectangle().setColor(0x00000001), Text.localised("bogosort.gui.tab.general.name").color(Color.WHITE.normal).shadow())
-                                .setBackground(true, new Rectangle().setColor(0xFFb1b1b1), Text.localised("bogosort.gui.tab.general.name").color(Color.WHITE.normal).shadow())
-                                .setSize(86, 16)
-                                .setPos(-87, 0))
-                        .addTabButton(new TabButton(1)
-                                .setBackground(false, new Rectangle().setColor(0x00000001), Text.localised("bogosort.gui.tab.item_sort_rules.name").color(Color.WHITE.normal).shadow())
-                                .setBackground(true, new Rectangle().setColor(0xFFb1b1b1), Text.localised("bogosort.gui.tab.item_sort_rules.name").color(Color.WHITE.normal).shadow())
-                                .setSize(86, 16)
-                                .setPos(-87, 16))
-                        .addTabButton(new TabButton(2)
-                                .setBackground(false, new Rectangle().setColor(0x00000001), Text.localised("bogosort.gui.tab.nbt_sort_rules.name").color(Color.WHITE.normal).shadow())
-                                .setBackground(true, new Rectangle().setColor(0xFFb1b1b1), Text.localised("bogosort.gui.tab.nbt_sort_rules.name").color(Color.WHITE.normal).shadow())
-                                .setSize(86, 16)
-                                .setPos(-87, 32))
-                        .addPage(createGeneralConfigUI(buildContext))
-                        .addPage(createItemSortConfigUI(buildContext))
-                        .addPage(createNbtSortConfigUI(buildContext))
-                        .setSize(210, 236)
-                        .setPos(90, 17));
-
-        wasOpened = true;
-        return builder.build();
+    public ConfigGui() {
+        super(BogoSorter.ID, "config");
     }
 
-    private static Widget createGeneralConfigUI(UIBuildContext buildContext) {
-        TextFieldWidget dmgThresholdField = new TextFieldWidget();
-        dmgThresholdField.setText(String.valueOf(PlayerConfig.getClient().autoRefillDamageThreshold));
-        return new Scrollable()
-                .setVerticalScroll()
-                .widget(new Rectangle().setColor(0xFF606060).asWidget()
-                        .setSize(1, 30)
-                        .setPos(32, 0))
-                .widget(new MultiChildWidget()
-                        .addChild(new CycleButtonWidget()
-                                .setToggle(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val)
-                                .setTexture(TOGGLE_BUTTON)
-                                .setSize(14, 14)
-                                .setPos(8, 0))
-                        .addChild(new TextWidget(Text.localised("bogosort.gui.enable_refill"))
-                                .setTextAlignment(Alignment.CenterLeft)
-                                .setSize(160, 14)
-                                .setPos(35, 0))
-                        .setPos(0, 0))
-                .widget(new MultiChildWidget()
-                        .addChild(dmgThresholdField
-                                .setGetterInt(() -> PlayerConfig.getClient().autoRefillDamageThreshold)
-                                .setSetterInt(val -> PlayerConfig.getClient().autoRefillDamageThreshold = val)
-                                .setNumbers(1, Short.MAX_VALUE)
-                                .setTextAlignment(Alignment.Center)
-                                .setSize(30, 14))
-                        .addChild(new TextWidget(Text.localised("bogosort.gui.refill_threshold"))
-                                .setTextAlignment(Alignment.CenterLeft)
-                                .setSize(160, 14)
-                                .setPos(35, 0))
-                        .setPos(0, 18))
-                .widget(new MultiChildWidget()
-                        .addChild(new TextWidget(Text.localised("bogosort.gui.hotbar_scrolling"))
-                                .setTextAlignment(Alignment.CenterLeft)
-                                .addTooltip(Text.localised("bogosort.gui.hotbar_scrolling.tooltip"))
-                                .setTooltipShowUpDelay(10)
-                                .setSize(160, 14)
-                                .setPos(5, 0))
-                        .addChild(new CycleButtonWidget()
-                                .setToggle(HotbarSwap::isEnabled, HotbarSwap::setEnabled)
-                                .setTexture(TOGGLE_BUTTON)
-                                .setSize(14, 14)
-                                .setPos(8, 16))
-                        .addChild(new TextWidget(Text.localised("bogosort.gui.enabled"))
-                                .setTextAlignment(Alignment.CenterLeft)
-                                .setSize(160, 14)
-                                .setPos(35, 16))
-                        .setPos(0, 40))
-                .setSize(200, 220)
-                .setPos(5, 5);
+    @Override
+    public ModularPanel buildUI(GuiContext guiContext) {
+        ModularPanel panel = ModularPanel.defaultPanel(guiContext, 300, 250);
+
+        Rectangle activeTab = new Rectangle().setColor(0xFFb1b1b1);
+        Rectangle tab = new Rectangle().setColor(0x00000001);
+
+        panel.child(new TextWidget(IKey.lang("bogosort.gui.title"))
+                        .left(0.5f)
+                        .top(5))
+                .child(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
+                        .left(4)
+                        .right(4)
+                        .height(1)
+                        .top(16))
+                .child(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
+                        .top(16)
+                        .bottom(4)
+                        .width(1)
+                        .left(89))
+                .child(new TabContainer()
+                        .left(90)
+                        .right(4)
+                        .top(17)
+                        .bottom(4)
+                        .tabButtonSize(86, 16)
+                        .buttonBarSide(TabContainer.Side.LEFT)
+                        .tabButton(new TabButton(0)
+                                .background(tab, IKey.lang("bogosort.gui.tab.general.name"))
+                                .activeBackground(activeTab, IKey.lang("bogosort.gui.tab.general.name"))
+                                .textureInset(-1))
+                        .tabButton(new TabButton(1)
+                                .background(tab, IKey.lang("bogosort.gui.tab.item_sort_rules.name"))
+                                .activeBackground(activeTab, IKey.lang("bogosort.gui.tab.item_sort_rules.name"))
+                                .textureInset(-1))
+                        .tabButton(new TabButton(2)
+                                .background(tab, IKey.lang("bogosort.gui.tab.nbt_sort_rules.name"))
+                                .activeBackground(activeTab, IKey.lang("bogosort.gui.tab.nbt_sort_rules.name"))
+                                .textureInset(-1))
+                        .addPage(createGeneralConfigUI(guiContext))
+                        .addPage(createItemSortConfigUI(guiContext))
+                        .addPage(createNbtSortConfigUI(guiContext))
+                );
+
+        return panel;
     }
 
-    private static Widget createItemSortConfigUI(UIBuildContext buildContext) {
-        SortableListWidget<SortRule<ItemStack>> sortableListWidget = SortableListWidget.removable(BogoSortAPI.INSTANCE.getItemSortRuleList(), BogoSorterConfig.sortRules);
-        Map<SortRule<ItemStack>, AvailableListItem<SortRule<ItemStack>>> widgetMap = new HashMap<>();
-        for (SortRule<ItemStack> sortRule : BogoSortAPI.INSTANCE.getItemSortRuleList()) {
-            AvailableListItem<SortRule<ItemStack>> listItem = new AvailableListItem<>(sortRule, new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
-                    .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
-                    .setTooltipShowUpDelay(10)
-                    .setSize(80, 20));
-            listItem.setAvailable(!BogoSorterConfig.sortRules.contains(sortRule))
-                    .setMoveConsumer(clickData -> sortableListWidget.addElement(sortRule))
-                    .setAvailableBackground(ModularUITextures.BASE_BUTTON)
-                    .setUnavailableBackground(ModularUITextures.FLUID_SLOT)
-                    .setSize(90, 20);
-            widgetMap.put(sortRule, listItem);
-        }
+    public IWidget createGeneralConfigUI(GuiContext context) {
+        return new ScrollWidget<>()
+                .size(1f, 1f)
+                .child(new Column()
+                        .crossAxisAlignment(CrossAxisAlignment.START)
+                        .child(new Rectangle().setColor(0xFF606060).asWidget()
+                                .top(1)
+                                .left(32)
+                                .size(1, 40))
+                        .child(new Row()
+                                .coverChildrenHeight()
+                                .child(new CycleButtonWidget()
+                                        .toggle(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val)
+                                        .texture(TOGGLE_BUTTON)
+                                        .size(14, 14)
+                                        .margin(8, 4))
+                                .child(IKey.lang("bogosort.gui.enable_refill").asWidget()
+                                        .height(14)
+                                        .marginLeft(10)))
+                        .child(new Row()
+                                .margin(0, 4)
+                                .coverChildrenHeight()
+                                .child(new TextFieldWidget()
+                                        .getterLong(() -> PlayerConfig.getClient().autoRefillDamageThreshold)
+                                        .setterLong(val -> PlayerConfig.getClient().autoRefillDamageThreshold = (int) val)
+                                        .setNumbers(1, Short.MAX_VALUE)
+                                        .setTextAlignment(Alignment.Center)
+                                        .background(new Rectangle().setColor(0xFFb1b1b1))
+                                        .size(30, 14)
+                                        .marginLeft(1))
+                                .child(IKey.lang("bogosort.gui.refill_threshold").asWidget()
+                                        .height(14)
+                                        .alignment(Alignment.CenterLeft)
+                                        .marginLeft(10)))
+                        .child(new TextWidget(IKey.lang("bogosort.gui.hotbar_scrolling"))
+                                .alignment(Alignment.CenterLeft)
+                                .left(5).height(14)
+                                .tooltip(tooltip -> tooltip.showUpTimer(10)
+                                        .addLine(IKey.lang("bogosort.gui.hotbar_scrolling.tooltip"))))
+                        .child(new Row()
+                                .coverChildrenHeight()
+                                .child(new CycleButtonWidget()
+                                        .toggle(HotbarSwap::isEnabled, HotbarSwap::setEnabled)
+                                        .texture(TOGGLE_BUTTON)
+                                        .size(14, 14)
+                                        .margin(8, 4))
+                                .child(new TextWidget(IKey.lang("bogosort.gui.enabled"))
+                                        .alignment(Alignment.CenterLeft)
+                                        .height(14))));
 
-        List<Widget> orderedWidgetList = BogoSortAPI.INSTANCE.getItemSortRuleList().stream().map(widgetMap::get).collect(Collectors.toList());
-
-        return new MultiChildWidget()
-                .addChild(new TextWidget(Text.localised("bogosort.gui.available_sort_rules"))
-                        .setTextAlignment(Alignment.Center)
-                        .setPos(5, 5)
-                        .setSize(90, 18))
-                .addChild(new TextWidget(Text.localised("bogosort.gui.configured_sort_rules"))
-                        .setTextAlignment(Alignment.Center)
-                        .setPos(105, 5)
-                        .setSize(100, 18))
-                .addChild(ListWidget.builder(new ArrayList<>(orderedWidgetList), (widget, index) -> widget)
-                        .setPos(5, 24)
-                        .setSize(90, 200))
-                .addChild(sortableListWidget
-                        .setWidgetCreator(ConfigGui::makeSortRuleWidget)
-                        .setSaveFunction(list -> {
-                            BogoSorterConfig.sortRules.clear();
-                            BogoSorterConfig.sortRules.addAll(list);
-                        })
-                        .setOnRemoveElement(sortRule -> widgetMap.get(sortRule).setAvailable(true))
-                        .setPos(105, 24)
-                        .setSize(100, 200));
     }
 
-    private static Widget createNbtSortConfigUI(UIBuildContext buildContext) {
-        SortableListWidget<NbtSortRule> sortableListWidget = SortableListWidget.removable(BogoSortAPI.INSTANCE.getNbtSortRuleList(), BogoSorterConfig.nbtSortRules);
-        Map<NbtSortRule, AvailableListItem<NbtSortRule>> widgetMap = new HashMap<>();
-        for (NbtSortRule sortRule : BogoSortAPI.INSTANCE.getNbtSortRuleList()) {
-            AvailableListItem<NbtSortRule> listItem = new AvailableListItem<>(sortRule, new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
-                    .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
-                    .setTooltipShowUpDelay(10)
-                    .setSize(80, 20));
-            listItem.setAvailable(!BogoSorterConfig.nbtSortRules.contains(sortRule))
-                    .setMoveConsumer(clickData -> sortableListWidget.addElement(sortRule))
-                    .setAvailableBackground(ModularUITextures.BASE_BUTTON)
-                    .setUnavailableBackground(ModularUITextures.FLUID_SLOT)
-                    .setSize(90, 20);
-            widgetMap.put(sortRule, listItem);
-        }
-
-        List<Widget> orderedWidgetList = BogoSortAPI.INSTANCE.getNbtSortRuleList().stream().map(widgetMap::get).collect(Collectors.toList());
-
-        return new MultiChildWidget()
-                .addChild(new TextWidget(Text.localised("bogosort.gui.available_sort_rules"))
-                        .setTextAlignment(Alignment.Center)
-                        .setPos(5, 5)
-                        .setSize(90, 18))
-                .addChild(new TextWidget(Text.localised("bogosort.gui.configured_sort_rules"))
-                        .setTextAlignment(Alignment.Center)
-                        .setPos(105, 5)
-                        .setSize(100, 18))
-                .addChild(ListWidget.builder(new ArrayList<>(orderedWidgetList), (widget, index) -> widget)
-                        .setPos(5, 24)
-                        .setSize(90, 200))
-                .addChild(sortableListWidget
-                        .setWidgetCreator(ConfigGui::makeSortRuleWidget)
-                        .setSaveFunction(list -> {
-                            BogoSorterConfig.nbtSortRules.clear();
-                            BogoSorterConfig.nbtSortRules.addAll(list);
-                        })
-                        .setOnRemoveElement(sortRule -> widgetMap.get(sortRule).setAvailable(true))
-                        .setPos(105, 24)
-                        .setSize(100, 200));
+    public IWidget createItemSortConfigUI(GuiContext context) {
+        return new ParentWidget<>().size(1f, 1f);
     }
 
-    private static Widget makeSortRuleWidget(SortRule<?> sortRule) {
-        return new Row()
-                .addChild(new CycleButtonWidget()
-                        .setToggle(sortRule::isInverted, sortRule::setInverted)
-                        .setTexture(ARROW_DOWN_UP)
-                        .addTooltip(0, Text.localised("bogosort.gui.descending"))
-                        .addTooltip(1, Text.localised("bogosort.gui.ascending"))
-                        .setBackground(ModularUITextures.BASE_BUTTON)
-                        .setSize(14, 20))
-                .addChild(new TextWidget(Text.localised(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow())
-                        .setTextAlignment(Alignment.Center)
-                        .addTooltip(Text.localised(sortRule.getDescriptionLangKey()))
-                        .setTooltipShowUpDelay(10)
-                        .setBackground(ModularUITextures.BASE_BUTTON)
-                        .setSize(66, 20))
-                .setSize(80, 20);
+    public IWidget createNbtSortConfigUI(GuiContext context) {
+        return new ParentWidget<>().size(1f, 1f);
     }
 
-    private static Widget createOrePrefixConfigUI(UIBuildContext buildContext) {
-        return new MultiChildWidget();
+    @Override
+    public void onClose() {
+        super.onClose();
+        Serializer.saveConfig();
+        PlayerConfig.syncToServer();
+        MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
+        wasOpened = false;
     }
 }

@@ -1,19 +1,10 @@
 package com.cleanroommc.bogosorter.common.config;
 
-import com.cleanroommc.modularui.api.ModularUITextures;
-import com.cleanroommc.modularui.api.drawable.IDrawable;
-import com.cleanroommc.modularui.api.drawable.Text;
-import com.cleanroommc.modularui.api.math.Color;
-import com.cleanroommc.modularui.api.math.Pos2d;
-import com.cleanroommc.modularui.api.widget.IWidgetParent;
-import com.cleanroommc.modularui.api.widget.Widget;
-import com.cleanroommc.modularui.common.widget.ButtonWidget;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class AvailableListItem<T> extends Widget implements IWidgetParent {
+/*public class AvailableListItem<T> extends Widget implements IWidgetParent {
 
     private final T value;
     private final Widget content;
@@ -92,4 +83,4 @@ public class AvailableListItem<T> extends Widget implements IWidgetParent {
         }
         return this;
     }
-}
+}*/

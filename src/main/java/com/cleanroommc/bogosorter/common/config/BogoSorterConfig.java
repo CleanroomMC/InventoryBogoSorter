@@ -5,7 +5,6 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
-import com.cleanroommc.modularui.common.internal.JsonHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -40,7 +39,7 @@ public class BogoSorterConfig {
         JsonArray jsonRules = new JsonArray();
         for (SortRule<ItemStack> rule : sortRules) {
             if (rule != BogoSortAPI.EMPTY_ITEM_SORT_RULE) {
-                JsonObject ruleJson= new JsonObject();
+                JsonObject ruleJson = new JsonObject();
                 ruleJson.addProperty("name", rule.getKey());
                 ruleJson.addProperty("inverted", rule.isInverted());
                 jsonRules.add(ruleJson);
@@ -51,7 +50,7 @@ public class BogoSorterConfig {
         jsonRules = new JsonArray();
         for (NbtSortRule rule : nbtSortRules) {
             if (rule != BogoSortAPI.EMPTY_NBT_SORT_RULE) {
-                JsonObject ruleJson= new JsonObject();
+                JsonObject ruleJson = new JsonObject();
                 ruleJson.addProperty("name", rule.getKey());
                 ruleJson.addProperty("inverted", rule.isInverted());
                 jsonRules.add(ruleJson);

@@ -2,7 +2,7 @@ package com.cleanroommc.bogosorter.common.sort.color;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.modularui.api.math.Color;
+import com.cleanroommc.modularui.utils.Color;
 import gregtech.api.block.machines.BlockMachine;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.util.GTUtility;
