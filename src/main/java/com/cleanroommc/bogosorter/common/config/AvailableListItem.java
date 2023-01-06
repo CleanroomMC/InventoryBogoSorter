@@ -1,10 +1,15 @@
 package com.cleanroommc.bogosorter.common.config;
 
+import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.utils.ClickData;
+import com.cleanroommc.modularui.widget.Widget;
+import com.cleanroommc.modularui.widgets.ButtonWidget;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/*public class AvailableListItem<T> extends Widget implements IWidgetParent {
+public class AvailableListItem<T> extends Widget<AvailableListItem<T>> {
 
     private final T value;
     private final Widget content;
@@ -22,8 +27,8 @@ import java.util.function.Consumer;
 
     @Override
     public void initChildren() {
-        moveButton = new ButtonWidget()
-                .setOnClick((clickData, widget) -> {
+        moveButton = new ButtonWidget<>()
+                .onMousePressed(mouseButton -> {
                     if (isAvailable()) {
                         moveConsumer.accept(clickData);
                         setAvailable(false);
@@ -83,4 +88,4 @@ import java.util.function.Consumer;
         }
         return this;
     }
-}*/
+}
