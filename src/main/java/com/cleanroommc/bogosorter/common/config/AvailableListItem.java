@@ -1,64 +1,68 @@
 package com.cleanroommc.bogosorter.common.config;
 
 import com.cleanroommc.modularui.api.drawable.IDrawable;
+import com.cleanroommc.modularui.api.layout.ILayoutWidget;
+import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.utils.ClickData;
 import com.cleanroommc.modularui.widget.Widget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
-public class AvailableListItem<T> extends Widget<AvailableListItem<T>> {
+public class AvailableListItem<T> extends Widget<AvailableListItem<T>> implements ILayoutWidget {
 
     private final T value;
-    private final Widget content;
-    private Widget moveButton;
+    private final Widget<?> content;
+    private IWidget moveButton;
     private IDrawable[] unavailableTexture;
     private IDrawable[] availableTexture;
-    private Consumer<ClickData> moveConsumer;
+    private IntConsumer moveConsumer;
     private boolean available = true;
-    private final List<Widget> children = new ArrayList<>();
+    private final List<IWidget> children = new ArrayList<>();
 
-    public AvailableListItem(T value, Widget content) {
+    public AvailableListItem(T value, Widget<?> content) {
         this.value = value;
         this.content = content;
     }
 
     @Override
-    public void initChildren() {
+    public void onInit() {
         moveButton = new ButtonWidget<>()
                 .onMousePressed(mouseButton -> {
                     if (isAvailable()) {
-                        moveConsumer.accept(clickData);
+                        moveConsumer.accept(mouseButton);
                         setAvailable(false);
+                        return true;
                     }
+                    return false;
                 })
-                .setBackground(ModularUITextures.BASE_BUTTON, ModularUITextures.ARROW_RIGHT.withFixedSize(10, 10, 0, 5));
+                .background(GuiTextures.BUTTON/*, ModularUITextures.ARROW_RIGHT.withFixedSize(10, 10, 0, 5)*/);
         children.add(content);
         children.add(moveButton);
-    }
 
-    @Override
-    public void onInit() {
         if (unavailableTexture == null) {
             unavailableTexture = content.getBackground() == null ? new IDrawable[0] : content.getBackground();
         }
         if (availableTexture == null) {
             availableTexture = content.getBackground() == null ? new IDrawable[0] : content.getBackground();
         }
-        content.setBackground(available ? availableTexture : unavailableTexture);
+        content.background(available ? availableTexture : unavailableTexture);
     }
 
     @Override
-    public void layoutChildren(int maxWidth, int maxHeight) {
-        moveButton.setSize(10, Math.max(content.getSize().height, 20));
-        moveButton.setPos(content.getSize().width, content.getSize().height / 2 - moveButton.getSize().height / 2);
-        content.setPos(Pos2d.ZERO);
+    public void layoutWidgets() {
+        this.moveButton.getArea().setSize(10, Math.max(content.getArea().height, 20));
+        this.moveButton.getArea().rx = content.getArea().width;
+        this.moveButton.getArea().ry = content.getArea().height / 2 - moveButton.getArea().height / 2;
     }
 
     @Override
-    public List<Widget> getChildren() {
+    public @NotNull List<IWidget> getChildren() {
         return children;
     }
 
@@ -76,15 +80,15 @@ public class AvailableListItem<T> extends Widget<AvailableListItem<T>> {
         return this;
     }
 
-    public AvailableListItem<T> setMoveConsumer(Consumer<ClickData> moveConsumer) {
+    public AvailableListItem<T> setMoveConsumer(IntConsumer moveConsumer) {
         this.moveConsumer = moveConsumer;
         return this;
     }
 
     public AvailableListItem<T> setAvailable(boolean available) {
         this.available = available;
-        if (isInitialised()) {
-            content.setBackground(available ? availableTexture : unavailableTexture);
+        if (isValid()) {
+            content.background(available ? availableTexture : unavailableTexture);
         }
         return this;
     }

@@ -1,9 +1,8 @@
 package com.cleanroommc.bogosorter.common.config;
 
-import com.cleanroommc.modularui.ModularUI;
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
-import com.cleanroommc.modularui.widget.Widget;
 import com.cleanroommc.modularui.widgets.TextWidget;
 
 import java.util.*;
@@ -21,6 +20,8 @@ public class SortableListWidget<T> extends ListWidget<SortableListWidget<T>> {
     private Consumer<T> onRemoveElement = t -> {
     };
     private boolean elementsRemovable = false;
+
+    private boolean initLayout = true;
 
     public static <T> SortableListWidget<T> removable(Collection<T> allValues, List<T> startValues) {
         return new SortableListWidget<>(true, allValues, startValues);
@@ -47,23 +48,27 @@ public class SortableListWidget<T> extends ListWidget<SortableListWidget<T>> {
             listItem.init(this);
             listItem.setCurrentIndex(i++);
             this.widgetMap.put(t, listItem);
-            this.children.add(listItem);
+            addChild(listItem, -1);
         }
     }
 
     @Override
-    public void onFirstRebuild() {
-        this.getChildren().clear();
-        for (T t : startValues) {
-            SortableListItem<T> listItem = widgetMap.get(t);
-            if (listItem == null) {
-                ModularUI.LOGGER.error("Unexpected error: Could not find sortable list item for {}!", t);
-                continue;
+    public void layoutWidgets() {
+        super.layoutWidgets();
+        if (this.initLayout) {
+            this.initLayout = false;
+            this.getChildren().clear();
+            for (T t : startValues) {
+                SortableListItem<T> listItem = widgetMap.get(t);
+                if (listItem == null) {
+                    BogoSorter.LOGGER.error("Unexpected error: Could not find sortable list item for {}!", t);
+                    continue;
+                }
+                addChild(listItem, -1);
             }
-            this.children.add(listItem);
+            assignIndexes();
+            layoutWidgets();
         }
-        assignIndexes();
-        layoutWidgets();
     }
 
     @Override
@@ -73,7 +78,7 @@ public class SortableListWidget<T> extends ListWidget<SortableListWidget<T>> {
     }
 
     public List<T> createElements() {
-        return this.children.stream().map(widget -> ((SortableListItem<T>) widget).getValue()).collect(Collectors.toList());
+        return getChildren().stream().map(widget -> ((SortableListItem<T>) widget).getValue()).collect(Collectors.toList());
     }
 
     protected void removeElement(int index) {
@@ -127,7 +132,7 @@ public class SortableListWidget<T> extends ListWidget<SortableListWidget<T>> {
     }
 
     public void addElement(T t) {
-        if (!isInitialised()) {
+        if (!isValid()) {
             throw new IllegalStateException("List needs to be initialised to add elements dynamically.");
         }
         if (!widgetMap.containsKey(t)) {
@@ -136,12 +141,12 @@ public class SortableListWidget<T> extends ListWidget<SortableListWidget<T>> {
         SortableListItem<T> listItem = widgetMap.get(t);
         listItem.setActive(true);
         listItem.setEnabled(true);
-        this.getChildren().add(listItem);
+        super.addChild(listItem, -1);
         assignIndexes();
-        checkNeedsRebuild();
+        layoutWidgets();
     }
 
-    public SortableListWidget<T> setWidgetCreator(Function<T, Widget> widgetCreator) {
+    public SortableListWidget<T> setWidgetCreator(Function<T, IWidget> widgetCreator) {
         this.widgetCreator = widgetCreator;
         return this;
     }

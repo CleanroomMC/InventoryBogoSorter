@@ -18,15 +18,21 @@ import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widget.ScrollWidget;
-import com.cleanroommc.modularui.widgets.*;
+import com.cleanroommc.modularui.widgets.CycleButtonWidget;
+import com.cleanroommc.modularui.widgets.TabButton;
+import com.cleanroommc.modularui.widgets.TabContainer;
+import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.layout.Column;
 import com.cleanroommc.modularui.widgets.layout.Row;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ConfigGui extends ModularScreen {
 
@@ -142,44 +148,60 @@ public class ConfigGui extends ModularScreen {
         Map<SortRule<ItemStack>, AvailableListItem<SortRule<ItemStack>>> widgetMap = new HashMap<>();
         for (SortRule<ItemStack> sortRule : BogoSortAPI.INSTANCE.getItemSortRuleList()) {
             AvailableListItem<SortRule<ItemStack>> listItem = new AvailableListItem<>(sortRule, new TextWidget(IKey.lang(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow(true))
-                    .addTooltip(IKey.lang(sortRule.getDescriptionLangKey()))
-                    .setTooltipShowUpDelay(10)
-                    .setSize(80, 20));
+                    .tooltip(tooltip -> tooltip.addLine(IKey.lang(sortRule.getDescriptionLangKey())).showUpTimer(10))
+                    .size(80, 20));
             listItem.setAvailable(!BogoSorterConfig.sortRules.contains(sortRule))
                     .setMoveConsumer(clickData -> sortableListWidget.addElement(sortRule))
                     .setAvailableBackground(GuiTextures.BUTTON)
                     .setUnavailableBackground(GuiTextures.SLOT_DARK)
-                    .setSize(90, 20);
+                    .size(90, 20);
             widgetMap.put(sortRule, listItem);
         }
 
-        List<Widget> orderedWidgetList = BogoSortAPI.INSTANCE.getItemSortRuleList().stream().map(widgetMap::get).collect(Collectors.toList());
+        List<IWidget> orderedWidgetList = BogoSortAPI.INSTANCE.getItemSortRuleList().stream().map(widgetMap::get).collect(Collectors.toList());
 
-        return new MultiChildWidget()
-                .addChild(new TextWidget(Text.localised("bogosort.gui.available_sort_rules"))
-                        .setTextAlignment(Alignment.Center)
-                        .setPos(5, 5)
-                        .setSize(90, 18))
-                .addChild(new TextWidget(Text.localised("bogosort.gui.configured_sort_rules"))
-                        .setTextAlignment(Alignment.Center)
-                        .setPos(105, 5)
-                        .setSize(100, 18))
-                .addChild(ListWidget.builder(new ArrayList<>(orderedWidgetList), (widget, index) -> widget)
-                        .setPos(5, 24)
-                        .setSize(90, 200))
-                .addChild(sortableListWidget
-                        .setWidgetCreator(ConfigGuiOld::makeSortRuleWidget)
+        return new ParentWidget<>()
+                .child(new TextWidget(IKey.lang("bogosort.gui.available_sort_rules"))
+                        .alignment(Alignment.Center)
+                        .pos(5, 5)
+                        .size(90, 18))
+                .child(new TextWidget(IKey.lang("bogosort.gui.configured_sort_rules"))
+                        .alignment(Alignment.Center)
+                        .pos(105, 5)
+                        .size(100, 18))
+                .child(ListWidget.of(new ArrayList<>(orderedWidgetList), widget -> widget)
+                        .pos(5, 24)
+                        .size(90, 200))
+                .child(sortableListWidget
+                        .setWidgetCreator(ConfigGui::makeSortRuleWidget)
                         .setSaveFunction(list -> {
                             BogoSorterConfig.sortRules.clear();
                             BogoSorterConfig.sortRules.addAll(list);
                         })
                         .setOnRemoveElement(sortRule -> widgetMap.get(sortRule).setAvailable(true))
-                        .setPos(105, 24)
-                        .setSize(100, 200));
+                        .pos(105, 24)
+                        .size(100, 200));
     }
 
     public IWidget createNbtSortConfigUI(GuiContext context) {
         return new ParentWidget<>().size(1f, 1f);
+    }
+
+    private static IWidget makeSortRuleWidget(SortRule<?> sortRule) {
+        return new Row()
+                .child(new CycleButtonWidget()
+                        .toggle(sortRule::isInverted, sortRule::setInverted)
+                        .texture(ARROW_DOWN_UP)
+                        .addTooltip(0, IKey.lang("bogosort.gui.descending"))
+                        .addTooltip(1, IKey.lang("bogosort.gui.ascending"))
+                        .background(GuiTextures.BUTTON)
+                        .size(14, 20))
+                .child(new TextWidget(IKey.lang(sortRule.getNameLangKey()).color(Color.WHITE.normal).shadow(true))
+                        .alignment(Alignment.Center)
+                        .tooltip(tooltip -> tooltip.addLine(IKey.lang(sortRule.getDescriptionLangKey())).showUpTimer(10))
+                        .background(GuiTextures.BUTTON)
+                        .size(66, 20))
+                .size(80, 20);
     }
 
     @Override

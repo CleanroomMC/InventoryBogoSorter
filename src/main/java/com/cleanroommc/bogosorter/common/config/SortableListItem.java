@@ -1,19 +1,19 @@
 package com.cleanroommc.bogosorter.common.config;
 
-import com.cleanroommc.modularui.api.widget.IDraggable;
+import com.cleanroommc.modularui.api.layout.ILayoutWidget;
+import com.cleanroommc.modularui.api.widget.IGuiElement;
 import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.GuiTextures;
+import com.cleanroommc.modularui.screen.LocatedWidget;
 import com.cleanroommc.modularui.widget.DraggableWidget;
-import com.cleanroommc.modularui.widget.Widget;
+import com.cleanroommc.modularui.widget.sizer.IResizeable;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
-import net.minecraft.client.renderer.GlStateManager;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SortableListItem<T> extends DraggableWidget<SortableListItem<T>> {
+public class SortableListItem<T> extends DraggableWidget<SortableListItem<T>> implements ILayoutWidget {
 
     private final IWidget upButton;
     private final IWidget downButton;
@@ -26,6 +26,7 @@ public class SortableListItem<T> extends DraggableWidget<SortableListItem<T>> {
     private boolean active = true;
 
     public SortableListItem(T value) {
+        flex().width(1f);
         this.value = value;
         this.upButton = new ButtonWidget<>()
                 .onMouseTapped(mouseButton -> {
@@ -65,27 +66,8 @@ public class SortableListItem<T> extends DraggableWidget<SortableListItem<T>> {
     @Override
     public void onInit() {
         this.content = this.listWidget.getWidgetCreator().apply(this.value);
+        this.content.flex().relative(this.listWidget);
         makeChildrenList();
-    }
-
-    @Override
-    protected @NotNull Size determineSize(int maxWidth, int maxHeight) {
-        int w = content.getSize().width + (listWidget.areElementsRemovable() ? 20 : 10);
-        int h = Math.max(content.getSize().height, 20);
-        Size size = new Size(w, h);
-
-        // need to layout children after sizing because size may be needed for positioning
-        if (content.getSize().height >= 20) {
-            this.content.setPosSilent(Pos2d.ZERO);
-        } else {
-            this.content.setPosSilent(new Pos2d(0, size.height / 2 - content.getSize().height / 2));
-        }
-        this.upButton.setPosSilent(new Pos2d(content.getSize().width, 0));
-        this.downButton.setPosSilent(new Pos2d(content.getSize().width, size.height - 10));
-        this.removeButton.setSize(10, size.height);
-        this.removeButton.setPosSilent(new Pos2d(size.width - 10, 0));
-
-        return size;
     }
 
     private void makeChildrenList() {
@@ -99,38 +81,7 @@ public class SortableListItem<T> extends DraggableWidget<SortableListItem<T>> {
     }
 
     @Override
-    public boolean canHover() {
-        return true;
-    }
-
-    @Override
-    public void renderMovingState(float partialTicks) {
-        Cursor cursor = getContext().getCursor();
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(-getAbsolutePos().x, -getAbsolutePos().y, 0);
-        GlStateManager.translate(cursor.getX() - relativeClickPos.x, cursor.getY() - relativeClickPos.y, 0);
-        drawInternal(partialTicks, true);
-        GlStateManager.popMatrix();
-    }
-
-    @Override
-    public boolean onDragStart(int button) {
-        setActive(false);
-        setEnabled(false);
-        relativeClickPos = getContext().getMousePos().subtract(getAbsolutePos());
-        return true;
-    }
-
-    @Override
-    public void onDragEnd(boolean successful) {
-        setActive(true);
-        setEnabled(true);
-        checkNeedsRebuild();
-        relativeClickPos = null;
-    }
-
-    @Override
-    public boolean canDropHere(@Nullable Widget widget, boolean isInBounds) {
+    public boolean canDropHere(int x, int y, @Nullable IGuiElement widget) {
         if (widget != null && widget.getParent() instanceof SortableListItem) {
             SortableListItem<T> listItem = (SortableListItem<T>) widget.getParent();
             return value.getClass().isAssignableFrom(listItem.value.getClass()) && currentIndex != listItem.currentIndex;
@@ -148,12 +99,11 @@ public class SortableListItem<T> extends DraggableWidget<SortableListItem<T>> {
 
     @Nullable
     private SortableListItem<T> findSortableListItem() {
-        if (!listWidget.isUnderMouse(getContext().getMousePos())) return null;
-        for (Object hovered : getContext().getCursor().getAllHovered()) {
-            if (hovered instanceof ModularWindow && hovered != getWindow()) return null;
-            if (hovered instanceof SortableListItem) {
-                if (((SortableListItem<?>) hovered).listWidget == listWidget) {
-                    return (SortableListItem<T>) hovered;
+        if (!listWidget.getArea().isInside(getContext().getMouseX(), getContext().getMouseY())) return null;
+        for (LocatedWidget widget : getPanel().getHovering()) {
+            if (widget.getWidget() instanceof SortableListItem) {
+                if (((SortableListItem<?>) widget.getWidget()).listWidget == listWidget) {
+                    return (SortableListItem<T>) widget.getWidget();
                 }
             }
         }
@@ -161,22 +111,14 @@ public class SortableListItem<T> extends DraggableWidget<SortableListItem<T>> {
     }
 
     @Override
-    public boolean isMoving() {
-        return moving;
-    }
-
-    @Override
     public void setMoving(boolean moving) {
-        this.moving = moving;
+        super.setMoving(moving);
+        setEnabled(!moving);
+        setActive(!moving);
     }
 
     public T getValue() {
         return value;
-    }
-
-    @Override
-    public List<Widget> getChildren() {
-        return this.allChildren;
     }
 
     public boolean isActive() {
@@ -185,5 +127,51 @@ public class SortableListItem<T> extends DraggableWidget<SortableListItem<T>> {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public void resize() {
+        this.upButton.resize();
+        this.downButton.resize();
+        this.removeButton.resize();
+        this.content.resize();
+
+        IResizeable resizer = this.resizer();
+        if (resizer != null) {
+            if (resizer.isSkip()) {
+                return;
+            }
+
+            resizer.apply(this);
+        }
+
+        layoutWidgets();
+
+        if (resizer != null) {
+            resizer.postApply(this);
+        }
+
+        postLayoutWidgets();
+    }
+
+    @Override
+    public int getDefaultHeight() {
+        return Math.max(content.getArea().height, 20);
+    }
+
+    @Override
+    public void layoutWidgets() {
+        // need to layout children after sizing because size may be needed for positioning
+        if (content.getArea().height >= 20) {
+            this.content.getArea().rx = 0;
+            this.content.getArea().ry = 0;
+        } else {
+            this.content.getArea().rx = 0;
+            this.content.getArea().ry = getArea().height / 2 - content.getArea().height / 2;
+        }
+        this.upButton.getArea().rx = this.content.getArea().width;
+        this.downButton.getArea().rx = this.content.getArea().width;
+        this.downButton.getArea().ry = getArea().height - 10;
+        this.removeButton.getArea().rx = getArea().width - 10;
     }
 }
