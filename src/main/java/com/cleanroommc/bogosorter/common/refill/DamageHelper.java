@@ -1,34 +1,45 @@
 package com.cleanroommc.bogosorter.common.refill;
 
+import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.common.config.PlayerConfig;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.ISpecialArmor;
 
 public class DamageHelper {
 
-    public static int getDamage(ItemStack item) {
-        if (item.isEmpty()) return 0;
-        /*if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof IToolItem) {
-            return ((IToolItem) item.getItem()).getItemDamage(item);
-        }*/
-        return item.isItemStackDamageable() ? item.getItemDamage() : 0;
+    public static boolean damageItemHook(EntityPlayer player, ItemStack itemStack) {
+        PlayerConfig playerConfig = PlayerConfig.get(player);
+        if (!playerConfig.enableAutoRefill || playerConfig.autoRefillDamageThreshold <= 0) return false;
+
+        if (RefillHandler.shouldHandleRefill(player, itemStack) && isNotArmor(itemStack)) {
+            ItemStack handItem = player.getHeldItemMainhand();
+            if (handItem != itemStack) {
+                handItem = player.getHeldItemOffhand();
+                if (handItem != itemStack) {
+                    BogoSorter.LOGGER.info("Broken item was not found in player hand!");
+                    return false;
+                }
+            }
+
+            int durabilityLeft = itemStack.getMaxDamage() - itemStack.getItemDamage();
+            if (durabilityLeft >= 0 && durabilityLeft < playerConfig.autoRefillDamageThreshold) {
+                return RefillHandler.handle(player.inventory.currentItem, itemStack, player, true);
+            }
+        }
+        return false;
     }
 
-    public static int getMaxDamage(ItemStack item) {
-        if (item.isEmpty()) return 0;
-        /*if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof IToolItem) {
-            return ((IToolItem) item.getItem()).getMaxItemDamage(item);
-        }*/
-        return Math.max(item.getMaxDamage(), 0);
+    private static boolean isNotArmor(ItemStack itemStack) {
+        if (itemStack.getItem() instanceof ItemArmor || itemStack.getItem() instanceof ISpecialArmor) return false;
+        EntityEquipmentSlot slot = itemStack.getItem().getEquipmentSlot(itemStack);
+        return slot == null || slot == EntityEquipmentSlot.MAINHAND || slot == EntityEquipmentSlot.OFFHAND;
     }
 
     public static int getDurability(ItemStack item) {
         if (item.isEmpty()) return 0;
-        /*if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof IToolItem) {
-            IToolItem tool = (IToolItem) item.getItem();
-            if (isUnbreakable(item)) {
-                return tool.getMaxItemDamage(item);
-            }
-            return tool.getMaxItemDamage(item) - tool.getItemDamage(item);
-        }*/
         if (item.getMaxDamage() <= 0) return 0;
         if (isUnbreakable(item)) {
             return item.getMaxDamage() + 1;
