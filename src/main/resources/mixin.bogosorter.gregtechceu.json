@@ -7,6 +7,6 @@
   "mixins": [
     "MixinMetaTileEntityCrate",
     "MixinModularUI",
-    "MixinToolMetaItem"
+    "MixinToolHelper"
   ]
 }

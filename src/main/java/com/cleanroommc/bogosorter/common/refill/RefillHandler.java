@@ -6,7 +6,7 @@ import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.network.SRefillSound;
-import gregtech.api.items.IToolItem;
+import gregtech.api.items.toolitem.IGTTool;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
@@ -88,19 +88,18 @@ public class RefillHandler {
     }
 
     public boolean handleRefill() {
-
         if (brokenItem.getItem() instanceof ItemBlock) {
             return findItem(false);
         } else if (brokenItem.isItemStackDamageable()) {
-            similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem();
-            isDamageable = true;
-            return findNormalDamageable();
-        } else if ((BogoSorter.isGTCELoaded() || BogoSorter.isGTCEuLoaded()) && brokenItem.getItem() instanceof IToolItem) {
-            exactItemMatcher = (stack, stack2) -> {
-                if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
-                if (!stack.hasTagCompound()) return true;
-                return OreDictHelper.getGtToolMaterial(stack).equals(OreDictHelper.getGtToolMaterial(stack2));
-            };
+            if ((BogoSorter.isGTCELoaded() || BogoSorter.isGTCEuLoaded()) && brokenItem.getItem() instanceof IGTTool) {
+                exactItemMatcher = (stack, stack2) -> {
+                    if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
+                    if (!stack.hasTagCompound()) return true;
+                    return OreDictHelper.getGtToolMaterial(stack).equals(OreDictHelper.getGtToolMaterial(stack2));
+                };
+            } else {
+                similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem();
+            }
             isDamageable = true;
             return findNormalDamageable();
         } else {
@@ -115,7 +114,7 @@ public class RefillHandler {
         while (slotsIterator.hasNext()) {
             int slot = slotsIterator.next();
             ItemStack found = inventory.mainInventory.get(slot);
-            if (found.isEmpty() || (isDamageable && DamageHelper.getDurability(found) <= playerConfig.autoRefillDamageThreshold)) {
+            if (found.isEmpty() || (this.swapItems && this.isDamageable && DamageHelper.getDurability(found) <= playerConfig.autoRefillDamageThreshold)) {
                 slotsIterator.remove();
                 continue;
             }
