@@ -88,7 +88,7 @@ public class PIMVisitor extends ClassVisitor implements Opcodes {
                 visitVarInsn(ALOAD, 0);
                 visitFieldInsn(GETFIELD, PIM_CLASS, DEOBF ? "player" : "field_73090_b", "L" + PLAYER_MP_CLASS + ";");
                 visitVarInsn(ALOAD, 9);
-                visitFieldInsn(GETSTATIC, HAND_CLASS, DEOBF ? "MAIN_HAND" : "field_184828_bq", "L" + HAND_CLASS + ";");
+                visitFieldInsn(GETSTATIC, HAND_CLASS, "MAIN_HAND", "L" + HAND_CLASS + ";");
                 visitOnDestroy(this);
                 BogoSorter.LOGGER.info("Applied PIM tryHarvestBlock ASM");
             }

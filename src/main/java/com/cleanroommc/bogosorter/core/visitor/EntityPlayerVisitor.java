@@ -86,7 +86,7 @@ public class EntityPlayerVisitor extends ClassVisitor implements Opcodes {
             if (opcode == INVOKEVIRTUAL && PIMVisitor.PLAYER_CLASS.equals(owner) && PIMVisitor.SET_HELD_ITEM_FUNC.equals(name)) {
                 visitVarInsn(ALOAD, 0);
                 visitVarInsn(ALOAD, 25);
-                visitFieldInsn(GETSTATIC, PIMVisitor.HAND_CLASS, DEOBF ? "MAIN_HAND" : "field_184828_bq", "L" + PIMVisitor.HAND_CLASS + ";");
+                visitFieldInsn(GETSTATIC, PIMVisitor.HAND_CLASS, "MAIN_HAND", "L" + PIMVisitor.HAND_CLASS + ";");
                 PIMVisitor.visitOnDestroy(this);
                 BogoSorter.LOGGER.info("Applied EntityPlayer attackTargetEntityWithCurrentItem ASM");
             }
