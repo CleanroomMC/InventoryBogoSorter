@@ -33,6 +33,8 @@ import net.minecraft.inventory.*;
 import net.minecraftforge.fml.common.Loader;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
+import rustic.common.tileentity.ContainerCabinet;
+import rustic.common.tileentity.ContainerCabinetDouble;
 import t145.metalchests.containers.ContainerMetalChest;
 import thebetweenlands.common.inventory.container.ContainerPouch;
 import thedarkcolour.futuremc.container.ContainerBarrel;
@@ -293,6 +295,15 @@ public class DefaultCompat {
                 if (slot > 0) {
                     builder.addSlotGroup(9, 0, slot);
                 }
+            });
+        }
+
+        if (Loader.isModLoaded("rustic")) {
+            api.addCompat(ContainerCabinet.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, 27);
+            });
+            api.addCompat(ContainerCabinetDouble.class, (container, builder) -> {
+                builder.addSlotGroup(9, 0, 54);
             });
         }
     }

@@ -109,6 +109,7 @@ dependencies {
 	provided 'curse.maven:betweenlands-243363:3540287'
 	provided 'curse.maven:terrafirmacraft-302973:3645502'
 	provided 'curse.maven:galacticraft_legacy-564236:3919260'
+	provided 'curse.maven:rustic-256141:3107974'
 }
 
 sourceSets {
