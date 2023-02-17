@@ -19,7 +19,6 @@ public class DamageHelper {
             if (handItem != itemStack) {
                 handItem = player.getHeldItemOffhand();
                 if (handItem != itemStack) {
-                    BogoSorter.LOGGER.info("Broken item was not found in player hand!");
                     return false;
                 }
             }
