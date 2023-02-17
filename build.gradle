@@ -110,6 +110,8 @@ dependencies {
 	provided 'curse.maven:terrafirmacraft-302973:3645502'
 	provided 'curse.maven:galacticraft_legacy-564236:3919260'
 	provided 'curse.maven:rustic-256141:3107974'
+	provided 'curse.maven:charset_lib-284523:3656492'
+	provided 'curse.maven:charset_storage_chests-298584:3656498'
 }
 
 sourceSets {
