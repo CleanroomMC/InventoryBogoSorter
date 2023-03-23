@@ -1,12 +1,10 @@
 {
-  "package": "com.cleanroommc.bogosorter.core.mixin.gtceu",
+  "package": "com.cleanroommc.bogosorter.core.mixin.charset",
   "refmap": "mixins.bogosorter.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinMetaTileEntityCrate",
-    "MixinModularUI",
-    "MixinToolHelper"
+    "MixinContainerChestCharset"
   ]
 }

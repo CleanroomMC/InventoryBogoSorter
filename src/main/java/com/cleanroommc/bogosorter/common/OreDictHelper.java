@@ -3,7 +3,7 @@ package com.cleanroommc.bogosorter.common;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
-import gregtech.api.items.toolitem.ToolMetaItem;
+import gregtech.api.items.toolitem.IGTTool;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -79,7 +79,7 @@ public class OreDictHelper {
     }
 
     public static String getMaterial(ItemStack item) {
-        if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof ToolMetaItem) {
+        if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof IGTTool) {
             return getGtToolMaterial(item);
         }
         if (BogoSorter.isTConstructLoaded() && item.getItem() instanceof IMaterialItem) {
@@ -91,19 +91,14 @@ public class OreDictHelper {
     @Optional.Method(modid = "gregtech")
     @NotNull
     public static String getGtToolMaterial(ItemStack itemStack) {
-        NBTTagCompound statsTag = itemStack.getSubCompound("GT.ToolStats");
+        NBTTagCompound statsTag = itemStack.getSubCompound("GT.Tool");
         if (statsTag == null) {
             return "";
         }
-        String toolMaterialName;
         if (statsTag.hasKey("Material")) {
-            toolMaterialName = statsTag.getString("Material");
-        } else if (statsTag.hasKey("PrimaryMaterial")) {
-            toolMaterialName = statsTag.getString("PrimaryMaterial");
-        } else {
-            return "";
+            return statsTag.getString("Material");
         }
-        return toolMaterialName;
+        return "";
     }
 
     public static String getOrePrefix(ItemStack item) {

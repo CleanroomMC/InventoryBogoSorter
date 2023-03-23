@@ -87,7 +87,7 @@ dependencies {
 	provided 'curse.maven:ae2_extended_life-570458:3811277'
 	provided 'curse.maven:ender_io-64578:3328811'
 	provided 'curse.maven:draconic_evolution-223565:3431261'
-	provided 'curse.maven:gregtech_ce_unofficial-557242:3859788'
+	provided 'curse.maven:gregtech_ce_unofficial-557242:4325257'
 	provided 'curse.maven:future_mc-310059:3842790'
 	provided 'curse.maven:tinkers_construct-74072:2902483'
 	provided 'curse.maven:projecte-226410:2702991'
@@ -109,6 +109,9 @@ dependencies {
 	provided 'curse.maven:betweenlands-243363:3540287'
 	provided 'curse.maven:terrafirmacraft-302973:3645502'
 	provided 'curse.maven:galacticraft_legacy-564236:3919260'
+	provided 'curse.maven:rustic-256141:3107974'
+	provided 'curse.maven:charset_lib-284523:3656492'
+	provided 'curse.maven:charset_storage_chests-298584:3656498'
 }
 
 sourceSets {
