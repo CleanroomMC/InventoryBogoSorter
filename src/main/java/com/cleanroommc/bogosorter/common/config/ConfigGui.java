@@ -147,7 +147,7 @@ public class ConfigGui extends ModularScreen {
                                 .width(1f).height(16)
                                 .background(GuiTextures.BUTTON, IKey.str("Profile 1").color(Color.WHITE.normal).shadow(true)))
                         .child(IKey.str("Profiles are not yet implemented. They will come in one of the next versions.").asWidget()
-                                .top(40)))
+                                .top(20).width(81)))
                 .child(new Row()
                         .left(92).right(2)
                         .height(16).top(2)
