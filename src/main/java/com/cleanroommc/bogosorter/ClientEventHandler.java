@@ -9,8 +9,8 @@ import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.sort.ClientSortData;
 import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
-import com.cleanroommc.modularui.api.UIInfos;
 import com.cleanroommc.modularui.api.widget.Interactable;
+import com.cleanroommc.modularui.manager.GuiManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -159,7 +159,7 @@ public class ClientEventHandler {
                     previousScreen = null;
                 } else {
                     previousScreen = Minecraft.getMinecraft().currentScreen;
-                    UIInfos.openClientUI(Minecraft.getMinecraft().player, ConfigGui::createConfigWindow);
+                    GuiManager.openClientUI(Minecraft.getMinecraft().player, new ConfigGui());
                 }
                 timeConfigGui = t;
                 return true;
