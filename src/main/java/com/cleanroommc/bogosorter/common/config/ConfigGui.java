@@ -220,7 +220,7 @@ public class ConfigGui extends ModularScreen {
                                                 .top(4).right(4)
                                                 .background(GuiTextures.BUTTON, GuiTextures.CLOSE)
                                                 .onMousePressed(mouseButton1 -> {
-                                                    closePanel(panel1);
+                                                    panel1.animateClose();
                                                     return true;
                                                 }))
                                         .child(new Grid()
@@ -285,7 +285,7 @@ public class ConfigGui extends ModularScreen {
                                                 .top(4).right(4)
                                                 .background(GuiTextures.BUTTON, GuiTextures.CLOSE)
                                                 .onMousePressed(mouseButton1 -> {
-                                                    closePanel(panel1);
+                                                    panel1.animateClose();
                                                     return true;
                                                 }))
                                         .child(new Grid()

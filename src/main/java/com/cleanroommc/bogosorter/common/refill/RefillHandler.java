@@ -25,6 +25,18 @@ import java.util.function.BiPredicate;
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class RefillHandler {
 
+    private static final Class<?> gtToolClass;
+
+    static {
+        Class<?> clazz;
+        try {
+            clazz = Class.forName("gregtech.api.items.toolitem.IGTTool");
+        } catch (Exception ignored) {
+            clazz = null;
+        }
+        gtToolClass = clazz;
+    }
+
     private static final int[][] INVENTORY_PROXIMITY_MAP = {
             {1, 2, 3, 4, 5, 6, 7, 8, 27, 18, 9, 28, 19, 10, 29, 20, 11, 30, 21, 12, 31, 22, 13, 32, 23, 14, 33, 24, 15, 34, 25, 16, 35, 26, 17},
             {0, 2, 3, 4, 5, 6, 7, 8, 28, 19, 10, 27, 18, 9, 29, 20, 11, 30, 21, 12, 31, 22, 13, 32, 23, 14, 33, 24, 15, 34, 25, 16, 35, 26, 17},
@@ -91,7 +103,7 @@ public class RefillHandler {
         if (brokenItem.getItem() instanceof ItemBlock) {
             return findItem(false);
         } else if (brokenItem.isItemStackDamageable()) {
-            if ((BogoSorter.isGTCELoaded() || BogoSorter.isGTCEuLoaded()) && brokenItem.getItem() instanceof IGTTool) {
+            if (gtToolClass != null && isGTCEuTool(brokenItem)) {
                 exactItemMatcher = (stack, stack2) -> {
                     if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
                     if (!stack.hasTagCompound()) return true;
@@ -105,6 +117,10 @@ public class RefillHandler {
         } else {
             return findItem(true);
         }
+    }
+
+    private static boolean isGTCEuTool(ItemStack itemStack) {
+        return itemStack.getItem() instanceof IGTTool;
     }
 
     private boolean findItem(boolean exactOnly) {
