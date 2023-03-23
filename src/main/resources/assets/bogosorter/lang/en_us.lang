@@ -4,6 +4,7 @@ key.sort=Sort Inventory
 
 bogosort.gui.title=Sort Config
 bogosort.gui.tab.general.name=General
+bogosort.gui.tab.profiles.name=Profiles
 bogosort.gui.tab.item_sort_rules.name=Item sort rules
 bogosort.gui.tab.nbt_sort_rules.name=NBT sort rules
 bogosort.gui.available_sort_rules=Available Sort-Rules
@@ -12,7 +13,7 @@ bogosort.gui.enable_refill=Enable auto hotbar refill
 bogosort.gui.refill_threshold=Auto refill damage threshold
 bogosort.gui.ascending=Ascending
 bogosort.gui.descending=Descending
-bogosort.gui.hotbar_scrolling=Hotbar column scrolling
+bogosort.gui.hotbar_scrolling=Enable hotbar column scrolling
 bogosort.gui.hotbar_scrolling.tooltip=Scroll though inventory column by holding ALT
 bogosort.gui.enabled=Enabled
 
@@ -55,8 +56,8 @@ bogosort.sortrules.item.burn_time.description=Sorts items numerically by its fue
 bogosort.sortrules.item.is_block.description=Sorts items based on if the item is a block or not
 bogosort.sortrules.item.hunger.description=Sorts items numerically by its hunger refill value
 bogosort.sortrules.item.saturation.description=Sorts items numerically by its saturation refill value
-bogosort.sortrules.item.emc.description==Sorts items numerically by its EMC value
-bogosort.sortrules.item.color.description==Sorts items numerically by its color hue value
+bogosort.sortrules.item.emc.description=Sorts items numerically by its EMC value
+bogosort.sortrules.item.color.description=Sorts items numerically by its color hue value
 
 bogosort.sortrules.nbt.potion.name=Potions
 bogosort.sortrules.nbt.enchantment.name=Enchantments
