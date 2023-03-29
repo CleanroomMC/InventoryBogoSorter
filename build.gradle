@@ -78,8 +78,8 @@ dependencies {
 		deobfCompile 'zone.rong:mixinbooter:5.0'
     }
 
-	//deobfCompile 'curse.maven:modularui-624243:3873836'
-	compile files('etc/modularui-2.0.1.jar') // for testing purpose
+	deobfCompile 'curse.maven:modularui-624243:4464112'
+	//compile files('etc/modularui-2.0.2.jar') // for testing purpose
 	provided 'curse.maven:iron_chests-228756:2747935'
 	provided 'curse.maven:thermal_expansion-69163:2926431'
 	provided 'curse.maven:actually_additions-228404:3117927'

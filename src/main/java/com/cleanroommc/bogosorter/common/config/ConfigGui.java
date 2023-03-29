@@ -15,6 +15,8 @@ import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
+import com.cleanroommc.modularui.test.TestGui;
+import com.cleanroommc.modularui.theme.Theme;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.widget.ParentWidget;
@@ -34,8 +36,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ConfigGui extends ModularScreen {
 
     public static boolean wasOpened = false;
-    public static final UITexture TOGGLE_BUTTON = UITexture.fullImage("bogosorter:gui/toggle_config");
-    public static final UITexture ARROW_DOWN_UP = UITexture.fullImage("bogosorter:gui/arrow_down_up");
+    public static final UITexture TOGGLE_BUTTON = UITexture.fullImage("bogosorter:gui/toggle_config", false);
+    public static final UITexture ARROW_DOWN_UP = UITexture.fullImage("bogosorter:gui/arrow_down_up", false);
 
     private Map<SortRule<ItemStack>, AvailableElement> availableElements;
     private Map<NbtSortRule, AvailableElement> availableElementsNbt;
@@ -71,12 +73,12 @@ public class ConfigGui extends ModularScreen {
                         .height(16).top(18)
                         .child(new PageButton(0, controller)
                                 .size(0.5f, 1f)
-                                .background(true, GuiTextures.BUTTON, IKey.lang("bogosort.gui.tab.general.name").color(Color.WHITE.normal).shadow(true))
-                                .background(false, GuiTextures.SLOT_DARK, IKey.lang("bogosort.gui.tab.general.name").color(Color.WHITE.normal).shadow(true)))
+                                .background(false, GuiTextures.SLOT_DARK)
+                                .overlay(IKey.lang("bogosort.gui.tab.general.name")))
                         .child(new PageButton(1, controller)
                                 .size(0.5f, 1f)
-                                .background(true, GuiTextures.BUTTON, IKey.lang("bogosort.gui.tab.profiles.name").color(Color.WHITE.normal).shadow(true))
-                                .background(false, GuiTextures.SLOT_DARK, IKey.lang("bogosort.gui.tab.profiles.name").color(Color.WHITE.normal).shadow(true))));
+                                .background(false, GuiTextures.SLOT_DARK)
+                                .overlay(IKey.lang("bogosort.gui.tab.profiles.name"))));
         return panel;
     }
 
@@ -107,6 +109,7 @@ public class ConfigGui extends ModularScreen {
                                 .setterLong(val -> PlayerConfig.getClient().autoRefillDamageThreshold = (int) val)
                                 .setNumbers(1, Short.MAX_VALUE)
                                 .setTextAlignment(Alignment.Center)
+                                .setTextColor(IKey.TEXT_COLOR)
                                 .background(new Rectangle().setColor(0xFFb1b1b1))
                                 .size(30, 14))
                         .child(IKey.lang("bogosort.gui.refill_threshold").asWidget()
@@ -145,7 +148,7 @@ public class ConfigGui extends ModularScreen {
                         .width(81).bottom(2)
                         .child(new ButtonWidget<>()
                                 .width(1f).height(16)
-                                .background(GuiTextures.BUTTON, IKey.str("Profile 1").color(Color.WHITE.normal).shadow(true)))
+                                .overlay(IKey.str("Profile 1")))
                         .child(IKey.str("Profiles are not yet implemented. They will come in one of the next versions.").asWidget()
                                 .top(20).width(81)))
                 .child(new Row()
@@ -153,12 +156,12 @@ public class ConfigGui extends ModularScreen {
                         .height(16).top(2)
                         .child(new PageButton(0, controller)
                                 .size(0.5f, 1f)
-                                .background(true, GuiTextures.BUTTON, IKey.lang("bogosort.gui.tab.item_sort_rules.name").color(Color.WHITE.normal).shadow(true))
-                                .background(false, GuiTextures.SLOT_DARK, IKey.lang("bogosort.gui.tab.item_sort_rules.name").color(Color.WHITE.normal).shadow(true)))
+                                .background(false, GuiTextures.SLOT_DARK)
+                                .overlay(IKey.lang("bogosort.gui.tab.item_sort_rules.name")))
                         .child(new PageButton(1, controller)
                                 .size(0.5f, 1f)
-                                .background(true, GuiTextures.BUTTON, IKey.lang("bogosort.gui.tab.nbt_sort_rules.name").color(Color.WHITE.normal).shadow(true))
-                                .background(false, GuiTextures.SLOT_DARK, IKey.lang("bogosort.gui.tab.nbt_sort_rules.name").color(Color.WHITE.normal).shadow(true))))
+                                .background(false, GuiTextures.SLOT_DARK)
+                                .overlay(IKey.lang("bogosort.gui.tab.nbt_sort_rules.name"))))
                 .child(new PagedWidget<>()
                         .controller(controller)
                         .left(90).right(0)
@@ -172,7 +175,7 @@ public class ConfigGui extends ModularScreen {
         AtomicReference<SortableListWidget<SortRule<ItemStack>, SortListItem<SortRule<ItemStack>>>> ref = new AtomicReference<>(null);
         List<List<AvailableElement>> availableMatrix = Grid.mapToMatrix(2, allValues, (index, value) -> {
             AvailableElement availableElement = new AvailableElement()
-                    .background(IKey.lang(value.getNameLangKey()).color(Color.WHITE.normal).shadow(true))
+                    .overlay(IKey.lang(value.getNameLangKey()))
                     .tooltip(tooltip -> tooltip.addLine(IKey.lang(value.getDescriptionLangKey())).showUpTimer(4))
                     .size(80, 14)
                     .onMousePressed(mouseButton1 -> {
@@ -190,7 +193,7 @@ public class ConfigGui extends ModularScreen {
         }
 
         SortableListWidget<SortRule<ItemStack>, SortListItem<SortRule<ItemStack>>> sortableListWidget = SortableListWidget.sortableBuilder(allValues, BogoSorterConfig.sortRules, s -> {
-            TextWidget ruleText = IKey.lang(s.getNameLangKey()).asWidget().color(Color.WHITE.normal).shadow(true);
+            TextWidget ruleText = IKey.lang(s.getNameLangKey()).asWidget().widgetTheme(Theme.BUTTON);
             return new SortListItem<>(s, ruleText
                     .paddingLeft(7)
                     .background(GuiTextures.BUTTON)
@@ -210,7 +213,7 @@ public class ConfigGui extends ModularScreen {
                         .left(7).right(7).top(7).bottom(23))
                 .child(new ButtonWidget<>()
                         .bottom(7).size(12, 12).left(0.5f)
-                        .background(GuiTextures.BUTTON, GuiTextures.ADD)
+                        .overlay(GuiTextures.ADD)
                         .onMousePressed(mouseButton -> {
                             if (!isPanelOpen("choose_item_rules")) {
                                 ModularPanel panel1 = ModularPanel.defaultPanel(context, 200, 140).name("choose_item_rules");
@@ -218,7 +221,7 @@ public class ConfigGui extends ModularScreen {
                                         .child(new ButtonWidget<>()
                                                 .size(8, 8)
                                                 .top(4).right(4)
-                                                .background(GuiTextures.BUTTON, GuiTextures.CLOSE)
+                                                .overlay(GuiTextures.CLOSE)
                                                 .onMousePressed(mouseButton1 -> {
                                                     panel1.animateClose();
                                                     return true;
@@ -237,7 +240,7 @@ public class ConfigGui extends ModularScreen {
         AtomicReference<SortableListWidget<NbtSortRule, SortListItem<NbtSortRule>>> ref = new AtomicReference<>(null);
         List<List<AvailableElement>> availableMatrix = Grid.mapToMatrix(2, allValues, (index, value) -> {
             AvailableElement availableElement = new AvailableElement()
-                    .background(IKey.lang(value.getNameLangKey()).color(Color.WHITE.normal).shadow(true))
+                    .overlay(IKey.lang(value.getNameLangKey()))
                     .tooltip(tooltip -> tooltip.addLine(IKey.lang(value.getDescriptionLangKey())).showUpTimer(4))
                     .size(80, 14)
                     .onMousePressed(mouseButton1 -> {
@@ -255,10 +258,9 @@ public class ConfigGui extends ModularScreen {
         }
 
         SortableListWidget<NbtSortRule, SortListItem<NbtSortRule>> sortableListWidget = SortableListWidget.sortableBuilder(allValues, BogoSorterConfig.nbtSortRules, s -> {
-            TextWidget ruleText = IKey.lang(s.getNameLangKey()).asWidget().color(Color.WHITE.normal).shadow(true);
+            TextWidget ruleText = IKey.lang(s.getNameLangKey()).asWidget().widgetTheme(Theme.BUTTON);
             return new SortListItem<>(s, ruleText
                     .paddingLeft(7)
-                    .background(GuiTextures.BUTTON)
                     .tooltip(tooltip -> tooltip.addLine(IKey.lang(s.getDescriptionLangKey())).showUpTimer(10).excludeArea(ruleText.getArea())));
         });
         ref.set(sortableListWidget);
@@ -275,7 +277,7 @@ public class ConfigGui extends ModularScreen {
                         .left(7).right(7).top(7).bottom(23))
                 .child(new ButtonWidget<>()
                         .bottom(7).size(12, 12).left(0.5f)
-                        .background(GuiTextures.BUTTON, GuiTextures.ADD)
+                        .overlay(GuiTextures.ADD)
                         .onMousePressed(mouseButton -> {
                             if (!isPanelOpen("choose_nbt_rules")) {
                                 ModularPanel panel1 = ModularPanel.defaultPanel(context, 200, 140).name("choose_nbt_rules");
@@ -283,7 +285,7 @@ public class ConfigGui extends ModularScreen {
                                         .child(new ButtonWidget<>()
                                                 .size(8, 8)
                                                 .top(4).right(4)
-                                                .background(GuiTextures.BUTTON, GuiTextures.CLOSE)
+                                                .overlay(GuiTextures.CLOSE)
                                                 .onMousePressed(mouseButton1 -> {
                                                     panel1.animateClose();
                                                     return true;
@@ -328,17 +330,16 @@ public class ConfigGui extends ModularScreen {
     private static class AvailableElement extends ButtonWidget<AvailableElement> {
 
         private boolean available = true;
-        private IDrawable[] activeBackground = {GuiTextures.BUTTON}, background = {GuiTextures.SLOT_DARK};
+        private final IDrawable activeBackground = GuiTextures.BUTTON;
+        private final IDrawable background = GuiTextures.SLOT_DARK;
 
         @Override
         public AvailableElement background(IDrawable... background) {
-            activeBackground = ArrayUtils.addAll(activeBackground, background);
-            this.background = ArrayUtils.addAll(this.background, background);
-            return this;
+            throw new UnsupportedOperationException("Use overlay()");
         }
 
         @Override
-        public IDrawable[] getBackground() {
+        public IDrawable getBackground() {
             return this.available ? activeBackground : background;
         }
     }

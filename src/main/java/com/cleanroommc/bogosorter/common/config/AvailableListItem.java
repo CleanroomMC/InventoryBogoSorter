@@ -3,15 +3,14 @@ package com.cleanroommc.bogosorter.common.config;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.layout.ILayoutWidget;
 import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.drawable.DrawableArray;
 import com.cleanroommc.modularui.drawable.GuiTextures;
-import com.cleanroommc.modularui.utils.ClickData;
 import com.cleanroommc.modularui.widget.Widget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 public class AvailableListItem<T> extends Widget<AvailableListItem<T>> implements ILayoutWidget {
@@ -19,8 +18,8 @@ public class AvailableListItem<T> extends Widget<AvailableListItem<T>> implement
     private final T value;
     private final Widget<?> content;
     private IWidget moveButton;
-    private IDrawable[] unavailableTexture;
-    private IDrawable[] availableTexture;
+    private IDrawable unavailableTexture;
+    private IDrawable availableTexture;
     private IntConsumer moveConsumer;
     private boolean available = true;
     private final List<IWidget> children = new ArrayList<>();
@@ -45,11 +44,11 @@ public class AvailableListItem<T> extends Widget<AvailableListItem<T>> implement
         children.add(content);
         children.add(moveButton);
 
-        if (unavailableTexture == null) {
-            unavailableTexture = content.getBackground() == null ? new IDrawable[0] : content.getBackground();
+        if (unavailableTexture == null && content.getBackground() != null) {
+            unavailableTexture = content.getBackground();
         }
-        if (availableTexture == null) {
-            availableTexture = content.getBackground() == null ? new IDrawable[0] : content.getBackground();
+        if (availableTexture == null && content.getBackground() != null) {
+            availableTexture = content.getBackground();
         }
         content.background(available ? availableTexture : unavailableTexture);
     }
@@ -70,13 +69,30 @@ public class AvailableListItem<T> extends Widget<AvailableListItem<T>> implement
         return available;
     }
 
+    @Override
+    public IDrawable getBackground() {
+        return this.available ? this.availableTexture : this.unavailableTexture;
+    }
+
     public AvailableListItem<T> setUnavailableBackground(IDrawable... unavailableTexture) {
-        this.unavailableTexture = unavailableTexture;
+        if (unavailableTexture.length == 0) {
+            this.unavailableTexture = null;
+        } else if (unavailableTexture.length == 1) {
+            this.unavailableTexture = unavailableTexture[0];
+        } else {
+            this.unavailableTexture = new DrawableArray(unavailableTexture);
+        }
         return this;
     }
 
     public AvailableListItem<T> setAvailableBackground(IDrawable... availableTexture) {
-        this.availableTexture = availableTexture;
+        if (availableTexture.length == 0) {
+            this.availableTexture = null;
+        } else if (availableTexture.length == 1) {
+            this.availableTexture = availableTexture[0];
+        } else {
+            this.availableTexture = new DrawableArray(availableTexture);
+        }
         return this;
     }
 
