@@ -54,6 +54,10 @@ minecraft {
 	}
 	clientJvmArgs.addAll(args)
 	serverJvmArgs.addAll(args)
+
+	replaceIn("src/main/java/${project.mod_ref_path.replace('.', '/')}.java")
+	replace("@VERSION@", project.mod_version)
+	replace("@MODID@", project.archivesBaseName)
 }
 
 repositories {
