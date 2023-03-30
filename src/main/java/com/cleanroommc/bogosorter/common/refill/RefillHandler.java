@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.common.refill;
 
-import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
@@ -17,12 +16,12 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Set;
 import java.util.function.BiPredicate;
 
-@Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class RefillHandler {
 
     private static final Class<?> gtToolClass;
@@ -48,6 +47,17 @@ public class RefillHandler {
             {6, 8, 5, 4, 3, 2, 1, 0, 34, 25, 16, 33, 24, 15, 35, 26, 17, 32, 23, 14, 31, 22, 13, 30, 21, 12, 29, 20, 11, 28, 19, 10, 27, 18, 9},
             {7, 6, 5, 4, 3, 2, 1, 0, 35, 26, 17, 34, 25, 16, 33, 24, 15, 32, 23, 14, 31, 22, 13, 30, 21, 12, 29, 20, 11, 28, 19, 10, 27, 18, 9},
     };
+
+    @SubscribeEvent
+    public static void onDestroyItem(PlayerDestroyItemEvent event) {
+        if (!PlayerConfig.get(event.getEntityPlayer()).enableAutoRefill || event.getEntityPlayer().world.isRemote)
+            return;
+
+        if (event.getOriginal().getItem() instanceof ItemBlock && shouldHandleRefill(event.getEntityPlayer(), event.getOriginal())) {
+            int index = event.getHand() == EnumHand.MAIN_HAND ? event.getEntityPlayer().inventory.currentItem : 40;
+            handle(index, event.getOriginal(), event.getEntityPlayer(), false);
+        }
+    }
 
     /**
      * Called via asm
@@ -196,7 +206,7 @@ public class RefillHandler {
     }
 
     private void refillItem(ItemStack refill, int refillIndex) {
-        setAndSyncSlot(hotbarIndex, refill);
+        setAndSyncSlot(hotbarIndex, refill.copy());
         setAndSyncSlot(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
 
         // the sound should be played for this player
@@ -207,12 +217,20 @@ public class RefillHandler {
 
     private void setAndSyncSlot(int index, ItemStack item) {
         if (index < 0 || index > 40) return;
+        int slot = index;
         if (index < 36) {
             inventory.mainInventory.set(index, item);
+            if (index < 9) slot += 36;
+            else slot += 9;
         } else if (index < 40) {
             inventory.armorInventory.set(index - 36, item);
+            slot += 5;
         } else {
             inventory.offHandInventory.set(0, item);
+            slot = 45;
+        }
+        if (!item.isEmpty()) {
+            player.inventoryContainer.inventoryItemStacks.set(slot, ItemStack.EMPTY);
         }
     }
 
