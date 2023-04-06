@@ -4,6 +4,7 @@ key.sort=Сортировать инвентарь
 
 bogosort.gui.title=Конфигурация сортировки
 bogosort.gui.tab.general.name=Общие
+bogosort.gui.tab.profiles.name=Профили
 bogosort.gui.tab.item_sort_rules.name=Правила сортировки предметов
 bogosort.gui.tab.nbt_sort_rules.name=Правила сортировки NBT
 bogosort.gui.available_sort_rules=Доступные правила сортировки
@@ -12,6 +13,9 @@ bogosort.gui.enable_refill=Включить автопополнение пан�
 bogosort.gui.refill_threshold=Порог урона автопополнения
 bogosort.gui.ascending=По возрастанию
 bogosort.gui.descending=По убыванию
+bogosort.gui.hotbar_scrolling=Включить прокрутку стобцов на панели быстрого доступа
+bogosort.gui.hotbar_scrolling.tooltip=Прокручивание стобцов инвентаря при зажатой клавише ALT
+bogosort.gui.enabled=Включено
 
 bogosort.command.config_relaod.success=Перезагружен конфиг сортировки
 
