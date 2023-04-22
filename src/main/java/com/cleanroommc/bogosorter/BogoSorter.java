@@ -51,6 +51,7 @@ public class BogoSorter {
         }
         NetworkHandler.init();
         OreDictHelper.init();
+        BogoSortAPI.INSTANCE.remapSortRule("is_block", "block_type");
         DefaultRules.init(BogoSortAPI.INSTANCE);
         DefaultCompat.init(BogoSortAPI.INSTANCE);
         Serializer.loadConfig();
