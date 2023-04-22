@@ -7,10 +7,11 @@ import gregtech.api.items.metaitem.FoodUseManager;
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.items.metaitem.stats.IFoodBehavior;
 import moze_intel.projecte.utils.EMCHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemStack;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.*;
 import net.minecraft.nbt.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -23,8 +24,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ItemCompareHelper {
+
+    private static final Pattern SLAB_PATTERN = Pattern.compile(".*Slab([A-Z].*)?");
+    private static final Pattern STAIR_PATTERN = Pattern.compile(".*Stairs?([A-Z].*)?");
+    private static final Pattern PIPE_PATTERN = Pattern.compile(".*Pipe([A-Z].*)?");
+    private static final Pattern CABLE_PATTERN = Pattern.compile(".*Cable([A-Z].*)?");
+    private static final Pattern WIRE_PATTERN = Pattern.compile(".*Wire([A-Z].*)?");
 
     public static String getMod(ItemStack item) {
         ResourceLocation loc = item.getItem().getRegistryName();
@@ -337,8 +345,26 @@ public class ItemCompareHelper {
         return Long.compare(getEmcValue(item2), getEmcValue(item1));
     }
 
-    public static int compareIsBlock(ItemStack item1, ItemStack item2) {
-        return Boolean.compare(item2.getItem() instanceof ItemBlock, item1.getItem() instanceof ItemBlock);
+    public static int compareBlockType(ItemStack item1, ItemStack item2) {
+        int c = Boolean.compare(isBlock(item2), isBlock(item1));
+        if (c != 0 || !isBlock(item1)) return c;
+        Block block1 = getBlock(item1);
+        Block block2 = getBlock(item2);
+        IBlockState state1 = block1.getStateFromMeta(item1.getMetadata());
+        IBlockState state2 = block2.getStateFromMeta(item2.getMetadata());
+        c = Boolean.compare(state2.isFullBlock(), state1.isFullBlock());
+        if (c != 0) return c;
+        c = Boolean.compare(state2.isFullCube(), state1.isFullCube());
+        if (c != 0) return c;
+        c = Boolean.compare(state2.isOpaqueCube(), state1.isOpaqueCube());
+        if (c != 0) return c;
+        c = Boolean.compare(isSlab(block2), isSlab(block1));
+        if (c != 0) return c;
+        c = Boolean.compare(isStair(block2), isStair(block1));
+        if (c != 0) return c;
+        c = Boolean.compare(isPipe(block2), isPipe(block1));
+        if (c != 0) return c;
+        return Boolean.compare(block1.hasTileEntity(state1), block2.hasTileEntity(state2));
     }
 
     public static int compareBurnTime(ItemStack item1, ItemStack item2) {
@@ -359,5 +385,27 @@ public class ItemCompareHelper {
 
     public static int compareColor(ItemStack item1, ItemStack item2) {
         return Integer.compare(ItemColorHelper.getItemColorHue(item1), ItemColorHelper.getItemColorHue(item2));
+    }
+
+    public static boolean isBlock(ItemStack stack) {
+        return stack.getItem() instanceof ItemBlock || stack.getItem() instanceof ItemBlockSpecial;
+    }
+
+    public static Block getBlock(ItemStack stack) {
+        return stack.getItem() instanceof ItemBlock ? ((ItemBlock) stack.getItem()).getBlock() : ((ItemBlockSpecial) stack.getItem()).getBlock();
+    }
+
+    public static boolean isSlab(Block block) {
+        return block instanceof BlockSlab || SLAB_PATTERN.matcher(block.getClass().getSimpleName()).matches();
+    }
+
+    public static boolean isStair(Block block) {
+        return block instanceof BlockStairs || STAIR_PATTERN.matcher(block.getClass().getSimpleName()).matches();
+    }
+
+    public static boolean isPipe(Block block) {
+        return PIPE_PATTERN.matcher(block.getClass().getSimpleName()).matches() ||
+                CABLE_PATTERN.matcher(block.getClass().getSimpleName()).matches() ||
+                WIRE_PATTERN.matcher(block.getClass().getSimpleName()).matches();
     }
 }

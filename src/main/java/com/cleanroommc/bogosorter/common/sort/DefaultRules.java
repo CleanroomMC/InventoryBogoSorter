@@ -26,7 +26,7 @@ public class DefaultRules {
         api.registerItemSortingRule("material", SortType.OREDICT, ItemCompareHelper::compareMaterial);
         api.registerItemSortingRule("ore_prefix", SortType.OREDICT, ItemCompareHelper::compareOrePrefix);
         api.registerItemSortingRule("burn_time", null, ItemCompareHelper::compareBurnTime);
-        api.registerItemSortingRule("is_block", null, ItemCompareHelper::compareIsBlock);
+        api.registerItemSortingRule("is_block", null, ItemCompareHelper::compareBlockType);
         api.registerItemSortingRule("hunger", null, ItemCompareHelper::compareHunger);
         api.registerItemSortingRule("saturation", null, ItemCompareHelper::compareSaturation);
         api.registerClientItemSortingRule("color", null, ItemCompareHelper::compareColor, ItemCompareHelper::compareColor);
