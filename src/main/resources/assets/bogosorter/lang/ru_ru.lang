@@ -4,6 +4,7 @@ key.sort=Сортировать инвентарь
 
 bogosort.gui.title=Конфигурация сортировки
 bogosort.gui.tab.general.name=Общие
+bogosort.gui.tab.profiles.name=Профили
 bogosort.gui.tab.item_sort_rules.name=Правила сортировки предметов
 bogosort.gui.tab.nbt_sort_rules.name=Правила сортировки NBT
 bogosort.gui.available_sort_rules=Доступные правила сортировки
@@ -12,6 +13,9 @@ bogosort.gui.enable_refill=Включить автопополнение пан�
 bogosort.gui.refill_threshold=Порог урона автопополнения
 bogosort.gui.ascending=По возрастанию
 bogosort.gui.descending=По убыванию
+bogosort.gui.hotbar_scrolling=Включить прокрутку стобцов на панели быстрого доступа
+bogosort.gui.hotbar_scrolling.tooltip=Прокручивание стобцов инвентаря при зажатой клавише ALT
+bogosort.gui.enabled=Включено
 
 bogosort.command.config_relaod.success=Перезагружен конфиг сортировки
 
@@ -29,7 +33,7 @@ bogosort.sortrules.item.ore_dict.name=Рудный словарь
 bogosort.sortrules.item.material.name=Материал
 bogosort.sortrules.item.ore_prefix.name=Префикс руды
 bogosort.sortrules.item.burn_time.name=Время записи
-bogosort.sortrules.item.is_block.name=Блок
+bogosort.sortrules.item.block_type.name=Тип блока
 bogosort.sortrules.item.hunger.name=Голод
 bogosort.sortrules.item.saturation.name=Насыщенность
 bogosort.sortrules.item.emc.name=Значение EMC
@@ -49,7 +53,7 @@ bogosort.sortrules.item.ore_dict.description=Сортирует предметы
 bogosort.sortrules.item.material.description=Сортирует предметы в алфавитном порядке по названию материала (например, железо, золото, медь...)
 bogosort.sortrules.item.ore_prefix.description=Сортирует предметы по их префиксу руды (например, слиток, самородок, пластина, снаряжение...)
 bogosort.sortrules.item.burn_time.description=Сортирует предметы по времени сжигания топлива
-bogosort.sortrules.item.is_block.description=Сортирует предметы по тому, является ли предмет блоком или нет
+bogosort.sortrules.item.block_type.description=Сортирует предметы на основе типа блока, к которому они относятся (например, полноценный блок, плита, ступеньки и т.д.)
 bogosort.sortrules.item.hunger.description=Сортирует предметы в числовом порядке по значению восполнения голода
 bogosort.sortrules.item.saturation.description=Сортирует предметы в числовом порядке по значению насыщения
 bogosort.sortrules.item.emc.description==Сортировка элементов по их значению EMC
