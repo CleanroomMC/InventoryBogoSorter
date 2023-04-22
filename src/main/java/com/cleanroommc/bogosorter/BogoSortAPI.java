@@ -17,6 +17,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
@@ -84,10 +85,11 @@ public class BogoSortAPI implements IBogoSortAPI {
         itemSortRules2.put(sortRule.getSyncId(), sortRule);
     }
 
+    @ApiStatus.Internal
     @Override
-    public void registerClientItemSortingRule(String key, SortType type, Comparator<ItemSortContainer> itemComparator) {
+    public void registerClientItemSortingRule(String key, SortType type, Comparator<ItemStack> comparator, Comparator<ItemSortContainer> serverComparator) {
         validateKey(key);
-        ClientItemSortRule sortRule = new ClientItemSortRule(key, type, itemComparator);
+        ClientItemSortRule sortRule = new ClientItemSortRule(key, type, comparator, serverComparator);
         itemSortRules.put(key, sortRule);
         itemSortRuleList.add(sortRule);
         itemSortRules2.put(sortRule.getSyncId(), sortRule);

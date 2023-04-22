@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
+import com.cleanroommc.bogosorter.common.sort.color.ItemColorHelper;
 import gregtech.api.items.metaitem.FoodUseManager;
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.items.metaitem.stats.IFoodBehavior;
@@ -87,7 +88,16 @@ public class ItemCompareHelper {
 
     @SuppressWarnings("all")
     public static int compareDisplayName(ItemSortContainer stack1, ItemSortContainer stack2) {
-        return TextFormatting.getTextWithoutFormattingCodes(stack1.getName()).compareTo(TextFormatting.getTextWithoutFormattingCodes(stack2.getName()));
+        return compareFormattedString(stack1.getName(), stack2.getName());
+    }
+
+    public static int compareDisplayName(ItemStack stack1, ItemStack stack2) {
+        return compareFormattedString(stack1.getDisplayName(), stack2.getDisplayName());
+    }
+
+    @SuppressWarnings("all")
+    public static int compareFormattedString(String s1, String s2) {
+        return TextFormatting.getTextWithoutFormattingCodes(s1).compareTo(TextFormatting.getTextWithoutFormattingCodes(s2));
     }
 
     public static int compareMeta(ItemStack stack1, ItemStack stack2) {
@@ -345,5 +355,9 @@ public class ItemCompareHelper {
 
     public static int compareColor(ItemSortContainer item1, ItemSortContainer item2) {
         return Integer.compare(item1.getColorHue(), item2.getColorHue());
+    }
+
+    public static int compareColor(ItemStack item1, ItemStack item2) {
+        return Integer.compare(ItemColorHelper.getItemColorHue(item1), ItemColorHelper.getItemColorHue(item2));
     }
 }

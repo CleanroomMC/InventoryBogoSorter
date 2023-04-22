@@ -54,7 +54,13 @@ public interface IBogoSortAPI {
      */
     void registerItemSortingRule(String key, SortType type, Comparator<ItemStack> itemComparator);
 
-    void registerClientItemSortingRule(String key, SortType type, Comparator<ItemSortContainer> itemComparator);
+    /**
+     * This registers a sort rule which can compare client data like localized name or color on server side.
+     * This method is not API friendly! You will not get it to work by simply registering a rule. It is much more involved.
+     * Instead, contact the author (brachy84) if you want to add a client sort rule.
+     */
+    @ApiStatus.Internal
+    void registerClientItemSortingRule(String key, SortType type, Comparator<ItemStack> comparator, Comparator<ItemSortContainer> serverComparator);
 
     /**
      * Registers a sorting rule for NBT tags
