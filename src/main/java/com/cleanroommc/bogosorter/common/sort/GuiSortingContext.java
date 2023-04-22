@@ -24,7 +24,7 @@ public class GuiSortingContext {
 
         if (container instanceof ISortableContainer) {
             ((ISortableContainer) container).buildSortingContext(builder);
-        } else {
+        } else if (BogoSortAPI.isValidSortable(container)) {
             BogoSortAPI.INSTANCE.getBuilder(container).accept(container, builder);
         }
         return builder.build();
@@ -46,15 +46,17 @@ public class GuiSortingContext {
             BogoSortAPI.INSTANCE.getBuilder(container).accept(container, builder);
             return builder.build();
         }
-        return new GuiSortingContext(container, Collections.emptyList());
+        return new GuiSortingContext(container, Collections.emptyList(), false);
     }
 
     private final Container container;
     private final List<Slot[][]> slots;
+    private final boolean hasPlayer;
 
-    public GuiSortingContext(Container container, List<Slot[][]> slots) {
+    public GuiSortingContext(Container container, List<Slot[][]> slots, boolean hasPlayer) {
         this.container = container;
         this.slots = slots;
+        this.hasPlayer = hasPlayer;
     }
 
     @Nullable
@@ -95,14 +97,30 @@ public class GuiSortingContext {
         return null;
     }
 
+    public int getNonPlayerSlotGroupAmount() {
+        if (this.hasPlayer) {
+            return this.slots.size() - 1;
+        }
+        return this.slots.size();
+    }
+
     public Container getContainer() {
         return container;
+    }
+
+    public boolean hasPlayer() {
+        return hasPlayer;
+    }
+
+    public boolean isEmpty() {
+        return this.slots.isEmpty();
     }
 
     public static class Builder implements ISortingContextBuilder {
 
         private final Container container;
         private final List<Slot[][]> slots = new ArrayList<>();
+        private boolean player = false;
 
         public Builder(Container container) {
             this.container = container;
@@ -145,7 +163,7 @@ public class GuiSortingContext {
         }
 
         public GuiSortingContext build() {
-            return new GuiSortingContext(container, slots);
+            return new GuiSortingContext(container, slots, player);
         }
     }
 
@@ -162,6 +180,7 @@ public class GuiSortingContext {
         }
         if (!slots.isEmpty()) {
             builder.addSlotGroup(9, slots);
+            builder.player = true;
         }
     }
 }

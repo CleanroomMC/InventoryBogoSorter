@@ -166,9 +166,7 @@ public class ClientEventHandler {
             long t = Minecraft.getSystemTime();
             if (t - timeSort > 500) {
                 Slot slot = getSlot(container);
-                if (slot == null || !canSort(slot))
-                    return false;
-                if (!sort(container, slot)) {
+                if (!canSort(slot) || !sort(container, slot)) {
                     return false;
                 }
                 timeSort = t;
@@ -178,11 +176,11 @@ public class ClientEventHandler {
         return false;
     }
 
-    private static boolean canSort(Slot slot) {
+    private static boolean canSort(@Nullable Slot slot) {
         return !Minecraft.getMinecraft().player.isCreative() ||
                 sortKey.getKeyModifier().isActive() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyModifier().isActive() ||
                 sortKey.getKeyCode() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyCode() ||
-                (slot.getStack().isEmpty() && Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty());
+                (Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty() && (slot == null || slot.getStack().isEmpty()));
     }
 
     private static boolean isKeyDown(KeyBinding key) {
@@ -206,32 +204,39 @@ public class ClientEventHandler {
     }
 
     public static boolean sort(GuiScreen guiScreen, @Nullable Slot slot) {
-        if (slot != null && guiScreen instanceof GuiContainer) {
-
+        if (guiScreen instanceof GuiContainer) {
             Container container = ((GuiContainer) guiScreen).inventorySlots;
-            boolean player = BogoSortAPI.INSTANCE.isPlayerSlot(slot);
-
-            if (!player && !isSortableContainer(guiScreen)) return false;
+            GuiSortingContext sortingContext = GuiSortingContext.create(container);
+            if (sortingContext.isEmpty()) return false;
+            Slot[][] slotGroup = null;
+            if (slot == null) {
+                if (sortingContext.getNonPlayerSlotGroupAmount() == 1) {
+                    slotGroup = sortingContext.getNonPlayerSlotGroup();
+                } else if (sortingContext.hasPlayer() && sortingContext.getNonPlayerSlotGroupAmount() == 0) {
+                    slotGroup = sortingContext.getPlayerSlotGroup();
+                }
+                if (slotGroup == null) return false;
+                slot = slotGroup[0][0];
+            } else {
+                slotGroup = sortingContext.getSlotGroup(slot.slotNumber);
+                if (slotGroup == null) return false;
+            }
+            boolean player = BogoSortAPI.isPlayerSlot(slot);
 
             List<SortRule<ItemStack>> sortRules = BogoSorterConfig.sortRules;
             boolean color = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("color"));
             boolean name = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("display_name"));
-            NetworkHandler.sendToServer(new CSort(createSortData(container, slot, player, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.slotNumber, player));
+            NetworkHandler.sendToServer(new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.slotNumber, player));
             Interactable.playButtonClickSound();
             return true;
         }
         return false;
     }
 
-    public static List<ClientSortData> createSortData(Container container, Slot slot, boolean player, boolean color, boolean name) {
+    public static List<ClientSortData> createSortData(Slot[][] slotGroup, boolean color, boolean name) {
         if (!color && !name) return Collections.emptyList();
-        GuiSortingContext context = GuiSortingContext.create(container, player);
-        Slot[][] slots = context.getSlotGroup(slot.slotNumber);
-        if (slots == null) {
-            return Collections.emptyList();
-        }
         List<ClientSortData> data = new ArrayList<>();
-        for (Slot[] slotRow : slots) {
+        for (Slot[] slotRow : slotGroup) {
             for (Slot slot1 : slotRow) {
                 data.add(ClientSortData.of(slot1, color, name));
             }
@@ -243,7 +248,7 @@ public class ClientEventHandler {
         if (slot != null && guiScreen instanceof GuiContainer) {
 
             Container container = ((GuiContainer) guiScreen).inventorySlots;
-            boolean player = BogoSortAPI.INSTANCE.isPlayerSlot(slot);
+            boolean player = BogoSortAPI.isPlayerSlot(slot);
 
             if (!player && !isSortableContainer(guiScreen)) return null;
 
