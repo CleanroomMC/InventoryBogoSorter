@@ -16,7 +16,7 @@ public class DefaultRules {
         api.registerItemSortingRule("id", SortType.ID, ItemCompareHelper::compareId);
         api.registerItemSortingRule("meta", SortType.META, ItemCompareHelper::compareMeta);
         api.registerItemSortingRule("registry_order", SortType.META, ItemCompareHelper::compareRegistryOrder);
-        api.registerClientItemSortingRule("display_name", null, ItemCompareHelper::compareDisplayName);
+        api.registerClientItemSortingRule("display_name", null, ItemCompareHelper::compareDisplayName, ItemCompareHelper::compareDisplayName);
         api.registerItemSortingRule("nbt_size", SortType.NBT, ItemCompareHelper::compareNbtSize);
         api.registerItemSortingRule("nbt_has", SortType.NBT, ItemCompareHelper::compareHasNbt);
         api.registerItemSortingRule("nbt_rules", SortType.NBT, ItemCompareHelper::compareNbtValues);
@@ -26,10 +26,10 @@ public class DefaultRules {
         api.registerItemSortingRule("material", SortType.OREDICT, ItemCompareHelper::compareMaterial);
         api.registerItemSortingRule("ore_prefix", SortType.OREDICT, ItemCompareHelper::compareOrePrefix);
         api.registerItemSortingRule("burn_time", null, ItemCompareHelper::compareBurnTime);
-        api.registerItemSortingRule("is_block", null, ItemCompareHelper::compareIsBlock);
+        api.registerItemSortingRule("block_type", null, ItemCompareHelper::compareBlockType);
         api.registerItemSortingRule("hunger", null, ItemCompareHelper::compareHunger);
         api.registerItemSortingRule("saturation", null, ItemCompareHelper::compareSaturation);
-        api.registerClientItemSortingRule("color", null, ItemCompareHelper::compareColor);
+        api.registerClientItemSortingRule("color", null, ItemCompareHelper::compareColor, ItemCompareHelper::compareColor);
 
         if (Loader.isModLoaded("projecte")) {
             api.registerItemSortingRule("emc", null, ItemCompareHelper::compareEMC);

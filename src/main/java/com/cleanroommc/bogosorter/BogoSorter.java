@@ -51,6 +51,7 @@ public class BogoSorter {
         }
         NetworkHandler.init();
         OreDictHelper.init();
+        BogoSortAPI.INSTANCE.remapSortRule("is_block", "block_type");
         DefaultRules.init(BogoSortAPI.INSTANCE);
         DefaultCompat.init(BogoSortAPI.INSTANCE);
         Serializer.loadConfig();
@@ -58,6 +59,7 @@ public class BogoSorter {
         if (NetworkUtils.isDedicatedClient()) {
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
             PlayerConfig.syncToServer();
+            MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
             MinecraftForge.EVENT_BUS.register(HotbarSwap.class);
         }
     }

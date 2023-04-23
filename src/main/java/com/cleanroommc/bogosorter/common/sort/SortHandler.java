@@ -47,7 +47,7 @@ public class SortHandler {
         this.containerComparator = (container1, container2) -> {
             int result;
             for (SortRule<ItemStack> sortRule : itemSortRules) {
-                result = sortRule instanceof ClientItemSortRule ? ((ClientItemSortRule) sortRule).compareClient(container1, container2) :
+                result = sortRule instanceof ClientItemSortRule ? ((ClientItemSortRule) sortRule).compareServer(container1, container2) :
                         sortRule.compare(container1.getItemStack(), container2.getItemStack());
                 if (result != 0) return result;
             }

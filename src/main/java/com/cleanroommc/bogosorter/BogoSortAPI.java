@@ -17,6 +17,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
@@ -50,6 +51,12 @@ public class BogoSortAPI implements IBogoSortAPI {
     // lists for fast iteration
     private final List<SortRule<ItemStack>> itemSortRuleList = new ArrayList<>();
     private final List<NbtSortRule> nbtSortRuleList = new ArrayList<>();
+    // a map of all rules that changed through versions for json parsing
+    private final Map<String, String> remappedSortRules = new Object2ObjectOpenHashMap<>();
+
+    public void remapSortRule(String old, String newName) {
+        this.remappedSortRules.put(old, newName);
+    }
 
     @Override
     public <T extends Container> void addCompat(Class<T> clazz, BiConsumer<T, ISortingContextBuilder> builder) {
@@ -84,10 +91,11 @@ public class BogoSortAPI implements IBogoSortAPI {
         itemSortRules2.put(sortRule.getSyncId(), sortRule);
     }
 
+    @ApiStatus.Internal
     @Override
-    public void registerClientItemSortingRule(String key, SortType type, Comparator<ItemSortContainer> itemComparator) {
+    public void registerClientItemSortingRule(String key, SortType type, Comparator<ItemStack> comparator, Comparator<ItemSortContainer> serverComparator) {
         validateKey(key);
-        ClientItemSortRule sortRule = new ClientItemSortRule(key, type, itemComparator);
+        ClientItemSortRule sortRule = new ClientItemSortRule(key, type, comparator, serverComparator);
         itemSortRules.put(key, sortRule);
         itemSortRuleList.add(sortRule);
         itemSortRules2.put(sortRule.getSyncId(), sortRule);
@@ -136,7 +144,11 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     public SortRule<ItemStack> getItemSortRule(String key) {
-        return itemSortRules.getOrDefault(key, EMPTY_ITEM_SORT_RULE);
+        SortRule<ItemStack> sortRule = this.itemSortRules.get(key);
+        if (sortRule == null && this.remappedSortRules.containsKey(key)) {
+            sortRule = this.itemSortRules.get(this.remappedSortRules.get(key));
+        }
+        return sortRule == null ? EMPTY_ITEM_SORT_RULE : sortRule;
     }
 
     public SortRule<ItemStack> getItemSortRule(int syncId) {
@@ -148,7 +160,11 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     public NbtSortRule getNbtSortRule(String key) {
-        return nbtSortRules.getOrDefault(key, EMPTY_NBT_SORT_RULE);
+        NbtSortRule sortRule = this.nbtSortRules.get(key);
+        if (sortRule == null && this.remappedSortRules.containsKey(key)) {
+            sortRule = this.nbtSortRules.get(this.remappedSortRules.get(key));
+        }
+        return sortRule == null ? EMPTY_NBT_SORT_RULE : sortRule;
     }
 
     public static boolean isValidSortable(Container container) {
