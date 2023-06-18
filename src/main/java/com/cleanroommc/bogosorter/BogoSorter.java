@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter;
 
+import com.cleanroommc.Tags;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
@@ -29,9 +30,9 @@ import org.apache.logging.log4j.Logger;
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
 
-    public static final String ID = "@MODID@";
+    public static final String ID = Tags.MODID;
     public static final String NAME = "Inventory Bogo Sorter";
-    public static final String VERSION = "@VERSION@";
+    public static final String VERSION = Tags.VERSION;
 
     public static final Logger LOGGER = LogManager.getLogger(ID);
 

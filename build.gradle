@@ -1,38 +1,34 @@
-buildscript {
-    repositories {
-		maven {
-			name = "forge"
-			url = "https://maven.minecraftforge.net/"
-		}
-        maven {
-			url = 'https://maven.cleanroommc.com'
-		}
-		maven {
-			url = 'https://repo.spongepowered.org/maven'
-		}
-    }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-		if (project.use_mixins.toBoolean()) {
-			classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
-		}
-    }
-}
+import com.gtnewhorizons.retrofuturagradle.mcp.ReobfuscatedJar
+import org.jetbrains.gradle.ext.Gradle
 
-apply plugin: 'net.minecraftforge.gradle.forge'
-
-if (project.use_mixins.toBoolean()) {
-	apply plugin: 'org.spongepowered.mixin'
+plugins {
+	id("java")
+	id("java-library")
+	id("maven-publish")
+	id("org.jetbrains.gradle.plugin.idea-ext") version "1.1.7"
+	id("eclipse")
+	id("com.gtnewhorizons.retrofuturagradle") version "1.3.9"
+	id("com.matthewprenger.cursegradle") version "1.4.0"
 }
 
 version = project.mod_version
 group = project.maven_group
 archivesBaseName = project.archives_base_name
 
-sourceCompatibility = targetCompatibility = '1.8'
+// Set the toolchain version to decouple the Java we run Gradle with from the Java used to compile and run the mod
+java {
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(8))
+		// Azul covers the most platforms for Java 8 toolchains, crucially including MacOS arm64
+		vendor.set(org.gradle.jvm.toolchain.JvmVendorSpec.AZUL)
+	}
+	// Generate sources and javadocs jars when building and publishing
+	withSourcesJar()
+	//withJavadocJar()
+}
 
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = "UTF-8"
 }
 
 configurations {
@@ -41,23 +37,23 @@ configurations {
 }
 
 minecraft {
-    version = '1.12.2-14.23.5.2847'
-    runDir = 'run'
-    mappings = 'stable_39'
-	def args = []
-	if (project.use_coremod.toBoolean()) {
-		args << '-Dfml.coreMods.load=' + coremod_plugin_class_name
-	}
-	if (project.use_mixins.toBoolean()) {
-		args << '-Dmixin.hotSwap=true'
-		args << '-Dmixin.debug=true'
-	}
-	clientJvmArgs.addAll(args)
-	serverJvmArgs.addAll(args)
+	mcVersion = '1.12.2'
+	def args = ["-ea:${project.group}"]
+	args << '-Dfml.coreMods.load=' + coremod_plugin_class_name
+	args << '-Dmixin.hotSwap=true'
+	args << '-Dmixin.checks.interfaces=true'
+	args << '-Dmixin.debug.export=true'
+	extraRunJvmArguments.addAll(args)
 
-	replaceIn("src/main/java/${project.mod_ref_path.replace('.', '/')}.java")
-	replace("@VERSION@", project.mod_version)
-	replace("@MODID@", project.archivesBaseName)
+	useDependencyAccessTransformers = true
+
+	injectedTags.put("VERSION", project.version)
+	injectedTags.put("MODID", project.archives_base_name)
+}
+
+// Generate a my.project.Tags class with the version number as a field
+tasks.injectTags.configure {
+	outputClassName.set("${project.group}.Tags")
 }
 
 repositories {
@@ -68,95 +64,140 @@ repositories {
         url = 'https://repo.spongepowered.org/maven'
     }
 	maven {
-		name = "CurseForge"
-		url = 'https://www.cursemaven.com'
+		url "https://cursemaven.com"
+		content {
+			includeGroup "curse.maven"
+		}
 	}
+	mavenLocal() // Must be last for caching to work
 }
 
 dependencies {
 	compileOnly 'org.jetbrains:annotations:23.0.0'
-	if (project.use_assetmover.toBoolean()) {
-		deobfCompile 'com.cleanroommc:assetmover:0.2'
-	}
-	if (project.use_mixins.toBoolean()) {
-		deobfCompile 'zone.rong:mixinbooter:5.0'
-    }
 
-	deobfCompile 'curse.maven:modularui-624243:4475780'
+	implementation 'zone.rong:mixinbooter:7.0'
+	api("org.spongepowered:mixin:0.8.3") { transitive = false }
+	annotationProcessor('org.ow2.asm:asm-debug-all:5.2')
+	annotationProcessor('com.google.guava:guava:24.1.1-jre')
+	annotationProcessor('com.google.code.gson:gson:2.8.6')
+	annotationProcessor("org.spongepowered:mixin:0.8.3") { transitive = false }
+
+	implementation 'curse.maven:modularui-624243:4541320'
 	//compile files('etc/modularui-2.0.2.jar') // for testing purpose
-	provided 'curse.maven:iron_chests-228756:2747935'
-	provided 'curse.maven:thermal_expansion-69163:2926431'
-	provided 'curse.maven:actually_additions-228404:3117927'
-	provided 'curse.maven:ender_storage_1_8-245174:2755787'
-	provided 'curse.maven:ae2_extended_life-570458:3811277'
-	provided 'curse.maven:ender_io-64578:3328811'
-	provided 'curse.maven:draconic_evolution-223565:3431261'
-	provided 'curse.maven:gregtech_ce_unofficial-557242:4325257'
-	provided 'curse.maven:future_mc-310059:3842790'
-	provided 'curse.maven:tinkers_construct-74072:2902483'
-	provided 'curse.maven:projecte-226410:2702991'
-	provided 'curse.maven:immersive_engineering-231951:2974106'
-	provided 'curse.maven:forestry-59751:2918418'
-	provided 'curse.maven:industrial_craft-242638:3838713'
-	provided 'curse.maven:metalchests-290145:2751488'
-	provided 'curse.maven:travelers_backpack-321117:3150850'
-	provided 'curse.maven:colossal_chests-237875:2718588'
-	provided 'curse.maven:cyclops_core-232758:3159497'
-	provided 'curse.maven:quark-243121:2924091'
-	provided 'curse.maven:cyclic-239286:3722420'
-	provided 'curse.maven:bibliocraft-228027:3647708'
-	provided 'curse.maven:railcraft-51195:2687757'
-	provided 'curse.maven:ic2_classic-242942:3093607'
-	provided 'curse.maven:energy_control-373450:3829524'
-	provided 'curse.maven:mrtjpcore-229002:2735197'
-	provided 'curse.maven:project_red_exploration-229049:2745551'
-	provided 'curse.maven:betweenlands-243363:3540287'
-	provided 'curse.maven:terrafirmacraft-302973:3645502'
-	provided 'curse.maven:galacticraft_legacy-564236:3919260'
-	provided 'curse.maven:rustic-256141:3107974'
-	provided 'curse.maven:charset_lib-284523:3656492'
-	provided 'curse.maven:charset_storage_chests-298584:3656498'
+	compileOnly rfg.deobf('curse.maven:iron_chests-228756:2747935')
+	compileOnly rfg.deobf('curse.maven:thermal_expansion-69163:2926431')
+	compileOnly rfg.deobf('curse.maven:actually_additions-228404:3117927')
+	compileOnly rfg.deobf('curse.maven:ender_storage_1_8-245174:2755787')
+	compileOnly rfg.deobf('curse.maven:ae2_extended_life-570458:3811277')
+	compileOnly rfg.deobf('curse.maven:ender_io-64578:3328811')
+	compileOnly rfg.deobf('curse.maven:draconic_evolution-223565:3431261')
+	compileOnly rfg.deobf('curse.maven:gregtech_ce_unofficial-557242:4325257')
+	compileOnly rfg.deobf('curse.maven:future_mc-310059:3842790')
+	compileOnly rfg.deobf('curse.maven:tinkers_construct-74072:2902483')
+	compileOnly rfg.deobf('curse.maven:projecte-226410:2702991')
+	compileOnly rfg.deobf('curse.maven:immersive_engineering-231951:2974106')
+	compileOnly rfg.deobf('curse.maven:forestry-59751:2918418')
+	compileOnly rfg.deobf('curse.maven:industrial_craft-242638:3838713')
+	compileOnly rfg.deobf('curse.maven:metalchests-290145:2751488')
+	compileOnly rfg.deobf('curse.maven:travelers_backpack-321117:3150850')
+	compileOnly rfg.deobf('curse.maven:colossal_chests-237875:2718588')
+	compileOnly rfg.deobf('curse.maven:cyclops_core-232758:3159497')
+	compileOnly rfg.deobf('curse.maven:quark-243121:2924091')
+	compileOnly rfg.deobf('curse.maven:cyclic-239286:3722420')
+	compileOnly rfg.deobf('curse.maven:bibliocraft-228027:3647708')
+	compileOnly rfg.deobf('curse.maven:railcraft-51195:2687757')
+	compileOnly rfg.deobf('curse.maven:ic2_classic-242942:3093607')
+	compileOnly rfg.deobf('curse.maven:energy_control-373450:3829524')
+	compileOnly rfg.deobf('curse.maven:mrtjpcore-229002:2735197')
+	compileOnly rfg.deobf('curse.maven:project_red_exploration-229049:2745551')
+	compileOnly rfg.deobf('curse.maven:betweenlands-243363:3540287')
+	compileOnly rfg.deobf('curse.maven:terrafirmacraft-302973:3645502')
+	compileOnly rfg.deobf('curse.maven:galacticraft_legacy-564236:3919260')
+	compileOnly rfg.deobf('curse.maven:rustic-256141:3107974')
+	compileOnly rfg.deobf('curse.maven:charset_lib-284523:3656492')
+	compileOnly rfg.deobf('curse.maven:charset_storage_chests-298584:3656498')
 }
 
-sourceSets {
+def mixinConfigRefMap = 'mixins.' + project.archives_base_name + '.refmap.json'
+def mixinTmpDir = buildDir.path + File.separator + 'tmp' + File.separator + 'mixins'
+def refMap = "${mixinTmpDir}" + File.separator + mixinConfigRefMap
+def mixinSrg = "${mixinTmpDir}" + File.separator + "mixins.srg"
 
-    main {
-        ext.refMap = 'mixins.' + archives_base_name + '.refmap.json'
-    }
+tasks.named("reobfJar", ReobfuscatedJar).configure {
+	extraSrgFiles.from(mixinSrg)
+}
 
+tasks.named("compileJava", JavaCompile).configure {
+	doFirst {
+		new File(mixinTmpDir).mkdirs()
+	}
+	options.compilerArgs += [
+			"-AreobfSrgFile=${tasks.reobfJar.srg.get().asFile}",
+			"-AoutSrgFile=${mixinSrg}",
+			"-AoutRefMapFile=${refMap}",
+	]
 }
 
 processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property 'version', project.version
-    inputs.property 'mcversion', project.minecraft.version
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-    // copy everything else except the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-	rename '(.+_at.cfg)', 'META-INF/$1' // Access Transformers
+	// this will ensure that this task is redone when the versions change.
+	inputs.property 'version', project.version
+	inputs.property 'mcversion', project.minecraft.version
+	// replace stuff in mcmod.info, nothing else
+	filesMatching(['mcmod.info', 'pack.mcmeta']) { fcd ->
+		// replace version and mcversion
+		fcd.expand(
+				'version': project.version,
+				'mcversion': project.minecraft.version
+		)
+	}
+
+	// Embed mixin refmap
+	from refMap
+	dependsOn("compileJava")
 }
 
 jar {
-    manifest {
+	manifest {
 		def attribute_map = [:]
-		if (project.use_coremod.toBoolean()) {
-			attribute_map['FMLCorePlugin'] = project.coremod_plugin_class_name
-			if (project.include_mod.toBoolean()) {
-				attribute_map['FMLCorePluginContainsFMLMod'] = true
+		attribute_map['FMLCorePlugin'] = project.coremod_plugin_class_name
+		attribute_map['FMLCorePluginContainsFMLMod'] = true
+		attribute_map['ForceLoadAsMod'] = project.gradle.startParameter.taskNames[0] == "build"
+		attributes(attribute_map)
+	}
+	// Add all embedded dependencies into the jar
+	from(provider { configurations.embed.collect { it.isDirectory() ? it : zipTree(it) } })
+}
+
+idea {
+	module { inheritOutputDirs = true }
+	project {
+		settings {
+			runConfigurations {
+				"1. Run Client"(Gradle) {
+					taskNames = ["runClient"]
+				}
+				"2. Run Server"(Gradle) {
+					taskNames = ["runServer"]
+				}
+				"3. Run Obfuscated Client"(Gradle) {
+					taskNames = ["runObfClient"]
+				}
+				"4. Run Obfuscated Server"(Gradle) {
+					taskNames = ["runObfServer"]
+				}
+			}
+			compiler.javac {
+				afterEvaluate {
+					javacAdditionalOptions = "-encoding utf8"
+					moduleJavacAdditionalOptions = [
+							(project.name + ".main"): tasks.compileJava.options.compilerArgs.collect { '"' + it + '"' }.join(' ')
+					]
+				}
 			}
 		}
-		if (project.use_mixins.toBoolean()) {
-			attribute_map['TweakClass'] = 'org.spongepowered.asm.launch.MixinTweaker'
-		}
-		// false for dev and true for non dev
-		attribute_map['ForceLoadAsMod'] = project.gradle.startParameter.taskNames[0] == "build"
-        attributes(attribute_map)
-    }
+	}
+}
+
+tasks.named("processIdeaSettings").configure {
+	dependsOn("injectTags")
 }
