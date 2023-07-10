@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter;
 
-import com.cleanroommc.Tags;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
