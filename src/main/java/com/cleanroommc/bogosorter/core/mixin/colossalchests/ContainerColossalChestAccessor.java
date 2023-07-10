@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
-@Mixin(ContainerColossalChest.class)
+@Mixin(value = ContainerColossalChest.class, remap = false)
 public interface ContainerColossalChestAccessor {
 
     @Accessor

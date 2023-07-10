@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import pl.asie.charset.module.storage.chests.ContainerChestCharset;
 import pl.asie.charset.module.storage.chests.TileEntityChestCharset;
 
-@Mixin(ContainerChestCharset.class)
+@Mixin(value = ContainerChestCharset.class, remap = false)
 public class MixinContainerChestCharset implements ISortableContainer {
 
     @Shadow

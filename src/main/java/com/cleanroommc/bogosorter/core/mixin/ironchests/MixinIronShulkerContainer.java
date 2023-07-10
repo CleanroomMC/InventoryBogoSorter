@@ -7,7 +7,7 @@ import cpw.mods.ironchest.common.gui.shulker.ContainerIronShulkerBox;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ContainerIronShulkerBox.class)
+@Mixin(value = ContainerIronShulkerBox.class, remap = false)
 public class MixinIronShulkerContainer implements ISortableContainer {
 
     @Shadow
