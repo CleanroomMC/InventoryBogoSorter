@@ -15,7 +15,6 @@ import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
-import com.cleanroommc.modularui.test.TestGui;
 import com.cleanroommc.modularui.theme.Theme;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
@@ -27,7 +26,6 @@ import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -55,7 +53,7 @@ public class ConfigGui extends ModularScreen {
         PagedWidget.Controller controller = new PagedWidget.Controller();
 
         panel.child(new TextWidget(IKey.lang("bogosort.gui.title"))
-                        .left(0.5f)
+                        .leftRel(0.5f)
                         .top(5))
                 .child(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
                         .left(4)
@@ -72,11 +70,11 @@ public class ConfigGui extends ModularScreen {
                         .left(4).right(4)
                         .height(16).top(18)
                         .child(new PageButton(0, controller)
-                                .size(0.5f, 1f)
+                                .sizeRel(0.5f, 1f)
                                 .background(false, GuiTextures.SLOT_DARK)
                                 .overlay(IKey.lang("bogosort.gui.tab.general.name")))
                         .child(new PageButton(1, controller)
-                                .size(0.5f, 1f)
+                                .sizeRel(0.5f, 1f)
                                 .background(false, GuiTextures.SLOT_DARK)
                                 .overlay(IKey.lang("bogosort.gui.tab.profiles.name"))));
         return panel;
@@ -91,7 +89,7 @@ public class ConfigGui extends ModularScreen {
                         .left(32)
                         .size(1, 48))
                 .child(new Row()
-                        .width(1f).height(14)
+                        .widthRel(1f).height(14)
                         .margin(0, 2)
                         .child(new CycleButtonWidget()
                                 .toggle(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val)
@@ -102,7 +100,7 @@ public class ConfigGui extends ModularScreen {
                                 .height(14)
                                 .marginLeft(10)))
                 .child(new Row()
-                        .width(1f).height(14)
+                        .widthRel(1f).height(14)
                         .margin(0, 2)
                         .child(new TextFieldWidget()
                                 .getterLong(() -> PlayerConfig.getClient().autoRefillDamageThreshold)
@@ -116,7 +114,7 @@ public class ConfigGui extends ModularScreen {
                                 .marginLeft(10)
                                 .height(14)))
                 .child(row
-                        .width(1f).height(14)
+                        .widthRel(1f).height(14)
                         .margin(0, 2)
                         .child(new CycleButtonWidget()
                                 .toggle(HotbarSwap::isEnabled, HotbarSwap::setEnabled)
@@ -137,7 +135,7 @@ public class ConfigGui extends ModularScreen {
     public IWidget createProfilesConfig(GuiContext context) {
         PagedWidget.Controller controller = new PagedWidget.Controller();
         return new ParentWidget<>()
-                .width(1f).top(2).bottom(0)
+                .widthRel(1f).top(2).bottom(0)
                 .child(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
                         .top(0)
                         .bottom(4)
@@ -147,7 +145,7 @@ public class ConfigGui extends ModularScreen {
                         .pos(2, 2)
                         .width(81).bottom(2)
                         .child(new ButtonWidget<>()
-                                .width(1f).height(16)
+                                .widthRel(1f).height(16)
                                 .overlay(IKey.str("Profile 1")))
                         .child(IKey.str("Profiles are not yet implemented. They will come in one of the next versions.").asWidget()
                                 .top(20).width(81)))
@@ -155,11 +153,11 @@ public class ConfigGui extends ModularScreen {
                         .left(92).right(2)
                         .height(16).top(2)
                         .child(new PageButton(0, controller)
-                                .size(0.5f, 1f)
+                                .sizeRel(0.5f, 1f)
                                 .background(false, GuiTextures.SLOT_DARK)
                                 .overlay(IKey.lang("bogosort.gui.tab.item_sort_rules.name")))
                         .child(new PageButton(1, controller)
-                                .size(0.5f, 1f)
+                                .sizeRel(0.5f, 1f)
                                 .background(false, GuiTextures.SLOT_DARK)
                                 .overlay(IKey.lang("bogosort.gui.tab.nbt_sort_rules.name"))))
                 .child(new PagedWidget<>()
@@ -201,7 +199,7 @@ public class ConfigGui extends ModularScreen {
         });
         ref.set(sortableListWidget);
         return new ParentWidget<>()
-                .size(1f, 1f)
+                .sizeRel(1f, 1f)
                 .child(sortableListWidget
                         .onRemove(stringItem -> {
                             this.availableElements.get(stringItem.getValue()).available = true;
@@ -212,7 +210,7 @@ public class ConfigGui extends ModularScreen {
                         })
                         .left(7).right(7).top(7).bottom(23))
                 .child(new ButtonWidget<>()
-                        .bottom(7).size(12, 12).left(0.5f)
+                        .bottom(7).size(12, 12).leftRel(0.5f)
                         .overlay(GuiTextures.ADD)
                         .onMousePressed(mouseButton -> {
                             if (!isPanelOpen("choose_item_rules")) {
@@ -265,7 +263,7 @@ public class ConfigGui extends ModularScreen {
         });
         ref.set(sortableListWidget);
         return new ParentWidget<>()
-                .size(1f, 1f)
+                .sizeRel(1f, 1f)
                 .child(sortableListWidget
                         .onRemove(stringItem -> {
                             this.availableElementsNbt.get(stringItem.getValue()).available = true;
@@ -276,7 +274,7 @@ public class ConfigGui extends ModularScreen {
                         })
                         .left(7).right(7).top(7).bottom(23))
                 .child(new ButtonWidget<>()
-                        .bottom(7).size(12, 12).left(0.5f)
+                        .bottom(7).size(12, 12).leftRel(0.5f)
                         .overlay(GuiTextures.ADD)
                         .onMousePressed(mouseButton -> {
                             if (!isPanelOpen("choose_nbt_rules")) {
@@ -320,7 +318,7 @@ public class ConfigGui extends ModularScreen {
                     .texture(ARROW_DOWN_UP)
                     .addTooltip(0, IKey.lang("bogosort.gui.descending"))
                     .addTooltip(1, IKey.lang("bogosort.gui.ascending"))
-                    .height(1f).width(14).pos(0, 0);
+                    .heightRel(1f).width(14).pos(0, 0);
             content.flex().left(14).right(10);
             removeable(buttonWidget -> buttonWidget.background(GuiTextures.BUTTON, GuiTextures.CLOSE.asIcon().size(8, 8)));
             getChildren().add(this.ascendingToggle);
