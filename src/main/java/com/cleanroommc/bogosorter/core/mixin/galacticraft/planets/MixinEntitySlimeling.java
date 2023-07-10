@@ -21,13 +21,17 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(EntitySlimeling.class)
 public abstract class MixinEntitySlimeling extends EntityTameable implements IEntityBreathable {
 
-    @Shadow public abstract void setSittingAI(boolean sitting);
+    @Shadow(remap = false)
+    public abstract void setSittingAI(boolean sitting);
 
-    @Shadow public abstract void setOwnerUsername(String username);
+    @Shadow(remap = false)
+    public abstract void setOwnerUsername(String username);
 
-    @Shadow protected abstract void setRandomFavFood();
+    @Shadow(remap = false)
+    protected abstract void setRandomFavFood();
 
-    @Shadow public abstract Item getFavoriteFood();
+    @Shadow(remap = false)
+    public abstract Item getFavoriteFood();
 
     public MixinEntitySlimeling(World worldIn) {
         super(worldIn);
@@ -84,16 +88,16 @@ public abstract class MixinEntitySlimeling extends EntityTameable implements IEn
                 if (this.rand.nextInt(3) == 0) {
                     this.setTamed(true);
                     this.getNavigator().clearPath();
-                    this.setAttackTarget((EntityLivingBase)null);
+                    this.setAttackTarget((EntityLivingBase) null);
                     this.setSittingAI(true);
                     this.setHealth(20.0F);
                     this.setOwnerId(player.getUniqueID());
                     this.setOwnerUsername(player.getName());
                     this.playTameEffect(true);
-                    this.world.setEntityState(this, (byte)7);
+                    this.world.setEntityState(this, (byte) 7);
                 } else {
                     this.playTameEffect(false);
-                    this.world.setEntityState(this, (byte)6);
+                    this.world.setEntityState(this, (byte) 6);
                 }
             }
 

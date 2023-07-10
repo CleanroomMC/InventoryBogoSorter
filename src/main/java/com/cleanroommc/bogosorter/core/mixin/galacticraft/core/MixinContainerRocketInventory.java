@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ContainerRocketInventory.class)
+@Mixin(value = ContainerRocketInventory.class, remap = false)
 public class MixinContainerRocketInventory implements ISortableContainer {
 
     @Shadow
