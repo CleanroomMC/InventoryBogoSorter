@@ -79,7 +79,7 @@ public class OreDictHelper {
     }
 
     public static String getMaterial(ItemStack item) {
-        if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof IGTTool) {
+        if (BogoSorter.isGTCEuLoaded() && item.getItem() instanceof IGTTool) {
             return getGtToolMaterial(item);
         }
         if (BogoSorter.isTConstructLoaded() && item.getItem() instanceof IMaterialItem) {
