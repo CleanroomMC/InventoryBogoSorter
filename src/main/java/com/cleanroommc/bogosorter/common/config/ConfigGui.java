@@ -18,6 +18,8 @@ import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.theme.Theme;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
+import com.cleanroommc.modularui.value.BoolValue;
+import com.cleanroommc.modularui.value.IntValue;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widgets.*;
 import com.cleanroommc.modularui.widgets.layout.Grid;
@@ -26,6 +28,7 @@ import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -41,14 +44,14 @@ public class ConfigGui extends ModularScreen {
     private Map<NbtSortRule, AvailableElement> availableElementsNbt;
 
     public ConfigGui() {
-        super(BogoSorter.ID, "config");
+        super(BogoSorter.ID);
     }
 
     @Override
-    public ModularPanel buildUI(GuiContext guiContext) {
+    public @NotNull ModularPanel buildUI(GuiContext guiContext) {
         this.availableElements = new Object2ObjectOpenHashMap<>();
         this.availableElementsNbt = new Object2ObjectOpenHashMap<>();
-        ModularPanel panel = ModularPanel.defaultPanel(guiContext, 300, 250);
+        ModularPanel panel = ModularPanel.defaultPanel("bogo_config", 300, 250);
 
         PagedWidget.Controller controller = new PagedWidget.Controller();
 
@@ -92,7 +95,7 @@ public class ConfigGui extends ModularScreen {
                         .widthRel(1f).height(14)
                         .margin(0, 2)
                         .child(new CycleButtonWidget()
-                                .toggle(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val)
+                                .value(new BoolValue.Dynamic(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val))
                                 .texture(TOGGLE_BUTTON)
                                 .size(14, 14)
                                 .margin(8, 0))
@@ -103,8 +106,7 @@ public class ConfigGui extends ModularScreen {
                         .widthRel(1f).height(14)
                         .margin(0, 2)
                         .child(new TextFieldWidget()
-                                .getterLong(() -> PlayerConfig.getClient().autoRefillDamageThreshold)
-                                .setterLong(val -> PlayerConfig.getClient().autoRefillDamageThreshold = (int) val)
+                                .value(new IntValue.Dynamic(() -> PlayerConfig.getClient().autoRefillDamageThreshold, val -> PlayerConfig.getClient().autoRefillDamageThreshold = val))
                                 .setNumbers(1, Short.MAX_VALUE)
                                 .setTextAlignment(Alignment.Center)
                                 .setTextColor(IKey.TEXT_COLOR)
@@ -117,7 +119,7 @@ public class ConfigGui extends ModularScreen {
                         .widthRel(1f).height(14)
                         .margin(0, 2)
                         .child(new CycleButtonWidget()
-                                .toggle(HotbarSwap::isEnabled, HotbarSwap::setEnabled)
+                                .value(new BoolValue.Dynamic(HotbarSwap::isEnabled, HotbarSwap::setEnabled))
                                 .texture(TOGGLE_BUTTON)
                                 .addTooltipLine(IKey.lang("bogosort.gui.hotbar_scrolling.tooltip"))
                                 .tooltipShowUpTimer(10)
@@ -202,7 +204,7 @@ public class ConfigGui extends ModularScreen {
                 .sizeRel(1f, 1f)
                 .child(sortableListWidget
                         .onRemove(stringItem -> {
-                            this.availableElements.get(stringItem.getValue()).available = true;
+                            this.availableElements.get(stringItem.getWidgetValue()).available = true;
                         })
                         .onChange(list -> {
                             BogoSorterConfig.sortRules.clear();
@@ -214,7 +216,7 @@ public class ConfigGui extends ModularScreen {
                         .overlay(GuiTextures.ADD)
                         .onMousePressed(mouseButton -> {
                             if (!isPanelOpen("choose_item_rules")) {
-                                ModularPanel panel1 = ModularPanel.defaultPanel(context, 200, 140).name("choose_item_rules");
+                                ModularPanel panel1 = ModularPanel.defaultPanel("choose_item_rules", 200, 140);
                                 openPanel(panel1
                                         .child(new ButtonWidget<>()
                                                 .size(8, 8)
@@ -266,7 +268,7 @@ public class ConfigGui extends ModularScreen {
                 .sizeRel(1f, 1f)
                 .child(sortableListWidget
                         .onRemove(stringItem -> {
-                            this.availableElementsNbt.get(stringItem.getValue()).available = true;
+                            this.availableElementsNbt.get(stringItem.getWidgetValue()).available = true;
                         })
                         .onChange(list -> {
                             BogoSorterConfig.nbtSortRules.clear();
@@ -278,7 +280,7 @@ public class ConfigGui extends ModularScreen {
                         .overlay(GuiTextures.ADD)
                         .onMousePressed(mouseButton -> {
                             if (!isPanelOpen("choose_nbt_rules")) {
-                                ModularPanel panel1 = ModularPanel.defaultPanel(context, 200, 140).name("choose_nbt_rules");
+                                ModularPanel panel1 = ModularPanel.defaultPanel("choose_nbt_rules", 200, 140);
                                 openPanel(panel1
                                         .child(new ButtonWidget<>()
                                                 .size(8, 8)
@@ -313,8 +315,7 @@ public class ConfigGui extends ModularScreen {
         public SortListItem(T value, IWidget content) {
             super(value, content);
             this.ascendingToggle = new CycleButtonWidget()
-                    .toggle(getValue()::isInverted, getValue()::setInverted)
-                    .background(GuiTextures.BUTTON)
+                    .value(new BoolValue.Dynamic(getWidgetValue()::isInverted, getWidgetValue()::setInverted))
                     .texture(ARROW_DOWN_UP)
                     .addTooltip(0, IKey.lang("bogosort.gui.descending"))
                     .addTooltip(1, IKey.lang("bogosort.gui.ascending"))
