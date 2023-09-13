@@ -56,9 +56,8 @@ public class ShortcutHandler {
         }
         if (toInsert.isEmpty()) {
             toInsert = stack.copy();
-            toInsert.setCount(1);
-            slot.decrStackSize(1);
-            slot.onTake(player, toInsert);
+            toInsert.shrink(1);
+            slot.putStack(toInsert);
             return true;
         }
         return false;
@@ -93,9 +92,8 @@ public class ShortcutHandler {
                 int inserted = stackInSlot.getCount() - remainder.getCount();
                 if (inserted > 0) {
                     copy = stackInSlot.copy();
-                    stackInSlot.setCount(inserted);
-                    slot1.decrStackSize(inserted);
-                    slot1.onTake(player, copy);
+                    copy.shrink(1);
+                    slot1.putStack(copy);
                 }
             }
         }
@@ -128,10 +126,9 @@ public class ShortcutHandler {
     }
 
     private static ItemStack insertToSlots(Slot[][] slots, ItemStack stack) {
-        if (!stack.isStackable()) {
-            return insertToSlots(slots, stack, true);
+        if (stack.isStackable()) {
+            stack = insertToSlots(slots, stack, false);
         }
-        stack = insertToSlots(slots, stack, false);
         if (!stack.isEmpty()) {
             stack = insertToSlots(slots, stack, true);
         }
