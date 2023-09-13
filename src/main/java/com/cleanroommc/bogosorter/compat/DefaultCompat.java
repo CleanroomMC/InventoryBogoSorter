@@ -4,8 +4,10 @@ import appeng.container.implementations.ContainerSkyChest;
 import blusunrize.immersiveengineering.common.gui.ContainerCrate;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
+import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
+import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
@@ -205,40 +207,37 @@ public class DefaultCompat {
             });
         }
 
-        /*if (Loader.isModLoaded("travelersbackpack")) {
+        if (Loader.isModLoaded("travelersbackpack")) {
             api.addCompat(ContainerTravelersBackpack.class, (container, builder) -> {
-                Slot[][] slotGroup = new Slot[6][];
+                List<Slot> slots = new ArrayList<>();
                 for (int i = 0; i < 3; i++) {
-                    Slot[] slotRow = new Slot[8];
-                    slotGroup[i] = slotRow;
                     for (int j = 0; j < 8; j++) {
-                        slotRow[j] = container.getSlot(i * 8 + j + 10);
+                        slots.add(container.getSlot(i * 8 + j + 10));
                     }
                 }
                 for (int i = 3; i < 6; i++) {
-                    Slot[] slotRow = new Slot[5];
-                    slotGroup[i] = slotRow;
                     for (int j = 0; j < 5; j++) {
-                        slotRow[j] = container.getSlot((i - 3) * 5 + j + 34);
+                        slots.add(container.getSlot((i - 3) * 5 + j + 34));
                     }
                 }
-                builder.addSlotGroup(slotGroup);
+                builder.addSlotGroup(8, slots);
             });
-        }*/
+        }
 
         if (Loader.isModLoaded("colossalchests")) {
             api.addCompat(ContainerColossalChest.class, (container, builder) -> {
                 List<Slot> chestSlots = ((ContainerColossalChestAccessor) container).getChestSlots();
-                /*int size = chestSlots.size();
-                int rows = size / 9;
-                Slot[][] slotGroup = new Slot[rows][9];
-                for (int i = 0; i < rows; i++) {
-                    for (int j = 0; j < 9; j++) {
-                        slotGroup[i][j] = chestSlots.get(i * 9 + j);
+                builder.addSlotGroup(new SlotGroup(chestSlots, 9, 0, (slotGroup, point) -> {
+                    point.y = 1000;
+                    for (Slot slot : slotGroup.getSlots()) {
+                        if (slot.xPos >= 0 && slot.yPos >= 0 && slot.isEnabled()) {
+                            point.x = Math.max(point.x, slot.xPos + 18);
+                            point.y = Math.min(point.y, slot.yPos);
+                        }
                     }
-                }*/
-                builder.addSlotGroup(9, chestSlots);
+                }));
             });
+            BogoSortAPI.INSTANCE.removePlayerButtons(ContainerColossalChest.class);
             api.addCompat(ContainerUncolossalChest.class, (container, builder) -> {
                 builder.addSlotGroup(5, 0, 5);
             });

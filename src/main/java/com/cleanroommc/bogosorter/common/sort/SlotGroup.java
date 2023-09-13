@@ -8,20 +8,20 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.awt.*;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class SlotGroup implements ISlotGroup {
 
     private final List<Slot> slots;
     private final int rowSize;
     private final int priority;
-    private final Consumer<Point> positionUpdater;
+    private final BiConsumer<SlotGroup, Point> positionUpdater;
 
-    public SlotGroup(List<Slot> slots, int rowSize, int priority, @Nullable Consumer<Point> positionUpdater) {
+    public SlotGroup(List<Slot> slots, int rowSize, int priority, @Nullable BiConsumer<SlotGroup, Point> positionUpdater) {
         this.slots = slots;
         this.rowSize = rowSize;
         this.priority = priority;
-        this.positionUpdater = positionUpdater != null ? positionUpdater : point -> {
+        this.positionUpdater = positionUpdater != null ? positionUpdater : (slotGroup, point) -> {
             if (getSlots().size() < rowSize) {
                 point.setLocation(-1000, -1000);
             } else {
@@ -47,6 +47,6 @@ public class SlotGroup implements ISlotGroup {
     }
 
     public void updateTopRightPos(Point point) {
-        this.positionUpdater.accept(point);
+        this.positionUpdater.accept(this, point);
     }
 }

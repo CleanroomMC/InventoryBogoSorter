@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.common.sort;
 
+import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.common.config.ConfigGui;
 import com.cleanroommc.bogosorter.core.mixin.GuiScreenAccessor;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.inventory.Container;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -30,11 +32,14 @@ public class ButtonHandler {
     @SubscribeEvent
     public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
         if (ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
-            GuiSortingContext context = GuiSortingContext.getOrCreate(((GuiContainer) event.getGui()).inventorySlots);
+            Container container = ((GuiContainer) event.getGui()).inventorySlots;
+            GuiSortingContext context = GuiSortingContext.getOrCreate(container);
             event.getButtonList().removeIf(guiButton -> guiButton instanceof SortButton);
             for (SlotGroup slotGroup : context.getSlotGroups()) {
-                event.getButtonList().add(new SortButton(slotGroup, true));
-                event.getButtonList().add(new SortButton(slotGroup, false));
+                if (!slotGroup.isPlayerInventory() || BogoSortAPI.INSTANCE.showPlayerButtons(container.getClass())) {
+                    event.getButtonList().add(new SortButton(slotGroup, true));
+                    event.getButtonList().add(new SortButton(slotGroup, false));
+                }
             }
         }
     }

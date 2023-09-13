@@ -7,8 +7,10 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class GuiSortingContext {
 
@@ -107,42 +109,38 @@ public class GuiSortingContext {
             return this;
         }
 
-        public Builder addSlotGroup(int rowSize, int startIndex, int endIndex) {
+        public ISortingContextBuilder addSlotGroup(int rowSize, int startIndex, int endIndex) {
+            return addSlotGroup(rowSize, startIndex, endIndex, 0, null);
+        }
+
+        @Override
+        public ISortingContextBuilder addSlotGroup(int rowSize, int startIndex, int endIndex, int priority) {
+            return addSlotGroup(rowSize, startIndex, endIndex, priority, null);
+        }
+
+        @Override
+        public ISortingContextBuilder addSlotGroup(int rowSize, int startIndex, int endIndex, int priority, BiConsumer<SlotGroup, Point> pointSetter) {
             if (endIndex - startIndex < rowSize) {
                 throw new IllegalArgumentException("The start and end index must be at least apart by the row size!");
             }
-            return addSlotGroup(rowSize, container.inventorySlots.subList(startIndex, endIndex));
+            return addSlotGroup(rowSize, container.inventorySlots.subList(startIndex, endIndex), priority, pointSetter);
         }
 
-        public Builder addSlotGroup(int rowSize, List<Slot> slots) {
+        public ISortingContextBuilder addSlotGroup(int rowSize, List<Slot> slots) {
+            return addSlotGroup(rowSize, slots, 0, null);
+        }
+
+        @Override
+        public ISortingContextBuilder addSlotGroup(int rowSize, List<Slot> slots, int priority) {
+            return addSlotGroup(rowSize, slots, priority, null);
+        }
+
+        @Override
+        public ISortingContextBuilder addSlotGroup(int rowSize, List<Slot> slots, int priority, BiConsumer<SlotGroup, Point> posSetter) {
             if (slots.size() < rowSize) {
                 throw new IllegalArgumentException("Slots needs fill at least 1 row! Found " + slots.size() + " slot, but expected at least " + rowSize);
             }
-            /*// create new list just to be save
-            slots = new ArrayList<>(slots);
-            // sort slots so they have the correct order when put in grid
-            slots.sort((slot1, slot2) -> {
-                if (slot1.yPos == slot2.yPos) return Integer.compare(slot1.xPos, slot2.xPos);
-                return Integer.compare(slot1.yPos, slot2.yPos);
-            });
-            // determine row amount
-            int rows = slots.size() / rowSize;
-            if (slots.size() % rowSize != 0) rows++;
-            // put slots into 2d array
-            Slot[][] slotGroup = new Slot[rows][rowSize];
-            for (int i = 0; i < slots.size(); i++) {
-                slotGroup[i / rowSize][i % rowSize] = slots.get(i);
-            }
-            if (rows > slots.size() / rowSize) {
-                int nulls = 0;
-                Slot[] lastRow = slotGroup[rows - 1];
-                for (Slot slot : lastRow) {
-                    if (slot == null) nulls++;
-                }
-                slotGroup[rows - 1] = Arrays.copyOf(lastRow, lastRow.length - nulls);
-            }
-            return addSlotGroup(slotGroup);*/
-            return addSlotGroup(new SlotGroup(slots, rowSize, 0, null));
+            return addSlotGroup(new SlotGroup(slots, rowSize, priority, posSetter));
         }
 
         public GuiSortingContext build() {

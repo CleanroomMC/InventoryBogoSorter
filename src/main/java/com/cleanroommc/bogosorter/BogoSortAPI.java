@@ -8,6 +8,7 @@ import com.cleanroommc.bogosorter.core.mixin.ItemStackAccessor;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -44,6 +45,7 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     private final Map<Class<?>, BiConsumer<Container, ISortingContextBuilder>> COMPAT_MAP = new Object2ObjectOpenHashMap<>();
+    private final Set<Class<?>> noPlayerSortButtons = new ObjectOpenHashSet<>();
     private final Map<String, SortRule<ItemStack>> itemSortRules = new Object2ObjectOpenHashMap<>();
     private final Map<String, NbtSortRule> nbtSortRules = new Object2ObjectOpenHashMap<>();
     private final Int2ObjectOpenHashMap<SortRule<ItemStack>> itemSortRules2 = new Int2ObjectOpenHashMap<>();
@@ -69,6 +71,10 @@ public class BogoSortAPI implements IBogoSortAPI {
             throw new IllegalArgumentException("Class must be an instance of Container!");
         }
         COMPAT_MAP.put(clazz, (BiConsumer<Container, ISortingContextBuilder>) builder);
+    }
+
+    public <T extends Container> void removePlayerButtons(Class<T> clazz) {
+        this.noPlayerSortButtons.add(clazz);
     }
 
     @Override
@@ -131,6 +137,10 @@ public class BogoSortAPI implements IBogoSortAPI {
     public <T extends Container> BiConsumer<T, ISortingContextBuilder> getBuilder(Container container) {
         BiConsumer<Container, ISortingContextBuilder> builder = COMPAT_MAP.get(container.getClass());
         return builder == null ? null : (BiConsumer<T, ISortingContextBuilder>) builder;
+    }
+
+    public <T extends Container> boolean showPlayerButtons(Class<T> clazz) {
+        return !this.noPlayerSortButtons.contains(clazz);
     }
 
     @Unmodifiable
