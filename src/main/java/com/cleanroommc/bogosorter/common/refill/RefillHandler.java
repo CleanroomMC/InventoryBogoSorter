@@ -50,7 +50,10 @@ public class RefillHandler {
 
     @SubscribeEvent
     public static void onDestroyItem(PlayerDestroyItemEvent event) {
-        if (!PlayerConfig.get(event.getEntityPlayer()).enableAutoRefill || event.getEntityPlayer().world.isRemote)
+        if (event.getEntityPlayer() == null ||
+                event.getEntityPlayer().world == null ||
+                event.getEntityPlayer().world.isRemote ||
+                !PlayerConfig.get(event.getEntityPlayer()).enableAutoRefill)
             return;
 
         if (event.getOriginal().getItem() instanceof ItemBlock && shouldHandleRefill(event.getEntityPlayer(), event.getOriginal())) {
