@@ -7,14 +7,19 @@ import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.manager.GuiManager;
 import com.cleanroommc.modularui.screen.GuiScreenWrapper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.Collections;
+import java.util.Objects;
 
 public class ButtonHandler {
 
@@ -66,6 +71,17 @@ public class ButtonHandler {
     }
 
     @SubscribeEvent
+    public static void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Post event) {
+        if (ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
+            for (GuiButton guiButton : ((GuiScreenAccessor) event.getGui()).getButtonList()) {
+                if (guiButton instanceof SortButton) {
+                    ((SortButton) guiButton).drawTooltip(event.getMouseX(), event.getMouseY());
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void onActionPerformed(GuiScreenEvent.ActionPerformedEvent.Pre event) {
         if (event.getButton() instanceof SortButton) {
             SortButton sortButton = (SortButton) event.getButton();
@@ -91,22 +107,29 @@ public class ButtonHandler {
         @Override
         public void drawButton(@NotNull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
             if (this.visible) {
+                this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+                GlStateManager.color(1, 1, 1, 1);
                 GuiTextures.BUTTON.draw(this.x, this.y, this.width, this.height);
-                FontRenderer fontrenderer = mc.fontRenderer;
                 this.mouseDragged(mc, mouseX, mouseY);
-                int j = 14737632;
+                int color = 14737632;
 
                 if (packedFGColour != 0) {
-                    j = packedFGColour;
+                    color = packedFGColour;
                 } else if (!this.enabled) {
-                    j = 10526880;
+                    color = 10526880;
                 } else if (this.hovered) {
-                    j = 16777120;
+                    color = 16777120;
                 }
                 int y = this.y;
                 if (!this.sort) y -= 1;
-                //y += this.sort ? this.height / 2 : this.height / 2;
-                this.drawCenteredString(fontrenderer, this.displayString, this.x + this.width / 2, y, j);
+                this.drawCenteredString(mc.fontRenderer, this.displayString, this.x + this.width / 2, y, color);
+            }
+        }
+
+        public void drawTooltip(int mouseX, int mouseY) {
+            if (this.enabled && this.hovered) {
+                GuiScreen guiScreen = Objects.requireNonNull(Minecraft.getMinecraft().currentScreen);
+                GuiUtils.drawHoveringText(Collections.singletonList(I18n.format(this.sort ? "key.sort" : "key.sort_config")), mouseX, mouseY, guiScreen.width, guiScreen.height, 300, Minecraft.getMinecraft().fontRenderer);
             }
         }
     }

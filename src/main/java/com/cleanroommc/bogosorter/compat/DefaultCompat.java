@@ -47,6 +47,9 @@ public class DefaultCompat {
 
     public static void init(IBogoSortAPI api) {
         // vanilla
+        api.addCompat(ContainerPlayer.class, (container, builder) -> {
+            // player slots are automatically added
+        });
         api.addCompat(ContainerChest.class, (container, builder) -> {
             IInventory inventory = container.getLowerChestInventory();
             builder.addSlotGroup(9, 0, inventory.getSizeInventory());
