@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.api;
 
+import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @ApiStatus.NonExtendable
 public interface ISortingContextBuilder {
 
-    ISortingContextBuilder addSlotGroup(Slot[][] slotGroup);
+    ISortingContextBuilder addSlotGroup(SlotGroup slotGroup);
 
     ISortingContextBuilder addSlotGroup(int rowSize, int startIndex, int endIndex);
 

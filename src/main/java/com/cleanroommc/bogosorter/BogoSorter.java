@@ -9,6 +9,7 @@ import com.cleanroommc.bogosorter.common.config.Serializer;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.refill.RefillHandler;
+import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
 import com.cleanroommc.modularui.keybind.KeyBindAPI;
@@ -60,6 +61,7 @@ public class BogoSorter {
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
             PlayerConfig.syncToServer();
             MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
+            MinecraftForge.EVENT_BUS.register(ButtonHandler.class);
             MinecraftForge.EVENT_BUS.register(HotbarSwap.class);
         }
     }

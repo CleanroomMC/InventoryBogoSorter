@@ -83,7 +83,7 @@ public class CSort implements IPacket {
         for(ClientSortData sortData : clientSortDataList) {
             map.put(sortData.getSlotNumber(), sortData);
         }
-        SortHandler sortHandler = new SortHandler(handler.player, handler.player.openContainer, player, map);
+        SortHandler sortHandler = new SortHandler(handler.player, handler.player.openContainer, map);
         sortHandler.sort(hover);
         return null;
     }

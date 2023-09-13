@@ -128,22 +128,24 @@ public class DefaultCompat {
                 }
             });
             api.addCompat(ContainerNaturalistBackpack.class, (container, builder) -> {
-                Slot[][] slotGroup = new Slot[25][5];
+                List<Slot> slots = new ArrayList<>();
                 for (int i = 0; i < 25; i++) {
                     for (int j = 0; j < 5; j++) {
-                        slotGroup[i][j] = container.getSlot(i * 5 + j + 36);
+                        //slotGroup[i][j] = container.getSlot(i * 5 + j + 36);
+                        slots.add(container.getSlot(i * 5 + j + 36));
                     }
                 }
-                builder.addSlotGroup(slotGroup);
+                builder.addSlotGroup(25, slots);
             });
             api.addCompat(ContainerNaturalistInventory.class, (container, builder) -> {
-                Slot[][] slotGroup = new Slot[25][5];
+                List<Slot> slots = new ArrayList<>();
                 for (int i = 0; i < 25; i++) {
                     for (int j = 0; j < 5; j++) {
-                        slotGroup[i][j] = container.getSlot(i * 5 + j + 36);
+                        //slotGroup[i][j] = container.getSlot(i * 5 + j + 36);
+                        slots.add(container.getSlot(i * 5 + j + 36));
                     }
                 }
-                builder.addSlotGroup(slotGroup);
+                builder.addSlotGroup(25, slots);
             });
         }
 
@@ -200,7 +202,7 @@ public class DefaultCompat {
             });
         }
 
-        if (Loader.isModLoaded("travelersbackpack")) {
+        /*if (Loader.isModLoaded("travelersbackpack")) {
             api.addCompat(ContainerTravelersBackpack.class, (container, builder) -> {
                 Slot[][] slotGroup = new Slot[6][];
                 for (int i = 0; i < 3; i++) {
@@ -219,20 +221,20 @@ public class DefaultCompat {
                 }
                 builder.addSlotGroup(slotGroup);
             });
-        }
+        }*/
 
         if (Loader.isModLoaded("colossalchests")) {
             api.addCompat(ContainerColossalChest.class, (container, builder) -> {
                 List<Slot> chestSlots = ((ContainerColossalChestAccessor) container).getChestSlots();
-                int size = chestSlots.size();
+                /*int size = chestSlots.size();
                 int rows = size / 9;
                 Slot[][] slotGroup = new Slot[rows][9];
                 for (int i = 0; i < rows; i++) {
                     for (int j = 0; j < 9; j++) {
                         slotGroup[i][j] = chestSlots.get(i * 9 + j);
                     }
-                }
-                builder.addSlotGroup(slotGroup);
+                }*/
+                builder.addSlotGroup(9, chestSlots);
             });
             api.addCompat(ContainerUncolossalChest.class, (container, builder) -> {
                 builder.addSlotGroup(5, 0, 5);
