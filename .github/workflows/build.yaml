@@ -81,8 +81,8 @@ jobs:
           game-versions: |
             1.12.2
           dependencies: |
-            mixin-booter | depends | 5.0
-            modularui | depends | 2.0.2
+            mixin-booter | depends | 8.3
+            modularui | depends | 2.1.0
             railcraft | recommends | *
             ender-io | recommends | *
             thermal-expansion | recommends | *
@@ -110,6 +110,7 @@ jobs:
             gregtech-ce-unofficial | recommends | *
             galacticraft-legacy | recommends | *
             ae2-extended-life | recommends | *
+            simply_backpacks | recommends | 1.4.9
           java: |
             8
           retry-attempts: 2
