@@ -90,9 +90,7 @@ public class ShortcutHandler {
             ItemStack remainder = insertToSlots(otherSlots.getSlots(), copy);
             int inserted = stackInSlot.getCount() - remainder.getCount();
             if (inserted > 0) {
-                copy = stackInSlot.copy();
-                copy.shrink(1);
-                slot1.putStack(copy);
+                slot1.putStack(remainder.copy());
             }
         }
         return true;
