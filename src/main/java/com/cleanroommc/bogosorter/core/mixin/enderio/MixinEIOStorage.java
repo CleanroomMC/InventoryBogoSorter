@@ -26,6 +26,6 @@ public class MixinEIOStorage implements ISortableContainer {
                 slotX.add(slot.xPos);
             }
         }
-        builder.addSlotGroup(slotX.size(), slots);
+        builder.addSlotGroup(slots, slotX.size());
     }
 }

@@ -8,11 +8,14 @@ import com.cleanroommc.bogosorter.common.network.CSort;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.sort.ClientSortData;
 import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
+import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
+import com.cleanroommc.bogosorter.compat.screen.WarningScreen;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.manager.GuiManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.settings.KeyBinding;
@@ -22,8 +25,11 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -46,6 +52,23 @@ public class ClientEventHandler {
     private static long timeConfigGui = 0;
     private static long timeSort = 0;
     private static long timeShortcut = 0;
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onGuiOpen(GuiOpenEvent event) {
+        if (event.getGui() instanceof GuiMainMenu && !WarningScreen.wasOpened) {
+            WarningScreen.wasOpened = true;
+            List<String> warnings = new ArrayList<>();
+            if (Loader.isModLoaded("inventorytweaks")) {
+                warnings.add("InventoryTweaks is loaded. This will cause issues!");
+                warnings.add("Consider removing the mod and reload the game.");
+            }
+            if (!warnings.isEmpty()) {
+                warnings.add(0, TextFormatting.BOLD + "! Warning from Inventory Bogosorter !");
+                warnings.add(1, "");
+                event.setGui(new WarningScreen(warnings));
+            }
+        }
+    }
 
     private static void shortcutAction() {
         timeShortcut = Minecraft.getSystemTime();
@@ -206,20 +229,20 @@ public class ClientEventHandler {
     public static boolean sort(GuiScreen guiScreen, @Nullable Slot slot) {
         if (guiScreen instanceof GuiContainer) {
             Container container = ((GuiContainer) guiScreen).inventorySlots;
-            GuiSortingContext sortingContext = GuiSortingContext.create(container);
+            GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
             if (sortingContext.isEmpty()) return false;
-            Slot[][] slotGroup = null;
+            SlotGroup slotGroup = null;
             if (slot == null) {
                 if (sortingContext.getNonPlayerSlotGroupAmount() == 1) {
                     slotGroup = sortingContext.getNonPlayerSlotGroup();
                 } else if (sortingContext.hasPlayer() && sortingContext.getNonPlayerSlotGroupAmount() == 0) {
                     slotGroup = sortingContext.getPlayerSlotGroup();
                 }
-                if (slotGroup == null) return false;
-                slot = slotGroup[0][0];
+                if (slotGroup == null || slotGroup.isEmpty()) return false;
+                slot = slotGroup.getSlots().get(0);
             } else {
                 slotGroup = sortingContext.getSlotGroup(slot.slotNumber);
-                if (slotGroup == null) return false;
+                if (slotGroup == null || slotGroup.isEmpty()) return false;
             }
             boolean player = BogoSortAPI.isPlayerSlot(slot);
 
@@ -233,13 +256,11 @@ public class ClientEventHandler {
         return false;
     }
 
-    public static List<ClientSortData> createSortData(Slot[][] slotGroup, boolean color, boolean name) {
+    public static List<ClientSortData> createSortData(SlotGroup slotGroup, boolean color, boolean name) {
         if (!color && !name) return Collections.emptyList();
         List<ClientSortData> data = new ArrayList<>();
-        for (Slot[] slotRow : slotGroup) {
-            for (Slot slot1 : slotRow) {
-                data.add(ClientSortData.of(slot1, color, name));
-            }
+        for (Slot slot1 : slotGroup.getSlots()) {
+            data.add(ClientSortData.of(slot1, color, name));
         }
         return data;
     }
@@ -252,7 +273,7 @@ public class ClientEventHandler {
 
             if (!player && !isSortableContainer(guiScreen)) return null;
 
-            return new SortHandler(Minecraft.getMinecraft().player, container, player, Int2ObjectMaps.emptyMap());
+            return new SortHandler(Minecraft.getMinecraft().player, container, Int2ObjectMaps.emptyMap());
         }
         return null;
     }

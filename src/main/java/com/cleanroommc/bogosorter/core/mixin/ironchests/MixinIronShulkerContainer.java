@@ -15,6 +15,6 @@ public class MixinIronShulkerContainer implements ISortableContainer {
 
     @Override
     public void buildSortingContext(ISortingContextBuilder builder) {
-        builder.addSlotGroup(type.rowLength, 0, type.size);
+        builder.addSlotGroup(0, type.size, type.rowLength);
     }
 }

@@ -19,7 +19,7 @@ public class MixinContainerRocketInventory implements ISortableContainer {
     public void buildSortingContext(ISortingContextBuilder builder) {
         int inventorySpace = rocketType.getInventorySpace() - 2;
         if (inventorySpace > 2) {
-            builder.addSlotGroup(9, 0, inventorySpace);
+            builder.addSlotGroup(0, inventorySpace, 9);
         }
     }
 }

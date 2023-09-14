@@ -35,8 +35,8 @@ public class SortHandler {
     private final Int2ObjectMap<ClientSortData> clientSortData;
     private final List<SortRule<ItemStack>> itemSortRules;
 
-    public SortHandler(EntityPlayer entityPlayer, Container container, boolean player, Int2ObjectMap<ClientSortData> clientSortData) {
-        this(entityPlayer, container, GuiSortingContext.create(container, player), clientSortData);
+    public SortHandler(EntityPlayer entityPlayer, Container container, Int2ObjectMap<ClientSortData> clientSortData) {
+        this(entityPlayer, container, GuiSortingContext.getOrCreate(container), clientSortData);
     }
 
     public SortHandler(EntityPlayer player, Container container, GuiSortingContext sortingContext, Int2ObjectMap<ClientSortData> clientSortData) {
@@ -64,11 +64,11 @@ public class SortHandler {
     }
 
     public void sort(int slotId, boolean sync) {
-        Slot[][] slotGroup = context.getSlotGroup(slotId);
+        SlotGroup slotGroup = context.getSlotGroup(slotId);
         sort(slotGroup, sync);
     }
 
-    public void sort(Slot[][] slotGroup, boolean sync) {
+    public void sort(SlotGroup slotGroup, boolean sync) {
         if (slotGroup != null) {
             if (new Random().nextFloat() < 0.0005f) {
                 sortBogo(slotGroup);
@@ -82,7 +82,7 @@ public class SortHandler {
         }
     }
 
-    public void sortHorizontal(Slot[][] slotGroup) {
+    public void sortHorizontal(SlotGroup slotGroup) {
         LinkedList<ItemSortContainer> itemList = gatherItems(slotGroup);
         if (itemList.isEmpty()) return;
 
@@ -92,20 +92,18 @@ public class SortHandler {
 
         ItemSortContainer itemSortContainer = itemList.pollFirst();
         if (itemSortContainer == null) return;
-        for (Slot[] slotRow : slotGroup) {
-            for (Slot slot : slotRow) {
-                if (itemSortContainer == null) {
-                    slot.putStack(ItemStack.EMPTY);
-                    continue;
-                }
+        for (Slot slot : slotGroup.getSlots()) {
+            if (itemSortContainer == null) {
+                slot.putStack(ItemStack.EMPTY);
+                continue;
+            }
 
-                int max = slot.getItemStackLimit(itemSortContainer.getItemStack());
-                if (max <= 0) continue;
-                slot.putStack(itemSortContainer.makeStack(max));
+            int max = slot.getItemStackLimit(itemSortContainer.getItemStack());
+            if (max <= 0) continue;
+            slot.putStack(itemSortContainer.makeStack(max));
 
-                if (!itemSortContainer.canMakeStack()) {
-                    itemSortContainer = itemList.pollFirst();
-                }
+            if (!itemSortContainer.canMakeStack()) {
+                itemSortContainer = itemList.pollFirst();
             }
         }
         if (!itemList.isEmpty()) {
@@ -114,7 +112,7 @@ public class SortHandler {
     }
 
     // TODO untested
-    public void sortVertical(Slot[][] slotGroup) {
+    /*public void sortVertical(SlotGroup slotGroup) {
         LinkedList<ItemSortContainer> itemList = gatherItems(slotGroup);
         if (itemList.isEmpty()) return;
 
@@ -145,53 +143,35 @@ public class SortHandler {
         if (!itemList.isEmpty()) {
             McUtils.giveItemsToPlayer(this.player, prepareDropList(itemList));
         }
-    }
+    }*/
 
-    public static void sortBogo(Slot[][] slotGroup) {
-        ItemStack[][] itemGrid = new ItemStack[slotGroup.length][slotGroup[0].length];
-        for (ItemStack[] itemRow : itemGrid) {
-            Arrays.fill(itemRow, ItemStack.EMPTY);
-        }
+    public static void sortBogo(SlotGroup slotGroup) {
         List<ItemStack> items = new ArrayList<>();
-        for (Slot[] slotRow : slotGroup) {
-            for (Slot slot : slotRow) {
-                ItemStack stack = slot.getStack();
-                if (!stack.isEmpty()) {
-                    items.add(stack);
-                }
-            }
+        for (Slot slot : slotGroup.getSlots()) {
+            ItemStack stack = slot.getStack();
+            items.add(stack);
         }
-        Random rnd = new Random();
-        for (ItemStack item : items) {
-            int slot, row;
-            do {
-                row = rnd.nextInt(itemGrid.length);
-                slot = rnd.nextInt(itemGrid[row].length);
-            } while (!itemGrid[row][slot].isEmpty());
-            itemGrid[row][slot] = item;
-        }
-        for (int r = 0; r < slotGroup.length; r++) {
-            for (int c = 0; c < slotGroup[r].length; c++) {
-                slotGroup[r][c].putStack(itemGrid[r][c]);
-            }
+        Collections.shuffle(items);
+        List<Slot> slots = slotGroup.getSlots();
+        for (int i = 0; i < slots.size(); i++) {
+            Slot slot = slots.get(i);
+            slot.putStack(items.get(i));
         }
     }
 
-    public LinkedList<ItemSortContainer> gatherItems(Slot[][] slotGroup) {
+    public LinkedList<ItemSortContainer> gatherItems(SlotGroup slotGroup) {
         LinkedList<ItemSortContainer> list = new LinkedList<>();
         Object2ObjectOpenCustomHashMap<ItemStack, ItemSortContainer> items = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
-        for (Slot[] slotRow : slotGroup) {
-            for (Slot slot : slotRow) {
-                ItemStack stack = slot.getStack();
-                if (!stack.isEmpty()) {
-                    ItemSortContainer container1 = items.get(stack);
-                    if (container1 == null) {
-                        container1 = new ItemSortContainer(stack, clientSortData.get(slot.slotNumber));
-                        items.put(stack, container1);
-                        list.add(container1);
-                    }
-                    container1.grow(stack.getCount());
+        for (Slot slot : slotGroup.getSlots()) {
+            ItemStack stack = slot.getStack();
+            if (!stack.isEmpty()) {
+                ItemSortContainer container1 = items.get(stack);
+                if (container1 == null) {
+                    container1 = new ItemSortContainer(stack, clientSortData.get(slot.slotNumber));
+                    items.put(stack, container1);
+                    list.add(container1);
                 }
+                container1.grow(stack.getCount());
             }
         }
         return list;
@@ -223,15 +203,13 @@ public class SortHandler {
     }
 
     public void clearAllItems(Slot slot1) {
-        Slot[][] slotGroup = context.getSlotGroup(slot1.slotNumber);
+        SlotGroup slotGroup = context.getSlotGroup(slot1.slotNumber);
         if (slotGroup != null) {
             List<Pair<ItemStack, Integer>> slots = new ArrayList<>();
-            for (Slot[] slotRow : slotGroup) {
-                for (Slot slot : slotRow) {
-                    if (!slot.getStack().isEmpty()) {
-                        slot.putStack(ItemStack.EMPTY);
-                        slots.add(Pair.of(ItemStack.EMPTY, slot.slotNumber));
-                    }
+            for (Slot slot : slotGroup.getSlots()) {
+                if (!slot.getStack().isEmpty()) {
+                    slot.putStack(ItemStack.EMPTY);
+                    slots.add(Pair.of(ItemStack.EMPTY, slot.slotNumber));
                 }
             }
             NetworkHandler.sendToServer(new CSlotSync(slots));
@@ -239,17 +217,15 @@ public class SortHandler {
     }
 
     public void randomizeItems(Slot slot1) {
-        Slot[][] slotGroup = context.getSlotGroup(slot1.slotNumber);
+        SlotGroup slotGroup = context.getSlotGroup(slot1.slotNumber);
         if (slotGroup != null) {
             List<Pair<ItemStack, Integer>> slots = new ArrayList<>();
             Random random = new Random();
-            for (Slot[] slotRow : slotGroup) {
-                for (Slot slot : slotRow) {
-                    if (random.nextFloat() < 0.3f) {
-                        ItemStack randomItem = ClientEventHandler.allItems.get(random.nextInt(ClientEventHandler.allItems.size())).copy();
-                        slot.putStack(randomItem.copy());
-                        slots.add(Pair.of(randomItem, slot.slotNumber));
-                    }
+            for (Slot slot : slotGroup.getSlots()) {
+                if (random.nextFloat() < 0.3f) {
+                    ItemStack randomItem = ClientEventHandler.allItems.get(random.nextInt(ClientEventHandler.allItems.size())).copy();
+                    slot.putStack(randomItem.copy());
+                    slots.add(Pair.of(randomItem, slot.slotNumber));
                 }
             }
             NetworkHandler.sendToServer(new CSlotSync(slots));

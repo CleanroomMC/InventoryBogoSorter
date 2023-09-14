@@ -12,7 +12,7 @@ public class MixinBuffer implements ISortableContainer {
     @Override
     public void buildSortingContext(ISortingContextBuilder builder) {
         if (((Container) (Object) this).inventorySlots.size() > 36) {
-            builder.addSlotGroup(3, 0, 9);
+            builder.addSlotGroup(0, 9, 3);
         }
     }
 }

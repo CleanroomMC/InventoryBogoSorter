@@ -11,9 +11,7 @@ import java.util.List;
 @ApiStatus.NonExtendable
 public interface ISortingContextBuilder {
 
-    ISortingContextBuilder addSlotGroup(Slot[][] slotGroup);
+    ISlotGroup addSlotGroup(List<Slot> slots, int rowSize);
 
-    ISortingContextBuilder addSlotGroup(int rowSize, int startIndex, int endIndex);
-
-    ISortingContextBuilder addSlotGroup(int rowSize, List<Slot> slots);
+    ISlotGroup addSlotGroup(int startIndex, int endIndex, int rowSize);
 }

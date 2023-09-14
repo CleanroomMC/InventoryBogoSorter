@@ -4,6 +4,7 @@ import com.cleanroommc.bogosorter.api.*;
 import com.cleanroommc.bogosorter.common.sort.ClientItemSortRule;
 import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
+import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.core.mixin.ItemStackAccessor;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -18,6 +19,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
@@ -44,6 +46,7 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     private final Map<Class<?>, BiConsumer<Container, ISortingContextBuilder>> COMPAT_MAP = new Object2ObjectOpenHashMap<>();
+    private final Map<Class<?>, IPosSetter> playerButtonPos = new Object2ObjectOpenHashMap<>();
     private final Map<String, SortRule<ItemStack>> itemSortRules = new Object2ObjectOpenHashMap<>();
     private final Map<String, NbtSortRule> nbtSortRules = new Object2ObjectOpenHashMap<>();
     private final Int2ObjectOpenHashMap<SortRule<ItemStack>> itemSortRules2 = new Int2ObjectOpenHashMap<>();
@@ -69,6 +72,11 @@ public class BogoSortAPI implements IBogoSortAPI {
             throw new IllegalArgumentException("Class must be an instance of Container!");
         }
         COMPAT_MAP.put(clazz, (BiConsumer<Container, ISortingContextBuilder>) builder);
+    }
+
+    @Override
+    public <T extends Container> void addPlayerSortButtonPosition(Class<T> clazz, @Nullable IPosSetter buttonPos) {
+        this.playerButtonPos.put(clazz, buttonPos);
     }
 
     @Override
@@ -131,6 +139,10 @@ public class BogoSortAPI implements IBogoSortAPI {
     public <T extends Container> BiConsumer<T, ISortingContextBuilder> getBuilder(Container container) {
         BiConsumer<Container, ISortingContextBuilder> builder = COMPAT_MAP.get(container.getClass());
         return builder == null ? null : (BiConsumer<T, ISortingContextBuilder>) builder;
+    }
+
+    public <T extends Container> IPosSetter getPlayerButtonPos(Class<T> clazz) {
+        return this.playerButtonPos.getOrDefault(clazz, SlotGroup.DEFAULT_POS_SETTER);
     }
 
     @Unmodifiable
