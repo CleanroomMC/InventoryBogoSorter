@@ -139,6 +139,7 @@ dependencies {
 	compileOnly rfg.deobf('curse.maven:rustic-256141:3107974')
 	compileOnly rfg.deobf('curse.maven:charset_lib-284523:3656492')
 	compileOnly rfg.deobf('curse.maven:charset_storage_chests-298584:3656498')
+	compileOnly rfg.deobf('curse.maven:simply_backpacks-311595:3028832')
 }
 
 processResources {
