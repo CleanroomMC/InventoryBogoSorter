@@ -17,7 +17,7 @@ public class MixinContainerHorseInventory implements ISortableContainer {
     @Override
     public void buildSortingContext(ISortingContextBuilder builder) {
         if(horse instanceof AbstractChestHorse && ((AbstractChestHorse) horse).hasChest()) {
-            builder.addSlotGroup(((AbstractChestHorse)horse).getInventoryColumns(), 2, 3 * ((AbstractChestHorse)horse).getInventoryColumns() + 2);
+            builder.addSlotGroup(2, 3 * ((AbstractChestHorse)horse).getInventoryColumns() + 2, ((AbstractChestHorse)horse).getInventoryColumns());
         }
     }
 }

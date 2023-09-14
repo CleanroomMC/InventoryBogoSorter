@@ -10,6 +10,6 @@ public class MixinVacuumChest implements ISortableContainer {
 
     @Override
     public void buildSortingContext(ISortingContextBuilder builder) {
-        builder.addSlotGroup(9, 1, 28);
+        builder.addSlotGroup(1, 28, 9);
     }
 }

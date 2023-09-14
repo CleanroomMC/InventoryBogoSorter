@@ -1,16 +1,16 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 public class GuiSortingContext {
 
@@ -42,6 +42,7 @@ public class GuiSortingContext {
     private final boolean hasPlayer;
 
     public GuiSortingContext(Container container, List<SlotGroup> slotGroups, boolean hasPlayer) {
+        slotGroups.sort(Comparator.comparingInt(SlotGroup::getPriority));
         this.container = container;
         this.slotGroups = slotGroups;
         this.hasPlayer = hasPlayer;
@@ -104,43 +105,19 @@ public class GuiSortingContext {
             this.container = container;
         }
 
-        public Builder addSlotGroup(SlotGroup slotGroup) {
-            this.slots.add(slotGroup);
-            return this;
-        }
-
-        public ISortingContextBuilder addSlotGroup(int rowSize, int startIndex, int endIndex) {
-            return addSlotGroup(rowSize, startIndex, endIndex, 0, null);
-        }
-
         @Override
-        public ISortingContextBuilder addSlotGroup(int rowSize, int startIndex, int endIndex, int priority) {
-            return addSlotGroup(rowSize, startIndex, endIndex, priority, null);
-        }
-
-        @Override
-        public ISortingContextBuilder addSlotGroup(int rowSize, int startIndex, int endIndex, int priority, BiConsumer<SlotGroup, Point> pointSetter) {
-            if (endIndex - startIndex < rowSize) {
-                throw new IllegalArgumentException("The start and end index must be at least apart by the row size!");
-            }
-            return addSlotGroup(rowSize, container.inventorySlots.subList(startIndex, endIndex), priority, pointSetter);
-        }
-
-        public ISortingContextBuilder addSlotGroup(int rowSize, List<Slot> slots) {
-            return addSlotGroup(rowSize, slots, 0, null);
-        }
-
-        @Override
-        public ISortingContextBuilder addSlotGroup(int rowSize, List<Slot> slots, int priority) {
-            return addSlotGroup(rowSize, slots, priority, null);
-        }
-
-        @Override
-        public ISortingContextBuilder addSlotGroup(int rowSize, List<Slot> slots, int priority, BiConsumer<SlotGroup, Point> posSetter) {
+        public ISlotGroup addSlotGroup(List<Slot> slots, int rowSize) {
             if (slots.size() < rowSize) {
-                throw new IllegalArgumentException("Slots needs fill at least 1 row! Found " + slots.size() + " slot, but expected at least " + rowSize);
+                throw new IllegalArgumentException("Slots must at least fill 1 row! Expected at least " + rowSize + " slot, but only found " + slots.size());
             }
-            return addSlotGroup(new SlotGroup(slots, rowSize, priority, posSetter));
+            SlotGroup slotGroup = new SlotGroup(slots, rowSize);
+            this.slots.add(slotGroup);
+            return slotGroup;
+        }
+
+        @Override
+        public ISlotGroup addSlotGroup(int startIndex, int endIndex, int rowSize) {
+            return addSlotGroup(this.container.inventorySlots.subList(startIndex, endIndex), rowSize);
         }
 
         public GuiSortingContext build() {
@@ -154,7 +131,10 @@ public class GuiSortingContext {
             if (BogoSortAPI.isPlayerSlot(slot)) slots.add(slot);
         }
         if (!slots.isEmpty()) {
-            builder.addSlotGroup(9, slots);
+            SlotGroup slotGroup = new SlotGroup(true, slots, Math.min(9, slots.size()));
+            slotGroup.priority(-10000)
+                    .buttonPosSetter(BogoSortAPI.INSTANCE.getPlayerButtonPos(container.getClass()));
+            builder.slots.add(slotGroup);
             builder.player = true;
         }
     }

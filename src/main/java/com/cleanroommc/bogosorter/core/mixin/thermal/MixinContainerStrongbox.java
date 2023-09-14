@@ -15,6 +15,6 @@ public abstract class MixinContainerStrongbox implements ISortableContainer {
 
     @Override
     public void buildSortingContext(ISortingContextBuilder builder) {
-        builder.addSlotGroup(rowSize, 36, ((Container) (Object) this).inventorySlots.size());
+        builder.addSlotGroup(36, ((Container) (Object) this).inventorySlots.size(), rowSize);
     }
 }

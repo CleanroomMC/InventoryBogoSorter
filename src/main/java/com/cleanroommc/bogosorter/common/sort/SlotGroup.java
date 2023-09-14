@@ -1,39 +1,46 @@
 package com.cleanroommc.bogosorter.common.sort;
 
+import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.api.ISlotGroup;
 import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.awt.*;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 public class SlotGroup implements ISlotGroup {
 
+    public static final IPosSetter DEFAULT_POS_SETTER = (gui, slotGroup, buttonPos) -> {
+        if (slotGroup.getSlots().size() < slotGroup.getRowSize()) {
+            buttonPos.setPos(-1000, -1000);
+        } else {
+            Slot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
+            buttonPos.setPos(topRight.xPos + 17, topRight.yPos - 2);
+        }
+    };
+
+    private final boolean player;
     private final List<Slot> slots;
     private final int rowSize;
-    private final int priority;
-    private final BiConsumer<SlotGroup, Point> positionUpdater;
+    private int priority;
+    private IPosSetter posSetter;
 
-    public SlotGroup(List<Slot> slots, int rowSize, int priority, @Nullable BiConsumer<SlotGroup, Point> positionUpdater) {
-        this.slots = slots;
+    public SlotGroup(List<Slot> slots, int rowSize) {
+        this(false, slots, rowSize);
+    }
+
+    public SlotGroup(boolean player, List<Slot> slots, int rowSize) {
+        this.player = player;
+        this.slots = Collections.unmodifiableList(slots);
         this.rowSize = rowSize;
-        this.priority = priority;
-        this.positionUpdater = positionUpdater != null ? positionUpdater : (slotGroup, point) -> {
-            if (getSlots().size() < rowSize) {
-                point.setLocation(-1000, -1000);
-            } else {
-                Slot topRight = getSlots().get(this.rowSize - 1);
-                point.setLocation(topRight.xPos + 18, topRight.yPos);
-            }
-        };
+        this.priority = 0;
+        this.posSetter = DEFAULT_POS_SETTER;
     }
 
     @Override
     public @UnmodifiableView List<Slot> getSlots() {
-        return Collections.unmodifiableList(this.slots);
+        return this.slots;
     }
 
     @Override
@@ -46,7 +53,36 @@ public class SlotGroup implements ISlotGroup {
         return this.priority;
     }
 
-    public void updateTopRightPos(Point point) {
-        this.positionUpdater.accept(this, point);
+    @Override
+    public boolean isPlayerInventory() {
+        return this.player;
+    }
+
+    @Nullable
+    public IPosSetter getPosSetter() {
+        return posSetter;
+    }
+
+    @Override
+    public ISlotGroup priority(int priority) {
+        this.priority = priority;
+        return this;
+    }
+
+    @Override
+    public ISlotGroup buttonPosSetter(@Nullable IPosSetter posSetter) {
+        this.posSetter = posSetter;
+        return this;
+    }
+
+    public boolean hasSlot(int slotNumber) {
+        for (Slot slot : getSlots()) {
+            if (slot.slotNumber == slotNumber) return true;
+        }
+        return false;
+    }
+
+    public boolean isEmpty() {
+        return getSlots().isEmpty();
     }
 }

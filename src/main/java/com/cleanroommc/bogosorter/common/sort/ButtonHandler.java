@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.common.sort;
 
-import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.common.config.ConfigGui;
 import com.cleanroommc.bogosorter.core.mixin.GuiScreenAccessor;
@@ -19,7 +18,6 @@ import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -27,7 +25,7 @@ public class ButtonHandler {
 
     private static final int SORT_ID = 394658246;
     private static final int SETTINGS_ID = 394658247;
-    private static final int BUTTON_SIZE = 10;
+    public static final int BUTTON_SIZE = 10;
 
     @SubscribeEvent
     public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
@@ -36,7 +34,7 @@ public class ButtonHandler {
             GuiSortingContext context = GuiSortingContext.getOrCreate(container);
             event.getButtonList().removeIf(guiButton -> guiButton instanceof SortButton);
             for (SlotGroup slotGroup : context.getSlotGroups()) {
-                if (!slotGroup.isPlayerInventory() || BogoSortAPI.INSTANCE.showPlayerButtons(container.getClass())) {
+                if (slotGroup.getPosSetter() != null) {
                     event.getButtonList().add(new SortButton(slotGroup, true));
                     event.getButtonList().add(new SortButton(slotGroup, false));
                 }
@@ -47,8 +45,11 @@ public class ButtonHandler {
     @SubscribeEvent
     public static void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
         if (ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
-            GuiSortingContext context = GuiSortingContext.getOrCreate(((GuiContainer) event.getGui()).inventorySlots);
+            GuiContainer gui = (GuiContainer) event.getGui();
+            GuiSortingContext context = GuiSortingContext.getOrCreate(gui.inventorySlots);
+            ButtonPos buttonPos = new ButtonPos();
             for (SlotGroup slotGroup : context.getSlotGroups()) {
+                if (slotGroup.getPosSetter() == null) continue;
                 SortButton sortButton = null, settingsButton = null;
                 for (GuiButton guiButton : ((GuiScreenAccessor) event.getGui()).getButtonList()) {
                     if (guiButton instanceof SortButton) {
@@ -63,14 +64,9 @@ public class ButtonHandler {
                     }
                 }
                 if (sortButton == null || settingsButton == null) continue;
-                Point p = new Point();
-                slotGroup.updateTopRightPos(p);
-                p.x += ((GuiContainer) event.getGui()).guiLeft;
-                p.y += ((GuiContainer) event.getGui()).guiTop;
-                sortButton.x = p.x - BUTTON_SIZE - BUTTON_SIZE - 1;
-                sortButton.y = p.y - BUTTON_SIZE - 2;
-                settingsButton.x = sortButton.x + BUTTON_SIZE;
-                settingsButton.y = sortButton.y;
+                buttonPos.reset();
+                slotGroup.getPosSetter().setButtonPos(gui, slotGroup, buttonPos);
+                buttonPos.applyPos(gui.guiLeft, gui.guiTop, sortButton, settingsButton);
             }
         }
     }
@@ -98,7 +94,7 @@ public class ButtonHandler {
         }
     }
 
-    private static class SortButton extends GuiButton {
+    public static class SortButton extends GuiButton {
 
         private final SlotGroup slotGroup;
         private final boolean sort;

@@ -4,11 +4,11 @@ import com.cleanroommc.bogosorter.api.*;
 import com.cleanroommc.bogosorter.common.sort.ClientItemSortRule;
 import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
+import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.core.mixin.ItemStackAccessor;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -19,6 +19,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
@@ -45,7 +46,7 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     private final Map<Class<?>, BiConsumer<Container, ISortingContextBuilder>> COMPAT_MAP = new Object2ObjectOpenHashMap<>();
-    private final Set<Class<?>> noPlayerSortButtons = new ObjectOpenHashSet<>();
+    private final Map<Class<?>, IPosSetter> playerButtonPos = new Object2ObjectOpenHashMap<>();
     private final Map<String, SortRule<ItemStack>> itemSortRules = new Object2ObjectOpenHashMap<>();
     private final Map<String, NbtSortRule> nbtSortRules = new Object2ObjectOpenHashMap<>();
     private final Int2ObjectOpenHashMap<SortRule<ItemStack>> itemSortRules2 = new Int2ObjectOpenHashMap<>();
@@ -73,8 +74,9 @@ public class BogoSortAPI implements IBogoSortAPI {
         COMPAT_MAP.put(clazz, (BiConsumer<Container, ISortingContextBuilder>) builder);
     }
 
-    public <T extends Container> void removePlayerButtons(Class<T> clazz) {
-        this.noPlayerSortButtons.add(clazz);
+    @Override
+    public <T extends Container> void addPlayerSortButtonPosition(Class<T> clazz, @Nullable IPosSetter buttonPos) {
+        this.playerButtonPos.put(clazz, buttonPos);
     }
 
     @Override
@@ -139,8 +141,8 @@ public class BogoSortAPI implements IBogoSortAPI {
         return builder == null ? null : (BiConsumer<T, ISortingContextBuilder>) builder;
     }
 
-    public <T extends Container> boolean showPlayerButtons(Class<T> clazz) {
-        return !this.noPlayerSortButtons.contains(clazz);
+    public <T extends Container> IPosSetter getPlayerButtonPos(Class<T> clazz) {
+        return this.playerButtonPos.getOrDefault(clazz, SlotGroup.DEFAULT_POS_SETTER);
     }
 
     @Unmodifiable

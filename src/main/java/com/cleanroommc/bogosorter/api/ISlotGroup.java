@@ -1,7 +1,7 @@
 package com.cleanroommc.bogosorter.api;
 
-import com.cleanroommc.bogosorter.BogoSortAPI;
 import net.minecraft.inventory.Slot;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.List;
@@ -15,18 +15,21 @@ public interface ISlotGroup {
 
     int getPriority();
 
-    default boolean hasSlot(int slotNumber) {
-        for (Slot slot : getSlots()) {
-            if (slot.slotNumber == slotNumber) return true;
-        }
-        return false;
-    }
+    boolean isPlayerInventory();
 
-    default boolean isEmpty() {
-        return getSlots().isEmpty();
-    }
+    /**
+     * Sets the priority of this slot group. Can determine where items are transferred first with shortcuts.
+     *
+     * @param priority priority
+     * @return this
+     */
+    ISlotGroup priority(int priority);
 
-    default boolean isPlayerInventory() {
-        return !getSlots().isEmpty() && BogoSortAPI.isPlayerSlot(getSlots().get(0));
-    }
+    /**
+     * Sets a custom function to determine the position of sort buttons. Default is top right corner.
+     *
+     * @param posSetter pos function or null if no buttons are desired
+     * @return this
+     */
+    ISlotGroup buttonPosSetter(@Nullable IPosSetter posSetter);
 }

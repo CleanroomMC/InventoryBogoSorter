@@ -6,6 +6,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.function.BiConsumer;
@@ -37,6 +38,15 @@ public interface IBogoSortAPI {
      */
     @ApiStatus.Internal
     <T> void addCompatSimple(Class<T> clazz, BiConsumer<T, ISortingContextBuilder> builder);
+
+    /**
+     * Registers a function to figure out where to place player inventory sort buttons.
+     *
+     * @param clazz     class of the container
+     * @param buttonPos pos function or null if no buttons are desired
+     * @param <T>       container type
+     */
+    <T extends Container> void addPlayerSortButtonPosition(Class<T> clazz, @Nullable IPosSetter buttonPos);
 
     /**
      * Removes sorting compat for a container class

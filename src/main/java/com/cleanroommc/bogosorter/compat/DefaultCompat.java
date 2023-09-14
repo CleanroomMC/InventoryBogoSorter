@@ -7,6 +7,7 @@ import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
+import com.cleanroommc.bogosorter.api.IButtonPos;
 import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
@@ -54,22 +55,22 @@ public class DefaultCompat {
         });
         api.addCompat(ContainerChest.class, (container, builder) -> {
             IInventory inventory = container.getLowerChestInventory();
-            builder.addSlotGroup(9, 0, inventory.getSizeInventory());
+            builder.addSlotGroup(0, inventory.getSizeInventory(), 9);
         });
         api.addCompat(ContainerDispenser.class, (container, builder) -> {
-            builder.addSlotGroup(3, 0, 9);
+            builder.addSlotGroup(0, 9, 3);
         });
         api.addCompat(ContainerHopper.class, (container, builder) -> {
-            builder.addSlotGroup(5, 0, 5);
+            builder.addSlotGroup(0, 5, 5);
         });
         api.addCompat(ContainerShulkerBox.class, (container, builder) -> {
-            builder.addSlotGroup(9, 0, 27);
+            builder.addSlotGroup(0, 27, 9);
         });
         // for horse inventory compat see MixinContainerHorseInventory
 
         if (Loader.isModLoaded("actuallyadditions")) {
             api.addCompat(ContainerGiantChest.class, (container, builder) -> {
-                builder.addSlotGroup(13, 0, 117);
+                builder.addSlotGroup(0, 117, 13);
             });
         }
 
@@ -77,13 +78,13 @@ public class DefaultCompat {
             api.addCompat(ContainerEnderItemStorage.class, (container, builder) -> {
                 switch (container.chestInv.getSize()) {
                     case 0:
-                        builder.addSlotGroup(3, 0, 9);
+                        builder.addSlotGroup(0, 9, 3);
                         break;
                     case 1:
-                        builder.addSlotGroup(9, 0, 27);
+                        builder.addSlotGroup(0, 27, 9);
                         break;
                     case 2:
-                        builder.addSlotGroup(9, 0, 54);
+                        builder.addSlotGroup(0, 54, 9);
                         break;
                 }
             });
@@ -91,44 +92,44 @@ public class DefaultCompat {
 
         if (Loader.isModLoaded("appliedenergistics2")) {
             api.addCompat(ContainerSkyChest.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, 36);
+                builder.addSlotGroup(0, 36, 9);
             });
         }
 
         if (Loader.isModLoaded("draconicevolution")) {
             api.addCompatSimple(ContainerDraconiumChest.class, (container, builder) -> {
-                builder.addSlotGroup(26, 0, 260);
+                builder.addSlotGroup(0, 260, 26);
             });
         }
 
         if (Loader.isModLoaded("futuremc")) {
             api.addCompatSimple(ContainerBarrel.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, 27);
+                builder.addSlotGroup(0, 27, 9);
             });
         }
 
         if (Loader.isModLoaded("projecte")) {
             api.addCompat(CondenserContainer.class, (container, builder) -> {
-                builder.addSlotGroup(13, 1, 92);
+                builder.addSlotGroup(1, 92, 13);
             });
             api.addCompat(CondenserMK2Container.class, (container, builder) -> {
-                builder.addSlotGroup(6, 1, 43);
-                builder.addSlotGroup(6, 43, 85);
+                builder.addSlotGroup(1, 43, 6);
+                builder.addSlotGroup(43, 85, 6);
             });
         }
 
         if (Loader.isModLoaded("immersiveengineering")) {
             api.addCompat(ContainerCrate.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, container.slotCount);
+                builder.addSlotGroup(0, container.slotCount, 9);
             });
         }
 
         if (Loader.isModLoaded("forestry")) {
             api.addCompat(ContainerBackpack.class, (container, builder) -> {
                 if (container.inventorySlots.size() == 51) {
-                    builder.addSlotGroup(5, 36, container.inventorySlots.size());
+                    builder.addSlotGroup(36, container.inventorySlots.size(), 5);
                 } else {
-                    builder.addSlotGroup(9, 36, container.inventorySlots.size());
+                    builder.addSlotGroup(36, container.inventorySlots.size(), 9);
 
                 }
             });
@@ -140,7 +141,7 @@ public class DefaultCompat {
                         slots.add(container.getSlot(i * 5 + j + 36));
                     }
                 }
-                builder.addSlotGroup(25, slots);
+                builder.addSlotGroup(slots, 25);
             });
             api.addCompat(ContainerNaturalistInventory.class, (container, builder) -> {
                 List<Slot> slots = new ArrayList<>();
@@ -150,7 +151,7 @@ public class DefaultCompat {
                         slots.add(container.getSlot(i * 5 + j + 36));
                     }
                 }
-                builder.addSlotGroup(25, slots);
+                builder.addSlotGroup(slots, 25);
             });
         }
 
@@ -158,13 +159,13 @@ public class DefaultCompat {
             api.addCompat(DynamicContainer.class, (container, builder) -> {
                 if (container.base instanceof TileEntityStorageBox) {
                     if (container.base instanceof TileEntityWoodenStorageBox) {
-                        builder.addSlotGroup(9, 0, 27);
+                        builder.addSlotGroup(0, 27, 9);
                     } else if (container.base instanceof TileEntityBronzeStorageBox || container.base instanceof TileEntityIronStorageBox) {
-                        builder.addSlotGroup(9, 0, 45);
+                        builder.addSlotGroup(0, 45, 9);
                     } else if (container.base instanceof TileEntitySteelStorageBox) {
-                        builder.addSlotGroup(9, 0, 63);
+                        builder.addSlotGroup(0, 63, 9);
                     } else if (container.base instanceof TileEntityIridiumStorageBox) {
-                        builder.addSlotGroup(18, 0, 126);
+                        builder.addSlotGroup(0, 126, 18);
                     }
                 }
             });
@@ -174,14 +175,14 @@ public class DefaultCompat {
             api.addCompat(ContainerPersonalChest.class, (container, builder) -> {
                 // make sure player can edit this chest
                 if (!(container.inventorySlots.get(0) instanceof SlotGhoest)) {
-                    builder.addSlotGroup(9, 0, 54);
+                    builder.addSlotGroup(0, 54, 9);
                 }
             });
         }
 
         if (Loader.isModLoaded("metalchests")) {
             api.addCompat(ContainerMetalChest.class, (container, builder) -> {
-                builder.addSlotGroup(container.type.getColumns(), 0, container.type.getInventorySize());
+                builder.addSlotGroup(0, container.type.getInventorySize(), container.type.getColumns());
             });
         }
 
@@ -201,7 +202,7 @@ public class DefaultCompat {
                 for (Map.Entry<String, List<Slot>> entry : sortableSlots.entrySet()) {
                     int rowSize = ((IModularSortable) (Object) container.getModularUI()).getRowSize(entry.getKey());
                     if (rowSize > 0) {
-                        builder.addSlotGroup(rowSize, entry.getValue());
+                        builder.addSlotGroup(entry.getValue(), rowSize);
                     }
                 }
             });
@@ -220,75 +221,79 @@ public class DefaultCompat {
                         slots.add(container.getSlot((i - 3) * 5 + j + 34));
                     }
                 }
-                builder.addSlotGroup(8, slots);
+                builder.addSlotGroup(slots, 8);
             });
         }
 
         if (Loader.isModLoaded("colossalchests")) {
             api.addCompat(ContainerColossalChest.class, (container, builder) -> {
                 List<Slot> chestSlots = ((ContainerColossalChestAccessor) container).getChestSlots();
-                builder.addSlotGroup(new SlotGroup(chestSlots, 9, 0, (slotGroup, point) -> {
-                    point.y = 1000;
+                builder.addSlotGroup(chestSlots, 9).buttonPosSetter((gui, slotGroup, buttonPos) -> {
+                    buttonPos.setPos(0, 1000);
                     for (Slot slot : slotGroup.getSlots()) {
                         if (slot.xPos >= 0 && slot.yPos >= 0 && slot.isEnabled()) {
-                            point.x = Math.max(point.x, slot.xPos + 18);
-                            point.y = Math.min(point.y, slot.yPos);
+                            buttonPos.setPos(Math.max(buttonPos.getX(), slot.xPos + 17), Math.min(buttonPos.getY(), slot.yPos - 2));
                         }
                     }
-                }));
+                });
             });
-            BogoSortAPI.INSTANCE.removePlayerButtons(ContainerColossalChest.class);
+            api.addPlayerSortButtonPosition(ContainerColossalChest.class, (gui, slotGroup, buttonPos) -> {
+                Slot slot = slotGroup.getSlots().get(26);
+                buttonPos.setPos(slot.xPos + 19, slot.yPos - 2);
+                buttonPos.setTopLeft();
+                buttonPos.setVertical();
+            });
             api.addCompat(ContainerUncolossalChest.class, (container, builder) -> {
-                builder.addSlotGroup(5, 0, 5);
+                builder.addSlotGroup(0, 5, 5);
             });
         }
 
         if (Loader.isModLoaded("quark")) {
             api.addCompat(vazkii.quark.oddities.inventory.ContainerBackpack.class, (container, builder) -> {
-                builder.addSlotGroup(9, 46, 46 + 27);
+                builder.addSlotGroup(46, 46 + 27, 9);
             });
         }
 
         if (Loader.isModLoaded("cyclicmagic")) {
             api.addCompat(ContainerStorage.class, (container, builder) -> {
-                builder.addSlotGroup(11, 0, 77);
+                builder.addSlotGroup(0, 77, 11);
             });
         }
 
         if (Loader.isModLoaded("bibliocraft")) {
             api.addCompat(ContainerFramedChest.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, container.getMainTile().getIsDouble() ? 27 * 2 : 27);
+                builder.addSlotGroup(0, container.getMainTile().getIsDouble() ? 27 * 2 : 27, 9);
             });
         }
 
         if (Loader.isModLoaded("railcraft")) {
             api.addCompat(ContainerRCChest.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, container.getInv().getSizeInventory());
+                builder.addSlotGroup(0, container.getInv().getSizeInventory(), 9);
             });
         }
 
         if (Loader.isModLoaded("energycontrol")) {
             api.addCompat(ContainerCardHolder.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, 54);
+                builder.addSlotGroup(0, 54, 9);
             });
         }
 
         if (Loader.isModLoaded("projectred-exploration")) {
             api.addCompat(mrtjp.projectred.exploration.ContainerBackpack.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, 27);
+                builder.addSlotGroup(0, 27, 9);
             });
         }
 
         if (Loader.isModLoaded("thebetweenlands")) {
             api.addCompat(ContainerPouch.class, (container, builder) -> {
                 IInventory inventory = container.getItemInventory();
-                builder.addSlotGroup(9, 0, inventory.getSizeInventory());
+                builder.addSlotGroup(0, inventory.getSizeInventory(), 9);
             });
         }
 
         if (Loader.isModLoaded("tfc")) {
             api.addCompat(ContainerChestTFC.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, container.getLowerChestInventory().getSizeInventory());
+                builder.addSlotGroup(0, container.getLowerChestInventory().getSizeInventory(), 9);
             });
         }
 
@@ -297,17 +302,17 @@ public class DefaultCompat {
                 int slot = container.getparachestInventory().getSizeInventory() - 3;
 
                 if (slot > 0) {
-                    builder.addSlotGroup(9, 0, slot);
+                    builder.addSlotGroup(0, slot, 9);
                 }
             });
         }
 
         if (Loader.isModLoaded("rustic")) {
             api.addCompat(ContainerCabinet.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, 27);
+                builder.addSlotGroup(0, 27, 9);
             });
             api.addCompat(ContainerCabinetDouble.class, (container, builder) -> {
-                builder.addSlotGroup(9, 0, 54);
+                builder.addSlotGroup(0, 54, 9);
             });
         }
     }
