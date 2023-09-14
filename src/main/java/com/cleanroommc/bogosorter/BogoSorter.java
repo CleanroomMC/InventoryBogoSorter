@@ -15,7 +15,9 @@ import com.cleanroommc.bogosorter.compat.DefaultCompat;
 import com.cleanroommc.modularui.keybind.KeyBindAPI;
 import gregtech.GregTechVersion;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -23,6 +25,8 @@ import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,7 +63,6 @@ public class BogoSorter {
         MinecraftForge.EVENT_BUS.register(RefillHandler.class);
         if (NetworkUtils.isDedicatedClient()) {
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
-            PlayerConfig.syncToServer();
             MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
             MinecraftForge.EVENT_BUS.register(ButtonHandler.class);
             MinecraftForge.EVENT_BUS.register(HotbarSwap.class);
@@ -80,6 +83,20 @@ public class BogoSorter {
     @Mod.EventHandler
     public void onServerLoad(FMLServerStartingEvent event) {
         event.registerServerCommand(new BogoSortCommandTree());
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(EntityJoinWorldEvent event) {
+        if (event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) {
+            PlayerConfig.syncToServer();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.WorldTickEvent event) {
+        if (event.phase == TickEvent.Phase.END && event.world.getTotalWorldTime() % 100 == 0) {
+            PlayerConfig.checkPlayers();
+        }
     }
 
     public static boolean isAnyGtLoaded() {

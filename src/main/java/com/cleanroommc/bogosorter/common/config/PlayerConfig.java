@@ -31,6 +31,10 @@ public class PlayerConfig {
         throw new IllegalStateException("Could net get player config for " + player.getName());
     }
 
+    public static void checkPlayers() {
+        playerConfig.keySet().removeIf(player -> !player.isAddedToWorld());
+    }
+
     @SideOnly(Side.CLIENT)
     public static PlayerConfig getClient() {
         return CLIENT;
