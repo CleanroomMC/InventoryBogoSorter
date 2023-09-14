@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.core.visitor;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.core.CatServerHelper;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -85,7 +86,7 @@ public class EntityPlayerVisitor extends ClassVisitor implements Opcodes {
             super.visitMethodInsn(opcode, owner, name, desc, itf);
             if (opcode == INVOKEVIRTUAL && PIMVisitor.PLAYER_CLASS.equals(owner) && PIMVisitor.SET_HELD_ITEM_FUNC.equals(name)) {
                 visitVarInsn(ALOAD, 0);
-                visitVarInsn(ALOAD, 25);
+                visitVarInsn(ALOAD, CatServerHelper.isCatServerLoaded() ? 26 : 25);
                 visitFieldInsn(GETSTATIC, PIMVisitor.HAND_CLASS, "MAIN_HAND", "L" + PIMVisitor.HAND_CLASS + ";");
                 PIMVisitor.visitOnDestroy(this);
                 BogoSorter.LOGGER.info("Applied EntityPlayer attackTargetEntityWithCurrentItem ASM");
