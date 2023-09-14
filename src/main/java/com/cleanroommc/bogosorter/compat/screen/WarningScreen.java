@@ -11,6 +11,9 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class WarningScreen extends GuiScreen {
+
+    public static boolean wasOpened = false;
+
     public final List<String> messages;
     private int textHeight;
 
@@ -33,13 +36,14 @@ public class WarningScreen extends GuiScreen {
 
     @Override
     public void actionPerformed(GuiButton button) {
-        if (button.id == 0) this.mc.displayGuiScreen(new GuiMainMenu());
+        if (button.id == 0) {
+            this.mc.displayGuiScreen(new GuiMainMenu());
+        }
     }
 
     @Override
     public void initGui() {
-        this.buttonList.clear();
         this.textHeight = this.messages.size() * this.fontRenderer.FONT_HEIGHT;
-        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, Math.min(this.height / 2 + this.textHeight / 2 + this.fontRenderer.FONT_HEIGHT, this.height - 30), I18n.format("gui.done")));
+        this.buttonList.add(new GuiButton(0, this.width / 2 - 100, Math.min(this.height / 2 + this.textHeight / 2 + this.fontRenderer.FONT_HEIGHT, this.height - 30), I18n.format("gui.toTitle")));
     }
 }

@@ -25,6 +25,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -53,14 +54,19 @@ public class ClientEventHandler {
     private static long timeShortcut = 0;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void utDisplayCompatScreens(GuiOpenEvent event) {
-        if (event.getGui() instanceof GuiMainMenu) {
+    public static void onGuiOpen(GuiOpenEvent event) {
+        if (event.getGui() instanceof GuiMainMenu && !WarningScreen.wasOpened) {
+            WarningScreen.wasOpened = true;
             List<String> warnings = new ArrayList<>();
-            if (Loader.isModLoaded("invtweaks")) {
-                warnings.add("InventoryTweaks is loaded. This will cause issues! Consider removing the mod and reload the game.");
+            if (Loader.isModLoaded("inventorytweaks")) {
+                warnings.add("InventoryTweaks is loaded. This will cause issues!");
+                warnings.add("Consider removing the mod and reload the game.");
             }
-            if (warnings.isEmpty()) return;
-            event.setGui(new WarningScreen(warnings));
+            if (!warnings.isEmpty()) {
+                warnings.add(0, TextFormatting.BOLD + "! Warning from Inventory Bogosorter !");
+                warnings.add(1, "");
+                event.setGui(new WarningScreen(warnings));
+            }
         }
     }
 
