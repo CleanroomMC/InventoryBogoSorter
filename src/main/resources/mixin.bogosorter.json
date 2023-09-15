@@ -12,8 +12,8 @@
   ],
   "client": [
     "CreativeSlotMixin",
+    "GuiContainerMixin",
     "GuiEditSignMixin",
-    "GuiScreenAccessor",
     "MixinMinecraft"
   ]
 }

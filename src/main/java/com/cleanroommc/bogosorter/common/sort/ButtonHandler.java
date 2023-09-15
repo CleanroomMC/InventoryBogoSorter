@@ -2,7 +2,6 @@ package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.common.config.ConfigGui;
-import com.cleanroommc.bogosorter.core.mixin.GuiScreenAccessor;
 import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.manager.GuiManager;
 import com.cleanroommc.modularui.screen.GuiScreenWrapper;
@@ -51,7 +50,7 @@ public class ButtonHandler {
             for (SlotGroup slotGroup : context.getSlotGroups()) {
                 if (slotGroup.getPosSetter() == null) continue;
                 SortButton sortButton = null, settingsButton = null;
-                for (GuiButton guiButton : ((GuiScreenAccessor) event.getGui()).getButtonList()) {
+                for (GuiButton guiButton : ((IGuiButtonAccessor) event.getGui()).getButtons()) {
                     if (guiButton instanceof SortButton) {
                         SortButton button = (SortButton) guiButton;
                         if (button.slotGroup == slotGroup) {
@@ -74,7 +73,7 @@ public class ButtonHandler {
     @SubscribeEvent
     public static void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Post event) {
         if (ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
-            for (GuiButton guiButton : ((GuiScreenAccessor) event.getGui()).getButtonList()) {
+            for (GuiButton guiButton : ((IGuiButtonAccessor) event.getGui()).getButtons()) {
                 if (guiButton instanceof SortButton) {
                     ((SortButton) guiButton).drawTooltip(event.getMouseX(), event.getMouseY());
                 }
