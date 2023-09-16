@@ -87,6 +87,10 @@ repositories {
 			includeGroup 'curse.maven'
 		}
 	}
+	maven {
+		url 'http://maven.tterrag.com/'
+		allowInsecureProtocol = true
+	}
 	mavenLocal() // Must be last for caching to work
 }
 
@@ -112,7 +116,10 @@ dependencies {
 	compileOnly rfg.deobf('curse.maven:actually_additions-228404:3117927')
 	compileOnly rfg.deobf('curse.maven:ender_storage_1_8-245174:2755787')
 	compileOnly rfg.deobf('curse.maven:ae2_extended_life-570458:3811277')
-	compileOnly rfg.deobf('curse.maven:ender_io-64578:3328811')
+	compileOnly rfg.deobf('com.enderio.core:EnderCore:1.12.2-+')
+	compileOnly (rfg.deobf('com.enderio:EnderIO:1.12.2-+')) {
+		transitive = false
+	}
 	compileOnly rfg.deobf('curse.maven:draconic_evolution-223565:3431261')
 	compileOnly rfg.deobf('curse.maven:gregtech_ce_unofficial-557242:4325257')
 	compileOnly rfg.deobf('curse.maven:future_mc-310059:3842790')

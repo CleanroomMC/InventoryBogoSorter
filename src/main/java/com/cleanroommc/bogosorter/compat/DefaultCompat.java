@@ -91,6 +91,7 @@ public class DefaultCompat {
         }
 
         if (Loader.isModLoaded("appliedenergistics2")) {
+            // TODO player inventory is not recognised as such
             api.addCompat(ContainerSkyChest.class, (container, builder) -> {
                 builder.addSlotGroup(0, 36, 9);
             });
@@ -99,6 +100,12 @@ public class DefaultCompat {
         if (Loader.isModLoaded("draconicevolution")) {
             api.addCompatSimple(ContainerDraconiumChest.class, (container, builder) -> {
                 builder.addSlotGroup(0, 260, 26);
+            });
+            api.addPlayerSortButtonPosition(ContainerDraconiumChest.class, (gui, slotGroup, buttonPos) -> {
+                Slot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
+                buttonPos.setVertical();
+                buttonPos.setTopLeft();
+                buttonPos.setPos(topRight.xPos + 17, topRight.yPos - 1);
             });
         }
 
@@ -113,9 +120,13 @@ public class DefaultCompat {
                 builder.addSlotGroup(1, 92, 13);
             });
             api.addCompat(CondenserMK2Container.class, (container, builder) -> {
-                builder.addSlotGroup(1, 43, 6);
-                builder.addSlotGroup(43, 85, 6);
+                builder.addSlotGroup(1, 43, 6)
+                        .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
+                builder.addSlotGroup(43, 85, 6)
+                        .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
             });
+            api.addPlayerSortButtonPosition(CondenserContainer.class, IPosSetter.TOP_RIGHT_VERTICAL);
+            api.addPlayerSortButtonPosition(CondenserMK2Container.class, IPosSetter.TOP_RIGHT_VERTICAL);
         }
 
         if (Loader.isModLoaded("immersiveengineering")) {
