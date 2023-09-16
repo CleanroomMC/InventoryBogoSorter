@@ -144,7 +144,7 @@ public class BogoSortAPI implements IBogoSortAPI {
         if (container instanceof ISortableContainer) {
             return ((ISortableContainer) container).getPlayerButtonPosSetter();
         }
-        return this.playerButtonPos.getOrDefault(container.getClass(), IPosSetter.DEFAULT);
+        return this.playerButtonPos.getOrDefault(container.getClass(), IPosSetter.TOP_RIGHT_HORIZONTAL);
     }
 
     @Unmodifiable

@@ -26,7 +26,7 @@ public class SlotGroup implements ISlotGroup {
         this.slots = Collections.unmodifiableList(slots);
         this.rowSize = rowSize;
         this.priority = 0;
-        this.posSetter = IPosSetter.DEFAULT;
+        this.posSetter = IPosSetter.TOP_RIGHT_HORIZONTAL;
     }
 
     @Override

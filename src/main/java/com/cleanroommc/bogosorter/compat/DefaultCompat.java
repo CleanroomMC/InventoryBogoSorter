@@ -6,6 +6,7 @@ import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
+import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
@@ -69,6 +70,8 @@ public class DefaultCompat {
             api.addCompat(ContainerGiantChest.class, (container, builder) -> {
                 builder.addSlotGroup(0, 117, 13);
             });
+            // TODO slightly clashes with page button
+            api.addPlayerSortButtonPosition(ContainerGiantChest.class, IPosSetter.TOP_RIGHT_VERTICAL);
         }
 
         if (Loader.isModLoaded("enderstorage")) {

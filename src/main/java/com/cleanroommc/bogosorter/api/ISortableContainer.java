@@ -13,6 +13,6 @@ public interface ISortableContainer {
 
     @Nullable
     default IPosSetter getPlayerButtonPosSetter() {
-        return IPosSetter.DEFAULT;
+        return IPosSetter.TOP_RIGHT_HORIZONTAL;
     }
 }
