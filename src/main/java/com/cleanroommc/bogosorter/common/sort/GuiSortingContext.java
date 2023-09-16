@@ -133,7 +133,7 @@ public class GuiSortingContext {
         if (!slots.isEmpty()) {
             SlotGroup slotGroup = new SlotGroup(true, slots, Math.min(9, slots.size()));
             slotGroup.priority(-10000)
-                    .buttonPosSetter(BogoSortAPI.INSTANCE.getPlayerButtonPos(container.getClass()));
+                    .buttonPosSetter(BogoSortAPI.INSTANCE.getPlayerButtonPos(container));
             builder.slots.add(slotGroup);
             builder.player = true;
         }

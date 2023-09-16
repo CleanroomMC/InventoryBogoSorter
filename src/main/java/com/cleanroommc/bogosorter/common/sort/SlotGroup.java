@@ -11,15 +11,6 @@ import java.util.List;
 
 public class SlotGroup implements ISlotGroup {
 
-    public static final IPosSetter DEFAULT_POS_SETTER = (gui, slotGroup, buttonPos) -> {
-        if (slotGroup.getSlots().size() < slotGroup.getRowSize()) {
-            buttonPos.setPos(-1000, -1000);
-        } else {
-            Slot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
-            buttonPos.setPos(topRight.xPos + 17, topRight.yPos - 2);
-        }
-    };
-
     private final boolean player;
     private final List<Slot> slots;
     private final int rowSize;
@@ -35,7 +26,7 @@ public class SlotGroup implements ISlotGroup {
         this.slots = Collections.unmodifiableList(slots);
         this.rowSize = rowSize;
         this.priority = 0;
-        this.posSetter = DEFAULT_POS_SETTER;
+        this.posSetter = IPosSetter.DEFAULT;
     }
 
     @Override

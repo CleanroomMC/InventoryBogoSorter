@@ -4,7 +4,6 @@ import com.cleanroommc.bogosorter.api.*;
 import com.cleanroommc.bogosorter.common.sort.ClientItemSortRule;
 import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
-import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.core.mixin.ItemStackAccessor;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -141,8 +140,11 @@ public class BogoSortAPI implements IBogoSortAPI {
         return builder == null ? null : (BiConsumer<T, ISortingContextBuilder>) builder;
     }
 
-    public <T extends Container> IPosSetter getPlayerButtonPos(Class<T> clazz) {
-        return this.playerButtonPos.getOrDefault(clazz, SlotGroup.DEFAULT_POS_SETTER);
+    public IPosSetter getPlayerButtonPos(Container container) {
+        if (container instanceof ISortableContainer) {
+            return ((ISortableContainer) container).getPlayerButtonPosSetter();
+        }
+        return this.playerButtonPos.getOrDefault(container.getClass(), IPosSetter.DEFAULT);
     }
 
     @Unmodifiable
