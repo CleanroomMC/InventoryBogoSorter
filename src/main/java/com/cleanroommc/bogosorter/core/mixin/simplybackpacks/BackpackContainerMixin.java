@@ -6,7 +6,7 @@ import com.flanks255.simplybackpacks.gui.BackpackContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(BackpackContainer.class)
+@Mixin(value = BackpackContainer.class, remap = false)
 public class BackpackContainerMixin implements ISortableContainer {
 
     @Shadow
