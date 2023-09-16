@@ -199,10 +199,11 @@ public class DefaultCompat {
                 for (Map.Entry<String, List<Slot>> entry : sortableSlots.entrySet()) {
                     int rowSize = ((IModularSortable) (Object) container.getModularUI()).getRowSize(entry.getKey());
                     if (rowSize > 0) {
-                        builder.addSlotGroup(entry.getValue(), rowSize);
+                        builder.addSlotGroup(entry.getValue(), rowSize).buttonPosSetter(null);
                     }
                 }
             });
+            api.addPlayerSortButtonPosition(ModularUIContainer.class, null);
         }
 
         if (Loader.isModLoaded("travelersbackpack")) {
