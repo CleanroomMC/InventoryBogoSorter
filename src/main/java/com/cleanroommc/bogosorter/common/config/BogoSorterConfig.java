@@ -5,11 +5,15 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
+import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -33,6 +37,7 @@ public class BogoSorterConfig {
         general.addProperty("enableAutoRefill", playerConfig.enableAutoRefill);
         general.addProperty("refillDmgThreshold", playerConfig.autoRefillDamageThreshold);
         general.addProperty("enableHotbarSwap", HotbarSwap.isEnabled());
+        general.addProperty("sortSound", SortHandler.sortSound.soundName.toString());
 
         json.add("General", general);
 
@@ -67,6 +72,11 @@ public class BogoSorterConfig {
             playerConfig.enableAutoRefill = general.get("enableAutoRefill").getAsBoolean();
             playerConfig.autoRefillDamageThreshold = general.get("refillDmgThreshold").getAsShort();
             HotbarSwap.setEnabled(JsonHelper.getBoolean(general, true, "enableHotbarSwap"));
+            String sortSound = JsonHelper.getString(general, "ui.button.click", "sortSound");
+            SortHandler.sortSound = SoundEvent.REGISTRY.getObject(new ResourceLocation(sortSound));
+            if (SortHandler.sortSound == null) {
+                SortHandler.sortSound = SoundEvents.UI_BUTTON_CLICK;
+            }
         }
         sortRules.clear();
         if (json.has("ItemSortRules")) {

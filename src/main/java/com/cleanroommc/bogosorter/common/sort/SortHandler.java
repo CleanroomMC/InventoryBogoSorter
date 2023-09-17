@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.McUtils;
@@ -10,10 +11,14 @@ import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -27,6 +32,18 @@ public class SortHandler {
     public static final Map<EntityPlayer, List<SortRule<ItemStack>>> cacheItemSortRules = new Object2ObjectOpenHashMap<>();
     public static final Map<EntityPlayer, List<NbtSortRule>> cacheNbtSortRules = new Object2ObjectOpenHashMap<>();
     public static final AtomicReference<List<NbtSortRule>> currentNbtSortRules = new AtomicReference<>(Collections.emptyList());
+
+    public static SoundEvent sortSound = SoundEvents.UI_BUTTON_CLICK;
+
+    @SideOnly(Side.CLIENT)
+    public static void playSortSound() {
+        SoundEvent sound = BogoSorter.isAprilFools() ? SoundEvent.REGISTRY.getObjectById(BogoSorter.RND.nextInt(SoundEvent.REGISTRY.getKeys().size())) : sortSound;
+        Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(sound, 1f));
+    }
+
+    private static float getBogoChance() {
+        return BogoSorter.isAprilFools() ? 0.2f : 0.01f;
+    }
 
     private final EntityPlayer player;
     private final Container container;
@@ -70,7 +87,7 @@ public class SortHandler {
 
     public void sort(SlotGroup slotGroup, boolean sync) {
         if (slotGroup != null) {
-            if (new Random().nextFloat() < 0.0005f) {
+            if (BogoSorter.RND.nextFloat() < getBogoChance()) {
                 sortBogo(slotGroup);
                 this.player.sendMessage(new TextComponentString("Get Bogo'd!"));
             } else {

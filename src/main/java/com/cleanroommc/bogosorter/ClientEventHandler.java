@@ -250,7 +250,7 @@ public class ClientEventHandler {
             boolean color = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("color"));
             boolean name = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("display_name"));
             NetworkHandler.sendToServer(new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.slotNumber, player));
-            Interactable.playButtonClickSound();
+            SortHandler.playSortSound();
             return true;
         }
         return false;

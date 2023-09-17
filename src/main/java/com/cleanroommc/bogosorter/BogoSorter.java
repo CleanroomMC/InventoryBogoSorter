@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
+import com.cleanroommc.bogosorter.common.XSTR;
 import com.cleanroommc.bogosorter.common.config.BogoSortCommandTree;
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.config.Serializer;
@@ -30,6 +31,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
+
 @Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION, dependencies = "required-after:modularui@[2.1.0,2.2.0);required-after:mixinbooter@[4.2,)")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
@@ -39,6 +42,8 @@ public class BogoSorter {
     public static final String VERSION = Tags.VERSION;
 
     public static final Logger LOGGER = LogManager.getLogger(ID);
+
+    public static final XSTR RND = new XSTR();
 
     private static boolean anyGtLoaded = false;
     private static boolean tconstructLoaded = false;
@@ -133,5 +138,10 @@ public class BogoSorter {
 
     public static boolean isQuarkLoaded() {
         return quarkLoaded;
+    }
+
+    public static boolean isAprilFools() {
+        LocalDate date = LocalDate.now();
+        return date.getMonthValue() == 4 && date.getDayOfMonth() == 1;
     }
 }
