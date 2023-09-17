@@ -281,13 +281,21 @@ public class DefaultCompat {
 
         if (Loader.isModLoaded("quark")) {
             api.addCompat(vazkii.quark.oddities.inventory.ContainerBackpack.class, (container, builder) -> {
-                builder.addSlotGroup(46, 46 + 27, 9);
+                builder.addSlotGroup(46, 46 + 27, 9)
+                        .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
             });
+            api.addPlayerSortButtonPosition(vazkii.quark.oddities.inventory.ContainerBackpack.class, IPosSetter.TOP_RIGHT_VERTICAL);
         }
 
         if (Loader.isModLoaded("cyclicmagic")) {
             api.addCompat(ContainerStorage.class, (container, builder) -> {
                 builder.addSlotGroup(0, 77, 11);
+            });
+            api.addPlayerSortButtonPosition(ContainerStorage.class, (gui, slotGroup, buttonPos) -> {
+                Slot topRight = slotGroup.getSlots().get(26);
+                buttonPos.setVertical();
+                buttonPos.setTopLeft();
+                buttonPos.setPos(topRight.xPos + 18, topRight.yPos + 3);
             });
         }
 
@@ -345,6 +353,14 @@ public class DefaultCompat {
             api.addCompat(ContainerCabinetDouble.class, (container, builder) -> {
                 builder.addSlotGroup(0, 54, 9);
             });
+        }
+    }
+
+    private static Class<?> getClass(String name) {
+        try {
+            return Class.forName(name, false, DefaultCompat.class.getClassLoader());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 }
