@@ -24,6 +24,8 @@ import ic2.core.block.personal.container.ContainerPersonalChest;
 import ic2.core.block.storage.box.*;
 import ic2.core.gui.dynamic.DynamicContainer;
 import ic2.core.inventory.slots.SlotGhoest;
+import ic2.core.item.inv.container.ContainerToolBox;
+import ic2.core.item.inv.inventories.ToolBoxInventory;
 import ic2.core.item.tool.ContainerToolbox;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import jds.bibliocraft.containers.ContainerFramedChest;
@@ -202,6 +204,18 @@ public class DefaultCompat {
                 // make sure player can edit this chest
                 if (!(container.inventorySlots.get(0) instanceof SlotGhoest)) {
                     builder.addSlotGroup(0, 54, 9);
+                }
+            });
+            api.addCompat(ContainerToolBox.class, (container, builder) -> {
+                ToolBoxInventory inv = container.getGuiHolder();
+                if (inv instanceof ToolBoxInventory.IridiumBoxInventory) {
+                    builder.addSlotGroup(0, 45, 9);
+                } else if (inv instanceof ToolBoxInventory.CarbonBoxInventory) {
+                    builder.addSlotGroup(0, 15, 5)
+                            .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
+                } else {
+                    builder.addSlotGroup(0, 8, 4)
+                            .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
                 }
             });
         }
