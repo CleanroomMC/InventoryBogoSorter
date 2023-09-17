@@ -5,7 +5,7 @@ import crazypants.enderio.base.machine.gui.AbstractMachineContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(AbstractMachineContainer.class)
+@Mixin(value = AbstractMachineContainer.class, remap = false)
 public interface EIOContainerAccessor<E extends AbstractInventoryMachineEntity> {
 
     @Accessor
