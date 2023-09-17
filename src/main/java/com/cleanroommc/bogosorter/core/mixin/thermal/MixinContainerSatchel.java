@@ -13,8 +13,17 @@ public abstract class MixinContainerSatchel implements ISortableContainer {
     @Shadow
     int rowSize;
 
+    @Shadow
+    boolean isCreative;
+
+    @Shadow
+    boolean isVoid;
+
+    @SuppressWarnings("all")
     @Override
     public void buildSortingContext(ISortingContextBuilder builder) {
-        builder.addSlotGroup(36, ((Container) (Object) this).inventorySlots.size(), rowSize);
+        if (!isCreative && !isVoid) {
+            builder.addSlotGroup(36, ((Container) (Object) this).inventorySlots.size(), rowSize);
+        }
     }
 }

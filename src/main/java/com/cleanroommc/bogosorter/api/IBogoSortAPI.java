@@ -44,9 +44,9 @@ public interface IBogoSortAPI {
      *
      * @param clazz     class of the container
      * @param buttonPos pos function or null if no buttons are desired
-     * @param <T>       container type
+     * @throws IllegalArgumentException if the class is not of a container
      */
-    <T extends Container> void addPlayerSortButtonPosition(Class<T> clazz, @Nullable IPosSetter buttonPos);
+    void addPlayerSortButtonPosition(Class<?> clazz, @Nullable IPosSetter buttonPos);
 
     /**
      * Removes sorting compat for a container class

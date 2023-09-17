@@ -15,13 +15,9 @@ public class MixinContainerChestCharset implements ISortableContainer {
     @Final
     protected TileEntityChestCharset tile;
 
-    @Shadow
-    @Final
-    protected int inventoryRows;
-
     @Override
     public void buildSortingContext(ISortingContextBuilder builder) {
-        builder.addSlotGroup(0, tile.getSlots(), inventoryRows);
+        builder.addSlotGroup(0, tile.getSlots(), 9);
     }
 
 }

@@ -74,7 +74,10 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     @Override
-    public <T extends Container> void addPlayerSortButtonPosition(Class<T> clazz, @Nullable IPosSetter buttonPos) {
+    public void addPlayerSortButtonPosition(Class<?> clazz, @Nullable IPosSetter buttonPos) {
+        if (!Container.class.isAssignableFrom(clazz)) {
+            throw new IllegalArgumentException("Class must be a subclass of Container!");
+        }
         this.playerButtonPos.put(clazz, buttonPos);
     }
 
@@ -144,7 +147,7 @@ public class BogoSortAPI implements IBogoSortAPI {
         if (container instanceof ISortableContainer) {
             return ((ISortableContainer) container).getPlayerButtonPosSetter();
         }
-        return this.playerButtonPos.getOrDefault(container.getClass(), IPosSetter.DEFAULT);
+        return this.playerButtonPos.getOrDefault(container.getClass(), IPosSetter.TOP_RIGHT_HORIZONTAL);
     }
 
     @Unmodifiable

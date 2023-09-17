@@ -44,12 +44,14 @@ public class BogoSorter {
     private static boolean tconstructLoaded = false;
     private static boolean anyIc2Loaded = false;
     private static boolean ic2ClassicLoaded = false;
+    private static boolean quarkLoaded = false;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
         anyGtLoaded = Loader.isModLoaded("gregtech");
         tconstructLoaded = Loader.isModLoaded("tconstruct");
         anyIc2Loaded = Loader.isModLoaded("ic2");
+        quarkLoaded = Loader.isModLoaded("quark");
         if (anyIc2Loaded) {
             ModContainer container = Loader.instance().getIndexedModList().get("ic2");
             ic2ClassicLoaded = container.getName().endsWith("Classic");
@@ -127,5 +129,9 @@ public class BogoSorter {
 
     public static boolean isIc2ExpLoaded() {
         return anyIc2Loaded && !ic2ClassicLoaded;
+    }
+
+    public static boolean isQuarkLoaded() {
+        return quarkLoaded;
     }
 }
