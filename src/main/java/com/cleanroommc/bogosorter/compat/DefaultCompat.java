@@ -57,16 +57,21 @@ public class DefaultCompat {
         });
         api.addCompat(ContainerChest.class, (container, builder) -> {
             IInventory inventory = container.getLowerChestInventory();
-            builder.addSlotGroup(0, inventory.getSizeInventory(), 9);
+            // quark adds a search bar
+            builder.addSlotGroup(0, inventory.getSizeInventory(), 9)
+                    .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
         });
         api.addCompat(ContainerDispenser.class, (container, builder) -> {
-            builder.addSlotGroup(0, 9, 3);
+            builder.addSlotGroup(0, 9, 3)
+                    .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
         });
         api.addCompat(ContainerHopper.class, (container, builder) -> {
             builder.addSlotGroup(0, 5, 5);
         });
         api.addCompat(ContainerShulkerBox.class, (container, builder) -> {
-            builder.addSlotGroup(0, 27, 9);
+            builder.addSlotGroup(0, 27, 9)
+                    .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
+
         });
         // for horse inventory compat see MixinContainerHorseInventory
 
@@ -293,7 +298,7 @@ public class DefaultCompat {
             });
         }
 
-        if (Loader.isModLoaded("quark")) {
+        if (BogoSorter.isQuarkLoaded()) {
             api.addCompat(vazkii.quark.oddities.inventory.ContainerBackpack.class, (container, builder) -> {
                 builder.addSlotGroup(46, 46 + 27, 9)
                         .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
@@ -362,10 +367,12 @@ public class DefaultCompat {
 
         if (Loader.isModLoaded("rustic")) {
             api.addCompat(ContainerCabinet.class, (container, builder) -> {
-                builder.addSlotGroup(0, 27, 9);
+                builder.addSlotGroup(0, 27, 9)
+                        .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
             });
             api.addCompat(ContainerCabinetDouble.class, (container, builder) -> {
-                builder.addSlotGroup(0, 54, 9);
+                builder.addSlotGroup(0, 54, 9)
+                        .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
             });
         }
     }
