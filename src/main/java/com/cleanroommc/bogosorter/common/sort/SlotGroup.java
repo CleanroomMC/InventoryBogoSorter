@@ -12,17 +12,19 @@ import java.util.List;
 public class SlotGroup implements ISlotGroup {
 
     private final boolean player;
+    private final boolean hotbar;
     private final List<Slot> slots;
     private final int rowSize;
     private int priority;
     private IPosSetter posSetter;
 
     public SlotGroup(List<Slot> slots, int rowSize) {
-        this(false, slots, rowSize);
+        this(false, false, slots, rowSize);
     }
 
-    public SlotGroup(boolean player, List<Slot> slots, int rowSize) {
+    public SlotGroup(boolean player, boolean hotbar, List<Slot> slots, int rowSize) {
         this.player = player;
+        this.hotbar = player && hotbar;
         this.slots = Collections.unmodifiableList(slots);
         this.rowSize = rowSize;
         this.priority = 0;
@@ -47,6 +49,10 @@ public class SlotGroup implements ISlotGroup {
     @Override
     public boolean isPlayerInventory() {
         return this.player;
+    }
+
+    public boolean isHotbar() {
+        return this.hotbar;
     }
 
     @Nullable

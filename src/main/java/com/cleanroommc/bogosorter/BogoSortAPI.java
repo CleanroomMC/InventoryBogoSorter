@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter;
 
+import appeng.container.slot.AppEngSlot;
 import com.cleanroommc.bogosorter.api.*;
 import com.cleanroommc.bogosorter.common.sort.ClientItemSortRule;
 import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
@@ -190,30 +191,16 @@ public class BogoSortAPI implements IBogoSortAPI {
 
     public static boolean isPlayerSlot(Slot slot) {
         if (slot == null) return false;
-        if (slot.inventory instanceof InventoryPlayer) {
-            return slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36;
-        }
-        if (slot instanceof SlotItemHandler) {
-            IItemHandler iItemHandler = ((SlotItemHandler) slot).getItemHandler();
-            if (iItemHandler instanceof PlayerMainInvWrapper || iItemHandler instanceof PlayerInvWrapper) {
-                return slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36;
-            }
+        if (slot.inventory instanceof InventoryPlayer ||
+                (slot instanceof SlotItemHandler && isPlayerInventory(((SlotItemHandler) slot).getItemHandler())) ||
+                (BogoSorter.isAe2Loaded() && slot instanceof AppEngSlot && isPlayerInventory(((AppEngSlot) slot).getItemHandler()))) {
+            return slot.getSlotIndex() >= 0 && slot.getSlotIndex() < 36;
         }
         return false;
     }
 
-    public static boolean isPlayerOrHotbarSlot(Slot slot) {
-        if (slot == null) return false;
-        if (slot.inventory instanceof InventoryPlayer) {
-            return slot.getSlotIndex() >= 0 && slot.getSlotIndex() < 36;
-        }
-        if (slot instanceof SlotItemHandler) {
-            IItemHandler iItemHandler = ((SlotItemHandler) slot).getItemHandler();
-            if (iItemHandler instanceof PlayerMainInvWrapper || iItemHandler instanceof PlayerInvWrapper) {
-                return slot.getSlotIndex() >= 0 && slot.getSlotIndex() < 36;
-            }
-        }
-        return false;
+    public static boolean isPlayerInventory(IItemHandler itemHandler) {
+        return itemHandler instanceof PlayerMainInvWrapper || itemHandler instanceof PlayerInvWrapper;
     }
 
     public static final Hash.Strategy<ItemStack> ITEM_META_NBT_HASH_STRATEGY = new Hash.Strategy<ItemStack>() {

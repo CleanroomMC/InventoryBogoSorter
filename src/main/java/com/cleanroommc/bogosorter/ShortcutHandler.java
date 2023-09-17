@@ -36,15 +36,15 @@ public class ShortcutHandler {
             GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
 
             SlotGroup slots = sortingContext.getSlotGroup(slot.slotNumber);
-            SlotGroup otherSlots = BogoSortAPI.isPlayerOrHotbarSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
+            SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
             if (otherSlots == null || slots == otherSlots) return false;
 
             toInsert = emptySlot ? insertToSlots(otherSlots.getSlots(), toInsert, true) : insertToSlots(otherSlots.getSlots(), toInsert);
         } else {
             List<Slot> otherSlots = new ArrayList<>();
-            boolean isPlayer = BogoSortAPI.isPlayerOrHotbarSlot(slot);
+            boolean isPlayer = BogoSortAPI.isPlayerSlot(slot);
             for (Slot slot1 : container.inventorySlots) {
-                if (isPlayer != BogoSortAPI.isPlayerOrHotbarSlot(slot1)) {
+                if (isPlayer != BogoSortAPI.isPlayerSlot(slot1)) {
                     otherSlots.add(slot1);
                 }
             }

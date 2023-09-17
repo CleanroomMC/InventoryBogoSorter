@@ -67,7 +67,7 @@ public class GuiSortingContext {
     @Nullable
     public SlotGroup getPlayerSlotGroup() {
         for (SlotGroup slotGroup : this.slotGroups) {
-            if (slotGroup.isPlayerInventory()) return slotGroup;
+            if (slotGroup.isPlayerInventory() && !slotGroup.isHotbar()) return slotGroup;
         }
         return null;
     }
@@ -127,13 +127,24 @@ public class GuiSortingContext {
 
     private static void addPlayerInventory(GuiSortingContext.Builder builder, Container container) {
         List<Slot> slots = new ArrayList<>();
+        List<Slot> hotbar = new ArrayList<>();
         for (Slot slot : container.inventorySlots) {
-            if (BogoSortAPI.isPlayerSlot(slot)) slots.add(slot);
+            if (BogoSortAPI.isPlayerSlot(slot)) {
+                if (slot.getSlotIndex() < 9) hotbar.add(slot);
+                else slots.add(slot);
+            }
         }
         if (!slots.isEmpty()) {
-            SlotGroup slotGroup = new SlotGroup(true, slots, Math.min(9, slots.size()));
+            SlotGroup slotGroup = new SlotGroup(true, false, slots, Math.min(9, slots.size()));
             slotGroup.priority(-10000)
                     .buttonPosSetter(BogoSortAPI.INSTANCE.getPlayerButtonPos(container));
+            builder.slots.add(slotGroup);
+            builder.player = true;
+        }
+        if (!hotbar.isEmpty()) {
+            SlotGroup slotGroup = new SlotGroup(true, true, hotbar, Math.min(9, hotbar.size()));
+            slotGroup.priority(-10000)
+                    .buttonPosSetter(null);
             builder.slots.add(slotGroup);
             builder.player = true;
         }

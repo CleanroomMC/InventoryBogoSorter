@@ -100,7 +100,6 @@ public class DefaultCompat {
         }
 
         if (Loader.isModLoaded("appliedenergistics2")) {
-            // TODO player inventory is not recognised as such
             api.addCompat(ContainerSkyChest.class, (container, builder) -> {
                 builder.addSlotGroup(0, 36, 9);
             });

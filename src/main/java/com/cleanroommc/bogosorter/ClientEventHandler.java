@@ -11,7 +11,6 @@ import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.screen.WarningScreen;
-import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.manager.GuiManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import net.minecraft.client.Minecraft;
@@ -244,12 +243,11 @@ public class ClientEventHandler {
                 slotGroup = sortingContext.getSlotGroup(slot.slotNumber);
                 if (slotGroup == null || slotGroup.isEmpty()) return false;
             }
-            boolean player = BogoSortAPI.isPlayerSlot(slot);
 
             List<SortRule<ItemStack>> sortRules = BogoSorterConfig.sortRules;
             boolean color = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("color"));
             boolean name = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("display_name"));
-            NetworkHandler.sendToServer(new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.slotNumber, player));
+            NetworkHandler.sendToServer(new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.slotNumber, slotGroup.isPlayerInventory()));
             SortHandler.playSortSound();
             return true;
         }
