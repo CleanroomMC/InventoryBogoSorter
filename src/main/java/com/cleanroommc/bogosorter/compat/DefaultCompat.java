@@ -19,10 +19,12 @@ import forestry.storage.gui.ContainerBackpack;
 import forestry.storage.gui.ContainerNaturalistBackpack;
 import gregtech.api.gui.Widget;
 import gregtech.api.gui.impl.ModularUIContainer;
+import ic2.core.block.personal.TileEntityPersonalChest;
 import ic2.core.block.personal.container.ContainerPersonalChest;
 import ic2.core.block.storage.box.*;
 import ic2.core.gui.dynamic.DynamicContainer;
 import ic2.core.inventory.slots.SlotGhoest;
+import ic2.core.item.tool.ContainerToolbox;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import jds.bibliocraft.containers.ContainerFramedChest;
 import micdoodle8.mods.galacticraft.core.inventory.ContainerParaChest;
@@ -179,6 +181,17 @@ public class DefaultCompat {
                         builder.addSlotGroup(0, 126, 18);
                     }
                 }
+                // personal safe client side
+                if (container.base instanceof TileEntityPersonalChest) {
+                    builder.addSlotGroup(0, 54, 9);
+                }
+            });
+            // personal safe server side
+            api.addCompatSimple(getClass("ic2.core.block.personal.TileEntityPersonalChest$2"), (container, builder) -> {
+                builder.addSlotGroup(0, 54, 9);
+            });
+            api.addCompat(ContainerToolbox.class, (container, builder) -> {
+                builder.addSlotGroup(0, 9, 9);
             });
         }
 
