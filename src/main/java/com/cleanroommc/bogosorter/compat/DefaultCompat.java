@@ -150,22 +150,24 @@ public class DefaultCompat {
                 List<Slot> slots = new ArrayList<>();
                 for (int i = 0; i < 25; i++) {
                     for (int j = 0; j < 5; j++) {
-                        //slotGroup[i][j] = container.getSlot(i * 5 + j + 36);
                         slots.add(container.getSlot(i * 5 + j + 36));
                     }
                 }
-                builder.addSlotGroup(slots, 25);
+                builder.addSlotGroup(slots, 5)
+                        .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
             });
             api.addCompat(ContainerNaturalistInventory.class, (container, builder) -> {
                 List<Slot> slots = new ArrayList<>();
                 for (int i = 0; i < 25; i++) {
                     for (int j = 0; j < 5; j++) {
-                        //slotGroup[i][j] = container.getSlot(i * 5 + j + 36);
                         slots.add(container.getSlot(i * 5 + j + 36));
                     }
                 }
-                builder.addSlotGroup(slots, 25);
+                builder.addSlotGroup(slots, 5)
+                        .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
             });
+            api.addPlayerSortButtonPosition(ContainerNaturalistBackpack.class, IPosSetter.TOP_RIGHT_VERTICAL);
+            api.addPlayerSortButtonPosition(ContainerNaturalistInventory.class, IPosSetter.TOP_RIGHT_VERTICAL);
         }
 
         if (BogoSorter.isIc2ExpLoaded()) {
@@ -247,6 +249,10 @@ public class DefaultCompat {
                     }
                 }
                 builder.addSlotGroup(slots, 8);
+            });
+            api.addPlayerSortButtonPosition(ContainerTravelersBackpack.class, (gui, slotGroup, buttonPos) -> {
+                Slot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
+                buttonPos.setPos(topRight.xPos + 17, topRight.yPos - 1);
             });
         }
 
