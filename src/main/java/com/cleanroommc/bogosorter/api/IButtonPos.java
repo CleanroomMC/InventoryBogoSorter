@@ -1,5 +1,8 @@
 package com.cleanroommc.bogosorter.api;
 
+/**
+ * Determines the true sort button pos for slot groups.
+ */
 public interface IButtonPos {
 
     /**
