@@ -45,12 +45,13 @@ public class ButtonHandler {
     public static void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
         if (ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
             GuiContainer gui = (GuiContainer) event.getGui();
+            IGuiContainerAccessor guiAccess = (IGuiContainerAccessor) gui;
             GuiSortingContext context = GuiSortingContext.getOrCreate(gui.inventorySlots);
             ButtonPos buttonPos = new ButtonPos();
             for (SlotGroup slotGroup : context.getSlotGroups()) {
                 if (slotGroup.getPosSetter() == null) continue;
                 SortButton sortButton = null, settingsButton = null;
-                for (GuiButton guiButton : ((IGuiButtonAccessor) event.getGui()).getButtons()) {
+                for (GuiButton guiButton : guiAccess.getButtons()) {
                     if (guiButton instanceof SortButton) {
                         SortButton button = (SortButton) guiButton;
                         if (button.slotGroup == slotGroup) {
@@ -65,7 +66,7 @@ public class ButtonHandler {
                 if (sortButton == null || settingsButton == null) continue;
                 buttonPos.reset();
                 slotGroup.getPosSetter().setButtonPos(gui, slotGroup, buttonPos);
-                buttonPos.applyPos(gui.guiLeft, gui.guiTop, sortButton, settingsButton);
+                buttonPos.applyPos(guiAccess.getGuiLeft(), guiAccess.getGuiTop(), sortButton, settingsButton);
             }
         }
     }
@@ -73,7 +74,7 @@ public class ButtonHandler {
     @SubscribeEvent
     public static void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Post event) {
         if (ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
-            for (GuiButton guiButton : ((IGuiButtonAccessor) event.getGui()).getButtons()) {
+            for (GuiButton guiButton : ((IGuiContainerAccessor) event.getGui()).getButtons()) {
                 if (guiButton instanceof SortButton) {
                     ((SortButton) guiButton).drawTooltip(event.getMouseX(), event.getMouseY());
                 }

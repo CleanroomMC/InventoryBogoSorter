@@ -4,7 +4,11 @@ import net.minecraft.client.gui.GuiButton;
 
 import java.util.List;
 
-public interface IGuiButtonAccessor {
+public interface IGuiContainerAccessor {
 
     List<GuiButton> getButtons();
+
+    int getGuiTop();
+
+    int getGuiLeft();
 }
