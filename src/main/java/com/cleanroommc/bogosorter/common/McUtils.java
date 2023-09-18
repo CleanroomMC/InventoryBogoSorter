@@ -1,7 +1,5 @@
 package com.cleanroommc.bogosorter.common;
 
-import com.cleanroommc.bogosorter.common.network.CDropItems;
-import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -37,16 +35,7 @@ public class McUtils {
 
     public static void giveItemsToPlayer(EntityPlayer player, List<ItemStack> items) {
         if (player == null || items.isEmpty()) return;
-        if (!player.world.isRemote) {
-            giveItemsToPlayerServer(player, items);
-            return;
-        }
-        CDropItems packet = new CDropItems(items);
-        NetworkHandler.sendToServer(packet);
-    }
-
-    public static void giveItemsToPlayerServer(EntityPlayer player, List<ItemStack> items) {
-        if (player == null || items.isEmpty() || player.world.isRemote) return;
+        if (player.world.isRemote) throw new IllegalStateException("Should only be called from server side!");
         PlayerMainInvWrapper itemHandler = new PlayerMainInvWrapper(player.inventory);
         items.removeIf(item -> {
             ItemStack remainder = insertToPlayer(itemHandler, item, false);

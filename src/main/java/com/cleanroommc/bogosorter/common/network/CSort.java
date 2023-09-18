@@ -12,17 +12,18 @@ import net.minecraft.network.PacketBuffer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class CSort implements IPacket {
 
-    private List<ClientSortData> clientSortDataList;
+    private Collection<ClientSortData> clientSortDataList;
     private List<SortRule<ItemStack>> sortRules;
     private List<NbtSortRule> nbtSortRules;
     private int hover;
     private boolean player;
 
-    public CSort(List<ClientSortData> clientSortDataList, List<SortRule<ItemStack>> sortRules, List<NbtSortRule> nbtSortRules, int hover, boolean player) {
+    public CSort(Collection<ClientSortData> clientSortDataList, List<SortRule<ItemStack>> sortRules, List<NbtSortRule> nbtSortRules, int hover, boolean player) {
         this.clientSortDataList = clientSortDataList;
         this.sortRules = sortRules;
         this.nbtSortRules = nbtSortRules;
@@ -80,8 +81,10 @@ public class CSort implements IPacket {
         SortHandler.cacheItemSortRules.put(handler.player, sortRules);
         SortHandler.cacheNbtSortRules.put(handler.player, nbtSortRules);
         Int2ObjectOpenHashMap<ClientSortData> map = new Int2ObjectOpenHashMap<>();
-        for(ClientSortData sortData : clientSortDataList) {
-            map.put(sortData.getSlotNumber(), sortData);
+        for (ClientSortData sortData : clientSortDataList) {
+            for (int i : sortData.getSlotNumbers()) {
+                map.put(i, sortData);
+            }
         }
         SortHandler sortHandler = new SortHandler(handler.player, handler.player.openContainer, map);
         sortHandler.sort(hover);

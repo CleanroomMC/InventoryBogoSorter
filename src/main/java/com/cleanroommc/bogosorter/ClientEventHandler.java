@@ -13,6 +13,7 @@ import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.screen.WarningScreen;
 import com.cleanroommc.modularui.manager.GuiManager;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -38,9 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ClientEventHandler {
 
@@ -254,13 +253,13 @@ public class ClientEventHandler {
         return false;
     }
 
-    public static List<ClientSortData> createSortData(SlotGroup slotGroup, boolean color, boolean name) {
+    public static Collection<ClientSortData> createSortData(SlotGroup slotGroup, boolean color, boolean name) {
         if (!color && !name) return Collections.emptyList();
-        List<ClientSortData> data = new ArrayList<>();
+        Map<ItemStack, ClientSortData> map = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         for (Slot slot1 : slotGroup.getSlots()) {
-            data.add(ClientSortData.of(slot1, color, name));
+            map.computeIfAbsent(slot1.getStack(), stack -> ClientSortData.of(stack, color, name)).getSlotNumbers().add(slot1.slotNumber);
         }
-        return data;
+        return map.values();
     }
 
     public static SortHandler createSortHandler(GuiScreen guiScreen, @Nullable Slot slot) {
