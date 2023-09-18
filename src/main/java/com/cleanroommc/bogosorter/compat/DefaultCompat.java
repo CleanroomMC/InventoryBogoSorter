@@ -109,7 +109,7 @@ public class DefaultCompat {
             api.addCompatSimple(ContainerDraconiumChest.class, (container, builder) -> {
                 builder.addSlotGroup(0, 260, 26);
             });
-            api.addPlayerSortButtonPosition(ContainerDraconiumChest.class, (gui, slotGroup, buttonPos) -> {
+            api.addPlayerSortButtonPosition(ContainerDraconiumChest.class, (slotGroup, buttonPos) -> {
                 Slot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();
@@ -268,7 +268,7 @@ public class DefaultCompat {
                 }
                 builder.addSlotGroup(slots, 8);
             });
-            api.addPlayerSortButtonPosition(ContainerTravelersBackpack.class, (gui, slotGroup, buttonPos) -> {
+            api.addPlayerSortButtonPosition(ContainerTravelersBackpack.class, (slotGroup, buttonPos) -> {
                 Slot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
                 buttonPos.setPos(topRight.xPos + 17, topRight.yPos - 1);
             });
@@ -277,7 +277,7 @@ public class DefaultCompat {
         if (Loader.isModLoaded("colossalchests")) {
             api.addCompat(ContainerColossalChest.class, (container, builder) -> {
                 List<Slot> chestSlots = ((ContainerColossalChestAccessor) container).getChestSlots();
-                builder.addSlotGroup(chestSlots, 9).buttonPosSetter((gui, slotGroup, buttonPos) -> {
+                builder.addSlotGroup(chestSlots, 9).buttonPosSetter((slotGroup, buttonPos) -> {
                     buttonPos.setPos(0, 1000);
                     for (Slot slot : slotGroup.getSlots()) {
                         if (slot.xPos >= 0 && slot.yPos >= 0 && slot.isEnabled()) {
@@ -286,7 +286,7 @@ public class DefaultCompat {
                     }
                 });
             });
-            api.addPlayerSortButtonPosition(ContainerColossalChest.class, (gui, slotGroup, buttonPos) -> {
+            api.addPlayerSortButtonPosition(ContainerColossalChest.class, (slotGroup, buttonPos) -> {
                 Slot slot = slotGroup.getSlots().get(26);
                 buttonPos.setPos(slot.xPos + 19, slot.yPos - 2);
                 buttonPos.setTopLeft();
@@ -309,7 +309,7 @@ public class DefaultCompat {
             api.addCompat(ContainerStorage.class, (container, builder) -> {
                 builder.addSlotGroup(0, 77, 11);
             });
-            api.addPlayerSortButtonPosition(ContainerStorage.class, (gui, slotGroup, buttonPos) -> {
+            api.addPlayerSortButtonPosition(ContainerStorage.class, (slotGroup, buttonPos) -> {
                 Slot topRight = slotGroup.getSlots().get(26);
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();

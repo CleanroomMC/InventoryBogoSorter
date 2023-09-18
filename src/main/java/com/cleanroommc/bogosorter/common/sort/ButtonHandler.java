@@ -66,7 +66,7 @@ public class ButtonHandler {
                 }
                 if (sortButton == null || settingsButton == null) continue;
                 buttonPos.reset();
-                slotGroup.getPosSetter().setButtonPos(gui, slotGroup, buttonPos);
+                slotGroup.getPosSetter().setButtonPos(slotGroup, buttonPos);
                 buttonPos.applyPos(guiAccess.getGuiLeft(), guiAccess.getGuiTop(), sortButton, settingsButton);
             }
         }

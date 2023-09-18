@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.api;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 
 /**
@@ -9,7 +8,7 @@ import net.minecraft.inventory.Slot;
 @FunctionalInterface
 public interface IPosSetter {
 
-    IPosSetter TOP_RIGHT_HORIZONTAL = (gui, slotGroup, buttonPos) -> {
+    IPosSetter TOP_RIGHT_HORIZONTAL = (slotGroup, buttonPos) -> {
         if (slotGroup.getSlots().size() < slotGroup.getRowSize()) {
             buttonPos.setPos(-1000, -1000);
         } else {
@@ -18,7 +17,7 @@ public interface IPosSetter {
         }
     };
 
-    IPosSetter TOP_RIGHT_VERTICAL = (gui, slotGroup, buttonPos) -> {
+    IPosSetter TOP_RIGHT_VERTICAL = (slotGroup, buttonPos) -> {
         if (slotGroup.getSlots().size() < slotGroup.getRowSize()) {
             buttonPos.setPos(-1000, -1000);
         } else {
@@ -33,9 +32,8 @@ public interface IPosSetter {
      * Called every frame, to make sure the buttons are always in the right position.
      * Call setters on {@link IButtonPos} here.
      *
-     * @param gui       gui container the buttons are in
      * @param slotGroup slot group of the buttons
      * @param buttonPos the mutable button pos
      */
-    void setButtonPos(GuiContainer gui, ISlotGroup slotGroup, IButtonPos buttonPos);
+    void setButtonPos(ISlotGroup slotGroup, IButtonPos buttonPos);
 }
