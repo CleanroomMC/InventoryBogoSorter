@@ -201,7 +201,7 @@ public class ClientEventHandler {
         return !Minecraft.getMinecraft().player.isCreative() ||
                 sortKey.getKeyModifier().isActive() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyModifier().isActive() ||
                 sortKey.getKeyCode() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyCode() ||
-                (Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty() && (slot == null || slot.getStack().isEmpty()));
+                (Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty() && (slot == null || slot.bogo$getStack().isEmpty()));
     }
 
     private static boolean isKeyDown(KeyBinding key) {
@@ -239,14 +239,14 @@ public class ClientEventHandler {
                 if (slotGroup == null || slotGroup.isEmpty()) return false;
                 slot = slotGroup.getSlots().get(0);
             } else {
-                slotGroup = sortingContext.getSlotGroup(slot.getSlotNumber());
+                slotGroup = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
                 if (slotGroup == null || slotGroup.isEmpty()) return false;
             }
 
             List<SortRule<ItemStack>> sortRules = BogoSorterConfig.sortRules;
             boolean color = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("color"));
             boolean name = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("display_name"));
-            NetworkHandler.sendToServer(new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.getSlotNumber(), slotGroup.isPlayerInventory()));
+            NetworkHandler.sendToServer(new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.bogo$getSlotNumber(), slotGroup.isPlayerInventory()));
             SortHandler.playSortSound();
             return true;
         }
@@ -257,7 +257,7 @@ public class ClientEventHandler {
         if (!color && !name) return Collections.emptyList();
         Map<ItemStack, ClientSortData> map = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         for (ISlot slot1 : slotGroup.getSlots()) {
-            map.computeIfAbsent(slot1.getStack(), stack -> ClientSortData.of(stack, color, name)).getSlotNumbers().add(slot1.getSlotNumber());
+            map.computeIfAbsent(slot1.bogo$getStack(), stack -> ClientSortData.of(stack, color, name)).getSlotNumbers().add(slot1.bogo$getSlotNumber());
         }
         return map.values();
     }

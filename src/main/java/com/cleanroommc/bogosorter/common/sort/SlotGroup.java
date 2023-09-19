@@ -7,6 +7,7 @@ import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,14 +21,14 @@ public class SlotGroup implements ISlotGroup {
     private int priority;
     private IPosSetter posSetter;
 
-    public SlotGroup(List<Slot> slots, int rowSize) {
+    public SlotGroup(List<ISlot> slots, int rowSize) {
         this(false, false, slots, rowSize);
     }
 
-    public SlotGroup(boolean player, boolean hotbar, List<Slot> slots, int rowSize) {
+    public SlotGroup(boolean player, boolean hotbar, List<ISlot> slots, int rowSize) {
         this.player = player;
         this.hotbar = player && hotbar;
-        this.slots = Collections.unmodifiableList(slots.stream().map(slot -> (ISlot) slot).collect(Collectors.toList()));
+        this.slots = Collections.unmodifiableList(slots);
         this.rowSize = rowSize;
         this.priority = 0;
         this.posSetter = IPosSetter.TOP_RIGHT_HORIZONTAL;
@@ -76,7 +77,7 @@ public class SlotGroup implements ISlotGroup {
 
     public boolean hasSlot(int slotNumber) {
         for (ISlot slot : getSlots()) {
-            if (slot.getSlotNumber() == slotNumber) return true;
+            if (slot.bogo$getSlotNumber() == slotNumber) return true;
         }
         return false;
     }

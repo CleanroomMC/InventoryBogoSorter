@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class BogoSortAPI implements IBogoSortAPI {
 
@@ -203,8 +204,14 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     @NotNull
+    @Override
     public ISlot getSlot(@NotNull Slot slot) {
         return this.slotGetterMap.getOrDefault(slot.getClass(), DEFAULT_SLOT_GETTER).apply(slot);
+    }
+
+    @Override
+    public List<ISlot> getSlots(List<Slot> slots) {
+        return slots.stream().map(this::getSlot).collect(Collectors.toList());
     }
 
     public static ISlot getSlot(@NotNull Container container, int index) {
@@ -243,10 +250,10 @@ public class BogoSortAPI implements IBogoSortAPI {
 
     public static boolean isPlayerSlot(ISlot slot) {
         if (slot == null) return false;
-        if (slot.getInventory() instanceof InventoryPlayer ||
+        if (slot.bogo$getInventory() instanceof InventoryPlayer ||
                 (slot instanceof SlotItemHandler && isPlayerInventory(((SlotItemHandler) slot).getItemHandler())) ||
                 (BogoSorter.isAe2Loaded() && slot instanceof AppEngSlot && isPlayerInventory(((AppEngSlot) slot).getItemHandler()))) {
-            return slot.getSlotIndex() >= 0 && slot.getSlotIndex() < 36;
+            return slot.bogo$getSlotIndex() >= 0 && slot.bogo$getSlotIndex() < 36;
         }
         return false;
     }

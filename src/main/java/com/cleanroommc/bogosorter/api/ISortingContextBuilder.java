@@ -22,7 +22,18 @@ public interface ISortingContextBuilder {
      *                try to use the row size of the first row.
      * @return the created slot group
      */
-    ISlotGroup addSlotGroup(List<Slot> slots, int rowSize);
+    ISlotGroup addSlotGroupOf(List<Slot> slots, int rowSize);
+
+    /**
+     * Creates and registers a slot group with a list of slots.
+     *
+     * @param slots   slot list
+     * @param rowSize This is mostly used to determine the button position with {@link IPosSetter#TOP_RIGHT_VERTICAL}
+     *                and {@link IPosSetter#TOP_RIGHT_HORIZONTAL}. If the slot group shape is not rectangular,
+     *                try to use the row size of the first row.
+     * @return the created slot group
+     */
+    ISlotGroup addSlotGroup(List<ISlot> slots, int rowSize);
 
     /**
      * Creates and registers a slot group based on a start and end index.

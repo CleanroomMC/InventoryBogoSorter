@@ -11,29 +11,31 @@ import net.minecraft.item.ItemStack;
  */
 public interface ISlot {
 
-    Slot getRealSlot();
+    Slot bogo$getRealSlot();
 
-    int getX();
+    int bogo$getX();
 
-    int getY();
+    int bogo$getY();
 
-    int getSlotNumber();
+    int bogo$getSlotNumber();
 
-    int getSlotIndex();
+    int bogo$getSlotIndex();
 
-    IInventory getInventory();
+    IInventory bogo$getInventory();
 
-    void putStack(ItemStack itemStack);
+    void bogo$putStack(ItemStack itemStack);
 
-    ItemStack getStack();
+    ItemStack bogo$getStack();
 
-    int getMaxStackSize(ItemStack itemStack);
+    int bogo$getMaxStackSize(ItemStack itemStack);
 
-    int getItemStackLimit(ItemStack itemStack);
+    int bogo$getItemStackLimit(ItemStack itemStack);
 
-    boolean isEnabled();
+    boolean bogo$isEnabled();
 
-    boolean isItemValid(ItemStack stack);
+    boolean bogo$isItemValid(ItemStack stack);
 
-    boolean canTakeStack(EntityPlayer player);
+    boolean bogo$canTakeStack(EntityPlayer player);
+
+    void bogo$onSlotChanged();
 }

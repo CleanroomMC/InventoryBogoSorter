@@ -32,8 +32,8 @@ public class ShortcutHandler {
     }
 
     public static boolean moveItemStack(EntityPlayer player, Container container, ISlot slot, boolean emptySlot, int amount) {
-        if (slot == null || slot.getStack().isEmpty()) return false;
-        ItemStack stack = slot.getStack();
+        if (slot == null || slot.bogo$getStack().isEmpty()) return false;
+        ItemStack stack = slot.bogo$getStack();
         amount = Math.min(amount, stack.getMaxStackSize());
         ItemStack toInsert = stack.copy();
         toInsert.setCount(amount);
@@ -41,7 +41,7 @@ public class ShortcutHandler {
         if (BogoSortAPI.isValidSortable(container)) {
             GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
 
-            SlotGroup slots = sortingContext.getSlotGroup(slot.getSlotNumber());
+            SlotGroup slots = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
             SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
             if (otherSlots == null || slots == otherSlots) return false;
 
@@ -63,7 +63,7 @@ public class ShortcutHandler {
         if (toInsert.isEmpty()) {
             toInsert = stack.copy();
             toInsert.shrink(amount);
-            slot.putStack(toInsert);
+            slot.bogo$putStack(toInsert);
             return true;
         }
         return false;
@@ -74,30 +74,30 @@ public class ShortcutHandler {
         Slot slot = guiContainer.getSlotUnderMouse();
         if (slot == null || !BogoSortAPI.isValidSortable(container)) return false;
         ISlot iSlot = BogoSortAPI.INSTANCE.getSlot(slot);
-        if (sameItemOnly && iSlot.getStack().isEmpty())
+        if (sameItemOnly && iSlot.bogo$getStack().isEmpty())
             return false;
-        NetworkHandler.sendToServer(new CShortcut(sameItemOnly ? CShortcut.Type.MOVE_ALL_SAME : CShortcut.Type.MOVE_ALL, iSlot.getSlotNumber()));
+        NetworkHandler.sendToServer(new CShortcut(sameItemOnly ? CShortcut.Type.MOVE_ALL_SAME : CShortcut.Type.MOVE_ALL, iSlot.bogo$getSlotNumber()));
         return true;
     }
 
     public static boolean moveAllItems(EntityPlayer player, Container container, ISlot slot, boolean sameItemOnly) {
         if (slot == null || !BogoSortAPI.isValidSortable(container)) return false;
-        ItemStack stack = slot.getStack().copy();
+        ItemStack stack = slot.bogo$getStack().copy();
         if (sameItemOnly && stack.isEmpty()) return false;
         GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
 
-        SlotGroup slots = sortingContext.getSlotGroup(slot.getSlotNumber());
+        SlotGroup slots = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
         SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
         if (slots == null || otherSlots == null || slots == otherSlots) return false;
         for (ISlot slot1 : slots.getSlots()) {
-            ItemStack stackInSlot = slot1.getStack();
+            ItemStack stackInSlot = slot1.bogo$getStack();
             ItemStack copy = stackInSlot.copy();
             if (stackInSlot.isEmpty() || (sameItemOnly && !ItemHandlerHelper.canItemStacksStack(stack, stackInSlot)))
                 continue;
             ItemStack remainder = BogoSortAPI.insert(container, otherSlots.getSlots(), copy);
             int inserted = stackInSlot.getCount() - remainder.getCount();
             if (inserted > 0) {
-                slot1.putStack(remainder.copy());
+                slot1.bogo$putStack(remainder.copy());
             }
         }
         return true;
@@ -116,9 +116,9 @@ public class ShortcutHandler {
         if (slots == null || !slots.isPlayerInventory()) return false;
         IntList slotsToDrop = new IntArrayList();
         for (ISlot slot1 : slots.getSlots()) {
-            ItemStack stack = slot1.getStack();
+            ItemStack stack = slot1.bogo$getStack();
             if (!stack.isEmpty() && (!onlySameType || ItemHandlerHelper.canItemStacksStack(stack, item))) {
-                slotsToDrop.add(slot1.getSlotNumber());
+                slotsToDrop.add(slot1.bogo$getSlotNumber());
             }
         }
         if (slotsToDrop.isEmpty()) return false;
@@ -135,23 +135,23 @@ public class ShortcutHandler {
     }
 
     public static ItemStack insert(ISlot slot, ItemStack stack, boolean emptyOnly) {
-        ItemStack stackInSlot = slot.getStack();
+        ItemStack stackInSlot = slot.bogo$getStack();
         if (emptyOnly) {
-            if (!stackInSlot.isEmpty() || !slot.isItemValid(stack)) return stack;
-            int amount = Math.min(stack.getCount(), slot.getItemStackLimit(stack));
+            if (!stackInSlot.isEmpty() || !slot.bogo$isItemValid(stack)) return stack;
+            int amount = Math.min(stack.getCount(), slot.bogo$getItemStackLimit(stack));
             if (amount <= 0) return stack;
             ItemStack newStack = stack.copy();
             newStack.setCount(amount);
             stack.shrink(amount);
-            slot.putStack(newStack);
+            slot.bogo$putStack(newStack);
             return stack.isEmpty() ? ItemStack.EMPTY : stack;
         }
         if (!stackInSlot.isEmpty() && ItemHandlerHelper.canItemStacksStack(stackInSlot, stack)) {
-            int amount = Math.min(slot.getItemStackLimit(stackInSlot), Math.min(stack.getCount(), slot.getMaxStackSize(stack) - stackInSlot.getCount()));
+            int amount = Math.min(slot.bogo$getItemStackLimit(stackInSlot), Math.min(stack.getCount(), slot.bogo$getMaxStackSize(stack) - stackInSlot.getCount()));
             if (amount <= 0) return stack;
             stack.shrink(amount);
             stackInSlot.grow(amount);
-            slot.putStack(stackInSlot);
+            slot.bogo$putStack(stackInSlot);
             return stack.isEmpty() ? ItemStack.EMPTY : stack;
         }
         return stack;

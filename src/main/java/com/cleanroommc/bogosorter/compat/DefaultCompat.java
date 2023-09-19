@@ -120,7 +120,7 @@ public class DefaultCompat {
                 ISlot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();
-                buttonPos.setPos(topRight.getX() + 17, topRight.getY() - 1);
+                buttonPos.setPos(topRight.bogo$getX() + 17, topRight.bogo$getY() - 1);
             });
         }
 
@@ -166,7 +166,7 @@ public class DefaultCompat {
                         slots.add(container.getSlot(i * 5 + j + 36));
                     }
                 }
-                builder.addSlotGroup(slots, 5)
+                builder.addSlotGroupOf(slots, 5)
                         .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
             });
             api.addCompat(ContainerNaturalistInventory.class, (container, builder) -> {
@@ -176,7 +176,7 @@ public class DefaultCompat {
                         slots.add(container.getSlot(i * 5 + j + 36));
                     }
                 }
-                builder.addSlotGroup(slots, 5)
+                builder.addSlotGroupOf(slots, 5)
                         .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
             });
             api.addPlayerSortButtonPosition(ContainerNaturalistBackpack.class, IPosSetter.TOP_RIGHT_VERTICAL);
@@ -253,7 +253,7 @@ public class DefaultCompat {
                 for (Map.Entry<String, List<Slot>> entry : sortableSlots.entrySet()) {
                     int rowSize = ((IModularSortable) (Object) container.getModularUI()).getRowSize(entry.getKey());
                     if (rowSize > 0) {
-                        builder.addSlotGroup(entry.getValue(), rowSize).buttonPosSetter(null);
+                        builder.addSlotGroupOf(entry.getValue(), rowSize).buttonPosSetter(null);
                     }
                 }
             });
@@ -273,29 +273,29 @@ public class DefaultCompat {
                         slots.add(container.getSlot((i - 3) * 5 + j + 34));
                     }
                 }
-                builder.addSlotGroup(slots, 8);
+                builder.addSlotGroupOf(slots, 8);
             });
             api.addPlayerSortButtonPosition(ContainerTravelersBackpack.class, (slotGroup, buttonPos) -> {
                 ISlot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
-                buttonPos.setPos(topRight.getX() + 17, topRight.getY() - 1);
+                buttonPos.setPos(topRight.bogo$getX() + 17, topRight.bogo$getY() - 1);
             });
         }
 
         if (Loader.isModLoaded("colossalchests")) {
             api.addCompat(ContainerColossalChest.class, (container, builder) -> {
                 List<Slot> chestSlots = ((ContainerColossalChestAccessor) container).getChestSlots();
-                builder.addSlotGroup(chestSlots, 9).buttonPosSetter((slotGroup, buttonPos) -> {
+                builder.addSlotGroupOf(chestSlots, 9).buttonPosSetter((slotGroup, buttonPos) -> {
                     buttonPos.setPos(0, 1000);
                     for (ISlot slot : slotGroup.getSlots()) {
-                        if (slot.getX() >= 0 && slot.getY() >= 0 && slot.isEnabled()) {
-                            buttonPos.setPos(Math.max(buttonPos.getX(), slot.getX() + 17), Math.min(buttonPos.getY(), slot.getY() - 2));
+                        if (slot.bogo$getX() >= 0 && slot.bogo$getY() >= 0 && slot.bogo$isEnabled()) {
+                            buttonPos.setPos(Math.max(buttonPos.getX(), slot.bogo$getX() + 17), Math.min(buttonPos.getY(), slot.bogo$getY() - 2));
                         }
                     }
                 });
             });
             api.addPlayerSortButtonPosition(ContainerColossalChest.class, (slotGroup, buttonPos) -> {
                 ISlot slot = slotGroup.getSlots().get(26);
-                buttonPos.setPos(slot.getX() + 19, slot.getY() - 2);
+                buttonPos.setPos(slot.bogo$getX() + 19, slot.bogo$getY() - 2);
                 buttonPos.setTopLeft();
                 buttonPos.setVertical();
             });
@@ -320,7 +320,7 @@ public class DefaultCompat {
                 ISlot topRight = slotGroup.getSlots().get(26);
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();
-                buttonPos.setPos(topRight.getX() + 18, topRight.getY() + 3);
+                buttonPos.setPos(topRight.bogo$getX() + 18, topRight.bogo$getY() + 3);
             });
         }
 
@@ -394,7 +394,7 @@ public class DefaultCompat {
                 builder.addSlotGroup(0, 9 * 27, 27);
             });
             api.addCompatSimple(ContainerInfinityChest.class, (container, builder) -> {
-                List<Slot> slots = new ArrayList<>();
+                List<ISlot> slots = new ArrayList<>();
                 for (Slot slot : builder.getContainer().inventorySlots) {
                     if (slot instanceof InfinitySlot) {
                         slots.add(new InfinitySlotWrapper((InfinitySlot) slot));
@@ -407,13 +407,13 @@ public class DefaultCompat {
 
     private static ISlot avaritiaddons$findSlot(List<ISlot> slots, ItemStack itemStack, boolean emptyOnly) {
         for (ISlot slot : slots) {
-            ItemStack stackInSlot = slot.getStack();
+            ItemStack stackInSlot = slot.bogo$getStack();
             if (!stackInSlot.isEmpty() && ItemHandlerHelper.canItemStacksStack(stackInSlot, itemStack)) {
                 return emptyOnly ? null : slot;
             }
         }
         for (ISlot slot : slots) {
-            if (slot.getStack().isEmpty()) return slot;
+            if (slot.bogo$getStack().isEmpty()) return slot;
         }
         return null;
     }

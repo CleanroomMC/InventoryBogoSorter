@@ -28,10 +28,10 @@ public class MixinEIOStorage implements ISortableContainer {
             Slot slot = ((Container) (Object) this).inventorySlots.get(i);
             slots.computeIfAbsent(current, key -> new ObjectArrayList<>()).add(slot);
         }
-        slots.forEach((slot, slotList) -> builder.addSlotGroup(slotList, StorageUpgradeAccessor.invokeCols(slot))
+        slots.forEach((slot, slotList) -> builder.addSlotGroupOf(slotList, StorageUpgradeAccessor.invokeCols(slot))
                 .buttonPosSetter((slotGroup, buttonPos) -> {
                     IPosSetter.TOP_RIGHT_HORIZONTAL.setButtonPos(slotGroup, buttonPos);
-                    buttonPos.setEnabled(slotGroup.getSlots().get(0).isEnabled());
+                    buttonPos.setEnabled(slotGroup.getSlots().get(0).bogo$isEnabled());
                 }));
     }
 }

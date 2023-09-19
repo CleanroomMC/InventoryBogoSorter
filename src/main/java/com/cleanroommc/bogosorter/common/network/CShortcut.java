@@ -4,7 +4,6 @@ import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.ShortcutHandler;
 import com.cleanroommc.bogosorter.api.ISlot;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
 
@@ -40,7 +39,7 @@ public class CShortcut implements IPacket {
         Container container = handler.player.openContainer;
         if (container == null) throw new IllegalStateException("Expected open container on server");
         ISlot slot = BogoSortAPI.getSlot(container, slotNumber);//container.getSlot(slotNumber);
-        if (!slot.canTakeStack(handler.player)) {
+        if (!slot.bogo$canTakeStack(handler.player)) {
             return null;
         }
         switch (type) {

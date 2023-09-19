@@ -11,7 +11,7 @@ public interface IPosSetter {
             buttonPos.setPos(-1000, -1000);
         } else {
             ISlot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
-            buttonPos.setPos(topRight.getX() + 17, topRight.getY() - 2);
+            buttonPos.setPos(topRight.bogo$getX() + 17, topRight.bogo$getY() - 2);
         }
     };
 
@@ -22,7 +22,7 @@ public interface IPosSetter {
             ISlot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
             buttonPos.setVertical();
             buttonPos.setTopLeft();
-            buttonPos.setPos(topRight.getX() + 18, topRight.getY() - 1);
+            buttonPos.setPos(topRight.bogo$getX() + 18, topRight.bogo$getY() - 1);
         }
     };
 

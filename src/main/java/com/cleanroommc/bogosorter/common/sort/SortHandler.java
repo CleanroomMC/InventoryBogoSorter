@@ -111,13 +111,13 @@ public class SortHandler {
         if (itemSortContainer == null) return;
         for (ISlot slot : slotGroup.getSlots()) {
             if (itemSortContainer == null) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.bogo$putStack(ItemStack.EMPTY);
                 continue;
             }
 
-            int max = Math.min(slot.getItemStackLimit(itemSortContainer.getItemStack()), slot.getMaxStackSize(itemSortContainer.getItemStack()));
+            int max = Math.min(slot.bogo$getItemStackLimit(itemSortContainer.getItemStack()), slot.bogo$getMaxStackSize(itemSortContainer.getItemStack()));
             if (max <= 0) continue;
-            slot.putStack(itemSortContainer.makeStack(max));
+            slot.bogo$putStack(itemSortContainer.makeStack(max));
 
             if (!itemSortContainer.canMakeStack()) {
                 itemSortContainer = itemList.pollFirst();
@@ -165,14 +165,14 @@ public class SortHandler {
     public static void sortBogo(SlotGroup slotGroup) {
         List<ItemStack> items = new ArrayList<>();
         for (ISlot slot : slotGroup.getSlots()) {
-            ItemStack stack = slot.getStack();
+            ItemStack stack = slot.bogo$getStack();
             items.add(stack);
         }
         Collections.shuffle(items);
         List<ISlot> slots = slotGroup.getSlots();
         for (int i = 0; i < slots.size(); i++) {
             ISlot slot = slots.get(i);
-            slot.putStack(items.get(i));
+            slot.bogo$putStack(items.get(i));
         }
     }
 
@@ -180,11 +180,11 @@ public class SortHandler {
         LinkedList<ItemSortContainer> list = new LinkedList<>();
         Object2ObjectOpenCustomHashMap<ItemStack, ItemSortContainer> items = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         for (ISlot slot : slotGroup.getSlots()) {
-            ItemStack stack = slot.getStack();
+            ItemStack stack = slot.bogo$getStack();
             if (!stack.isEmpty()) {
                 ItemSortContainer container1 = items.get(stack);
                 if (container1 == null) {
-                    container1 = new ItemSortContainer(stack, clientSortData.get(slot.getSlotNumber()));
+                    container1 = new ItemSortContainer(stack, clientSortData.get(slot.bogo$getSlotNumber()));
                     items.put(stack, container1);
                     list.add(container1);
                 }
@@ -220,13 +220,13 @@ public class SortHandler {
     }
 
     public void clearAllItems(ISlot slot1) {
-        SlotGroup slotGroup = context.getSlotGroup(slot1.getSlotNumber());
+        SlotGroup slotGroup = context.getSlotGroup(slot1.bogo$getSlotNumber());
         if (slotGroup != null) {
             List<Pair<ItemStack, Integer>> slots = new ArrayList<>();
             for (ISlot slot : slotGroup.getSlots()) {
-                if (!slot.getStack().isEmpty()) {
-                    slot.putStack(ItemStack.EMPTY);
-                    slots.add(Pair.of(ItemStack.EMPTY, slot.getSlotNumber()));
+                if (!slot.bogo$getStack().isEmpty()) {
+                    slot.bogo$putStack(ItemStack.EMPTY);
+                    slots.add(Pair.of(ItemStack.EMPTY, slot.bogo$getSlotNumber()));
                 }
             }
             NetworkHandler.sendToServer(new CSlotSync(slots));
@@ -234,15 +234,15 @@ public class SortHandler {
     }
 
     public void randomizeItems(ISlot slot1) {
-        SlotGroup slotGroup = context.getSlotGroup(slot1.getSlotNumber());
+        SlotGroup slotGroup = context.getSlotGroup(slot1.bogo$getSlotNumber());
         if (slotGroup != null) {
             List<Pair<ItemStack, Integer>> slots = new ArrayList<>();
             Random random = new Random();
             for (ISlot slot : slotGroup.getSlots()) {
                 if (random.nextFloat() < 0.3f) {
                     ItemStack randomItem = ClientEventHandler.allItems.get(random.nextInt(ClientEventHandler.allItems.size())).copy();
-                    slot.putStack(randomItem.copy());
-                    slots.add(Pair.of(randomItem, slot.getSlotNumber()));
+                    slot.bogo$putStack(randomItem.copy());
+                    slots.add(Pair.of(randomItem, slot.bogo$getSlotNumber()));
                 }
             }
             NetworkHandler.sendToServer(new CSlotSync(slots));

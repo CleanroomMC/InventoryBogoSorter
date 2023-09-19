@@ -1,68 +1,57 @@
-package com.cleanroommc.bogosorter.core.mixin;
+package com.cleanroommc.bogosorter.compat;
 
 import com.cleanroommc.bogosorter.api.ISlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(Slot.class)
-public class SlotMixin implements ISlot {
+public class SlotDelegate implements ISlot {
 
-    @Shadow
-    public int xPos;
+    private final Slot slot;
 
-    @Shadow
-    public int yPos;
-
-    @Shadow
-    public int slotNumber;
-
-    @Shadow
-    @Final
-    public IInventory inventory;
+    public SlotDelegate(Slot slot) {
+        this.slot = slot;
+    }
 
     @Override
     public Slot bogo$getRealSlot() {
-        return (Slot) (Object) this;
+        return slot;
     }
 
     @Override
     public int bogo$getX() {
-        return xPos;
+        return slot.xPos;
     }
 
     @Override
     public int bogo$getY() {
-        return yPos;
+        return slot.yPos;
     }
 
     @Override
     public int bogo$getSlotNumber() {
-        return slotNumber;
+        return slot.slotNumber;
     }
 
     @Override
     public int bogo$getSlotIndex() {
-        return bogo$this().getSlotIndex();
+        return slot.getSlotIndex();
     }
 
     @Override
     public IInventory bogo$getInventory() {
-        return inventory;
+        return slot.inventory;
     }
 
     @Override
     public void bogo$putStack(ItemStack itemStack) {
-        bogo$this().putStack(itemStack);
+        slot.putStack(itemStack);
     }
 
     @Override
     public ItemStack bogo$getStack() {
-        return bogo$this().getStack();
+        return slot.getStack();
     }
 
     @Override
@@ -72,30 +61,26 @@ public class SlotMixin implements ISlot {
 
     @Override
     public int bogo$getItemStackLimit(ItemStack itemStack) {
-        return bogo$this().getItemStackLimit(itemStack);
+        return slot.getItemStackLimit(itemStack);
     }
 
     @Override
     public boolean bogo$isEnabled() {
-        return bogo$this().isEnabled();
+        return slot.isEnabled();
     }
 
     @Override
     public boolean bogo$isItemValid(ItemStack stack) {
-        return bogo$this().isItemValid(stack);
+        return slot.isItemValid(stack);
     }
 
     @Override
     public boolean bogo$canTakeStack(EntityPlayer player) {
-        return bogo$this().canTakeStack(player);
+        return slot.canTakeStack(player);
     }
 
     @Override
     public void bogo$onSlotChanged() {
-        bogo$this().onSlotChanged();
-    }
-
-    public Slot bogo$this() {
-        return (Slot) (Object) this;
+        slot.onSlotChanged();
     }
 }

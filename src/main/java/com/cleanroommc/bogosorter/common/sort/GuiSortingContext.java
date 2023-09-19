@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GuiSortingContext {
 
@@ -106,7 +108,12 @@ public class GuiSortingContext {
         }
 
         @Override
-        public ISlotGroup addSlotGroup(List<Slot> slots, int rowSize) {
+        public ISlotGroup addSlotGroupOf(List<Slot> slots, int rowSize) {
+            return addSlotGroup(slots.stream().map(BogoSortAPI.INSTANCE::getSlot).collect(Collectors.toList()), rowSize);
+        }
+
+        @Override
+        public ISlotGroup addSlotGroup(List<ISlot> slots, int rowSize) {
             if (slots.size() < rowSize) {
                 throw new IllegalArgumentException("Slots must at least fill 1 row! Expected at least " + rowSize + " slot, but only found " + slots.size());
             }
@@ -117,7 +124,7 @@ public class GuiSortingContext {
 
         @Override
         public ISlotGroup addSlotGroup(int startIndex, int endIndex, int rowSize) {
-            return addSlotGroup(this.container.inventorySlots.subList(startIndex, endIndex), rowSize);
+            return addSlotGroupOf(this.container.inventorySlots.subList(startIndex, endIndex), rowSize);
         }
 
         @Override
@@ -131,12 +138,12 @@ public class GuiSortingContext {
     }
 
     private static void addPlayerInventory(GuiSortingContext.Builder builder, Container container) {
-        List<Slot> slots = new ArrayList<>();
-        List<Slot> hotbar = new ArrayList<>();
+        List<ISlot> slots = new ArrayList<>();
+        List<ISlot> hotbar = new ArrayList<>();
         for (Slot slot : container.inventorySlots) {
             if (BogoSortAPI.isPlayerSlot(slot)) {
-                if (slot.getSlotIndex() < 9) hotbar.add(slot);
-                else slots.add(slot);
+                if (slot.getSlotIndex() < 9) hotbar.add(BogoSortAPI.INSTANCE.getSlot(slot));
+                else slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
             }
         }
         if (!slots.isEmpty()) {

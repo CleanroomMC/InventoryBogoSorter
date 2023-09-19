@@ -10,6 +10,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -117,4 +118,8 @@ public interface IBogoSortAPI {
      * @see net.minecraftforge.common.util.Constants.NBT for expectedType
      */
     <T> void registerNbtSortingRule(String key, String tagPath, int expectedType, Comparator<T> comparator, Function<NBTBase, T> converter);
+
+    ISlot getSlot(Slot slot);
+
+    List<ISlot> getSlots(List<Slot> slots);
 }

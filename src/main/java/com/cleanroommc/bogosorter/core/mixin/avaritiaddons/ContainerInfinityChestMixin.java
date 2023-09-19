@@ -42,17 +42,17 @@ public abstract class ContainerInfinityChestMixin {
         Container container = (Container) (Object) this;
         ISlot slot = BogoSortAPI.getSlot(container, slotNumber);
 
-        if (slot.getStack().isEmpty()) {
+        if (slot.bogo$getStack().isEmpty()) {
             cir.setReturnValue(ItemStack.EMPTY);
             return;
         }
-        ItemStack stack = slot.getStack();
+        ItemStack stack = slot.bogo$getStack();
         ItemStack toInsert = stack.copy();
         int amount = Math.min(stack.getCount(), stack.getMaxStackSize());
         toInsert.setCount(amount);
         GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
 
-        SlotGroup slots = sortingContext.getSlotGroup(slot.getSlotNumber());
+        SlotGroup slots = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
         SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
         if (otherSlots == null || slots == otherSlots) {
             cir.setReturnValue(ItemStack.EMPTY);
@@ -61,7 +61,7 @@ public abstract class ContainerInfinityChestMixin {
 
         toInsert = BogoSortAPI.insert(container, otherSlots.getSlots(), toInsert);
         stack.shrink(amount - toInsert.getCount());
-        slot.putStack(stack.isEmpty() ? ItemStack.EMPTY : stack);
+        slot.bogo$putStack(stack.isEmpty() ? ItemStack.EMPTY : stack);
 
         cir.setReturnValue(toInsert);
     }
