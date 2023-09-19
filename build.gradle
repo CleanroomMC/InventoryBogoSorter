@@ -147,6 +147,8 @@ dependencies {
 	compileOnly rfg.deobf('curse.maven:charset_lib-284523:3656492')
 	compileOnly rfg.deobf('curse.maven:charset_storage_chests-298584:3656498')
 	compileOnly rfg.deobf('curse.maven:simply_backpacks-311595:3028832')
+	compileOnly rfg.deobf('curse.maven:avaritiaddons-248873:4745387')
+	compileOnly rfg.deobf('curse.maven:wanionlib-253043:4623135')
 }
 
 processResources {

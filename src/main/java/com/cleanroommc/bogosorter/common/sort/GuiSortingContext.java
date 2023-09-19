@@ -120,6 +120,11 @@ public class GuiSortingContext {
             return addSlotGroup(this.container.inventorySlots.subList(startIndex, endIndex), rowSize);
         }
 
+        @Override
+        public Container getContainer() {
+            return this.container;
+        }
+
         public GuiSortingContext build() {
             return new GuiSortingContext(container, slots, player);
         }

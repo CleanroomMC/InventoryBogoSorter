@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.common.network;
 
+import com.cleanroommc.bogosorter.BogoSortAPI;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
@@ -43,7 +44,7 @@ public class CSlotSync implements IPacket {
     @Override
     public IPacket executeServer(NetHandlerPlayServer handler) {
         for (Pair<ItemStack, Integer> pair : content) {
-            handler.player.openContainer.getSlot(pair.getValue()).putStack(pair.getKey());
+            BogoSortAPI.getSlot(handler.player.openContainer, pair.getValue()).putStack(pair.getKey());
         }
         handler.player.openContainer.detectAndSendChanges();
         return null;

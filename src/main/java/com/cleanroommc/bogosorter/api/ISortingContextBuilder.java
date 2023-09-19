@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.api;
 
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -34,4 +35,6 @@ public interface ISortingContextBuilder {
      * @return the created slot group
      */
     ISlotGroup addSlotGroup(int startIndex, int endIndex, int rowSize);
+
+    Container getContainer();
 }

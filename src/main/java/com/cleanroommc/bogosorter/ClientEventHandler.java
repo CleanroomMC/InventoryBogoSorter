@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter;
 
+import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
@@ -21,7 +22,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -99,7 +99,7 @@ public class ClientEventHandler {
         if (FMLLaunchHandler.isDeobfuscatedEnvironment()) {
             // clear
             if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1)) {
-                Slot slot = getSlot(event.getGui());
+                ISlot slot = getSlot(event.getGui());
                 SortHandler sortHandler = createSortHandler(event.getGui(), slot);
                 if (sortHandler == null) return;
                 sortHandler.clearAllItems(slot);
@@ -114,7 +114,7 @@ public class ClientEventHandler {
                         allItems.addAll(subItems);
                     }
                 }
-                Slot slot = getSlot(event.getGui());
+                ISlot slot = getSlot(event.getGui());
                 SortHandler sortHandler = createSortHandler(event.getGui(), slot);
                 if (sortHandler == null) return;
                 sortHandler.randomizeItems(slot);
@@ -186,7 +186,7 @@ public class ClientEventHandler {
         if (container != null && s) {
             long t = Minecraft.getSystemTime();
             if (t - timeSort > 500) {
-                Slot slot = getSlot(container);
+                ISlot slot = getSlot(container);
                 if (!canSort(slot) || !sort(container, slot)) {
                     return false;
                 }
@@ -197,7 +197,7 @@ public class ClientEventHandler {
         return false;
     }
 
-    private static boolean canSort(@Nullable Slot slot) {
+    private static boolean canSort(@Nullable ISlot slot) {
         return !Minecraft.getMinecraft().player.isCreative() ||
                 sortKey.getKeyModifier().isActive() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyModifier().isActive() ||
                 sortKey.getKeyCode() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyCode() ||
@@ -217,14 +217,14 @@ public class ClientEventHandler {
     }
 
     @Nullable
-    public static Slot getSlot(GuiScreen guiScreen) {
+    public static ISlot getSlot(GuiScreen guiScreen) {
         if (guiScreen instanceof GuiContainer) {
-            return ((GuiContainer) guiScreen).getSlotUnderMouse();
+            return (ISlot) ((GuiContainer) guiScreen).getSlotUnderMouse();
         }
         return null;
     }
 
-    public static boolean sort(GuiScreen guiScreen, @Nullable Slot slot) {
+    public static boolean sort(GuiScreen guiScreen, @Nullable ISlot slot) {
         if (guiScreen instanceof GuiContainer) {
             Container container = ((GuiContainer) guiScreen).inventorySlots;
             GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
@@ -239,14 +239,14 @@ public class ClientEventHandler {
                 if (slotGroup == null || slotGroup.isEmpty()) return false;
                 slot = slotGroup.getSlots().get(0);
             } else {
-                slotGroup = sortingContext.getSlotGroup(slot.slotNumber);
+                slotGroup = sortingContext.getSlotGroup(slot.getSlotNumber());
                 if (slotGroup == null || slotGroup.isEmpty()) return false;
             }
 
             List<SortRule<ItemStack>> sortRules = BogoSorterConfig.sortRules;
             boolean color = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("color"));
             boolean name = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("display_name"));
-            NetworkHandler.sendToServer(new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.slotNumber, slotGroup.isPlayerInventory()));
+            NetworkHandler.sendToServer(new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.getSlotNumber(), slotGroup.isPlayerInventory()));
             SortHandler.playSortSound();
             return true;
         }
@@ -256,13 +256,13 @@ public class ClientEventHandler {
     public static Collection<ClientSortData> createSortData(SlotGroup slotGroup, boolean color, boolean name) {
         if (!color && !name) return Collections.emptyList();
         Map<ItemStack, ClientSortData> map = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
-        for (Slot slot1 : slotGroup.getSlots()) {
-            map.computeIfAbsent(slot1.getStack(), stack -> ClientSortData.of(stack, color, name)).getSlotNumbers().add(slot1.slotNumber);
+        for (ISlot slot1 : slotGroup.getSlots()) {
+            map.computeIfAbsent(slot1.getStack(), stack -> ClientSortData.of(stack, color, name)).getSlotNumbers().add(slot1.getSlotNumber());
         }
         return map.values();
     }
 
-    public static SortHandler createSortHandler(GuiScreen guiScreen, @Nullable Slot slot) {
+    public static SortHandler createSortHandler(GuiScreen guiScreen, @Nullable ISlot slot) {
         if (slot != null && guiScreen instanceof GuiContainer) {
 
             Container container = ((GuiContainer) guiScreen).inventorySlots;

@@ -51,7 +51,7 @@ public class ItemSortContainer {
 
     public ItemStack makeStack(int max) {
         ItemStack copy = itemStack.copy();
-        int size = Math.min(max, Math.min(copy.getMaxStackSize(), amount));
+        int size = Math.min(max, amount);
         copy.setCount(size);
         shrink(size);
         return copy;

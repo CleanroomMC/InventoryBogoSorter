@@ -19,6 +19,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -42,11 +43,17 @@ public class BogoSortAPI implements IBogoSortAPI {
         }
     };
 
+    public static final Function<Slot, ISlot> DEFAULT_SLOT_GETTER = slot -> (ISlot) slot;
+
+    private static final ICustomInsertable DEFAULT_INSERTABLE = (container, slots, stack, emptyOnly) -> ShortcutHandler.insertToSlots(slots, stack, emptyOnly);
+
     private BogoSortAPI() {
     }
 
     private final Map<Class<?>, BiConsumer<Container, ISortingContextBuilder>> COMPAT_MAP = new Object2ObjectOpenHashMap<>();
     private final Map<Class<?>, IPosSetter> playerButtonPos = new Object2ObjectOpenHashMap<>();
+    private final Map<Class<?>, Function<Slot, ISlot>> slotGetterMap = new Object2ObjectOpenHashMap<>();
+    private final Map<Class<?>, ICustomInsertable> customInsertableMap = new Object2ObjectOpenHashMap<>();
     private final Map<String, SortRule<ItemStack>> itemSortRules = new Object2ObjectOpenHashMap<>();
     private final Map<String, NbtSortRule> nbtSortRules = new Object2ObjectOpenHashMap<>();
     private final Int2ObjectOpenHashMap<SortRule<ItemStack>> itemSortRules2 = new Int2ObjectOpenHashMap<>();
@@ -59,6 +66,16 @@ public class BogoSortAPI implements IBogoSortAPI {
 
     public void remapSortRule(String old, String newName) {
         this.remappedSortRules.put(old, newName);
+    }
+
+    @Override
+    public <T extends Slot> void addSlotGetter(Class<T> clazz, Function<T, ISlot> function) {
+        this.slotGetterMap.put(clazz, (Function<Slot, ISlot>) function);
+    }
+
+    @Override
+    public void addCustomInsertable(Class<? extends Container> clazz, ICustomInsertable insertable) {
+        this.customInsertableMap.put(clazz, insertable);
     }
 
     @Override
@@ -185,13 +202,48 @@ public class BogoSortAPI implements IBogoSortAPI {
         return sortRule == null ? EMPTY_NBT_SORT_RULE : sortRule;
     }
 
+    @NotNull
+    public ISlot getSlot(@NotNull Slot slot) {
+        return this.slotGetterMap.getOrDefault(slot.getClass(), DEFAULT_SLOT_GETTER).apply(slot);
+    }
+
+    public static ISlot getSlot(@NotNull Container container, int index) {
+        return INSTANCE.getSlot(container.getSlot(index));
+    }
+
+    @NotNull
+    public ICustomInsertable getInsertable(@NotNull Container container, boolean player) {
+        return player ? DEFAULT_INSERTABLE : this.customInsertableMap.getOrDefault(container.getClass(), DEFAULT_INSERTABLE);
+    }
+
+    public static ItemStack insert(Container container, List<ISlot> slots, ItemStack stack) {
+        if (slots.isEmpty()) return stack;
+        ICustomInsertable insertable = INSTANCE.getInsertable(container, isPlayerSlot(slots.get(0)));
+        if (stack.isStackable()) {
+            stack = insertable.insert(container, slots, stack, false);
+        }
+        if (!stack.isEmpty()) {
+            stack = insertable.insert(container, slots, stack, true);
+        }
+        return stack;
+    }
+
+    public static ItemStack insert(Container container, List<ISlot> slots, ItemStack stack, boolean emptyOnly) {
+        if (slots.isEmpty()) return stack;
+        return INSTANCE.getInsertable(container, isPlayerSlot(slots.get(0))).insert(container, slots, stack, emptyOnly);
+    }
+
     public static boolean isValidSortable(Container container) {
         return container instanceof ISortableContainer || INSTANCE.COMPAT_MAP.containsKey(container.getClass());
     }
 
     public static boolean isPlayerSlot(Slot slot) {
+        return isPlayerSlot((ISlot) slot);
+    }
+
+    public static boolean isPlayerSlot(ISlot slot) {
         if (slot == null) return false;
-        if (slot.inventory instanceof InventoryPlayer ||
+        if (slot.getInventory() instanceof InventoryPlayer ||
                 (slot instanceof SlotItemHandler && isPlayerInventory(((SlotItemHandler) slot).getItemHandler())) ||
                 (BogoSorter.isAe2Loaded() && slot instanceof AppEngSlot && isPlayerInventory(((AppEngSlot) slot).getItemHandler()))) {
             return slot.getSlotIndex() >= 0 && slot.getSlotIndex() < 36;

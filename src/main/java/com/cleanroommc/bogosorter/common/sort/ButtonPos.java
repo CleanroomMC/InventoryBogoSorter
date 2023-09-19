@@ -12,7 +12,7 @@ public class ButtonPos implements IButtonPos {
     private Layout layout = Layout.HORIZONTAL;
 
     public void reset() {
-        this.enabled = false;
+        this.enabled = true;
         this.x = 0;
         this.y = 0;
         this.alignment = Alignment.BOTTOM_RIGHT;

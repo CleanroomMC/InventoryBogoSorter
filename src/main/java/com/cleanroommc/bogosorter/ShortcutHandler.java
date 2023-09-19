@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter;
 
+import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.common.network.CDropSlots;
 import com.cleanroommc.bogosorter.common.network.CShortcut;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
@@ -26,38 +27,42 @@ public class ShortcutHandler {
         return true;
     }
 
-    public static boolean moveSingleItem(EntityPlayer player, Container container, Slot slot, boolean emptySlot) {
+    public static boolean moveSingleItem(EntityPlayer player, Container container, ISlot slot, boolean emptySlot) {
+        return moveItemStack(player, container, slot, emptySlot, 1);
+    }
+
+    public static boolean moveItemStack(EntityPlayer player, Container container, ISlot slot, boolean emptySlot, int amount) {
         if (slot == null || slot.getStack().isEmpty()) return false;
         ItemStack stack = slot.getStack();
+        amount = Math.min(amount, stack.getMaxStackSize());
         ItemStack toInsert = stack.copy();
-        toInsert.setCount(1);
+        toInsert.setCount(amount);
 
         if (BogoSortAPI.isValidSortable(container)) {
             GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
 
-            SlotGroup slots = sortingContext.getSlotGroup(slot.slotNumber);
+            SlotGroup slots = sortingContext.getSlotGroup(slot.getSlotNumber());
             SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
             if (otherSlots == null || slots == otherSlots) return false;
 
-            toInsert = emptySlot ? insertToSlots(otherSlots.getSlots(), toInsert, true) : insertToSlots(otherSlots.getSlots(), toInsert);
+            toInsert = emptySlot ?
+                    BogoSortAPI.insert(container, otherSlots.getSlots(), toInsert, true) :
+                    BogoSortAPI.insert(container, otherSlots.getSlots(), toInsert);
         } else {
-            List<Slot> otherSlots = new ArrayList<>();
+            List<ISlot> otherSlots = new ArrayList<>();
             boolean isPlayer = BogoSortAPI.isPlayerSlot(slot);
             for (Slot slot1 : container.inventorySlots) {
                 if (isPlayer != BogoSortAPI.isPlayerSlot(slot1)) {
-                    otherSlots.add(slot1);
+                    otherSlots.add(BogoSortAPI.INSTANCE.getSlot(slot1));
                 }
             }
-            if (!emptySlot && toInsert.isStackable()) {
-                toInsert = insertToSlots(otherSlots, toInsert, false);
-            }
-            if (!toInsert.isEmpty()) {
-                toInsert = insertToSlots(otherSlots, toInsert, true);
-            }
+            toInsert = emptySlot ?
+                    BogoSortAPI.insert(container, otherSlots, toInsert, true) :
+                    BogoSortAPI.insert(container, otherSlots, toInsert);
         }
         if (toInsert.isEmpty()) {
             toInsert = stack.copy();
-            toInsert.shrink(1);
+            toInsert.shrink(amount);
             slot.putStack(toInsert);
             return true;
         }
@@ -67,27 +72,29 @@ public class ShortcutHandler {
     public static boolean moveAllItems(GuiContainer guiContainer, boolean sameItemOnly) {
         Container container = guiContainer.inventorySlots;
         Slot slot = guiContainer.getSlotUnderMouse();
-        if (slot == null || !BogoSortAPI.isValidSortable(container) || (sameItemOnly && slot.getStack().isEmpty()))
+        if (slot == null || !BogoSortAPI.isValidSortable(container)) return false;
+        ISlot iSlot = BogoSortAPI.INSTANCE.getSlot(slot);
+        if (sameItemOnly && iSlot.getStack().isEmpty())
             return false;
-        NetworkHandler.sendToServer(new CShortcut(sameItemOnly ? CShortcut.Type.MOVE_ALL_SAME : CShortcut.Type.MOVE_ALL, slot.slotNumber));
+        NetworkHandler.sendToServer(new CShortcut(sameItemOnly ? CShortcut.Type.MOVE_ALL_SAME : CShortcut.Type.MOVE_ALL, iSlot.getSlotNumber()));
         return true;
     }
 
-    public static boolean moveAllItems(EntityPlayer player, Container container, Slot slot, boolean sameItemOnly) {
+    public static boolean moveAllItems(EntityPlayer player, Container container, ISlot slot, boolean sameItemOnly) {
         if (slot == null || !BogoSortAPI.isValidSortable(container)) return false;
         ItemStack stack = slot.getStack().copy();
         if (sameItemOnly && stack.isEmpty()) return false;
         GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
 
-        SlotGroup slots = sortingContext.getSlotGroup(slot.slotNumber);
+        SlotGroup slots = sortingContext.getSlotGroup(slot.getSlotNumber());
         SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
         if (slots == null || otherSlots == null || slots == otherSlots) return false;
-        for (Slot slot1 : slots.getSlots()) {
+        for (ISlot slot1 : slots.getSlots()) {
             ItemStack stackInSlot = slot1.getStack();
             ItemStack copy = stackInSlot.copy();
             if (stackInSlot.isEmpty() || (sameItemOnly && !ItemHandlerHelper.canItemStacksStack(stack, stackInSlot)))
                 continue;
-            ItemStack remainder = insertToSlots(otherSlots.getSlots(), copy);
+            ItemStack remainder = BogoSortAPI.insert(container, otherSlots.getSlots(), copy);
             int inserted = stackInSlot.getCount() - remainder.getCount();
             if (inserted > 0) {
                 slot1.putStack(remainder.copy());
@@ -108,10 +115,10 @@ public class ShortcutHandler {
         SlotGroup slots = GuiSortingContext.getOrCreate(container).getSlotGroup(slot.slotNumber);
         if (slots == null || !slots.isPlayerInventory()) return false;
         IntList slotsToDrop = new IntArrayList();
-        for (Slot slot1 : slots.getSlots()) {
+        for (ISlot slot1 : slots.getSlots()) {
             ItemStack stack = slot1.getStack();
             if (!stack.isEmpty() && (!onlySameType || ItemHandlerHelper.canItemStacksStack(stack, item))) {
-                slotsToDrop.add(slot1.slotNumber);
+                slotsToDrop.add(slot1.getSlotNumber());
             }
         }
         if (slotsToDrop.isEmpty()) return false;
@@ -119,25 +126,15 @@ public class ShortcutHandler {
         return true;
     }
 
-    private static ItemStack insertToSlots(List<Slot> slots, ItemStack stack) {
-        if (stack.isStackable()) {
-            stack = insertToSlots(slots, stack, false);
-        }
-        if (!stack.isEmpty()) {
-            stack = insertToSlots(slots, stack, true);
-        }
-        return stack;
-    }
-
-    private static ItemStack insertToSlots(List<Slot> slots, ItemStack stack, boolean emptyOnly) {
-        for (Slot slot : slots) {
+    public static ItemStack insertToSlots(List<ISlot> slots, ItemStack stack, boolean emptyOnly) {
+        for (ISlot slot : slots) {
             stack = insert(slot, stack, emptyOnly);
             if (stack.isEmpty()) return stack;
         }
         return stack;
     }
 
-    private static ItemStack insert(Slot slot, ItemStack stack, boolean emptyOnly) {
+    public static ItemStack insert(ISlot slot, ItemStack stack, boolean emptyOnly) {
         ItemStack stackInSlot = slot.getStack();
         if (emptyOnly) {
             if (!stackInSlot.isEmpty() || !slot.isItemValid(stack)) return stack;
@@ -150,10 +147,11 @@ public class ShortcutHandler {
             return stack.isEmpty() ? ItemStack.EMPTY : stack;
         }
         if (!stackInSlot.isEmpty() && ItemHandlerHelper.canItemStacksStack(stackInSlot, stack)) {
-            int amount = Math.min(slot.getItemStackLimit(stackInSlot), Math.min(stack.getCount(), stackInSlot.getMaxStackSize() - stackInSlot.getCount()));
+            int amount = Math.min(slot.getItemStackLimit(stackInSlot), Math.min(stack.getCount(), slot.getMaxStackSize(stack) - stackInSlot.getCount()));
             if (amount <= 0) return stack;
             stack.shrink(amount);
             stackInSlot.grow(amount);
+            slot.putStack(stackInSlot);
             return stack.isEmpty() ? ItemStack.EMPTY : stack;
         }
         return stack;

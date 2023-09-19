@@ -5,8 +5,10 @@ import blusunrize.immersiveengineering.common.gui.ContainerCrate;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.ShortcutHandler;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.IPosSetter;
+import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
@@ -35,7 +37,9 @@ import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.dries007.tfc.objects.container.ContainerChestTFC;
 import net.minecraft.inventory.*;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
 import rustic.common.tileentity.ContainerCabinet;
@@ -43,6 +47,9 @@ import rustic.common.tileentity.ContainerCabinetDouble;
 import t145.metalchests.containers.ContainerMetalChest;
 import thebetweenlands.common.inventory.container.ContainerPouch;
 import thedarkcolour.futuremc.container.ContainerBarrel;
+import wanion.avaritiaddons.block.chest.compressed.ContainerCompressedChest;
+import wanion.avaritiaddons.block.chest.infinity.ContainerInfinityChest;
+import wanion.avaritiaddons.block.chest.infinity.InfinitySlot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,10 +117,10 @@ public class DefaultCompat {
                 builder.addSlotGroup(0, 260, 26);
             });
             api.addPlayerSortButtonPosition(ContainerDraconiumChest.class, (slotGroup, buttonPos) -> {
-                Slot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
+                ISlot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();
-                buttonPos.setPos(topRight.xPos + 17, topRight.yPos - 1);
+                buttonPos.setPos(topRight.getX() + 17, topRight.getY() - 1);
             });
         }
 
@@ -269,8 +276,8 @@ public class DefaultCompat {
                 builder.addSlotGroup(slots, 8);
             });
             api.addPlayerSortButtonPosition(ContainerTravelersBackpack.class, (slotGroup, buttonPos) -> {
-                Slot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
-                buttonPos.setPos(topRight.xPos + 17, topRight.yPos - 1);
+                ISlot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
+                buttonPos.setPos(topRight.getX() + 17, topRight.getY() - 1);
             });
         }
 
@@ -279,16 +286,16 @@ public class DefaultCompat {
                 List<Slot> chestSlots = ((ContainerColossalChestAccessor) container).getChestSlots();
                 builder.addSlotGroup(chestSlots, 9).buttonPosSetter((slotGroup, buttonPos) -> {
                     buttonPos.setPos(0, 1000);
-                    for (Slot slot : slotGroup.getSlots()) {
-                        if (slot.xPos >= 0 && slot.yPos >= 0 && slot.isEnabled()) {
-                            buttonPos.setPos(Math.max(buttonPos.getX(), slot.xPos + 17), Math.min(buttonPos.getY(), slot.yPos - 2));
+                    for (ISlot slot : slotGroup.getSlots()) {
+                        if (slot.getX() >= 0 && slot.getY() >= 0 && slot.isEnabled()) {
+                            buttonPos.setPos(Math.max(buttonPos.getX(), slot.getX() + 17), Math.min(buttonPos.getY(), slot.getY() - 2));
                         }
                     }
                 });
             });
             api.addPlayerSortButtonPosition(ContainerColossalChest.class, (slotGroup, buttonPos) -> {
-                Slot slot = slotGroup.getSlots().get(26);
-                buttonPos.setPos(slot.xPos + 19, slot.yPos - 2);
+                ISlot slot = slotGroup.getSlots().get(26);
+                buttonPos.setPos(slot.getX() + 19, slot.getY() - 2);
                 buttonPos.setTopLeft();
                 buttonPos.setVertical();
             });
@@ -310,10 +317,10 @@ public class DefaultCompat {
                 builder.addSlotGroup(0, 77, 11);
             });
             api.addPlayerSortButtonPosition(ContainerStorage.class, (slotGroup, buttonPos) -> {
-                Slot topRight = slotGroup.getSlots().get(26);
+                ISlot topRight = slotGroup.getSlots().get(26);
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();
-                buttonPos.setPos(topRight.xPos + 18, topRight.yPos + 3);
+                buttonPos.setPos(topRight.getX() + 18, topRight.getY() + 3);
             });
         }
 
@@ -374,6 +381,41 @@ public class DefaultCompat {
                         .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
             });
         }
+
+        if (Loader.isModLoaded("avaritiaddons")) {
+            api.addSlotGetter(InfinitySlot.class, InfinitySlotWrapper::new);
+            api.addCustomInsertable(ContainerInfinityChest.class, (container, slots, itemStack, emptyOnly) -> {
+                ISlot slot = avaritiaddons$findSlot(slots, itemStack, emptyOnly);
+                if (slot == null) return itemStack;
+                if (emptyOnly) itemStack = ShortcutHandler.insert(slot, itemStack, true);
+                return itemStack.isEmpty() ? ItemStack.EMPTY : ShortcutHandler.insert(slot, itemStack, false);
+            });
+            api.addCompatSimple(ContainerCompressedChest.class, (container, builder) -> {
+                builder.addSlotGroup(0, 9 * 27, 27);
+            });
+            api.addCompatSimple(ContainerInfinityChest.class, (container, builder) -> {
+                List<Slot> slots = new ArrayList<>();
+                for (Slot slot : builder.getContainer().inventorySlots) {
+                    if (slot instanceof InfinitySlot) {
+                        slots.add(new InfinitySlotWrapper((InfinitySlot) slot));
+                    }
+                }
+                builder.addSlotGroup(slots, 27);
+            });
+        }
+    }
+
+    private static ISlot avaritiaddons$findSlot(List<ISlot> slots, ItemStack itemStack, boolean emptyOnly) {
+        for (ISlot slot : slots) {
+            ItemStack stackInSlot = slot.getStack();
+            if (!stackInSlot.isEmpty() && ItemHandlerHelper.canItemStacksStack(stackInSlot, itemStack)) {
+                return emptyOnly ? null : slot;
+            }
+        }
+        for (ISlot slot : slots) {
+            if (slot.getStack().isEmpty()) return slot;
+        }
+        return null;
     }
 
     private static Class<?> getClass(String name) {

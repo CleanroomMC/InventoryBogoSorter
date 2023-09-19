@@ -5,8 +5,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fluids.FluidStack;
@@ -29,24 +27,6 @@ public class NetworkUtils {
     public static boolean isClient(EntityPlayer player) {
         if (player == null) throw new NullPointerException("Can't get side of null player!");
         return player.world == null ? player instanceof EntityPlayerSP : player.world.isRemote;
-    }
-
-    public static void writeSlotPos(PacketBuffer buf, Container container) {
-        buf.writeVarInt(container.inventorySlots.size());
-        for (Slot slot : container.inventorySlots) {
-            buf.writeVarInt(slot.slotNumber);
-            buf.writeVarInt(slot.xPos);
-            buf.writeVarInt(slot.yPos);
-        }
-    }
-
-    public static void readSlotPos(PacketBuffer buf, Container container) {
-        int n = buf.readVarInt();
-        for (int i = 0; i < n; i++) {
-            Slot slot = container.getSlot(buf.readVarInt());
-            slot.xPos = buf.readVarInt();
-            slot.yPos = buf.readVarInt();
-        }
     }
 
     public static void writePacketBuffer(PacketBuffer writeTo, PacketBuffer writeFrom) {

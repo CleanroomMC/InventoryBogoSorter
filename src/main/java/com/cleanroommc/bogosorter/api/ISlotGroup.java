@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.api;
 
-import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
@@ -18,7 +17,7 @@ public interface ISlotGroup {
      * @return all slots
      */
     @UnmodifiableView
-    List<Slot> getSlots();
+    List<ISlot> getSlots();
 
     /**
      * Returns how many slots are in row. This is mostly used to determine the button position with

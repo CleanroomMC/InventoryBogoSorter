@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.api;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import org.jetbrains.annotations.ApiStatus;
@@ -18,6 +19,23 @@ public interface IBogoSortAPI {
     static IBogoSortAPI getInstance() {
         return BogoSortAPI.INSTANCE;
     }
+
+    /**
+     * Register a function that converts a {@link Slot} to a {@link ISlot}. Useful if modders messed up.
+     *
+     * @param clazz    slot class
+     * @param function converter function
+     * @param <T>      slot type
+     */
+    <T extends Slot> void addSlotGetter(Class<T> clazz, Function<T, ISlot> function);
+
+    /**
+     * Registers a function which handles slot insertions in a custom way.
+     *
+     * @param clazz      container class
+     * @param insertable custom insertion function
+     */
+    void addCustomInsertable(Class<? extends Container> clazz, ICustomInsertable insertable);
 
     /**
      * Adds sorting compat for a container class
