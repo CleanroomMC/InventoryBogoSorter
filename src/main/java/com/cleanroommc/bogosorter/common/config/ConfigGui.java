@@ -107,7 +107,7 @@ public class ConfigGui extends ModularScreen {
                         .margin(0, 2)
                         .child(new TextFieldWidget()
                                 .value(new IntValue.Dynamic(() -> PlayerConfig.getClient().autoRefillDamageThreshold, val -> PlayerConfig.getClient().autoRefillDamageThreshold = val))
-                                .setNumbers(1, Short.MAX_VALUE)
+                                .setNumbers(0, Short.MAX_VALUE)
                                 .setTextAlignment(Alignment.Center)
                                 .setTextColor(IKey.TEXT_COLOR)
                                 .background(new Rectangle().setColor(0xFFb1b1b1))
