@@ -61,7 +61,7 @@ public abstract class ContainerInfinityChestMixin {
 
         toInsert = BogoSortAPI.insert(container, otherSlots.getSlots(), toInsert);
         stack.shrink(amount - toInsert.getCount());
-        slot.putStack(stack);
+        slot.putStack(stack.isEmpty() ? ItemStack.EMPTY : stack);
 
         cir.setReturnValue(toInsert);
     }
