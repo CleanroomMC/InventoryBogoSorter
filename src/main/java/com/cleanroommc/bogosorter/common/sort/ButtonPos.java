@@ -6,15 +6,22 @@ import java.util.Objects;
 
 public class ButtonPos implements IButtonPos {
 
+    private boolean enabled = true;
     private int x = 0, y = 0;
     private Alignment alignment = Alignment.BOTTOM_RIGHT;
     private Layout layout = Layout.HORIZONTAL;
 
     public void reset() {
+        this.enabled = false;
         this.x = 0;
         this.y = 0;
         this.alignment = Alignment.BOTTOM_RIGHT;
         this.layout = Layout.HORIZONTAL;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -31,6 +38,11 @@ public class ButtonPos implements IButtonPos {
     @Override
     public void setLayout(Layout layout) {
         this.layout = Objects.requireNonNull(layout);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
     }
 
     @Override

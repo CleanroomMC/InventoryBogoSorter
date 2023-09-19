@@ -8,6 +8,7 @@
     "EIOContainerAccessor",
     "MixinBuffer",
     "MixinEIOStorage",
-    "MixinVacuumChest"
+    "MixinVacuumChest",
+    "StorageUpgradeAccessor"
   ]
 }

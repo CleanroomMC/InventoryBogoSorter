@@ -67,6 +67,8 @@ public class ButtonHandler {
                 if (sortButton == null || settingsButton == null) continue;
                 buttonPos.reset();
                 slotGroup.getPosSetter().setButtonPos(slotGroup, buttonPos);
+                sortButton.enabled = buttonPos.isEnabled();
+                settingsButton.enabled = buttonPos.isEnabled();
                 buttonPos.applyPos(guiAccess.getGuiLeft(), guiAccess.getGuiTop(), sortButton, settingsButton);
             }
         }
@@ -85,7 +87,7 @@ public class ButtonHandler {
 
     @SubscribeEvent
     public static void onActionPerformed(GuiScreenEvent.ActionPerformedEvent.Pre event) {
-        if (event.getButton() instanceof SortButton) {
+        if (event.getButton() instanceof SortButton && event.getButton().enabled) {
             SortButton sortButton = (SortButton) event.getButton();
             if (sortButton.sort) {
                 ClientEventHandler.sort(event.getGui(), sortButton.slotGroup.getSlots().get(0));
@@ -110,7 +112,7 @@ public class ButtonHandler {
 
         @Override
         public void drawButton(@NotNull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
-            if (this.visible) {
+            if (this.visible && this.enabled) {
                 this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
                 GlStateManager.color(1, 1, 1, 1);
                 GuiTextures.BUTTON.draw(this.x, this.y, this.width, this.height);

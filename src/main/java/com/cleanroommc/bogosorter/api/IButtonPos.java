@@ -5,6 +5,8 @@ package com.cleanroommc.bogosorter.api;
  */
 public interface IButtonPos {
 
+    void setEnabled(boolean enabled);
+
     /**
      * Sets position where the buttons will be placed.
      *
@@ -51,6 +53,8 @@ public interface IButtonPos {
     default void setVertical() {
         setLayout(Layout.VERTICAL);
     }
+
+    boolean isEnabled();
 
     int getX();
 
