@@ -37,7 +37,7 @@ public class BogoSorterConfig {
         general.addProperty("enableAutoRefill", playerConfig.enableAutoRefill);
         general.addProperty("refillDmgThreshold", playerConfig.autoRefillDamageThreshold);
         general.addProperty("enableHotbarSwap", HotbarSwap.isEnabled());
-        general.addProperty("sortSound", SortHandler.sortSound.soundName.toString());
+        general.addProperty("sortSound", SortHandler.sortSound.getSoundName().toString());
 
         json.add("General", general);
 
