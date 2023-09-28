@@ -6,14 +6,12 @@ public class SortRule<T> implements Comparator<T> {
 
     private static int nextId = 0;
 
-    private final SortType type;
     private final String key;
     private final Comparator<T> comparator;
     private boolean inverted = false;
     private final int syncId;
 
-    public SortRule(String key, SortType type, Comparator<T> comparator) {
-        this.type = type;
+    public SortRule(String key, Comparator<T> comparator) {
         this.key = key;
         this.comparator = comparator;
         this.syncId = nextId++;

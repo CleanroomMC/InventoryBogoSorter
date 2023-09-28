@@ -1,7 +1,6 @@
 package com.cleanroommc.bogosorter.api;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
-import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -78,18 +77,9 @@ public interface IBogoSortAPI {
     /**
      * Registers a sorting rule for items
      *
-     * @param type           the type of which component will be compared
      * @param itemComparator comparator
      */
-    void registerItemSortingRule(String key, SortType type, Comparator<ItemStack> itemComparator);
-
-    /**
-     * This registers a sort rule which can compare client data like localized name or color on server side.
-     * This method is not API friendly! You will not get it to work by simply registering a rule. It is much more involved.
-     * Instead, contact the author (brachy84) if you want to add a client sort rule.
-     */
-    @ApiStatus.Internal
-    void registerClientItemSortingRule(String key, SortType type, Comparator<ItemStack> comparator, Comparator<ItemSortContainer> serverComparator);
+    void registerItemSortingRule(String key, Comparator<ItemStack> itemComparator);
 
     /**
      * Registers a sorting rule for NBT tags

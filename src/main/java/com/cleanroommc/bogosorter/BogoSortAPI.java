@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class BogoSortAPI implements IBogoSortAPI {
 
     public static final BogoSortAPI INSTANCE = new BogoSortAPI();
-    public static final SortRule<ItemStack> EMPTY_ITEM_SORT_RULE = new SortRule<ItemStack>("empty", null, (o1, o2) -> 0) {
+    public static final SortRule<ItemStack> EMPTY_ITEM_SORT_RULE = new SortRule<ItemStack>("empty", (o1, o2) -> 0) {
         @Override
         public boolean isEmpty() {
             return true;
@@ -112,19 +112,18 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     @Override
-    public void registerItemSortingRule(String key, SortType type, Comparator<ItemStack> itemComparator) {
+    public void registerItemSortingRule(String key, Comparator<ItemStack> itemComparator) {
         validateKey(key);
-        SortRule<ItemStack> sortRule = new SortRule<>(key, type, itemComparator);
+        SortRule<ItemStack> sortRule = new SortRule<>(key, itemComparator);
         itemSortRules.put(key, sortRule);
         itemSortRuleList.add(sortRule);
         itemSortRules2.put(sortRule.getSyncId(), sortRule);
     }
 
     @ApiStatus.Internal
-    @Override
-    public void registerClientItemSortingRule(String key, SortType type, Comparator<ItemStack> comparator, Comparator<ItemSortContainer> serverComparator) {
+    public void registerClientItemSortingRule(String key, Comparator<ItemStack> comparator, Comparator<ItemSortContainer> serverComparator) {
         validateKey(key);
-        ClientItemSortRule sortRule = new ClientItemSortRule(key, type, comparator, serverComparator);
+        ClientItemSortRule sortRule = new ClientItemSortRule(key, comparator, serverComparator);
         itemSortRules.put(key, sortRule);
         itemSortRuleList.add(sortRule);
         itemSortRules2.put(sortRule.getSyncId(), sortRule);

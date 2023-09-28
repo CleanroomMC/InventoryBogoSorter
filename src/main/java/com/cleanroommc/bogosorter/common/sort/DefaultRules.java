@@ -1,8 +1,7 @@
 package com.cleanroommc.bogosorter.common.sort;
 
+import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.api.IBogoSortAPI;
-import com.cleanroommc.bogosorter.api.SortType;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
@@ -11,28 +10,28 @@ import net.minecraftforge.fml.common.Loader;
 
 public class DefaultRules {
 
-    public static void init(IBogoSortAPI api) {
-        api.registerItemSortingRule("mod", SortType.MOD, ItemCompareHelper::compareMod);
-        api.registerItemSortingRule("id", SortType.ID, ItemCompareHelper::compareId);
-        api.registerItemSortingRule("meta", SortType.META, ItemCompareHelper::compareMeta);
-        api.registerItemSortingRule("registry_order", SortType.META, ItemCompareHelper::compareRegistryOrder);
-        api.registerClientItemSortingRule("display_name", null, ItemCompareHelper::compareDisplayName, ItemCompareHelper::compareDisplayName);
-        api.registerItemSortingRule("nbt_size", SortType.NBT, ItemCompareHelper::compareNbtSize);
-        api.registerItemSortingRule("nbt_has", SortType.NBT, ItemCompareHelper::compareHasNbt);
-        api.registerItemSortingRule("nbt_rules", SortType.NBT, ItemCompareHelper::compareNbtValues);
-        api.registerItemSortingRule("nbt_all_values", SortType.NBT, ItemCompareHelper::compareNbtAllValues);
-        api.registerItemSortingRule("count", SortType.COUNT, ItemCompareHelper::compareCount);
-        api.registerItemSortingRule("ore_dict", SortType.OREDICT, ItemCompareHelper::compareOreDict);
-        api.registerItemSortingRule("material", SortType.OREDICT, ItemCompareHelper::compareMaterial);
-        api.registerItemSortingRule("ore_prefix", SortType.OREDICT, ItemCompareHelper::compareOrePrefix);
-        api.registerItemSortingRule("burn_time", null, ItemCompareHelper::compareBurnTime);
-        api.registerItemSortingRule("block_type", null, ItemCompareHelper::compareBlockType);
-        api.registerItemSortingRule("hunger", null, ItemCompareHelper::compareHunger);
-        api.registerItemSortingRule("saturation", null, ItemCompareHelper::compareSaturation);
-        api.registerClientItemSortingRule("color", null, ItemCompareHelper::compareColor, ItemCompareHelper::compareColor);
+    public static void init(BogoSortAPI api) {
+        api.registerItemSortingRule("mod", ItemCompareHelper::compareMod);
+        api.registerItemSortingRule("id", ItemCompareHelper::compareId);
+        api.registerItemSortingRule("meta", ItemCompareHelper::compareMeta);
+        api.registerItemSortingRule("registry_order", ItemCompareHelper::compareRegistryOrder);
+        api.registerClientItemSortingRule("display_name", ItemCompareHelper::compareDisplayName, ItemCompareHelper::compareDisplayName);
+        api.registerItemSortingRule("nbt_size", ItemCompareHelper::compareNbtSize);
+        api.registerItemSortingRule("nbt_has", ItemCompareHelper::compareHasNbt);
+        api.registerItemSortingRule("nbt_rules", ItemCompareHelper::compareNbtValues);
+        api.registerItemSortingRule("nbt_all_values", ItemCompareHelper::compareNbtAllValues);
+        api.registerItemSortingRule("count", ItemCompareHelper::compareCount);
+        api.registerItemSortingRule("ore_dict", ItemCompareHelper::compareOreDict);
+        api.registerItemSortingRule("material", ItemCompareHelper::compareMaterial);
+        api.registerItemSortingRule("ore_prefix", ItemCompareHelper::compareOrePrefix);
+        api.registerItemSortingRule("burn_time", ItemCompareHelper::compareBurnTime);
+        api.registerItemSortingRule("block_type", ItemCompareHelper::compareBlockType);
+        api.registerItemSortingRule("hunger", ItemCompareHelper::compareHunger);
+        api.registerItemSortingRule("saturation", ItemCompareHelper::compareSaturation);
+        api.registerClientItemSortingRule("color", ItemCompareHelper::compareColor, ItemCompareHelper::compareColor);
 
         if (Loader.isModLoaded("projecte")) {
-            api.registerItemSortingRule("emc", null, ItemCompareHelper::compareEMC);
+            api.registerItemSortingRule("emc", ItemCompareHelper::compareEMC);
         }
 
         api.registerNbtSortingRule("potion", "Potion", Constants.NBT.TAG_STRING, ItemCompareHelper::comparePotionId, DefaultRules::getPotionId);
