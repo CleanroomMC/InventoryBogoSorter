@@ -2,13 +2,16 @@ package com.cleanroommc.bogosorter;
 
 import appeng.container.slot.AppEngSlot;
 import com.cleanroommc.bogosorter.api.*;
+import com.cleanroommc.bogosorter.common.config.ConfigGui;
 import com.cleanroommc.bogosorter.common.sort.ClientItemSortRule;
 import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.core.mixin.ItemStackAccessor;
+import com.cleanroommc.modularui.manager.GuiManager;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -26,7 +29,6 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class BogoSortAPI implements IBogoSortAPI {
 
@@ -202,6 +204,16 @@ public class BogoSortAPI implements IBogoSortAPI {
         return sortRule == null ? EMPTY_NBT_SORT_RULE : sortRule;
     }
 
+    @Override
+    public void openConfigGui() {
+        GuiManager.openClientUI(Minecraft.getMinecraft().player, new ConfigGui());
+    }
+
+    @Override
+    public boolean sortSlotGroup(Slot slot) {
+        return ClientEventHandler.sort(Minecraft.getMinecraft().currentScreen, getSlot(slot));
+    }
+
     @NotNull
     @Override
     public ISlot getSlot(@NotNull Slot slot) {
@@ -209,8 +221,10 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     @Override
-    public List<ISlot> getSlots(List<Slot> slots) {
-        return slots.stream().map(this::getSlot).collect(Collectors.toList());
+    public List<ISlot> getSlots(@NotNull List<Slot> slots) {
+        List<ISlot> iSlots = new ArrayList<>();
+        for (Slot slot : slots) iSlots.add(getSlot(slot));
+        return iSlots;
     }
 
     public static ISlot getSlot(@NotNull Container container, int index) {

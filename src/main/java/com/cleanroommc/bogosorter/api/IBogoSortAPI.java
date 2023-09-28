@@ -5,7 +5,10 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
@@ -109,7 +112,34 @@ public interface IBogoSortAPI {
      */
     <T> void registerNbtSortingRule(String key, String tagPath, int expectedType, Comparator<T> comparator, Function<NBTBase, T> converter);
 
+    /**
+     * Opens the bogosort config gui
+     */
+    @SideOnly(Side.CLIENT)
+    void openConfigGui();
+
+    /**
+     * Tries to sort a slot group with the given slot.
+     *
+     * @param slot slot of slot group to sort
+     * @return if the slot group will be sorted (on server side)
+     */
+    @SideOnly(Side.CLIENT)
+    boolean sortSlotGroup(Slot slot);
+
+    /**
+     * Turns a slot into a generic interface slot
+     *
+     * @param slot slot
+     * @return generic slot
+     */
     ISlot getSlot(Slot slot);
 
-    List<ISlot> getSlots(List<Slot> slots);
+    /**
+     * Transforms a list of slots using {@link #getSlot(Slot)}
+     *
+     * @param slots list of slots
+     * @return list of generic slots
+     */
+    List<ISlot> getSlots(@NotNull List<Slot> slots);
 }
