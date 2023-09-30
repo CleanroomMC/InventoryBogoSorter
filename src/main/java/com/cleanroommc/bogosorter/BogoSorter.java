@@ -33,7 +33,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 
-@Mod(modid = BogoSorter.ID, name = BogoSorter.NAME, version = BogoSorter.VERSION, dependencies = "required-after:modularui@[2.1.0,2.2.0);required-after:mixinbooter@[4.2,)")
+@Mod(modid = BogoSorter.ID,
+        name = BogoSorter.NAME,
+        version = BogoSorter.VERSION,
+        dependencies =
+                "required-after:modularui@[2.2.0,2.3.0);" +
+                "required-after:mixinbooter@[8.0,)")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
 
