@@ -117,6 +117,7 @@ jobs:
             simply_backpacks | recommends | 1.4.9
             improvedbackpacks | recommends | *
             expandable-inventory | recommends | *
+            charm | recommends | *
           java: |
             8
           retry-attempts: 2

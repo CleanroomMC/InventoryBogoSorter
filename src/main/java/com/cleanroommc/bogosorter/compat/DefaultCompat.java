@@ -410,6 +410,12 @@ public class DefaultCompat {
             api.addCompat(ContainerExpandedInventory.class, (container, builder) -> {
             });
         }
+
+        if (Loader.isModLoaded("charm")) {
+            api.addCompat(svenhjol.charm.crafting.container.ContainerBarrel.class, (container, builder) -> {
+                builder.addSlotGroup(0, 27, 9);
+            });
+        }
     }
 
     private static ISlot avaritiaddons$findSlot(List<ISlot> slots, ItemStack itemStack, boolean emptyOnly) {
