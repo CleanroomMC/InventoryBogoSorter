@@ -115,7 +115,8 @@ jobs:
             galacticraft-legacy | recommends | *
             ae2-extended-life | recommends | *
             simply_backpacks | recommends | 1.4.9
-            improvedbackpacks | recommends | 1.5.0.0
+            improvedbackpacks | recommends | *
+            expandable-inventory | recommends | *
           java: |
             8
           retry-attempts: 2

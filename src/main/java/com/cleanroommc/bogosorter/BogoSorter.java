@@ -56,6 +56,7 @@ public class BogoSorter {
     private static boolean ic2ClassicLoaded = false;
     private static boolean quarkLoaded = false;
     private static boolean ae2Loaded = false;
+    private static boolean expandableInventoryLoaded = false;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
@@ -64,6 +65,7 @@ public class BogoSorter {
         anyIc2Loaded = Loader.isModLoaded("ic2");
         quarkLoaded = Loader.isModLoaded("quark");
         ae2Loaded = Loader.isModLoaded("appliedenergistics2");
+        expandableInventoryLoaded = Loader.isModLoaded("expandableinventory");
         if (anyIc2Loaded) {
             ModContainer container = Loader.instance().getIndexedModList().get("ic2");
             ic2ClassicLoaded = container.getName().endsWith("Classic");
@@ -149,6 +151,10 @@ public class BogoSorter {
 
     public static boolean isAe2Loaded() {
         return ae2Loaded;
+    }
+
+    public static boolean isExpandableInventoryLoaded() {
+        return expandableInventoryLoaded;
     }
 
     public static boolean isAprilFools() {

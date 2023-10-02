@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
@@ -8,6 +9,7 @@ import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
+import ru.socol.expandableinventory.gui.ContainerExpandedInventory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -140,11 +142,12 @@ public class GuiSortingContext {
     private static void addPlayerInventory(GuiSortingContext.Builder builder, Container container) {
         List<ISlot> slots = new ArrayList<>();
         List<ISlot> hotbar = new ArrayList<>();
+        boolean all = BogoSorter.isExpandableInventoryLoaded() && container instanceof ContainerExpandedInventory;
         for (Slot slot : container.inventorySlots) {
             if (BogoSortAPI.isPlayerSlot(slot)) {
                 if (slot.getSlotIndex() < 9) hotbar.add(BogoSortAPI.INSTANCE.getSlot(slot));
                 else slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
-            }
+            } else if (all) slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
         }
         if (!slots.isEmpty()) {
             SlotGroup slotGroup = new SlotGroup(true, false, slots, Math.min(9, slots.size()));

@@ -42,6 +42,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
+import ru.socol.expandableinventory.gui.ContainerExpandedInventory;
 import rustic.common.tileentity.ContainerCabinet;
 import rustic.common.tileentity.ContainerCabinetDouble;
 import t145.metalchests.containers.ContainerMetalChest;
@@ -401,6 +402,12 @@ public class DefaultCompat {
                     }
                 }
                 builder.addSlotGroup(slots, 27);
+            });
+        }
+
+        if (BogoSorter.isExpandableInventoryLoaded()) {
+            // mark as sortable
+            api.addCompat(ContainerExpandedInventory.class, (container, builder) -> {
             });
         }
     }

@@ -150,6 +150,7 @@ dependencies {
 	compileOnly rfg.deobf('curse.maven:avaritiaddons-248873:4745387')
 	compileOnly rfg.deobf('curse.maven:wanionlib-253043:4623135')
 	compileOnly rfg.deobf('curse.maven:improvedbackpacks-270457:2918455')
+	implementation rfg.deobf('curse.maven:expandable_inventory-304371:2751939')
 }
 
 processResources {
