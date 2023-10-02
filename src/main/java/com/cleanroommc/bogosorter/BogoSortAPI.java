@@ -17,6 +17,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
@@ -204,11 +206,13 @@ public class BogoSortAPI implements IBogoSortAPI {
         return sortRule == null ? EMPTY_NBT_SORT_RULE : sortRule;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void openConfigGui() {
         GuiManager.openClientUI(Minecraft.getMinecraft().player, new ConfigGui());
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public boolean sortSlotGroup(Slot slot) {
         return ClientEventHandler.sort(Minecraft.getMinecraft().currentScreen, getSlot(slot));
