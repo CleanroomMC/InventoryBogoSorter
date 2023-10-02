@@ -6,9 +6,7 @@ import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.ShortcutHandler;
-import com.cleanroommc.bogosorter.api.IBogoSortAPI;
-import com.cleanroommc.bogosorter.api.IPosSetter;
-import com.cleanroommc.bogosorter.api.ISlot;
+import com.cleanroommc.bogosorter.api.*;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
@@ -36,15 +34,18 @@ import mods.railcraft.common.gui.containers.ContainerRCChest;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.dries007.tfc.objects.container.ContainerChestTFC;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.SlotItemHandler;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
 import ru.socol.expandableinventory.gui.ContainerExpandedInventory;
 import rustic.common.tileentity.ContainerCabinet;
 import rustic.common.tileentity.ContainerCabinetDouble;
+import rustic.common.tileentity.ContainerVase;
 import t145.metalchests.containers.ContainerMetalChest;
 import thebetweenlands.common.inventory.container.ContainerPouch;
 import thedarkcolour.futuremc.container.ContainerBarrel;
@@ -55,6 +56,7 @@ import wanion.avaritiaddons.block.chest.infinity.InfinitySlot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class DefaultCompat {
 
@@ -374,11 +376,19 @@ public class DefaultCompat {
 
         if (Loader.isModLoaded("rustic")) {
             api.addCompat(ContainerCabinet.class, (container, builder) -> {
-                builder.addSlotGroup(0, 27, 9)
+                decipherSlotGroup(builder, container, s -> s instanceof SlotItemHandler)
                         .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
             });
             api.addCompat(ContainerCabinetDouble.class, (container, builder) -> {
-                builder.addSlotGroup(0, 54, 9)
+                decipherSlotGroup(builder, container, s -> s instanceof SlotItemHandler)
+                        .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
+            });
+            api.addCompat(rustic.common.tileentity.ContainerBarrel.class, (container, builder) -> {
+                decipherSlotGroup(builder, container, s -> s instanceof SlotItemHandler)
+                        .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
+            });
+            api.addCompat(ContainerVase.class, (container, builder) -> {
+                decipherSlotGroup(builder, container, s -> s instanceof SlotItemHandler)
                         .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
             });
         }
@@ -416,6 +426,16 @@ public class DefaultCompat {
                 builder.addSlotGroup(0, 27, 9);
             });
         }
+    }
+
+    private static ISlotGroup decipherSlotGroup(ISortingContextBuilder builder, Container container, Predicate<Slot> predicate) {
+        List<Slot> slots = new ArrayList<>();
+        for (Slot slot : container.inventorySlots) {
+            if (!(slot.inventory instanceof InventoryPlayer) && predicate.test(slot)) {
+                slots.add(slot);
+            }
+        }
+        return builder.addSlotGroupOf(slots, (int) slots.stream().mapToInt(s -> s.xPos).distinct().count());
     }
 
     private static ISlot avaritiaddons$findSlot(List<ISlot> slots, ItemStack itemStack, boolean emptyOnly) {
