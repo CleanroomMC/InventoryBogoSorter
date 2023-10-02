@@ -109,7 +109,7 @@ dependencies {
 		transitive = false
 	}
 
-	implementation 'curse.maven:modularui-624243:4778841'
+	api 'curse.maven:modularui-624243:4779301-sources-4779302'
 	//compile files('etc/modularui-2.0.2.jar') // for testing purpose
 	compileOnly rfg.deobf('curse.maven:iron_chests-228756:2747935')
 	compileOnly rfg.deobf('curse.maven:thermal_expansion-69163:2926431')
