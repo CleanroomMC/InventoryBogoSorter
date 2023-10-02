@@ -12,7 +12,7 @@ public class LateMixin implements ILateMixinLoader {
 
     public static final List<String> modMixins = ImmutableList.of("ironchest", "thermalexpansion", "enderio",
             "gregtechceu", "colossalchests", "galacticraftcore", "galacticraftplanets", "charset",
-            "simplybackpacks", "avaritiaddons");
+            "simplybackpacks", "avaritiaddons", "improvedbackpacks");
 
     @Override
     public List<String> getMixinConfigs() {
