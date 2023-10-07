@@ -152,7 +152,8 @@ dependencies {
 	compileOnly rfg.deobf('curse.maven:improvedbackpacks-270457:2918455')
 	compileOnly rfg.deobf('curse.maven:expandable_inventory-304371:2751939')
 	compileOnly rfg.deobf('curse.maven:charm-318872:3146596')
-	implementation rfg.deobf('curse.maven:cooking_for_blockheads-231484:2862651')
+	compileOnly rfg.deobf('curse.maven:cooking_for_blockheads-231484:2862651')
+	compileOnly rfg.deobf('curse.maven:mekanism-268560:2835175')
 }
 
 processResources {

@@ -434,6 +434,10 @@ public class DefaultCompat {
             api.addCompat(ContainerCounter.class, (container, builder) -> builder.addGenericSlotGroup());
             api.addCompat(ContainerFridge.class, (container, builder) -> builder.addGenericSlotGroup());
         }
+
+        if (Loader.isModLoaded("mekanism")) {
+            api.addCompat(mekanism.common.inventory.container.ContainerPersonalChest.class, (container, builder) -> builder.addGenericSlotGroup());
+        }
     }
 
     private static ISlot avaritiaddons$findSlot(List<ISlot> slots, ItemStack itemStack, boolean emptyOnly) {

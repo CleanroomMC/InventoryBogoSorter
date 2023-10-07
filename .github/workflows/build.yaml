@@ -118,6 +118,8 @@ jobs:
             improvedbackpacks | recommends | *
             expandable-inventory | recommends | *
             charm | recommends | *
+            cooking-for-blockheads | recommends | *
+            mekanism | recommends | *
           java: |
             8
           retry-attempts: 2
