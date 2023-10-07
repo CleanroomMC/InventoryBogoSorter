@@ -35,6 +35,8 @@ import micdoodle8.mods.galacticraft.core.inventory.ContainerParaChest;
 import mods.railcraft.common.gui.containers.ContainerRCChest;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
+import net.blay09.mods.cookingforblockheads.container.ContainerCounter;
+import net.blay09.mods.cookingforblockheads.container.ContainerFridge;
 import net.dries007.tfc.objects.container.ContainerChestTFC;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
@@ -426,6 +428,11 @@ public class DefaultCompat {
             api.addCompat(svenhjol.charm.crafting.container.ContainerBarrel.class, (container, builder) -> {
                 builder.addSlotGroup(0, 27, 9);
             });
+        }
+
+        if (Loader.isModLoaded("cookingforblockheads")) {
+            api.addCompat(ContainerCounter.class, (container, builder) -> builder.addGenericSlotGroup());
+            api.addCompat(ContainerFridge.class, (container, builder) -> builder.addGenericSlotGroup());
         }
     }
 
