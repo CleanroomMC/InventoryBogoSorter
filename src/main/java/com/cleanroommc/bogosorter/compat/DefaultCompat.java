@@ -63,6 +63,13 @@ public class DefaultCompat {
         api.addCompat(ContainerPlayer.class, (container, builder) -> {
             // player slots are automatically added
         });
+        api.addPlayerSortButtonPosition(ContainerPlayer.class, (slotGroup, buttonPos) -> {
+            if (BogoSorter.isQuarkLoaded() || Loader.isModLoaded("nutrition")) {
+                IPosSetter.TOP_RIGHT_VERTICAL.setButtonPos(slotGroup, buttonPos);
+            } else {
+                IPosSetter.TOP_RIGHT_HORIZONTAL.setButtonPos(slotGroup, buttonPos);
+            }
+        });
         api.addCompat(ContainerChest.class, (container, builder) -> {
             IInventory inventory = container.getLowerChestInventory();
             // quark adds a search bar
