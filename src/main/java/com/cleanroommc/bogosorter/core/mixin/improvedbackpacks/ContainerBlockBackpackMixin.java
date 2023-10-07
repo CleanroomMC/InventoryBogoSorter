@@ -10,7 +10,7 @@ import ru.poopycoders.improvedbackpacks.inventory.containers.ContainerBackpack;
 import ru.poopycoders.improvedbackpacks.inventory.containers.ContainerBlockBackpack;
 import ru.poopycoders.improvedbackpacks.tiles.TileEntityBackpack;
 
-@Mixin(ContainerBlockBackpack.class)
+@Mixin(value = ContainerBlockBackpack.class, remap = false)
 public class ContainerBlockBackpackMixin implements ISortableContainer {
 
 

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import ru.poopycoders.improvedbackpacks.inventory.InventoryBackpack;
 import ru.poopycoders.improvedbackpacks.inventory.containers.ContainerBackpack;
 
-@Mixin(ContainerBackpack.class)
+@Mixin(value = ContainerBackpack.class, remap = false)
 public class ContainerBackpackMixin implements ISortableContainer {
 
     @Shadow @Final private InventoryBackpack backpackInventory;
