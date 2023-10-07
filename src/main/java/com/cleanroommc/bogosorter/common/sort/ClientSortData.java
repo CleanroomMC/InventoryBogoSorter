@@ -13,14 +13,8 @@ public class ClientSortData {
 
     @SideOnly(Side.CLIENT)
     public static ClientSortData of(ItemStack itemStack, boolean getColor, boolean getName) {
-        int color = 0;
-        String name = StringUtils.EMPTY;
-        if (getColor) {
-            color = ItemColorHelper.getItemColorHue(itemStack);
-        }
-        if (getName) {
-            name = itemStack.getDisplayName();
-        }
+        int color = getColor ? ItemColorHelper.getItemColorHue(itemStack) : 0;
+        String name = getName ? itemStack.getDisplayName() : StringUtils.EMPTY;
         return new ClientSortData(color, name);
     }
 

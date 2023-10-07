@@ -36,43 +36,44 @@ public class ItemColorHelper {
         float r = Color.getRedF(color);
         float g = Color.getGreenF(color);
         float b = Color.getBlueF(color);
+        if (r == g && r == b) return 0;
         float min = Math.min(r, Math.min(g, b));
         float hue;
-        if (r > g && r > b) {
-            hue = (g - b) / (r - min);
-        } else if (g > r && g > b) {
-            hue = 2 + (b - r) / (g - min);
-        } else if (b > r && b > g) {
-            hue = 4 + (r - g) / (b - min);
+        if (r >= g && r >= b) {
+            hue = ((g - b) / (r - min)) % 6;
+        } else if (g >= r && g >= b) {
+            hue = ((b - r) / (g - min)) + 2;
         } else {
-            return 0;
+            hue = ((r - g) / (b - min)) + 4;
         }
         hue *= 60;
-        if (hue < 0) {
-            hue += 360;
-        }
+        if (hue < 0) hue += 360;
         return (int) hue;
     }
 
     public static int getItemColorHue(ItemStack item) {
-        return getHue(getAverageItemColor(item));
-    }
-
-    public static int getAverageItemColor(ItemStack item) {
         if (item.isEmpty()) {
-            return 0;
+            return 362;
         }
         if (ITEM_COLORS.containsKey(item)) {
             return ITEM_COLORS.getInt(item);
         }
-        int color;
-        if (item.getItem() instanceof ItemBlock) {
-            color = getBlockColors(item, ((ItemBlock) item.getItem()).getBlock());
-        } else {
-            color = getItemColors(item);
+        int hue;
+        try {
+            hue = getHue(getAverageItemColor(item));
+        } catch (Exception e) {
+            hue = 361;
         }
-        ITEM_COLORS.put(item, color);
-        return color;
+        ITEM_COLORS.put(item, hue);
+        return hue;
+    }
+
+    public static int getAverageItemColor(ItemStack item) {
+        if (item.getItem() instanceof ItemBlock) {
+            return getBlockColors(item, ((ItemBlock) item.getItem()).getBlock());
+        } else {
+            return getItemColors(item);
+        }
     }
 
     private static int getItemColors(ItemStack itemStack) {
@@ -97,14 +98,17 @@ public class ItemColorHelper {
         }
 
         final BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
-        int renderColor = blockColors.colorMultiplier(blockState, null, null, 0);
+        int renderColor = 0xFFFFFFFF;
+        try {
+            blockColors.colorMultiplier(blockState, null, null, 0);
+        } catch (Exception ignored) {
+        }
         final TextureAtlasSprite textureAtlasSprite;
         if (BogoSorter.isGTCEuLoaded() && blockState.getBlock() instanceof BlockMachine) {
             MetaTileEntity mte = GTUtility.getMetaTileEntity(itemStack);
             Pair<TextureAtlasSprite, Integer> pair = mte.getParticleTexture();
             textureAtlasSprite = pair.getKey();
             renderColor = pair.getRight();
-
         } else {
             textureAtlasSprite = getTextureAtlasSprite(blockState);
         }
