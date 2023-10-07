@@ -34,7 +34,7 @@ public class ButtonHandler {
             GuiSortingContext context = GuiSortingContext.getOrCreate(container);
             event.getButtonList().removeIf(guiButton -> guiButton instanceof SortButton);
             for (SlotGroup slotGroup : context.getSlotGroups()) {
-                if (slotGroup.getPosSetter() != null) {
+                if (slotGroup.canBeSorted() && slotGroup.getPosSetter() != null) {
                     event.getButtonList().add(new SortButton(slotGroup, true));
                     event.getButtonList().add(new SortButton(slotGroup, false));
                 }

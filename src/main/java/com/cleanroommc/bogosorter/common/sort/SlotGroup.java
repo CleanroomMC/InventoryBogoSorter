@@ -3,16 +3,15 @@ package com.cleanroommc.bogosorter.common.sort;
 import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.api.ISlotGroup;
-import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SlotGroup implements ISlotGroup {
+
+    public static final SlotGroup EMPTY = new SlotGroup(Collections.emptyList(), 0);
 
     private final boolean player;
     private final boolean hotbar;

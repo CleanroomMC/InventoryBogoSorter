@@ -47,5 +47,13 @@ public interface ISortingContextBuilder {
      */
     ISlotGroup addSlotGroup(int startIndex, int endIndex, int rowSize);
 
+    /**
+     * Creates and registers a generic slot group. It assumes that all non player slots belong to the same group and
+     * that the slot group has a rectangular shape.
+     *
+     * @return the created slot group or a dummy if not enough slots where found.
+     */
+    ISlotGroup addGenericSlotGroup();
+
     Container getContainer();
 }

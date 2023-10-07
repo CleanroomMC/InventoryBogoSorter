@@ -60,4 +60,8 @@ public interface ISlotGroup {
      * @return this
      */
     ISlotGroup buttonPosSetter(@Nullable IPosSetter posSetter);
+
+    default boolean canBeSorted() {
+        return getSlots().size() > 1;
+    }
 }

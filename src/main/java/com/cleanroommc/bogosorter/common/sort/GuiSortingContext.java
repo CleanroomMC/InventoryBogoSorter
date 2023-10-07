@@ -6,6 +6,7 @@ import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import org.jetbrains.annotations.Nullable;
@@ -119,6 +120,9 @@ public class GuiSortingContext {
             if (slots.size() < rowSize) {
                 throw new IllegalArgumentException("Slots must at least fill 1 row! Expected at least " + rowSize + " slot, but only found " + slots.size());
             }
+            if (slots.size() < 2) {
+                throw new IllegalArgumentException("Slot group must have at least 2 slots!");
+            }
             SlotGroup slotGroup = new SlotGroup(slots, rowSize);
             this.slots.add(slotGroup);
             return slotGroup;
@@ -127,6 +131,23 @@ public class GuiSortingContext {
         @Override
         public ISlotGroup addSlotGroup(int startIndex, int endIndex, int rowSize) {
             return addSlotGroupOf(this.container.inventorySlots.subList(startIndex, endIndex), rowSize);
+        }
+
+        @Override
+        public ISlotGroup addGenericSlotGroup() {
+            List<ISlot> slots = new ArrayList<>();
+            IntArraySet xValues = new IntArraySet();
+            for (Slot slot : this.container.inventorySlots) {
+                ISlot iSlot = BogoSortAPI.INSTANCE.getSlot(slot);
+                if (!BogoSortAPI.isPlayerSlot(iSlot)) {
+                    slots.add(iSlot);
+                    xValues.add(iSlot.bogo$getX());
+                }
+            }
+            if (slots.size() < 2) {
+                return SlotGroup.EMPTY;
+            }
+            return addSlotGroup(slots, xValues.size());
         }
 
         @Override

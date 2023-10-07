@@ -71,20 +71,19 @@ public class DefaultCompat {
             }
         });
         api.addCompat(ContainerChest.class, (container, builder) -> {
-            IInventory inventory = container.getLowerChestInventory();
             // quark adds a search bar
-            builder.addSlotGroup(0, inventory.getSizeInventory(), 9)
+            builder.addGenericSlotGroup()
                     .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
         });
         api.addCompat(ContainerDispenser.class, (container, builder) -> {
-            builder.addSlotGroup(0, 9, 3)
+            builder.addGenericSlotGroup()
                     .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
         });
         api.addCompat(ContainerHopper.class, (container, builder) -> {
-            builder.addSlotGroup(0, 5, 5);
+            builder.addGenericSlotGroup();
         });
         api.addCompat(ContainerShulkerBox.class, (container, builder) -> {
-            builder.addSlotGroup(0, 27, 9)
+            builder.addGenericSlotGroup()
                     .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
 
         });
