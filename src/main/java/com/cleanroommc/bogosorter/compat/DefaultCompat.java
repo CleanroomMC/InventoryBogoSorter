@@ -45,6 +45,7 @@ import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
 import ru.socol.expandableinventory.gui.ContainerExpandedInventory;
 import rustic.common.tileentity.ContainerCabinet;
 import rustic.common.tileentity.ContainerCabinetDouble;
+import rustic.common.tileentity.ContainerVase;
 import t145.metalchests.containers.ContainerMetalChest;
 import thebetweenlands.common.inventory.container.ContainerPouch;
 import thedarkcolour.futuremc.container.ContainerBarrel;
@@ -380,13 +381,17 @@ public class DefaultCompat {
 
         if (Loader.isModLoaded("rustic")) {
             api.addCompat(ContainerCabinet.class, (container, builder) -> {
-                builder.addSlotGroup(0, 27, 9)
+                builder.addGenericSlotGroup()
                         .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
             });
             api.addCompat(ContainerCabinetDouble.class, (container, builder) -> {
-                builder.addSlotGroup(0, 54, 9)
+                builder.addGenericSlotGroup()
                         .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
             });
+            api.addCompat(rustic.common.tileentity.ContainerBarrel.class, (container, builder) -> builder.addGenericSlotGroup()
+                    .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL));
+            api.addCompat(ContainerVase.class, (container, builder) -> builder.addGenericSlotGroup()
+                    .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL));
         }
 
         if (Loader.isModLoaded("avaritiaddons")) {
