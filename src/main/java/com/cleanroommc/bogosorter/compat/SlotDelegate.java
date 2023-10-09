@@ -83,4 +83,14 @@ public class SlotDelegate implements ISlot {
     public void bogo$onSlotChanged() {
         slot.onSlotChanged();
     }
+
+    @Override
+    public void bogo$onSlotChanged(ItemStack oldItem, ItemStack newItem) {
+        slot.onSlotChange(newItem, oldItem);
+    }
+
+    @Override
+    public ItemStack bogo$onTake(EntityPlayer player, ItemStack itemStack) {
+        return slot.onTake(player, itemStack);
+    }
 }

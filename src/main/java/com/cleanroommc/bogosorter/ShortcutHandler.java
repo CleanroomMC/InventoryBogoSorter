@@ -12,6 +12,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -64,6 +65,12 @@ public class ShortcutHandler {
             toInsert = stack.copy();
             toInsert.shrink(amount);
             slot.bogo$putStack(toInsert);
+            // needed for crafting tables
+            slot.bogo$onSlotChanged(stack, toInsert);
+            // I hope im doing this right
+            toInsert = stack.copy();
+            toInsert.setCount(amount);
+            slot.bogo$onTake(player, toInsert);
             return true;
         }
         return false;

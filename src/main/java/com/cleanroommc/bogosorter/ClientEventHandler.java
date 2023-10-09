@@ -137,7 +137,7 @@ public class ClientEventHandler {
             return false;
         }
         if (container != null && canDoShortcutAction()) {
-            if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1)) {
+            if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1) && !GuiScreen.isShiftKeyDown() && !GuiScreen.isCtrlKeyDown()) {
                 if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !GuiScreen.isAltKeyDown() && ShortcutHandler.moveAllItems(container, false)) {
                     shortcutAction();
                     return true;
@@ -147,7 +147,7 @@ public class ClientEventHandler {
                     return true;
                 }
             }
-            if (GuiScreen.isCtrlKeyDown()) {
+            if (GuiScreen.isCtrlKeyDown() && !GuiScreen.isShiftKeyDown() && !GuiScreen.isAltKeyDown()) {
                 if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1) && ShortcutHandler.moveSingleItem(container, false)) {
                     shortcutAction();
                     return true;
@@ -157,7 +157,7 @@ public class ClientEventHandler {
                     return true;
                 }
             }
-            if (isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop)) {
+            if (isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop) && !GuiScreen.isShiftKeyDown() && !GuiScreen.isCtrlKeyDown()) {
                 if (!Keyboard.isKeyDown(Keyboard.KEY_SPACE) && GuiScreen.isAltKeyDown() && ShortcutHandler.dropItems(container, true)) {
                     shortcutAction();
                     return true;

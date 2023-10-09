@@ -38,4 +38,8 @@ public interface ISlot {
     boolean bogo$canTakeStack(EntityPlayer player);
 
     void bogo$onSlotChanged();
+
+    void bogo$onSlotChanged(ItemStack oldItem, ItemStack newItem);
+
+    ItemStack bogo$onTake(EntityPlayer player, ItemStack itemStack);
 }

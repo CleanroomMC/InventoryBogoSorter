@@ -95,6 +95,16 @@ public class SlotMixin implements ISlot {
         bogo$this().onSlotChanged();
     }
 
+    @Override
+    public void bogo$onSlotChanged(ItemStack oldItem, ItemStack newItem) {
+        bogo$this().onSlotChange(newItem, oldItem);
+    }
+
+    @Override
+    public ItemStack bogo$onTake(EntityPlayer player, ItemStack itemStack) {
+        return bogo$this().onTake(player, itemStack);
+    }
+
     public Slot bogo$this() {
         return (Slot) (Object) this;
     }
