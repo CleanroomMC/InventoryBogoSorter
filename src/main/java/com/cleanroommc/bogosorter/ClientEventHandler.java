@@ -137,7 +137,7 @@ public class ClientEventHandler {
             return false;
         }
         if (container != null && canDoShortcutAction()) {
-            if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1) && !GuiScreen.isShiftKeyDown() && !GuiScreen.isCtrlKeyDown()) {
+            if (isButtonPressed(0) && !Mouse.isButtonDown(1) && !GuiScreen.isShiftKeyDown() && !GuiScreen.isCtrlKeyDown()) {
                 if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !GuiScreen.isAltKeyDown() && ShortcutHandler.moveAllItems(container, false)) {
                     shortcutAction();
                     return true;
@@ -148,11 +148,11 @@ public class ClientEventHandler {
                 }
             }
             if (GuiScreen.isCtrlKeyDown() && !GuiScreen.isShiftKeyDown() && !GuiScreen.isAltKeyDown()) {
-                if (Mouse.isButtonDown(0) && !Mouse.isButtonDown(1) && ShortcutHandler.moveSingleItem(container, false)) {
+                if (isButtonPressed(0) && !Mouse.isButtonDown(1) && ShortcutHandler.moveSingleItem(container, false)) {
                     shortcutAction();
                     return true;
                 }
-                if (Mouse.isButtonDown(1) && !Mouse.isButtonDown(0) && ShortcutHandler.moveSingleItem(container, true)) {
+                if (isButtonPressed(1) && !Mouse.isButtonDown(0) && ShortcutHandler.moveSingleItem(container, true)) {
                     shortcutAction();
                     return true;
                 }
@@ -199,13 +199,21 @@ public class ClientEventHandler {
 
     private static boolean canSort(@Nullable ISlot slot) {
         return !Minecraft.getMinecraft().player.isCreative() ||
-                sortKey.getKeyModifier().isActive() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyModifier().isActive() ||
+                sortKey.getKeyModifier().isActive(null) != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyModifier().isActive(null) ||
                 sortKey.getKeyCode() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyCode() ||
                 (Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty() && (slot == null || slot.bogo$getStack().isEmpty()));
     }
 
+    private static boolean isButtonPressed(int button) {
+        return Mouse.getEventButtonState() && Mouse.getEventButton() == button;
+    }
+
     private static boolean isKeyDown(KeyBinding key) {
-        return key.getKeyModifier().isActive() && (key.getKeyCode() < 0 ? Mouse.isButtonDown(key.getKeyCode() + 100) : Keyboard.isKeyDown(key.getKeyCode()));
+        if (!key.getKeyModifier().isActive(null)) return false;
+        if (key.getKeyCode() < 0) {
+            return isButtonPressed(key.getKeyCode() + 100);
+        }
+        return Keyboard.getEventKeyState() && Keyboard.getEventKey() == key.getKeyCode();
     }
 
     public static boolean isSortableContainer(GuiScreen screen) {
