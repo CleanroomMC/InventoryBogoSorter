@@ -55,12 +55,18 @@ public class CShortcut implements IPacket {
             case MOVE_SINGLE_EMPTY:
                 ShortcutHandler.moveSingleItem(handler.player, container, slot, true);
                 break;
+            case DROP_ALL:
+                ShortcutHandler.dropItems(handler.player, container, slot, false);
+                break;
+            case DROP_ALL_SAME:
+                ShortcutHandler.dropItems(handler.player, container, slot, true);
+                break;
         }
         container.detectAndSendChanges();
         return null;
     }
 
     public enum Type {
-        MOVE_ALL, MOVE_ALL_SAME, MOVE_SINGLE, MOVE_SINGLE_EMPTY
+        MOVE_ALL, MOVE_ALL_SAME, MOVE_SINGLE, MOVE_SINGLE_EMPTY, DROP_ALL, DROP_ALL_SAME
     }
 }
