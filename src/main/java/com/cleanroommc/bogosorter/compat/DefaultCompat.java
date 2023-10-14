@@ -432,12 +432,12 @@ public class DefaultCompat {
         }
 
         if (Loader.isModLoaded("cookingforblockheads")) {
-            api.addCompat(ContainerCounter.class, (container, builder) -> builder.addGenericSlotGroup());
-            api.addCompat(ContainerFridge.class, (container, builder) -> builder.addGenericSlotGroup());
+            api.addGenericCompat(ContainerCounter.class);
+            api.addGenericCompat(ContainerFridge.class);
         }
 
         if (Loader.isModLoaded("mekanism")) {
-            api.addCompat(mekanism.common.inventory.container.ContainerPersonalChest.class, (container, builder) -> builder.addGenericSlotGroup());
+            api.addGenericCompat(mekanism.common.inventory.container.ContainerPersonalChest.class);
         }
 
         if (Loader.isModLoaded("conarm")) {

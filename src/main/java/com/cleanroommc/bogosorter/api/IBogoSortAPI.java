@@ -49,6 +49,12 @@ public interface IBogoSortAPI {
      */
     <T extends Container> void addCompat(Class<T> clazz, BiConsumer<T, ISortingContextBuilder> builder);
 
+    /**
+     * Adds generic sorting compat for a container class. Meaning the slots must layed out in a rectangular shape.
+     *
+     * @param clazz container class
+     * @param <T>   container type
+     */
     default <T extends Container> void addGenericCompat(Class<T> clazz) {
         addCompat(clazz, (container, builder) -> builder.addGenericSlotGroup());
     }
