@@ -49,6 +49,10 @@ public interface IBogoSortAPI {
      */
     <T extends Container> void addCompat(Class<T> clazz, BiConsumer<T, ISortingContextBuilder> builder);
 
+    default <T extends Container> void addGenericCompat(Class<T> clazz) {
+        addCompat(clazz, (container, builder) -> builder.addGenericSlotGroup());
+    }
+
     /**
      * Adds sorting compat for a container class.
      * Is useful when you don't have access to the super class of {@link T}

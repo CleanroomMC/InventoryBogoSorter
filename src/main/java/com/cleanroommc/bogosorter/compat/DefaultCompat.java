@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.compat;
 
 import appeng.container.implementations.ContainerSkyChest;
 import blusunrize.immersiveengineering.common.gui.ContainerCrate;
+import c4.conarm.common.inventory.ContainerKnapsack;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.BogoSorter;
@@ -437,6 +438,10 @@ public class DefaultCompat {
 
         if (Loader.isModLoaded("mekanism")) {
             api.addCompat(mekanism.common.inventory.container.ContainerPersonalChest.class, (container, builder) -> builder.addGenericSlotGroup());
+        }
+
+        if (Loader.isModLoaded("conarm")) {
+            api.addGenericCompat(ContainerKnapsack.class);
         }
     }
 

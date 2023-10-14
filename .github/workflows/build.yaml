@@ -114,12 +114,13 @@ jobs:
             gregtech-ce-unofficial | recommends | *
             galacticraft-legacy | recommends | *
             ae2-extended-life | recommends | *
-            simply_backpacks | recommends | 1.4.9
+            simply-backpacks | recommends | 1.4.9
             improvedbackpacks | recommends | *
             expandable-inventory | recommends | *
             charm | recommends | *
             cooking-for-blockheads | recommends | *
             mekanism | recommends | *
+            constructs-armory | recommends | *
           java: |
             8
           retry-attempts: 2

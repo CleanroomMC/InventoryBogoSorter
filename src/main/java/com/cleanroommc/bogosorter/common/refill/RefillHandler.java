@@ -29,7 +29,7 @@ public class RefillHandler {
     static {
         Class<?> clazz;
         try {
-            clazz = Class.forName("gregtech.api.items.toolitem.IGTTool");
+            clazz = Class.forName("gregtech.api.items.toolitem.IGTTool", false, RefillHandler.class.getClassLoader());
         } catch (Exception ignored) {
             clazz = null;
         }
