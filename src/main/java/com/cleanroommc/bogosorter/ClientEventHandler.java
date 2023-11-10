@@ -177,7 +177,7 @@ public class ClientEventHandler {
                     previousScreen = null;
                 } else {
                     previousScreen = Minecraft.getMinecraft().currentScreen;
-                    GuiManager.openClientUI(Minecraft.getMinecraft().player, new ConfigGui());
+                    BogoSortAPI.INSTANCE.openConfigGui();
                 }
                 timeConfigGui = t;
                 return true;

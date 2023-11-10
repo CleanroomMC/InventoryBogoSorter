@@ -37,7 +37,7 @@ import java.time.LocalDate;
         name = BogoSorter.NAME,
         version = BogoSorter.VERSION,
         dependencies =
-                "required-after:modularui@[2.2.2,2.3.0);" +
+                "required-after:modularui@[2.3.0,2.4.0);" +
                 "required-after:mixinbooter@[8.0,)")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {

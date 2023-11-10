@@ -7,7 +7,7 @@ import com.cleanroommc.bogosorter.common.sort.ClientItemSortRule;
 import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.core.mixin.ItemStackAccessor;
-import com.cleanroommc.modularui.manager.GuiManager;
+import com.cleanroommc.modularui.manager.ClientGUI;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -209,7 +209,7 @@ public class BogoSortAPI implements IBogoSortAPI {
     @SideOnly(Side.CLIENT)
     @Override
     public void openConfigGui() {
-        GuiManager.openClientUI(Minecraft.getMinecraft().player, new ConfigGui());
+        ClientGUI.open(new ConfigGui());
     }
 
     @SideOnly(Side.CLIENT)

@@ -1,10 +1,9 @@
 package com.cleanroommc.bogosorter.common.sort;
 
+import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.ClientEventHandler;
-import com.cleanroommc.bogosorter.common.config.ConfigGui;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.GuiTextures;
-import com.cleanroommc.modularui.manager.GuiManager;
 import com.cleanroommc.modularui.screen.GuiScreenWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -92,7 +91,7 @@ public class ButtonHandler {
             if (sortButton.sort) {
                 ClientEventHandler.sort(event.getGui(), sortButton.slotGroup.getSlots().get(0));
             } else {
-                GuiManager.openClientUI(Minecraft.getMinecraft().player, new ConfigGui());
+                BogoSortAPI.INSTANCE.openConfigGui();
                 Interactable.playButtonClickSound();
             }
             event.setCanceled(true);
