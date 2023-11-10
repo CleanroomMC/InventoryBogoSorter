@@ -23,7 +23,7 @@ public class ConfigReloadCommand extends CommandBase {
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    public void execute(@NotNull MinecraftServer server, @NotNull ICommandSender sender, String @NotNull [] args) {
         if (sender instanceof EntityPlayerMP) {
             NetworkHandler.sendToPlayer(new SReloadConfig(), (EntityPlayerMP) sender);
             sender.sendMessage(new TextComponentTranslation("bogosort.command.config_relaod.success"));

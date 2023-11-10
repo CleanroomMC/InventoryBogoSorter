@@ -1,10 +1,14 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.ClientEventHandler;
+import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.GuiTextures;
+import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.GuiScreenWrapper;
+import com.cleanroommc.modularui.utils.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -25,6 +29,12 @@ public class ButtonHandler {
     private static final int SORT_ID = 394658246;
     private static final int SETTINGS_ID = 394658247;
     public static final int BUTTON_SIZE = 10;
+
+    public static final UITexture BUTTON_BACKGROUND = UITexture.builder()
+            .location(BogoSorter.ID, "gui/base_button")
+            .imageSize(18, 18)
+            .adaptable(1)
+            .build();
 
     @SubscribeEvent
     public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
@@ -113,8 +123,9 @@ public class ButtonHandler {
         public void drawButton(@NotNull Minecraft mc, int mouseX, int mouseY, float partialTicks) {
             if (this.visible && this.enabled) {
                 this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-                GlStateManager.color(1, 1, 1, 1);
-                GuiTextures.BUTTON.draw(this.x, this.y, this.width, this.height);
+                Color.setGlColor(BogoSorterConfig.buttonColor);
+                BUTTON_BACKGROUND.draw(this.x, this.y, this.width, this.height);
+                Color.resetGlColor();
                 this.mouseDragged(mc, mouseX, mouseY);
                 int color = 14737632;
 

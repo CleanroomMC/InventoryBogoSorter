@@ -6,6 +6,7 @@ import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
+import com.cleanroommc.modularui.utils.JsonHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -14,6 +15,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -30,6 +32,9 @@ public class BogoSorterConfig {
     public static final Object2IntOpenHashMap<String> ORE_PREFIXES = new Object2IntOpenHashMap<>();
     public static final List<String> ORE_PREFIXES_LIST = new ArrayList<>();
 
+    public static int buttonColor = 0xFFFFFFFF;
+    public static float baseBogoChance = 0.01f;
+
     @SideOnly(Side.CLIENT)
     public static void save(JsonObject json) {
         PlayerConfig playerConfig = PlayerConfig.getClient();
@@ -38,6 +43,9 @@ public class BogoSorterConfig {
         general.addProperty("refillDmgThreshold", playerConfig.autoRefillDamageThreshold);
         general.addProperty("enableHotbarSwap", HotbarSwap.isEnabled());
         general.addProperty("sortSound", SortHandler.sortSound.getSoundName().toString());
+        general.addProperty("buttonColor", "#" + Integer.toHexString(buttonColor));
+        general.addProperty("_comment", "By setting the chance below to 0 you agree to have no humor and that you are boring.");
+        general.addProperty("baseBogoChance", baseBogoChance);
 
         json.add("General", general);
 
@@ -69,14 +77,16 @@ public class BogoSorterConfig {
         PlayerConfig playerConfig = PlayerConfig.getClient();
         if (json.has("General")) {
             JsonObject general = json.getAsJsonObject("General");
-            playerConfig.enableAutoRefill = general.get("enableAutoRefill").getAsBoolean();
-            playerConfig.autoRefillDamageThreshold = general.get("refillDmgThreshold").getAsShort();
+            playerConfig.enableAutoRefill = JsonHelper.getBoolean(general, true, "enableAutoRefill");
+            playerConfig.autoRefillDamageThreshold = (short) JsonHelper.getInt(general, 1, "refillDmgThreshold");
             HotbarSwap.setEnabled(JsonHelper.getBoolean(general, true, "enableHotbarSwap"));
             String sortSound = JsonHelper.getString(general, "ui.button.click", "sortSound");
             SortHandler.sortSound = SoundEvent.REGISTRY.getObject(new ResourceLocation(sortSound));
             if (SortHandler.sortSound == null) {
                 SortHandler.sortSound = SoundEvents.UI_BUTTON_CLICK;
             }
+            buttonColor = JsonHelper.getColor(general, 0xFFFFFFFF, "buttonColor");
+            baseBogoChance = MathHelper.clamp(JsonHelper.getFloat(general, 0.01f, "baseBogoChance"), 0f, 1f);
         }
         sortRules.clear();
         if (json.has("ItemSortRules")) {

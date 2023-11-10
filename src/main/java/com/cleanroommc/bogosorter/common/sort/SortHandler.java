@@ -42,7 +42,11 @@ public class SortHandler {
     }
 
     private static float getBogoChance() {
-        return BogoSorter.isAprilFools() ? 0.2f : 0.01f;
+        float f = BogoSorterConfig.baseBogoChance;
+        if (BogoSorter.isAprilFools()) {
+            return f < 0.01 ? 0.2f : Math.min(f * 20, 1f);
+        }
+        return f;
     }
 
     private final EntityPlayer player;
@@ -87,7 +91,8 @@ public class SortHandler {
 
     public void sort(SlotGroup slotGroup, boolean sync) {
         if (slotGroup != null) {
-            if (BogoSorter.RND.nextFloat() < getBogoChance()) {
+            float chance = getBogoChance();
+            if (chance > 0 && BogoSorter.RND.nextFloat() < getBogoChance()) {
                 sortBogo(slotGroup);
                 this.player.sendMessage(new TextComponentString("Get Bogo'd!"));
             } else {
