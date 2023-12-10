@@ -39,6 +39,7 @@ public class ConfigGui extends CustomModularScreen {
     public static boolean wasOpened = false;
     public static final UITexture TOGGLE_BUTTON = UITexture.fullImage("bogosorter:gui/toggle_config", false);
     public static final UITexture ARROW_DOWN_UP = UITexture.fullImage("bogosorter:gui/arrow_down_up", false);
+    private static final int DARK_GREY = 0xFF404040;
 
     private Map<SortRule<ItemStack>, AvailableElement> availableElements;
     private Map<NbtSortRule, AvailableElement> availableElementsNbt;
@@ -58,7 +59,7 @@ public class ConfigGui extends CustomModularScreen {
         panel.child(new TextWidget(IKey.lang("bogosort.gui.title"))
                         .leftRel(0.5f)
                         .top(5))
-                .child(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
+                .child(new Rectangle().setColor(DARK_GREY).asWidget()
                         .left(4)
                         .right(4)
                         .height(1)
@@ -74,11 +75,11 @@ public class ConfigGui extends CustomModularScreen {
                         .height(16).top(18)
                         .child(new PageButton(0, controller)
                                 .sizeRel(0.5f, 1f)
-                                .background(false, GuiTextures.SLOT_DARK)
+                                .disableHoverBackground()
                                 .overlay(IKey.lang("bogosort.gui.tab.general.name")))
                         .child(new PageButton(1, controller)
                                 .sizeRel(0.5f, 1f)
-                                .background(false, GuiTextures.SLOT_DARK)
+                                .disableHoverBackground()
                                 .overlay(IKey.lang("bogosort.gui.tab.profiles.name"))));
         return panel;
     }
@@ -97,6 +98,7 @@ public class ConfigGui extends CustomModularScreen {
                         .child(new CycleButtonWidget()
                                 .value(new BoolValue.Dynamic(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val))
                                 .texture(TOGGLE_BUTTON)
+                                .disableHoverBackground()
                                 .size(14, 14)
                                 .margin(8, 0)
                                 .background(IDrawable.EMPTY))
@@ -122,6 +124,7 @@ public class ConfigGui extends CustomModularScreen {
                         .child(new CycleButtonWidget()
                                 .value(new BoolValue.Dynamic(HotbarSwap::isEnabled, HotbarSwap::setEnabled))
                                 .texture(TOGGLE_BUTTON)
+                                .disableHoverBackground()
                                 .addTooltipLine(IKey.lang("bogosort.gui.hotbar_scrolling.tooltip"))
                                 .tooltipShowUpTimer(10)
                                 .excludeTooltipArea(row.getArea())
@@ -140,7 +143,7 @@ public class ConfigGui extends CustomModularScreen {
         PagedWidget.Controller controller = new PagedWidget.Controller();
         return new ParentWidget<>()
                 .widthRel(1f).top(2).bottom(0)
-                .child(new Rectangle().setColor(Color.BLACK.bright(7)).asWidget()
+                .child(new Rectangle().setColor(DARK_GREY).asWidget()
                         .top(0)
                         .bottom(4)
                         .width(1)
@@ -158,11 +161,11 @@ public class ConfigGui extends CustomModularScreen {
                         .height(16).top(2)
                         .child(new PageButton(0, controller)
                                 .sizeRel(0.5f, 1f)
-                                .background(false, GuiTextures.SLOT_DARK)
+                                .disableHoverBackground()
                                 .overlay(IKey.lang("bogosort.gui.tab.item_sort_rules.name")))
                         .child(new PageButton(1, controller)
                                 .sizeRel(0.5f, 1f)
-                                .background(false, GuiTextures.SLOT_DARK)
+                                .disableHoverBackground()
                                 .overlay(IKey.lang("bogosort.gui.tab.nbt_sort_rules.name"))))
                 .child(new PagedWidget<>()
                         .controller(controller)
@@ -198,7 +201,7 @@ public class ConfigGui extends CustomModularScreen {
             TextWidget ruleText = IKey.lang(s.getNameLangKey()).asWidget().widgetTheme(Theme.BUTTON);
             return new SortListItem<>(s, ruleText
                     .paddingLeft(7)
-                    .background(GuiTextures.BUTTON)
+                    .background(GuiTextures.MC_BUTTON)
                     .tooltip(tooltip -> tooltip.addLine(IKey.lang(s.getDescriptionLangKey())).showUpTimer(10).excludeArea(ruleText.getArea())));
         });
         ref.set(sortableListWidget);
@@ -263,6 +266,7 @@ public class ConfigGui extends CustomModularScreen {
             TextWidget ruleText = IKey.lang(s.getNameLangKey()).asWidget().widgetTheme(Theme.BUTTON);
             return new SortListItem<>(s, ruleText
                     .paddingLeft(7)
+                    .background(GuiTextures.MC_BUTTON)
                     .tooltip(tooltip -> tooltip.addLine(IKey.lang(s.getDescriptionLangKey())).showUpTimer(10).excludeArea(ruleText.getArea())));
         });
         ref.set(sortableListWidget);
@@ -323,7 +327,7 @@ public class ConfigGui extends CustomModularScreen {
                     .addTooltip(1, IKey.lang("bogosort.gui.ascending"))
                     .heightRel(1f).width(14).pos(0, 0);
             content.flex().left(14).right(10);
-            removeable(buttonWidget -> buttonWidget.background(GuiTextures.BUTTON, GuiTextures.CLOSE.asIcon().size(8, 8)));
+            removeable(buttonWidget -> buttonWidget.background(GuiTextures.MC_BUTTON, GuiTextures.CLOSE.asIcon().size(8, 8)));
             getChildren().add(this.ascendingToggle);
         }
     }
@@ -331,8 +335,12 @@ public class ConfigGui extends CustomModularScreen {
     private static class AvailableElement extends ButtonWidget<AvailableElement> {
 
         private boolean available = true;
-        private final IDrawable activeBackground = GuiTextures.BUTTON;
-        private final IDrawable background = GuiTextures.SLOT_DARK;
+        private final IDrawable activeBackground = GuiTextures.MC_BUTTON;
+        private final IDrawable background = GuiTextures.MC_BUTTON_DISABLED;
+
+        public AvailableElement() {
+            disableHoverBackground();
+        }
 
         @Override
         public AvailableElement background(IDrawable... background) {
