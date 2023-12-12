@@ -327,7 +327,7 @@ public class ConfigGui extends CustomModularScreen {
                     .addTooltip(1, IKey.lang("bogosort.gui.ascending"))
                     .heightRel(1f).width(14).pos(0, 0);
             content.flex().left(14).right(10);
-            removeable(buttonWidget -> buttonWidget.background(GuiTextures.MC_BUTTON, GuiTextures.CLOSE.asIcon().size(8, 8)));
+            removeable(buttonWidget -> buttonWidget.background(GuiTextures.MC_BUTTON).overlay(GuiTextures.CLOSE.asIcon().size(8, 8)));
             getChildren().add(this.ascendingToggle);
         }
     }
