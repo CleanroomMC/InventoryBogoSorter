@@ -57,30 +57,30 @@ public class ConfigGui extends CustomModularScreen {
         PagedWidget.Controller controller = new PagedWidget.Controller();
 
         panel.child(new TextWidget(IKey.lang("bogosort.gui.title"))
-                        .leftRel(0.5f)
-                        .top(5))
+                            .leftRel(0.5f)
+                            .top(5))
                 .child(new Rectangle().setColor(DARK_GREY).asWidget()
-                        .left(4)
-                        .right(4)
-                        .height(1)
-                        .top(16))
+                               .left(4)
+                               .right(4)
+                               .height(1)
+                               .top(16))
                 .child(new PagedWidget<>()
-                        .controller(controller)
-                        .left(4).right(4)
-                        .top(35).bottom(4)
-                        .addPage(createGeneralConfigUI(guiContext))
-                        .addPage(createProfilesConfig(guiContext)))
+                               .controller(controller)
+                               .left(4).right(4)
+                               .top(35).bottom(4)
+                               .addPage(createGeneralConfigUI(guiContext))
+                               .addPage(createProfilesConfig(guiContext)))
                 .child(new Row()
-                        .left(4).right(4)
-                        .height(16).top(18)
-                        .child(new PageButton(0, controller)
-                                .sizeRel(0.5f, 1f)
-                                .disableHoverBackground()
-                                .overlay(IKey.lang("bogosort.gui.tab.general.name")))
-                        .child(new PageButton(1, controller)
-                                .sizeRel(0.5f, 1f)
-                                .disableHoverBackground()
-                                .overlay(IKey.lang("bogosort.gui.tab.profiles.name"))));
+                               .left(4).right(4)
+                               .height(16).top(18)
+                               .child(new PageButton(0, controller)
+                                              .sizeRel(0.5f, 1f)
+                                              .disableHoverBackground()
+                                              .overlay(IKey.lang("bogosort.gui.tab.general.name")))
+                               .child(new PageButton(1, controller)
+                                              .sizeRel(0.5f, 1f)
+                                              .disableHoverBackground()
+                                              .overlay(IKey.lang("bogosort.gui.tab.profiles.name"))));
         return panel;
     }
 
@@ -89,54 +89,58 @@ public class ConfigGui extends CustomModularScreen {
         return new ListWidget<>()
                 .left(5).right(5).top(2).bottom(2)
                 .child(new Rectangle().setColor(0xFF606060).asWidget()
-                        .top(1)
-                        .left(32)
-                        .size(1, 48))
+                               .top(1)
+                               .left(32)
+                               .size(1, 56))
                 .child(new Row()
-                        .widthRel(1f).height(14)
-                        .margin(0, 2)
-                        .child(new CycleButtonWidget()
-                                .value(new BoolValue.Dynamic(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val))
-                                .texture(TOGGLE_BUTTON)
-                                .disableHoverBackground()
-                                .size(14, 14)
-                                .margin(8, 0)
-                                .background(IDrawable.EMPTY))
-                        .child(IKey.lang("bogosort.gui.enable_refill").asWidget()
-                                .height(14)
-                                .marginLeft(10)))
+                               .widthRel(1f).height(14)
+                               .margin(0, 2)
+                               .child(new CycleButtonWidget()
+                                              .value(new BoolValue.Dynamic(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val))
+                                              .texture(TOGGLE_BUTTON)
+                                              .disableHoverBackground()
+                                              .size(14, 14)
+                                              .margin(8, 0)
+                                              .background(IDrawable.EMPTY))
+                               .child(IKey.lang("bogosort.gui.enable_refill").asWidget()
+                                              .height(14)
+                                              .marginLeft(10)
+                                              .expanded())
+                               .childIf(BogoSorter.isQuarkLoaded(), () -> new ColoredIcon(GuiTextures.EXCLAMATION, Color.RED.main).asWidget()
+                                       .size(14)
+                                       .tooltip(tooltip -> tooltip.addLine(IKey.lang("bogosort.gui.refill_comment")))))
                 .child(new Row()
-                        .widthRel(1f).height(14)
-                        .margin(0, 2)
-                        .child(new TextFieldWidget()
-                                .value(new IntValue.Dynamic(() -> PlayerConfig.getClient().autoRefillDamageThreshold, val -> PlayerConfig.getClient().autoRefillDamageThreshold = val))
-                                .setNumbers(0, Short.MAX_VALUE)
-                                .setTextAlignment(Alignment.Center)
-                                .setTextColor(IKey.TEXT_COLOR)
-                                .background(new Rectangle().setColor(0xFFb1b1b1))
-                                .size(30, 14))
-                        .child(IKey.lang("bogosort.gui.refill_threshold").asWidget()
-                                .marginLeft(10)
-                                .height(14)))
+                               .widthRel(1f).height(14)
+                               .margin(0, 2)
+                               .child(new TextFieldWidget()
+                                              .value(new IntValue.Dynamic(() -> PlayerConfig.getClient().autoRefillDamageThreshold, val -> PlayerConfig.getClient().autoRefillDamageThreshold = val))
+                                              .setNumbers(0, Short.MAX_VALUE)
+                                              .setTextAlignment(Alignment.Center)
+                                              .setTextColor(IKey.TEXT_COLOR)
+                                              .background(new Rectangle().setColor(0xFFb1b1b1))
+                                              .size(30, 14))
+                               .child(IKey.lang("bogosort.gui.refill_threshold").asWidget()
+                                              .marginLeft(10)
+                                              .height(14)))
                 .child(row
-                        .widthRel(1f).height(14)
-                        .margin(0, 2)
-                        .child(new CycleButtonWidget()
-                                .value(new BoolValue.Dynamic(HotbarSwap::isEnabled, HotbarSwap::setEnabled))
-                                .texture(TOGGLE_BUTTON)
-                                .disableHoverBackground()
-                                .addTooltipLine(IKey.lang("bogosort.gui.hotbar_scrolling.tooltip"))
-                                .tooltipShowUpTimer(10)
-                                .excludeTooltipArea(row.getArea())
-                                .size(14, 14)
-                                .margin(8, 0)
-                                .background(IDrawable.EMPTY))
-                        .child(IKey.lang("bogosort.gui.hotbar_scrolling").asWidget()
-                                .marginLeft(10)
-                                .height(14)
-                                .addTooltipLine(IKey.lang("bogosort.gui.hotbar_scrolling.tooltip"))
-                                .tooltipShowUpTimer(10)
-                                .excludeTooltipArea(row.getArea())));
+                               .widthRel(1f).height(14)
+                               .margin(0, 2)
+                               .child(new CycleButtonWidget()
+                                              .value(new BoolValue.Dynamic(HotbarSwap::isEnabled, HotbarSwap::setEnabled))
+                                              .texture(TOGGLE_BUTTON)
+                                              .disableHoverBackground()
+                                              .addTooltipLine(IKey.lang("bogosort.gui.hotbar_scrolling.tooltip"))
+                                              .tooltipShowUpTimer(10)
+                                              .excludeTooltipArea(row.getArea())
+                                              .size(14, 14)
+                                              .margin(8, 0)
+                                              .background(IDrawable.EMPTY))
+                               .child(IKey.lang("bogosort.gui.hotbar_scrolling").asWidget()
+                                              .marginLeft(10)
+                                              .height(14)
+                                              .addTooltipLine(IKey.lang("bogosort.gui.hotbar_scrolling.tooltip"))
+                                              .tooltipShowUpTimer(10)
+                                              .excludeTooltipArea(row.getArea())));
     }
 
     public IWidget createProfilesConfig(GuiContext context) {
@@ -144,35 +148,35 @@ public class ConfigGui extends CustomModularScreen {
         return new ParentWidget<>()
                 .widthRel(1f).top(2).bottom(0)
                 .child(new Rectangle().setColor(DARK_GREY).asWidget()
-                        .top(0)
-                        .bottom(4)
-                        .width(1)
-                        .left(89))
+                               .top(0)
+                               .bottom(4)
+                               .width(1)
+                               .left(89))
                 .child(new ListWidget<>() // Profiles
-                        .pos(2, 2)
-                        .width(81).bottom(2)
-                        .child(new ButtonWidget<>()
-                                .widthRel(1f).height(16)
-                                .overlay(IKey.str("Profile 1")))
-                        .child(IKey.str("Profiles are not yet implemented. They will come in one of the next versions.").asWidget()
-                                .top(20).width(81)))
+                               .pos(2, 2)
+                               .width(81).bottom(2)
+                               .child(new ButtonWidget<>()
+                                              .widthRel(1f).height(16)
+                                              .overlay(IKey.str("Profile 1")))
+                               .child(IKey.str("Profiles are not yet implemented. They will come in one of the next versions.").asWidget()
+                                              .top(20).width(81)))
                 .child(new Row()
-                        .left(92).right(2)
-                        .height(16).top(2)
-                        .child(new PageButton(0, controller)
-                                .sizeRel(0.5f, 1f)
-                                .disableHoverBackground()
-                                .overlay(IKey.lang("bogosort.gui.tab.item_sort_rules.name")))
-                        .child(new PageButton(1, controller)
-                                .sizeRel(0.5f, 1f)
-                                .disableHoverBackground()
-                                .overlay(IKey.lang("bogosort.gui.tab.nbt_sort_rules.name"))))
+                               .left(92).right(2)
+                               .height(16).top(2)
+                               .child(new PageButton(0, controller)
+                                              .sizeRel(0.5f, 1f)
+                                              .disableHoverBackground()
+                                              .overlay(IKey.lang("bogosort.gui.tab.item_sort_rules.name")))
+                               .child(new PageButton(1, controller)
+                                              .sizeRel(0.5f, 1f)
+                                              .disableHoverBackground()
+                                              .overlay(IKey.lang("bogosort.gui.tab.nbt_sort_rules.name"))))
                 .child(new PagedWidget<>()
-                        .controller(controller)
-                        .left(90).right(0)
-                        .top(16).bottom(0)
-                        .addPage(createItemSortConfigUI(context))
-                        .addPage(createNbtSortConfigUI(context)));
+                               .controller(controller)
+                               .left(90).right(0)
+                               .top(16).bottom(0)
+                               .addPage(createItemSortConfigUI(context))
+                               .addPage(createNbtSortConfigUI(context)));
     }
 
     public IWidget createItemSortConfigUI(GuiContext context) {
@@ -208,36 +212,36 @@ public class ConfigGui extends CustomModularScreen {
         return new ParentWidget<>()
                 .sizeRel(1f, 1f)
                 .child(sortableListWidget
-                        .onRemove(stringItem -> {
-                            this.availableElements.get(stringItem.getWidgetValue()).available = true;
-                        })
-                        .onChange(list -> {
-                            BogoSorterConfig.sortRules.clear();
-                            BogoSorterConfig.sortRules.addAll(list);
-                        })
-                        .left(7).right(7).top(7).bottom(23))
+                               .onRemove(stringItem -> {
+                                   this.availableElements.get(stringItem.getWidgetValue()).available = true;
+                               })
+                               .onChange(list -> {
+                                   BogoSorterConfig.sortRules.clear();
+                                   BogoSorterConfig.sortRules.addAll(list);
+                               })
+                               .left(7).right(7).top(7).bottom(23))
                 .child(new ButtonWidget<>()
-                        .bottom(7).size(12, 12).leftRel(0.5f)
-                        .overlay(GuiTextures.ADD)
-                        .onMousePressed(mouseButton -> {
-                            if (!isPanelOpen("choose_item_rules")) {
-                                ModularPanel panel1 = ModularPanel.defaultPanel("choose_item_rules", 200, 140);
-                                openPanel(panel1
-                                        .child(new ButtonWidget<>()
-                                                .size(8, 8)
-                                                .top(4).right(4)
-                                                .overlay(GuiTextures.CLOSE)
-                                                .onMousePressed(mouseButton1 -> {
-                                                    panel1.animateClose();
-                                                    return true;
-                                                }))
-                                        .child(new Grid()
-                                                .matrix(availableMatrix)
-                                                .scrollable()
-                                                .pos(7, 7).right(17).bottom(7)));
-                            }
-                            return true;
-                        }));
+                               .bottom(7).size(12, 12).leftRel(0.5f)
+                               .overlay(GuiTextures.ADD)
+                               .onMousePressed(mouseButton -> {
+                                   if (!isPanelOpen("choose_item_rules")) {
+                                       ModularPanel panel1 = ModularPanel.defaultPanel("choose_item_rules", 200, 140);
+                                       openPanel(panel1
+                                                         .child(new ButtonWidget<>()
+                                                                        .size(8, 8)
+                                                                        .top(4).right(4)
+                                                                        .overlay(GuiTextures.CLOSE)
+                                                                        .onMousePressed(mouseButton1 -> {
+                                                                            panel1.animateClose();
+                                                                            return true;
+                                                                        }))
+                                                         .child(new Grid()
+                                                                        .matrix(availableMatrix)
+                                                                        .scrollable()
+                                                                        .pos(7, 7).right(17).bottom(7)));
+                                   }
+                                   return true;
+                               }));
     }
 
     public IWidget createNbtSortConfigUI(GuiContext context) {
@@ -273,36 +277,36 @@ public class ConfigGui extends CustomModularScreen {
         return new ParentWidget<>()
                 .sizeRel(1f, 1f)
                 .child(sortableListWidget
-                        .onRemove(stringItem -> {
-                            this.availableElementsNbt.get(stringItem.getWidgetValue()).available = true;
-                        })
-                        .onChange(list -> {
-                            BogoSorterConfig.nbtSortRules.clear();
-                            BogoSorterConfig.nbtSortRules.addAll(list);
-                        })
-                        .left(7).right(7).top(7).bottom(23))
+                               .onRemove(stringItem -> {
+                                   this.availableElementsNbt.get(stringItem.getWidgetValue()).available = true;
+                               })
+                               .onChange(list -> {
+                                   BogoSorterConfig.nbtSortRules.clear();
+                                   BogoSorterConfig.nbtSortRules.addAll(list);
+                               })
+                               .left(7).right(7).top(7).bottom(23))
                 .child(new ButtonWidget<>()
-                        .bottom(7).size(12, 12).leftRel(0.5f)
-                        .overlay(GuiTextures.ADD)
-                        .onMousePressed(mouseButton -> {
-                            if (!isPanelOpen("choose_nbt_rules")) {
-                                ModularPanel panel1 = ModularPanel.defaultPanel("choose_nbt_rules", 200, 140);
-                                openPanel(panel1
-                                        .child(new ButtonWidget<>()
-                                                .size(8, 8)
-                                                .top(4).right(4)
-                                                .overlay(GuiTextures.CLOSE)
-                                                .onMousePressed(mouseButton1 -> {
-                                                    panel1.animateClose();
-                                                    return true;
-                                                }))
-                                        .child(new Grid()
-                                                .matrix(availableMatrix)
-                                                .scrollable()
-                                                .pos(7, 7).right(17).bottom(7)));
-                            }
-                            return true;
-                        }));
+                               .bottom(7).size(12, 12).leftRel(0.5f)
+                               .overlay(GuiTextures.ADD)
+                               .onMousePressed(mouseButton -> {
+                                   if (!isPanelOpen("choose_nbt_rules")) {
+                                       ModularPanel panel1 = ModularPanel.defaultPanel("choose_nbt_rules", 200, 140);
+                                       openPanel(panel1
+                                                         .child(new ButtonWidget<>()
+                                                                        .size(8, 8)
+                                                                        .top(4).right(4)
+                                                                        .overlay(GuiTextures.CLOSE)
+                                                                        .onMousePressed(mouseButton1 -> {
+                                                                            panel1.animateClose();
+                                                                            return true;
+                                                                        }))
+                                                         .child(new Grid()
+                                                                        .matrix(availableMatrix)
+                                                                        .scrollable()
+                                                                        .pos(7, 7).right(17).bottom(7)));
+                                   }
+                                   return true;
+                               }));
     }
 
     @Override
