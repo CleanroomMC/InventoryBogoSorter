@@ -9,12 +9,10 @@ public class ItemSortContainer {
 
     private final ItemStack itemStack;
     private final ClientSortData sortData;
-    private int amount;
 
     public ItemSortContainer(ItemStack itemStack, ClientSortData sortData) {
-        this.itemStack = itemStack;
+        this.itemStack = itemStack.copy();
         this.sortData = sortData;
-        this.amount = 0;
     }
 
     public ItemStack getItemStack() {
@@ -34,27 +32,23 @@ public class ItemSortContainer {
     }
 
     public void shrink(int amount) {
-        this.amount -= amount;
+        this.itemStack.shrink(amount);
     }
 
     public void grow(int amount) {
-        this.amount += amount;
+        this.itemStack.grow(amount);
     }
 
     public int getAmount() {
-        return amount;
+        return this.itemStack.getCount();
     }
 
     public boolean canMakeStack() {
-        return amount > 0;
+        return getAmount() > 0;
     }
 
     public ItemStack makeStack(int max) {
-        ItemStack copy = itemStack.copy();
-        int size = Math.min(max, amount);
-        copy.setCount(size);
-        shrink(size);
-        return copy;
+        return this.itemStack.splitStack(max);
     }
 
     @Override

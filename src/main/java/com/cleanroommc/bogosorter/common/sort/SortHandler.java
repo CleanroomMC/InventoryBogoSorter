@@ -192,8 +192,9 @@ public class SortHandler {
                     container1 = new ItemSortContainer(stack, clientSortData.get(slot.bogo$getSlotNumber()));
                     items.put(stack, container1);
                     list.add(container1);
+                } else {
+                    container1.grow(stack.getCount());
                 }
-                container1.grow(stack.getCount());
             }
         }
         return list;
