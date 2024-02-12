@@ -42,7 +42,7 @@ import java.time.LocalDate;
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
 
-    public static final String ID = Tags.ID;
+    public static final String ID = Tags.MODID;
     public static final String NAME = "Inventory Bogo Sorter";
     public static final String VERSION = Tags.VERSION;
 
