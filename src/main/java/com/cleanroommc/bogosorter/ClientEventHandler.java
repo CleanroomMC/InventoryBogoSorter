@@ -12,6 +12,7 @@ import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.screen.WarningScreen;
+import com.cleanroommc.modularui.factory.ClientGUI;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import net.minecraft.client.Minecraft;
@@ -32,6 +33,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.jetbrains.annotations.Nullable;
@@ -49,6 +51,20 @@ public class ClientEventHandler {
     private static long timeConfigGui = 0;
     private static long timeSort = 0;
     private static long timeShortcut = 0;
+
+    private static GuiScreen nextGui = null;
+
+    public static void openNextTick(GuiScreen screen) {
+        ClientEventHandler.nextGui = screen;
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (ClientEventHandler.nextGui != null) {
+            ClientGUI.open(ClientEventHandler.nextGui);
+            ClientEventHandler.nextGui = null;
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onGuiOpen(GuiOpenEvent event) {
@@ -128,8 +144,6 @@ public class ClientEventHandler {
         }
     }
 
-    private static GuiScreen previousScreen;
-
     // handle all inputs in one method
     public static boolean handleInput(@Nullable GuiContainer container) {
         if (container != null && container.isFocused()) {
@@ -171,12 +185,8 @@ public class ClientEventHandler {
         if (c) {
             long t = Minecraft.getSystemTime();
             if (t - timeConfigGui > 500) {
-                if (ConfigGui.wasOpened) {
-                    Minecraft.getMinecraft().displayGuiScreen(previousScreen);
-                    previousScreen = null;
-                } else {
-                    previousScreen = Minecraft.getMinecraft().currentScreen;
-                    BogoSortAPI.INSTANCE.openConfigGui();
+                if (!ConfigGui.closeCurrent()) {
+                    BogoSortAPI.INSTANCE.openConfigGui(Minecraft.getMinecraft().currentScreen);
                 }
                 timeConfigGui = t;
                 return true;

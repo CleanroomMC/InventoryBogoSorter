@@ -101,7 +101,7 @@ public class ButtonHandler {
             if (sortButton.sort) {
                 ClientEventHandler.sort(event.getGui(), sortButton.slotGroup.getSlots().get(0));
             } else {
-                BogoSortAPI.INSTANCE.openConfigGui();
+                BogoSortAPI.INSTANCE.openConfigGui(event.getGui());
                 Interactable.playButtonClickSound();
             }
             event.setCanceled(true);

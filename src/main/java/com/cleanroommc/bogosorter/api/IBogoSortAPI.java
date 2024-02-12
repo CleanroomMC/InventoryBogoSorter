@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.api;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -126,7 +127,12 @@ public interface IBogoSortAPI {
      * Opens the bogosort config gui
      */
     @SideOnly(Side.CLIENT)
-    void openConfigGui();
+    default void openConfigGui() {
+        openConfigGui(null);
+    }
+
+    @SideOnly(Side.CLIENT)
+    void openConfigGui(GuiScreen old);
 
     /**
      * Tries to sort a slot group with the given slot.

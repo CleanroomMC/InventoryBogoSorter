@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.common.config;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
@@ -14,6 +15,7 @@ import com.cleanroommc.modularui.drawable.Rectangle;
 import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.CustomModularScreen;
 import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.theme.Theme;
 import com.cleanroommc.modularui.utils.Alignment;
@@ -26,6 +28,7 @@ import com.cleanroommc.modularui.widgets.layout.Grid;
 import com.cleanroommc.modularui.widgets.layout.Row;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
@@ -41,18 +44,34 @@ public class ConfigGui extends CustomModularScreen {
     public static final UITexture ARROW_DOWN_UP = UITexture.fullImage("bogosorter:gui/arrow_down_up", false);
     private static final int DARK_GREY = 0xFF404040;
 
+    public static boolean closeCurrent() {
+        ModularScreen screen = ModularScreen.getCurrent();
+        if (screen instanceof ConfigGui) {
+            screen.close();
+            return true;
+        }
+        return false;
+    }
+
+    private final GuiScreen old;
     private Map<SortRule<ItemStack>, AvailableElement> availableElements;
     private Map<NbtSortRule, AvailableElement> availableElementsNbt;
 
-    public ConfigGui() {
+    public ConfigGui(GuiScreen old) {
         super(BogoSorter.ID);
+        this.old = old;
     }
 
     @Override
     public @NotNull ModularPanel buildUI(GuiContext guiContext) {
         this.availableElements = new Object2ObjectOpenHashMap<>();
         this.availableElementsNbt = new Object2ObjectOpenHashMap<>();
-        ModularPanel panel = ModularPanel.defaultPanel("bogo_config", 300, 250);
+        ModularPanel panel = new ModularPanel("bogo_config") {
+            @Override
+            public boolean shouldAnimate() {
+                return super.shouldAnimate() && ConfigGui.this.old == null;
+            }
+        }.size(300, 250).align(Alignment.Center);
 
         PagedWidget.Controller controller = new PagedWidget.Controller();
 
@@ -316,6 +335,10 @@ public class ConfigGui extends CustomModularScreen {
         PlayerConfig.syncToServer();
         MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
         wasOpened = false;
+        if (this.old != null) {
+            // open next tick, otherwise infinite loop
+            ClientEventHandler.openNextTick(this.old);
+        }
     }
 
     private static class SortListItem<T extends SortRule<?>> extends SortableListWidget.Item<T> {

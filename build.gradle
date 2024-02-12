@@ -109,7 +109,7 @@ dependencies {
 		transitive = false
 	}
 
-	implementation ("com.cleanroommc:modularui:2.4.1") { transitive false }
+	implementation ("com.cleanroommc:modularui:2.4.2") { transitive false }
 	//implementation files('libs/modularui-2.2.3-dev.jar') // for testing purpose
 	compileOnly rfg.deobf('curse.maven:iron_chests-228756:2747935')
 	compileOnly rfg.deobf('curse.maven:thermal_expansion-69163:2926431')
@@ -133,7 +133,7 @@ dependencies {
 	compileOnly rfg.deobf('curse.maven:travelers_backpack-321117:3150850')
 	compileOnly rfg.deobf('curse.maven:colossal_chests-237875:2718588')
 	compileOnly rfg.deobf('curse.maven:cyclops_core-232758:3159497')
-	implementation rfg.deobf('curse.maven:quark-243121:2924091')
+	compileOnly rfg.deobf('curse.maven:quark-243121:2924091')
 	compileOnly rfg.deobf('curse.maven:cyclic-239286:3722420')
 	compileOnly rfg.deobf('curse.maven:bibliocraft-228027:3647708')
 	compileOnly rfg.deobf('curse.maven:railcraft-51195:2687757')
