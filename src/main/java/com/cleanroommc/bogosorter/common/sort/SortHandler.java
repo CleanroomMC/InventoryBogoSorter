@@ -41,14 +41,6 @@ public class SortHandler {
         Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(sound, 1f));
     }
 
-    private static float getBogoChance() {
-        float f = BogoSorterConfig.baseBogoChance;
-        if (BogoSorter.isAprilFools()) {
-            return f < 0.01 ? 0.2f : Math.min(f * 20, 1f);
-        }
-        return f;
-    }
-
     private final EntityPlayer player;
     private final Container container;
     private final GuiSortingContext context;
@@ -91,8 +83,7 @@ public class SortHandler {
 
     public void sort(SlotGroup slotGroup, boolean sync) {
         if (slotGroup != null) {
-            float chance = getBogoChance();
-            if (chance > 0 && BogoSorter.RND.nextFloat() < getBogoChance()) {
+            if (BogoSorter.isAprilFools() && BogoSorter.RND.nextFloat() < 0.01f) {
                 sortBogo(slotGroup);
                 this.player.sendMessage(new TextComponentString("Get Bogo'd!"));
             } else {

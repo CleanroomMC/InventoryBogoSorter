@@ -33,7 +33,6 @@ public class BogoSorterConfig {
     public static final List<String> ORE_PREFIXES_LIST = new ArrayList<>();
 
     public static int buttonColor = 0xFFFFFFFF;
-    public static float baseBogoChance = 0.01f;
 
     @SideOnly(Side.CLIENT)
     public static void save(JsonObject json) {
@@ -45,7 +44,6 @@ public class BogoSorterConfig {
         general.addProperty("sortSound", SortHandler.sortSound.getSoundName().toString());
         general.addProperty("buttonColor", "#" + Integer.toHexString(buttonColor));
         general.addProperty("_comment", "By setting the chance below to 0 you agree to have no humor and that you are boring.");
-        general.addProperty("baseBogoChance", baseBogoChance);
 
         json.add("General", general);
 
@@ -86,7 +84,6 @@ public class BogoSorterConfig {
                 SortHandler.sortSound = SoundEvents.UI_BUTTON_CLICK;
             }
             buttonColor = JsonHelper.getColor(general, 0xFFFFFFFF, "buttonColor");
-            baseBogoChance = MathHelper.clamp(JsonHelper.getFloat(general, 0.01f, "baseBogoChance"), 0f, 1f);
         }
         sortRules.clear();
         if (json.has("ItemSortRules")) {

@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
+import java.time.Month;
 
 @Mod(modid = BogoSorter.ID,
         name = BogoSorter.NAME,
@@ -159,6 +160,6 @@ public class BogoSorter {
 
     public static boolean isAprilFools() {
         LocalDate date = LocalDate.now();
-        return date.getMonthValue() == 4 && date.getDayOfMonth() == 1;
+        return date.getMonth() == Month.APRIL && date.getDayOfMonth() == 1;
     }
 }
