@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.compat;
 import appeng.container.implementations.ContainerSkyChest;
 import blusunrize.immersiveengineering.common.gui.ContainerCrate;
 import c4.conarm.common.inventory.ContainerKnapsack;
+import cassiokf.industrialrenewal.gui.container.ContainerStorageChest;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.BogoSorter;
@@ -429,6 +430,16 @@ public class DefaultCompat {
             api.addCompat(svenhjol.charm.crafting.container.ContainerBarrel.class, (container, builder) -> {
                 builder.addSlotGroup(0, 27, 9);
             });
+        }
+
+        if (Loader.isModLoaded("industrialrenewal")) {
+            api.addCompat(ContainerStorageChest.class, (container, builder) -> {
+                builder.addGenericSlotGroup()
+                        .buttonPosSetter((slotGroup, buttonPos) -> {
+                            buttonPos.setEnabled(false);
+                        });
+            });
+            api.addPlayerSortButtonPosition(ContainerStorageChest.class, IPosSetter.TOP_RIGHT_VERTICAL);
         }
 
         if (Loader.isModLoaded("cookingforblockheads")) {
