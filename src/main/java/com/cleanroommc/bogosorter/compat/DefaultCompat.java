@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.compat;
 import appeng.container.implementations.ContainerSkyChest;
 import blusunrize.immersiveengineering.common.gui.ContainerCrate;
 import c4.conarm.common.inventory.ContainerKnapsack;
+import cassiokf.industrialrenewal.gui.container.ContainerStorageChest;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.BogoSorter;
@@ -428,6 +429,25 @@ public class DefaultCompat {
         if (Loader.isModLoaded("charm")) {
             api.addCompat(svenhjol.charm.crafting.container.ContainerBarrel.class, (container, builder) -> {
                 builder.addSlotGroup(0, 27, 9);
+            });
+        }
+
+        if (Loader.isModLoaded("industrialrenewal")) {
+            api.addCompat(ContainerStorageChest.class, (container, builder) -> {
+                builder.addGenericSlotGroup().buttonPosSetter((slotGroup, buttonPos) -> {
+                    buttonPos.setPos(0, 1000);
+                    for (ISlot slot : slotGroup.getSlots()) {
+                        if (slot.bogo$getX() >= 0 && slot.bogo$getY() >= 0 && slot.bogo$isEnabled()) {
+                            buttonPos.setPos(Math.max(buttonPos.getX(), slot.bogo$getX() + 17), Math.min(buttonPos.getY(), slot.bogo$getY() - 2));
+                        }
+                    }
+                });
+            });
+            api.addPlayerSortButtonPosition(ContainerStorageChest.class, (slotGroup, buttonPos) -> {
+                ISlot slot = slotGroup.getSlots().get(26);
+                buttonPos.setPos(slot.bogo$getX() + 19, slot.bogo$getY() - 2);
+                buttonPos.setTopLeft();
+                buttonPos.setVertical();
             });
         }
 

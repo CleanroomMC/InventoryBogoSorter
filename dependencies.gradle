@@ -83,4 +83,5 @@ dependencies {
     compileOnly rfg.deobf('curse.maven:charm-318872:3146596')
     compileOnly rfg.deobf('curse.maven:cooking_for_blockheads-231484:2862651')
     compileOnly rfg.deobf('curse.maven:mekanism-268560:2835175')
+    compileOnly rfg.deobf("curse.maven:industrial-renewal-299849:3340876")
 }
