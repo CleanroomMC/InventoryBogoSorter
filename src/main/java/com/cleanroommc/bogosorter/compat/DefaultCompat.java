@@ -434,12 +434,21 @@ public class DefaultCompat {
 
         if (Loader.isModLoaded("industrialrenewal")) {
             api.addCompat(ContainerStorageChest.class, (container, builder) -> {
-                builder.addGenericSlotGroup()
-                        .buttonPosSetter((slotGroup, buttonPos) -> {
-                            buttonPos.setEnabled(false);
-                        });
+                builder.addGenericSlotGroup().buttonPosSetter((slotGroup, buttonPos) -> {
+                    buttonPos.setPos(0, 1000);
+                    for (ISlot slot : slotGroup.getSlots()) {
+                        if (slot.bogo$getX() >= 0 && slot.bogo$getY() >= 0 && slot.bogo$isEnabled()) {
+                            buttonPos.setPos(Math.max(buttonPos.getX(), slot.bogo$getX() + 17), Math.min(buttonPos.getY(), slot.bogo$getY() - 2));
+                        }
+                    }
+                });
             });
-            api.addPlayerSortButtonPosition(ContainerStorageChest.class, IPosSetter.TOP_RIGHT_VERTICAL);
+            api.addPlayerSortButtonPosition(ContainerStorageChest.class, (slotGroup, buttonPos) -> {
+                ISlot slot = slotGroup.getSlots().get(26);
+                buttonPos.setPos(slot.bogo$getX() + 19, slot.bogo$getY() - 2);
+                buttonPos.setTopLeft();
+                buttonPos.setVertical();
+            });
         }
 
         if (Loader.isModLoaded("cookingforblockheads")) {
