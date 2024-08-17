@@ -250,8 +250,26 @@ public class SortHandler {
         List<ISlot> result = new ArrayList<>();
 
         for (ISlot slot : slotGroup.getSlots()) {
-            if (slot.bogo$canTakeStack(player))
-                result.add(slot);
+            /*
+             * Logic being used to check if we cannot access the slot:
+             * 1. Can the player take the stack?
+             * This usually returns true, but some slot implementations return false if the slot is empty.
+             *
+             * 2. Can we insert the current stack into the slot?
+             * This may seem roundabout, but this means that if it returns false, then most likely, the slot is
+             * always returning false.
+             *
+             * 3. Is the stack in the slot empty?
+             * If it is empty, some implementations return false for both above methods.
+             * Although this might risk changing actually inaccessible slots, most likely, those slots would not be
+             * empty.
+             *
+             * The slot should only be marked as inaccessible if all three conditions return false.
+             */
+            boolean canTake = slot.bogo$canTakeStack(player);
+            boolean canInsert = slot.bogo$isItemValid(slot.bogo$getStack().copy());
+            boolean isEmpty = slot.bogo$getStack().isEmpty();
+            if (canTake || canInsert || isEmpty) result.add(slot);
         }
         return result;
     }
