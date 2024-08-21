@@ -41,7 +41,7 @@ public class BogoSorterConfig {
         general.addProperty("enableAutoRefill", playerConfig.enableAutoRefill);
         general.addProperty("refillDmgThreshold", playerConfig.autoRefillDamageThreshold);
         general.addProperty("enableHotbarSwap", HotbarSwap.isEnabled());
-        general.addProperty("sortSound", SortHandler.sortSound.getSoundName().toString());
+        general.addProperty("sortSound", SortHandler.getSortSoundName());
         general.addProperty("buttonColor", "#" + Integer.toHexString(buttonColor));
         general.addProperty("_comment", "By setting the chance below to 0 you agree to have no humor and that you are boring.");
 
@@ -78,11 +78,11 @@ public class BogoSorterConfig {
             playerConfig.enableAutoRefill = JsonHelper.getBoolean(general, true, "enableAutoRefill");
             playerConfig.autoRefillDamageThreshold = (short) JsonHelper.getInt(general, 1, "refillDmgThreshold");
             HotbarSwap.setEnabled(JsonHelper.getBoolean(general, true, "enableHotbarSwap"));
-            String sortSound = JsonHelper.getString(general, "ui.button.click", "sortSound");
-            SortHandler.sortSound = SoundEvent.REGISTRY.getObject(new ResourceLocation(sortSound));
-            if (SortHandler.sortSound == null) {
-                SortHandler.sortSound = SoundEvents.UI_BUTTON_CLICK;
-            }
+            SortHandler.sortSound = JsonHelper.getElement(general, SoundEvents.UI_BUTTON_CLICK, element -> {
+                if (element.isJsonNull()) return null;
+                SoundEvent soundEvent = SoundEvent.REGISTRY.getObject(new ResourceLocation(element.getAsString()));
+                return soundEvent != null ? soundEvent : SoundEvents.UI_BUTTON_CLICK;
+            }, "sortSound");
             buttonColor = JsonHelper.getColor(general, 0xFFFFFFFF, "buttonColor");
         }
         sortRules.clear();

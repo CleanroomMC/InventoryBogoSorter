@@ -20,9 +20,11 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,12 +35,37 @@ public class SortHandler {
     public static final Map<EntityPlayer, List<NbtSortRule>> cacheNbtSortRules = new Object2ObjectOpenHashMap<>();
     public static final AtomicReference<List<NbtSortRule>> currentNbtSortRules = new AtomicReference<>(Collections.emptyList());
 
-    public static SoundEvent sortSound = SoundEvents.UI_BUTTON_CLICK;
+    @Nullable public static SoundEvent sortSound = SoundEvents.UI_BUTTON_CLICK;
+    private static List<SoundEvent> foolsSounds = null;
+    private static long foolsBuildTime = 0;
+
+    public static String getSortSoundName() {
+        return sortSound == null ? "null" : sortSound.getSoundName().toString();
+    }
 
     @SideOnly(Side.CLIENT)
     public static void playSortSound() {
-        SoundEvent sound = BogoSorter.isAprilFools() ? SoundEvent.REGISTRY.getObjectById(BogoSorter.RND.nextInt(SoundEvent.REGISTRY.getKeys().size())) : sortSound;
-        Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(sound, 1f));
+        SoundEvent sound;
+        if (BogoSorter.isAprilFools()) {
+            if (foolsSounds == null || foolsBuildTime - Minecraft.getSystemTime() > 300000) {
+                List<SoundEvent> sounds = new ArrayList<>(256);
+                for (SoundEvent soundEvent : ForgeRegistries.SOUND_EVENTS) {
+                    if (soundEvent != null &&
+                            !soundEvent.getSoundName().getPath().contains("music.") &&
+                            !soundEvent.getSoundName().getPath().contains("record.")) {
+                        sounds.add(soundEvent);
+                    }
+                }
+                foolsSounds = sounds;
+                foolsBuildTime = Minecraft.getSystemTime();
+            }
+            sound = foolsSounds.get(BogoSorter.RND.nextInt(foolsSounds.size()));
+        } else {
+            sound = sortSound;
+        }
+        if (sound != null) {
+            Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(sound, 1f));
+        }
     }
 
     private final EntityPlayer player;
@@ -52,7 +79,8 @@ public class SortHandler {
         this(entityPlayer, container, GuiSortingContext.getOrCreate(container), clientSortData);
     }
 
-    public SortHandler(EntityPlayer player, Container container, GuiSortingContext sortingContext, Int2ObjectMap<ClientSortData> clientSortData) {
+    public SortHandler(EntityPlayer player, Container container, GuiSortingContext sortingContext,
+                       Int2ObjectMap<ClientSortData> clientSortData) {
         this.player = player;
         this.container = container;
         this.context = sortingContext;
@@ -61,7 +89,7 @@ public class SortHandler {
             int result;
             for (SortRule<ItemStack> sortRule : itemSortRules) {
                 result = sortRule instanceof ClientItemSortRule ? ((ClientItemSortRule) sortRule).compareServer(container1, container2) :
-                        sortRule.compare(container1.getItemStack(), container2.getItemStack());
+                         sortRule.compare(container1.getItemStack(), container2.getItemStack());
                 if (result != 0) return result;
             }
             result = ItemCompareHelper.compareRegistryOrder(container1.getItemStack(), container2.getItemStack());
@@ -111,7 +139,8 @@ public class SortHandler {
                 continue;
             }
 
-            int max = Math.min(slot.bogo$getItemStackLimit(itemSortContainer.getItemStack()), slot.bogo$getMaxStackSize(itemSortContainer.getItemStack()));
+            int max = Math.min(slot.bogo$getItemStackLimit(itemSortContainer.getItemStack()),
+                               slot.bogo$getMaxStackSize(itemSortContainer.getItemStack()));
             if (max <= 0) continue;
             slot.bogo$putStack(itemSortContainer.makeStack(max));
 
@@ -174,7 +203,8 @@ public class SortHandler {
 
     public LinkedList<ItemSortContainer> gatherItems(SlotGroup slotGroup) {
         LinkedList<ItemSortContainer> list = new LinkedList<>();
-        Object2ObjectOpenCustomHashMap<ItemStack, ItemSortContainer> items = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
+        Object2ObjectOpenCustomHashMap<ItemStack, ItemSortContainer> items = new Object2ObjectOpenCustomHashMap<>(
+                BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         for (ISlot slot : getSortableSlots(slotGroup)) {
             ItemStack stack = slot.bogo$getStack();
             if (!stack.isEmpty()) {
