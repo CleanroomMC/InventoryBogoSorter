@@ -105,7 +105,7 @@ public class SortHandler {
 
         ItemSortContainer itemSortContainer = itemList.pollFirst();
         if (itemSortContainer == null) return;
-        for (ISlot slot : slotGroup.getSlots()) {
+        for (ISlot slot : getSortableSlots(slotGroup)) {
             if (itemSortContainer == null) {
                 slot.bogo$putStack(ItemStack.EMPTY);
                 continue;
@@ -158,14 +158,14 @@ public class SortHandler {
         }
     }*/
 
-    public static void sortBogo(SlotGroup slotGroup) {
+    public void sortBogo(SlotGroup slotGroup) {
         List<ItemStack> items = new ArrayList<>();
-        for (ISlot slot : slotGroup.getSlots()) {
+        for (ISlot slot : getSortableSlots(slotGroup)) {
             ItemStack stack = slot.bogo$getStack();
             items.add(stack);
         }
         Collections.shuffle(items);
-        List<ISlot> slots = slotGroup.getSlots();
+        List<ISlot> slots = getSortableSlots(slotGroup);
         for (int i = 0; i < slots.size(); i++) {
             ISlot slot = slots.get(i);
             slot.bogo$putStack(items.get(i));
@@ -175,7 +175,7 @@ public class SortHandler {
     public LinkedList<ItemSortContainer> gatherItems(SlotGroup slotGroup) {
         LinkedList<ItemSortContainer> list = new LinkedList<>();
         Object2ObjectOpenCustomHashMap<ItemStack, ItemSortContainer> items = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
-        for (ISlot slot : slotGroup.getSlots()) {
+        for (ISlot slot : getSortableSlots(slotGroup)) {
             ItemStack stack = slot.bogo$getStack();
             if (!stack.isEmpty()) {
                 ItemSortContainer container1 = items.get(stack);
@@ -220,7 +220,7 @@ public class SortHandler {
         SlotGroup slotGroup = context.getSlotGroup(slot1.bogo$getSlotNumber());
         if (slotGroup != null) {
             List<Pair<ItemStack, Integer>> slots = new ArrayList<>();
-            for (ISlot slot : slotGroup.getSlots()) {
+            for (ISlot slot : getSortableSlots(slotGroup)) {
                 if (!slot.bogo$getStack().isEmpty()) {
                     slot.bogo$putStack(ItemStack.EMPTY);
                     slots.add(Pair.of(ItemStack.EMPTY, slot.bogo$getSlotNumber()));
@@ -235,7 +235,7 @@ public class SortHandler {
         if (slotGroup != null) {
             List<Pair<ItemStack, Integer>> slots = new ArrayList<>();
             Random random = new Random();
-            for (ISlot slot : slotGroup.getSlots()) {
+            for (ISlot slot : getSortableSlots(slotGroup)) {
                 if (random.nextFloat() < 0.3f) {
                     ItemStack randomItem = ClientEventHandler.allItems.get(random.nextInt(ClientEventHandler.allItems.size())).copy();
                     slot.bogo$putStack(randomItem.copy());
@@ -244,5 +244,33 @@ public class SortHandler {
             }
             NetworkHandler.sendToServer(new CSlotSync(slots));
         }
+    }
+
+    public List<ISlot> getSortableSlots(SlotGroup slotGroup) {
+        List<ISlot> result = new ArrayList<>();
+
+        for (ISlot slot : slotGroup.getSlots()) {
+            /*
+             * Logic being used to check if we cannot access the slot:
+             * 1. Can the player take the stack?
+             * This usually returns true, but some slot implementations return false if the slot is empty.
+             *
+             * 2. Can we insert the current stack into the slot?
+             * This may seem roundabout, but this means that if it returns false, then most likely, the slot is
+             * always returning false.
+             *
+             * 3. Is the stack in the slot empty?
+             * If it is empty, some implementations return false for both above methods.
+             * Although this might risk changing actually inaccessible slots, most likely, those slots would not be
+             * empty.
+             *
+             * The slot should only be marked as inaccessible if all three conditions return false.
+             */
+            boolean canTake = slot.bogo$canTakeStack(player);
+            boolean canInsert = slot.bogo$isItemValid(slot.bogo$getStack().copy());
+            boolean isEmpty = slot.bogo$getStack().isEmpty();
+            if (canTake || canInsert || isEmpty) result.add(slot);
+        }
+        return result;
     }
 }
