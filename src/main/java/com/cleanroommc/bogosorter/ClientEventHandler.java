@@ -48,9 +48,37 @@ public class ClientEventHandler {
     public static final KeyBinding configGuiKey = new KeyBinding("key.sort_config", KeyConflictContext.UNIVERSAL, Keyboard.KEY_K, "key.categories.bogosorter");
     public static final KeyBinding sortKey = new KeyBinding("key.sort", KeyConflictContext.GUI, -98, "key.categories.bogosorter");
 
+    public static final KeyBind moveAllSame = KeyBind.builder("move_all_same")
+            .lmb(true).rmb(false)
+            .shift(false).ctrl(false).alt(true).space(false)
+            .build();
+    public static final KeyBind moveAll = KeyBind.builder("move_all")
+            .lmb(true).rmb(false)
+            .shift(false).ctrl(false).alt(false).space(true)
+            .build();
+    public static final KeyBind moveSingle = KeyBind.builder("move_single")
+            .lmb(true).rmb(false)
+            .shift(false).ctrl(true).alt(false)
+            .build();
+    public static final KeyBind moveSingleEmpty = KeyBind.builder("move_single_empty")
+            .lmb(false).rmb(true)
+            .shift(false).ctrl(true).alt(false)
+            .build();
+    public static final KeyBind throwAllSame = KeyBind.builder("throw_all_same")
+            .lmb(false).rmb(false)
+            .shift(false).ctrl(false).alt(true).space(false)
+            .validator(() -> isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop))
+            .build();
+    public static final KeyBind throwAll = KeyBind.builder("throw_all")
+            .lmb(false).rmb(false)
+            .shift(false).ctrl(false).alt(false).space(true)
+            .validator(() -> isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop))
+            .build();
+
     private static long timeConfigGui = 0;
     private static long timeSort = 0;
     private static long timeShortcut = 0;
+    private static long ticks = 0;
 
     private static GuiScreen nextGui = null;
 
@@ -58,8 +86,15 @@ public class ClientEventHandler {
         ClientEventHandler.nextGui = screen;
     }
 
+    public static long getTicks() {
+        return ticks;
+    }
+
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            ticks++;
+        }
         if (ClientEventHandler.nextGui != null) {
             ClientGUI.open(ClientEventHandler.nextGui);
             ClientEventHandler.nextGui = null;
@@ -105,6 +140,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onGuiKeyInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
+        KeyBind.checkKeys(getTicks());
         if (!(event.getGui() instanceof GuiContainer)) return;
         if (handleInput((GuiContainer) event.getGui())) {
             event.setCanceled(true);
@@ -139,6 +175,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onMouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
+        KeyBind.checkKeys(getTicks());
         if (event.getGui() instanceof GuiContainer && handleInput((GuiContainer) event.getGui())) {
             event.setCanceled(true);
         }
@@ -150,35 +187,29 @@ public class ClientEventHandler {
             return false;
         }
         if (container != null && canDoShortcutAction()) {
-            if (isButtonPressed(0) && !Mouse.isButtonDown(1) && !GuiScreen.isShiftKeyDown() && !GuiScreen.isCtrlKeyDown()) {
-                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !GuiScreen.isAltKeyDown() && ShortcutHandler.moveAllItems(container, false)) {
-                    shortcutAction();
-                    return true;
-                }
-                if (!Keyboard.isKeyDown(Keyboard.KEY_SPACE) && GuiScreen.isAltKeyDown() && ShortcutHandler.moveAllItems(container, true)) {
-                    shortcutAction();
-                    return true;
-                }
+            if (moveAll.isFirstPress() && ShortcutHandler.moveAllItems(container, false)) {
+                shortcutAction();
+                return true;
             }
-            if (GuiScreen.isCtrlKeyDown() && !GuiScreen.isShiftKeyDown() && !GuiScreen.isAltKeyDown()) {
-                if (isButtonPressed(0) && !Mouse.isButtonDown(1) && ShortcutHandler.moveSingleItem(container, false)) {
-                    shortcutAction();
-                    return true;
-                }
-                if (isButtonPressed(1) && !Mouse.isButtonDown(0) && ShortcutHandler.moveSingleItem(container, true)) {
-                    shortcutAction();
-                    return true;
-                }
+            if (moveAllSame.isFirstPress() && ShortcutHandler.moveAllItems(container, true)) {
+                shortcutAction();
+                return true;
             }
-            if (isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop) && !GuiScreen.isShiftKeyDown() && !GuiScreen.isCtrlKeyDown()) {
-                if (!Keyboard.isKeyDown(Keyboard.KEY_SPACE) && GuiScreen.isAltKeyDown() && ShortcutHandler.dropItems(container, true)) {
-                    shortcutAction();
-                    return true;
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !GuiScreen.isAltKeyDown() && ShortcutHandler.dropItems(container, false)) {
-                    shortcutAction();
-                    return true;
-                }
+            if (moveSingle.isFirstPressOrHeldLong(15) && ShortcutHandler.moveSingleItem(container, false)) {
+                shortcutAction();
+                return true;
+            }
+            if (moveSingleEmpty.isFirstPressOrHeldLong(15) && ShortcutHandler.moveSingleItem(container, true)) {
+                shortcutAction();
+                return true;
+            }
+            if (throwAll.isFirstPress() && ShortcutHandler.dropItems(container, false)) {
+                shortcutAction();
+                return true;
+            }
+            if (throwAllSame.isFirstPress() && ShortcutHandler.dropItems(container, true)) {
+                shortcutAction();
+                return true;
             }
         }
         boolean c = configGuiKey.isPressed(), s = sortKey.isPressed();
