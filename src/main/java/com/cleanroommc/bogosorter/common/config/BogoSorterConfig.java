@@ -43,7 +43,7 @@ public class BogoSorterConfig {
         general.addProperty("enableHotbarSwap", HotbarSwap.isEnabled());
         general.addProperty("sortSound", SortHandler.getSortSoundName());
         general.addProperty("buttonColor", "#" + Integer.toHexString(buttonColor));
-        general.addProperty("_comment", "By setting the chance below to 0 you agree to have no humor and that you are boring.");
+        // general.addProperty("_comment", "By setting the chance below to 0 you agree to have no humor and that you are boring.");
 
         json.add("General", general);
 
