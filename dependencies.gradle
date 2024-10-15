@@ -86,4 +86,5 @@ dependencies {
     compileOnly rfg.deobf("curse.maven:industrial-renewal-299849:3340876")
     compileOnly rfg.deobf("curse.maven:rftools-224641:2861573")
     compileOnly rfg.deobf("curse.maven:mcjtylib-233105:2745846")
+    compileOnly rfg.deobf("curse.maven:hbms-nuclear-tech-hamster-reloaded-862305:4939325")
 }
