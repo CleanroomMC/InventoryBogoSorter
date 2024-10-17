@@ -5,6 +5,9 @@ import blusunrize.immersiveengineering.common.gui.ContainerCrate;
 import c4.conarm.common.inventory.ContainerKnapsack;
 import cassiokf.industrialrenewal.gui.container.ContainerStorageChest;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
+import com.aranaira.arcanearchives.config.ConfigHandler;
+import com.aranaira.arcanearchives.inventory.ContainerRadiantChest;
+import com.aranaira.arcanearchives.inventory.slots.SlotExtended;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.ShortcutHandler;
@@ -462,6 +465,21 @@ public class DefaultCompat {
 
         if (Loader.isModLoaded("conarm")) {
             api.addGenericCompat(ContainerKnapsack.class);
+        }
+
+        if (Loader.isModLoaded("arcanearchives")) {
+            api.addCompat(ContainerRadiantChest.class, (chest, builder) -> {
+                var slots = new ArrayList<ISlot>();
+                for (Slot slot : chest.inventorySlots) {
+                    if (slot instanceof SlotExtended) {
+                        /**
+                         * @see com.aranaira.arcanearchives.inventory.handlers.ExtendedItemStackHandler#getSlotLimit(int)
+                         */
+                        slots.add(new FixedLimitSlot(slot, 64 * ConfigHandler.serverSideConfig.RadiantMultiplier));
+                    }
+                }
+                builder.addSlotGroup(slots, 9);
+            });
         }
     }
 
