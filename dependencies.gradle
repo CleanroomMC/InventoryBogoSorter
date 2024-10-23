@@ -86,4 +86,7 @@ dependencies {
     compileOnly rfg.deobf("curse.maven:industrial-renewal-299849:3340876")
     compileOnly rfg.deobf("curse.maven:rftools-224641:2861573")
     compileOnly rfg.deobf("curse.maven:mcjtylib-233105:2745846")
+
+    //[IronBackpacks-1.12.2-3.0.8-12](https://www.curseforge.com/minecraft/mc-mods/iron-backpacks/files/2564573)
+    compileOnly(rfg.deobf("curse.maven:iron-backpacks-227049:2564573"))
 }
