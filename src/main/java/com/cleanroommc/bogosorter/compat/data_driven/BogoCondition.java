@@ -21,8 +21,8 @@ public interface BogoCondition {
 
     static BogoCondition and(BogoCondition... conditions) {
         return conditions.length == 0
-            ? ALWAYS :
-            () -> Arrays.stream(conditions).allMatch(BogoCondition::test);
+            ? ALWAYS
+            : () -> Arrays.stream(conditions).allMatch(BogoCondition::test);
     }
 
     static BogoCondition or(BogoCondition... conditions) {

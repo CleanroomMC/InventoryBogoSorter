@@ -29,11 +29,11 @@ public class BogoCompatParser {
         if (condition == null) {
             return parseHandler(o);
         }
-        return new ConditionalCompatHandler(
-            o.get("target").getAsString(),
-            parseCondition(condition.getAsJsonObject()),
-            name -> parseHandler(o)
-        );
+        return api -> {
+            if (parseCondition(condition.getAsJsonObject()).test()) {
+                parseHandler(o).handle(api);
+            }
+        };
     }
 
     private static @NotNull BogoCompatHandler parseHandler(@NotNull JsonObject o) {
