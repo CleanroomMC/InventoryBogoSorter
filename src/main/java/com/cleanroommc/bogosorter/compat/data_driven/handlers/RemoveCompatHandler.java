@@ -9,7 +9,7 @@ import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 public class RemoveCompatHandler extends CompatHandlerBase {
     public RemoveCompatHandler(String className) {
         super(className);
-        BogoSorter.LOGGER.info("found remove-only bogo compat handler targeting: '{}'", className);
+        BogoSorter.LOGGER.info("constructed remove-only bogo compat handler targeting: '{}'", className);
     }
 
     @Override

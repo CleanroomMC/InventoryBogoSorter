@@ -9,7 +9,7 @@ import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 public class MarkOnlyCompatHandler extends CompatHandlerBase {
     public MarkOnlyCompatHandler(String className) {
         super(className);
-        BogoSorter.LOGGER.info("found mark-only bogo compat handler targeting: '{}'", className);
+        BogoSorter.LOGGER.info("constructed mark-only bogo compat handler targeting: '{}'", className);
     }
 
     @Override

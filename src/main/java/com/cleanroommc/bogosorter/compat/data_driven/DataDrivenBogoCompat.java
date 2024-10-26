@@ -37,17 +37,23 @@ public class DataDrivenBogoCompat {
     public static ArrayList<BogoCompatHandler> scanDefault() {
         var parsed = new ArrayList<BogoCompatHandler>();
         for (ModContainer mod : Loader.instance().getModList()) {
-            try (var zip = new ZipFile(mod.getSource())) {
-                var entry = zip.getEntry("resources/" + COMPAT_FILE);
+            var f = mod.getSource();
+            if (!f.exists()) {
+                continue; //for some special mods like 'minecraft' or 'scalar' or 'mcp'
+            }
+            try (var zip = new ZipFile(f)) {
+                var entry = zip.getEntry(COMPAT_FILE);
                 if (entry == null) {
                     continue;
                 }
+                BogoSorter.LOGGER.info("found '{}' in mod '{}'", COMPAT_FILE, mod.getModId());
                 var arr = GSON.fromJson(
                     new BufferedReader(new InputStreamReader(zip.getInputStream(entry))),
                     JsonArray.class
                 );
                 parsed.addAll(parseAll(arr));
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                BogoSorter.LOGGER.error("error during reading '{}' in mod '{}'", COMPAT_FILE, mod.getModId(), e);
             }
         }
         Path path = Loader.instance().getConfigDir().toPath().resolve("bogosorter").resolve(COMPAT_FILE);

@@ -18,7 +18,7 @@ public class MappedSlotCompatHandler extends CompatHandlerBase {
 
     public MappedSlotCompatHandler(String className, int rowSize, Function<List<Slot>, List<ISlot>> mapper) {
         super(className);
-        BogoSorter.LOGGER.info("found mapped bogo compat handler targeting '{}' with row size '{}'", className, rowSize);
+        BogoSorter.LOGGER.info("constructed mapped bogo compat handler targeting '{}' with row size '{}'", className, rowSize);
         this.rowSize = rowSize;
         this.mapper = Objects.requireNonNull(mapper);
     }

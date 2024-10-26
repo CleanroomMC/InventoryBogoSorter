@@ -10,7 +10,7 @@ public class GeneralCompatHandler extends CompatHandlerBase {
 
     public GeneralCompatHandler(String className) {
         super(className);
-        BogoSorter.LOGGER.info("found general bogo compat handler targeting: '{}'", className);
+        BogoSorter.LOGGER.info("constructed general bogo compat handler targeting: '{}'", className);
     }
 
     @Override

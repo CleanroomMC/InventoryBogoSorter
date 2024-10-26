@@ -21,7 +21,7 @@ public class RangedSlotCompatHandler extends CompatHandlerBase {
         this.end = end;
         this.rowSize = rowSize;
         BogoSorter.LOGGER.info(
-            "found ranged bogo compat handler targeting '{}', with start {}, end {}, row size {}",
+            "constructed ranged bogo compat handler targeting '{}', with start {}, end {}, row size {}",
             targetClassName,
             start,
             end,
