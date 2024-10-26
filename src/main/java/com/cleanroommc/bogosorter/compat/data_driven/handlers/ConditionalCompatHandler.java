@@ -13,7 +13,11 @@ public class ConditionalCompatHandler extends CompatHandlerBase {
     private final BogoCondition condition;
     private final Function<String, BogoCompatHandler> target2handler;
 
-    public ConditionalCompatHandler(String className, BogoCondition condition, Function<String, BogoCompatHandler> target2handler) {
+    public ConditionalCompatHandler(
+        String className,
+        BogoCondition condition,
+        Function<String, BogoCompatHandler> target2handler
+    ) {
         super(className);
         this.condition = condition;
         this.target2handler = target2handler;

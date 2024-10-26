@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.handlers;
 
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.google.common.base.Preconditions;
 
@@ -19,6 +20,13 @@ public class RangedSlotCompatHandler extends CompatHandlerBase {
         this.start = start;
         this.end = end;
         this.rowSize = rowSize;
+        BogoSorter.LOGGER.info(
+            "found ranged bogo compat handler targeting '{}', with start {}, end {}, row size {}",
+            targetClassName,
+            start,
+            end,
+            rowSize
+        );
     }
 
     @Override

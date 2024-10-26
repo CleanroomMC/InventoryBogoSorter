@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.handlers;
 
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
 import net.minecraft.inventory.Slot;
@@ -17,6 +18,7 @@ public class MappedSlotCompatHandler extends CompatHandlerBase {
 
     public MappedSlotCompatHandler(String className, int rowSize, Function<List<Slot>, List<ISlot>> mapper) {
         super(className);
+        BogoSorter.LOGGER.info("found mapped bogo compat handler targeting '{}' with row size '{}'", className, rowSize);
         this.rowSize = rowSize;
         this.mapper = Objects.requireNonNull(mapper);
     }

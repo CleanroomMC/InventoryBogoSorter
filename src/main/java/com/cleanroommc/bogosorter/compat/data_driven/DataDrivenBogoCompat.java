@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven;
 
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -21,17 +22,14 @@ import java.util.zip.ZipFile;
 public class DataDrivenBogoCompat {
     public static final String COMPAT_FILE = "bogo.compat.json";
     private static final Gson GSON = new Gson();
-    private static boolean init = false;
 
     public static void handle(IBogoSortAPI api) {
-        if (init) {
-            return;
-        }
-        init = true;
+        BogoSorter.LOGGER.info("adding data-driven compat");
         for (BogoCompatHandler handler : scanDefault()) {
             try {
                 handler.handle(api);
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                BogoSorter.LOGGER.error("error when adding data-driven compat",  e);
             }
         }
     }
@@ -52,12 +50,14 @@ public class DataDrivenBogoCompat {
             } catch (IOException ignored) {
             }
         }
-        Path path = Loader.instance().getConfigDir().toPath().resolve("bogosorter/" + COMPAT_FILE);
+        Path path = Loader.instance().getConfigDir().toPath().resolve("bogosorter").resolve(COMPAT_FILE);
         if (Files.exists(path)) {
+            BogoSorter.LOGGER.info("found compat file in config directory");
             try {
                 var arr = GSON.fromJson(Files.newBufferedReader(path), JsonArray.class);
                 parsed.addAll(parseAll(arr));
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                BogoSorter.LOGGER.error("error when parsing compat file from config", e);
             }
         }
         return parsed;
@@ -69,6 +69,7 @@ public class DataDrivenBogoCompat {
             try {
                 parsed.add(BogoCompatParser.parse(element.getAsJsonObject()));
             } catch (Exception e) {
+                BogoSorter.LOGGER.error("error when parsing handler json: {}", element,  e);
             }
         }
         return parsed;

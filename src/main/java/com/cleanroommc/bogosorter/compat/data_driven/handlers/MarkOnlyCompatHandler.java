@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.handlers;
 
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 
 /**
@@ -8,6 +9,7 @@ import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 public class MarkOnlyCompatHandler extends CompatHandlerBase {
     public MarkOnlyCompatHandler(String className) {
         super(className);
+        BogoSorter.LOGGER.info("found mark-only bogo compat handler targeting: '{}'", className);
     }
 
     @Override

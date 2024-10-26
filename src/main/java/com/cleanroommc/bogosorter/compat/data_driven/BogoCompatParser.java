@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven;
 
+import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.data_driven.handlers.*;
@@ -25,20 +26,26 @@ public class BogoCompatParser {
     @NotNull
     public static BogoCompatHandler parse(@NotNull JsonObject o) {
         JsonElement condition = o.get("condition");
+        if (condition == null) {
+            return parseHandler(o);
+        }
         return new ConditionalCompatHandler(
             o.get("target").getAsString(),
-            condition != null && condition.isJsonObject()
-                ? parseCondition(condition.getAsJsonObject())
-                : BogoCondition.ALWAYS,
-            name -> switch (o.get("type").getAsString()) {
-                case "general" -> new GeneralCompatHandler(name);
-                case "remove" -> new RemoveCompatHandler(name);
-                case "mark_only" -> new MarkOnlyCompatHandler(name);
-                case "slot_range" -> parseRanged(o, name);
-                case "slot_mapped" -> parseMapped(o, name);
-                default -> throw new IllegalArgumentException();
-            }
+            parseCondition(condition.getAsJsonObject()),
+            name -> parseHandler(o)
         );
+    }
+
+    private static @NotNull BogoCompatHandler parseHandler(@NotNull JsonObject o) {
+        var name = o.get("target").getAsString();
+        return switch (o.get("type").getAsString()) {
+            case "general" -> new GeneralCompatHandler(name);
+            case "remove" -> new RemoveCompatHandler(name);
+            case "mark_only" -> new MarkOnlyCompatHandler(name);
+            case "slot_range" -> parseRanged(o, name);
+            case "slot_mapped" -> parseMapped(o, name);
+            default -> throw new IllegalArgumentException();
+        };
     }
 
     @NotNull
@@ -63,6 +70,10 @@ public class BogoCompatParser {
             if (condition != null) {
                 conditions.add(condition);
             }
+        }
+        if (conditions.isEmpty()) {
+            BogoSorter.LOGGER.warn("no valid logics in: {}", o);
+            return BogoCondition.ALWAYS;
         }
         return BogoCondition.and(conditions.toArray(new BogoCondition[0]));
     }
