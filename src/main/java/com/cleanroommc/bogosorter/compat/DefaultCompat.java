@@ -11,6 +11,7 @@ import com.cleanroommc.bogosorter.ShortcutHandler;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.api.ISlot;
+import com.cleanroommc.bogosorter.compat.data_driven.DataDrivenBogoCompat;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
@@ -463,6 +464,8 @@ public class DefaultCompat {
         if (Loader.isModLoaded("conarm")) {
             api.addGenericCompat(ContainerKnapsack.class);
         }
+
+        DataDrivenBogoCompat.handle(api);
     }
 
     private static ISlot avaritiaddons$findSlot(List<ISlot> slots, ItemStack itemStack, boolean emptyOnly) {
