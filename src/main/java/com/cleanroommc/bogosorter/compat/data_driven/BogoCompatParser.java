@@ -56,15 +56,20 @@ public class BogoCompatParser {
             var condition = switch (entry.getKey()) {
                 case "mod" -> BogoCondition.modloaded(value.getAsString());
                 case "not" -> BogoCondition.not(parseCondition(value.getAsJsonObject()));
-                case "and" -> parseCondition(value.getAsJsonObject());
-                case "or" -> BogoCondition.or(
-                    value
-                        .getAsJsonObject()
-                        .entrySet()
-                        .stream()
-                        .map(e -> parseCondition(e.getValue().getAsJsonObject()))
-                        .toArray(BogoCondition[]::new)
-                );
+                case "and" -> {
+                    ArrayList<BogoCondition> parsed = new ArrayList<>();
+                    for (JsonElement element : value.getAsJsonArray()) {
+                        parsed.add(parseCondition(element.getAsJsonObject()));
+                    }
+                    yield BogoCondition.and(parsed.toArray(new BogoCondition[0]));
+                }
+                case "or" -> {
+                    ArrayList<BogoCondition> parsed = new ArrayList<>();
+                    for (JsonElement element : value.getAsJsonArray()) {
+                        parsed.add(parseCondition(element.getAsJsonObject()));
+                    }
+                    yield BogoCondition.or(parsed.toArray(new BogoCondition[0]));
+                }
                 default -> null;
             };
             if (condition != null) {
