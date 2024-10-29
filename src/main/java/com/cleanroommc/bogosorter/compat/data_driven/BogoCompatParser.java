@@ -54,7 +54,7 @@ public class BogoCompatParser {
         for (var entry : o.entrySet()) {
             var value = entry.getValue();
             var condition = switch (entry.getKey()) {
-                case "mod" -> BogoCondition.modloaded(value.getAsString());
+                case "mod" -> parseModCondition(entry.getValue());
                 case "not" -> BogoCondition.not(parseCondition(value.getAsJsonObject()));
                 case "and" -> {
                     ArrayList<BogoCondition> parsed = new ArrayList<>();
@@ -79,6 +79,26 @@ public class BogoCompatParser {
         if (conditions.isEmpty()) {
             BogoSorter.LOGGER.warn("no valid logics in: {}", o);
             return BogoCondition.ALWAYS;
+        }
+        return BogoCondition.and(conditions.toArray(new BogoCondition[0]));
+    }
+
+    private static BogoCondition parseModCondition(JsonElement element) {
+        if (element.isJsonPrimitive()) {
+            return BogoCondition.modloaded(element.getAsString());
+        }
+        var o = element.getAsJsonObject();
+        var id = o.get("id").getAsString();
+        var versionPattern = o.get("version_pattern");
+
+        List<BogoCondition> conditions = new ArrayList<>();
+        conditions.add(BogoCondition.modloaded(id));
+        if (versionPattern != null) {
+            conditions.add(() -> Loader.instance()
+                .getIndexedModList()
+                .get(id)
+                .getVersion()
+                .matches(versionPattern.getAsString()));
         }
         return BogoCondition.and(conditions.toArray(new BogoCondition[0]));
     }
