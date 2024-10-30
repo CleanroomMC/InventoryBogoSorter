@@ -176,8 +176,11 @@ public class ClientEventHandler {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onMouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
         KeyBind.checkKeys(getTicks());
-        if (event.getGui() instanceof GuiContainer && handleInput((GuiContainer) event.getGui())) {
-            event.setCanceled(true);
+
+        if (event.getGui() instanceof GuiContainer container) {
+            if (handleInput(container)) {
+                event.setCanceled(true);
+            }
         }
     }
 
