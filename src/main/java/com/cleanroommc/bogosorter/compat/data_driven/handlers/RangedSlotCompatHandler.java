@@ -31,6 +31,6 @@ public class RangedSlotCompatHandler extends CompatHandlerBase {
 
     @Override
     public void handle(IBogoSortAPI api) {
-        api.addCompat(toClass(), (container, builder) -> builder.addSlotGroup(start, end, rowSize));
+        api.addCompat(toClass(), (container, builder) -> additionalAction(builder.addSlotGroup(start, end, rowSize)));
     }
 }

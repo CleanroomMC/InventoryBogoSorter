@@ -15,6 +15,6 @@ public class GeneralCompatHandler extends CompatHandlerBase {
 
     @Override
     public void handle(IBogoSortAPI api) {
-        api.addGenericCompat(toClass());
+        api.addCompat(toClass(), (container, builder) -> additionalAction(builder.addGenericSlotGroup()));
     }
 }

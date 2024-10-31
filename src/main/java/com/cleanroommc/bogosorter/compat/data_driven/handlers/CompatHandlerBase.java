@@ -1,18 +1,21 @@
 package com.cleanroommc.bogosorter.compat.data_driven.handlers;
 
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
+import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.compat.data_driven.BogoCompatHandler;
 import net.minecraft.inventory.Container;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * @author ZZZank
  */
 public abstract class CompatHandlerBase implements BogoCompatHandler {
     public final String targetName;
+    private Consumer<ISlotGroup> additional;
 
     public CompatHandlerBase(String className) {
         this.targetName = Objects.requireNonNull(className);
@@ -42,4 +45,14 @@ public abstract class CompatHandlerBase implements BogoCompatHandler {
 
     @Override
     public abstract void handle(IBogoSortAPI api);
+
+    public void setAdditional(Consumer<ISlotGroup> additional) {
+        this.additional = additional;
+    }
+
+    public void additionalAction(ISlotGroup slotGroup) {
+        if (additional != null) {
+            additional.accept(slotGroup);
+        }
+    }
 }

@@ -25,8 +25,8 @@ public class MappedSlotCompatHandler extends CompatHandlerBase {
 
     @Override
     public void handle(IBogoSortAPI api) {
-        api.addCompat(toClass(), (container, builder) -> {
-            builder.addSlotGroup(mapper.apply(container.inventorySlots), rowSize);
-        });
+        api.addCompat(toClass(), (container, builder) -> additionalAction(
+            builder.addSlotGroup(mapper.apply(container.inventorySlots), rowSize))
+        );
     }
 }
