@@ -56,20 +56,8 @@ public class BogoCompatParser {
             var condition = switch (entry.getKey()) {
                 case "mod" -> parseModCondition(entry.getValue());
                 case "not" -> BogoCondition.not(parseCondition(value.getAsJsonObject()));
-                case "and" -> {
-                    ArrayList<BogoCondition> parsed = new ArrayList<>();
-                    for (JsonElement element : value.getAsJsonArray()) {
-                        parsed.add(parseCondition(element.getAsJsonObject()));
-                    }
-                    yield BogoCondition.and(parsed.toArray(new BogoCondition[0]));
-                }
-                case "or" -> {
-                    ArrayList<BogoCondition> parsed = new ArrayList<>();
-                    for (JsonElement element : value.getAsJsonArray()) {
-                        parsed.add(parseCondition(element.getAsJsonObject()));
-                    }
-                    yield BogoCondition.or(parsed.toArray(new BogoCondition[0]));
-                }
+                case "and" -> BogoCondition.and(parseConditionList(value).toArray(new BogoCondition[0]));
+                case "or" -> BogoCondition.or(parseConditionList(value).toArray(new BogoCondition[0]));
                 default -> null;
             };
             if (condition != null) {
@@ -83,23 +71,30 @@ public class BogoCompatParser {
         return BogoCondition.and(conditions.toArray(new BogoCondition[0]));
     }
 
+    private static @NotNull ArrayList<BogoCondition> parseConditionList(JsonElement value) {
+        ArrayList<BogoCondition> parsed = new ArrayList<>();
+        for (JsonElement element : value.getAsJsonArray()) {
+            parsed.add(parseCondition(element.getAsJsonObject()));
+        }
+        return parsed;
+    }
+
     private static BogoCondition parseModCondition(JsonElement element) {
         if (element.isJsonPrimitive()) {
             return BogoCondition.modloaded(element.getAsString());
         }
-        var o = element.getAsJsonObject();
-        var id = o.get("id").getAsString();
-        var versionPattern = o.get("version_pattern");
 
+        var o = element.getAsJsonObject();
         List<BogoCondition> conditions = new ArrayList<>();
+
+        var id = o.get("id").getAsString();
         conditions.add(BogoCondition.modloaded(id));
+
+        var versionPattern = o.get("version_pattern");
         if (versionPattern != null) {
-            conditions.add(() -> Loader.instance()
-                .getIndexedModList()
-                .get(id)
-                .getVersion()
-                .matches(versionPattern.getAsString()));
+            conditions.add(BogoCondition.modVersionMatched(id, versionPattern.getAsString()));
         }
+
         return BogoCondition.and(conditions.toArray(new BogoCondition[0]));
     }
 
