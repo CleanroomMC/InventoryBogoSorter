@@ -481,6 +481,10 @@ public class DefaultCompat {
                 builder.addSlotGroup(slots, 9);
             });
         }
+
+        if (Loader.isModLoaded("ironbackpacks")) {
+            api.addGenericCompat(gr8pefish.ironbackpacks.container.ContainerBackpack.class);
+        }
     }
 
     private static ISlot avaritiaddons$findSlot(List<ISlot> slots, ItemStack itemStack, boolean emptyOnly) {
