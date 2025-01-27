@@ -1,0 +1,13 @@
+{
+  "package": "com.cleanroommc.bogosorter.core.mixin.hbm",
+  "refmap": "mixins.bogosorter.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinContainerCrateDesh",
+    "MixinContainerCrateIron",
+    "MixinContainerCrateSteel",
+    "MixinContainerCrateTungsten"
+  ]
+}
