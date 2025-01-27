@@ -463,6 +463,10 @@ public class DefaultCompat {
         if (Loader.isModLoaded("conarm")) {
             api.addGenericCompat(ContainerKnapsack.class);
         }
+
+        if (Loader.isModLoaded("ironbackpacks")) {
+            api.addGenericCompat(gr8pefish.ironbackpacks.container.ContainerBackpack.class);
+        }
     }
 
     private static ISlot avaritiaddons$findSlot(List<ISlot> slots, ItemStack itemStack, boolean emptyOnly) {
