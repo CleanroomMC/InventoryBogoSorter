@@ -6,6 +6,7 @@ import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -30,6 +31,20 @@ public class ShortcutHandler {
     public static void moveSingleItem(EntityPlayer player, Container container, ISlot slot, boolean emptySlot) {
         moveItemStack(player, container, slot, emptySlot, 1);
     }
+
+    @SideOnly(Side.CLIENT)
+    public static boolean moveItemStack(GuiContainer guiContainer, boolean emptySlot) {
+        Slot slot = guiContainer.getSlotUnderMouse();
+        if (slot == null || slot.getStack().isEmpty()) return false;
+
+        EntityPlayer player = Minecraft.getMinecraft().player;
+        Container container = guiContainer.inventorySlots;
+        ISlot iSlot = BogoSortAPI.INSTANCE.getSlot(slot);
+
+        moveItemStack(player, container, iSlot, emptySlot, iSlot.bogo$getStack().getCount());
+        return true;
+    }
+
 
     public static void moveItemStack(EntityPlayer player, Container container, ISlot slot, boolean emptySlot, int amount) {
         if (slot == null || slot.bogo$getStack().isEmpty()) return;
