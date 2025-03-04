@@ -10,6 +10,7 @@ bogosort.gui.tab.nbt_sort_rules.name=NBT sort rules
 bogosort.gui.available_sort_rules=Available Sort-Rules
 bogosort.gui.configured_sort_rules=Configured Sort-Rules
 bogosort.gui.enable_refill=Enable auto hotbar refill
+bogosort.gui.refill_comment=Quark is installed. If this option is disabled, theirs might still be enabled. You can find the config at 'Management' -> 'Automatic Tool Restock'.
 bogosort.gui.refill_threshold=Auto refill damage threshold
 bogosort.gui.ascending=Ascending
 bogosort.gui.descending=Descending
@@ -62,7 +63,7 @@ bogosort.sortrules.item.color.description=Sorts items numerically by its color h
 bogosort.sortrules.nbt.potion.name=Potions
 bogosort.sortrules.nbt.enchantment.name=Enchantments
 bogosort.sortrules.nbt.enchantment_book.name=Ench. books
-bogosort.sortrules.nbt.gt_circ_config.name=GT programmable circuit
+bogosort.sortrules.nbt.gt_circ_config.name=GT prog. circuit
 bogosort.sortrules.nbt.gt_item_damage.name=GT tool damage
 
 bogosort.sortrules.nbt.potion.description=Sorts potions by effect and level

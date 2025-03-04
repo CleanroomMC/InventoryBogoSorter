@@ -1,19 +1,39 @@
-# Brachy's Inventory Tweaks
+# Inventory Bogosorter
 
-This is a rewrite of the popular inventory tweaks mod.
+This is aims to replace the popular Inventory Tweaks mod.
 
 ### Why?
-InventoryTweaks API is very limited. It doesn't work well with modular gui libraries like ModularUI.
+
+Inventory Tweaks API is very limited. It doesn't work well with modular gui libraries like ModularUI. It also has desync bugs, since it is client side only.
+
 ### Why rewrite and not just fork?
-The code base is utter garbage. It's one of the most disgusting code bases I've ever seen (no offense).
+
+The Inventory Tweaks code is very unpleasant to work with. I rather write my own clean mod.
 
 ---
 
+## Features
+
+- sorting of player inventories in (almost) all moded GUI's (default key is middle mouse button)
+- sorting of many modded inventories
+- sort buttons for each sortable inventory
+- configuring of sort rules (open config with K by default)
+- automatically switching out tools wich are about to break
+- automatically refill broken tools or used up items
+- scroll through vertical slots above a hotbar slots while holding ALT
+- several key shortcuts to move items:
+  - CTRL + LMB: transfers a single item
+  - CTRL + RMB: transfers a single item into an empty slot
+  - Space + LMB: transfer the whole inventory
+  - ALT + LMB: transfers all items of the same type
+  - Space + Q: throws the whole inventory into the world
+  - ALT + Q: throws all the items of the same type into the world
+
 ## TODO's
 
-- basic sorting
-- advanced sorting of items (name, meta, mod, ore dict, nbt)
-- user customizable sort order
-- more user customization (like new row between certain sorts)
-- swap out broken tools automatically
-
+- sorting profiles
+  - bind certain profiles to a certain block? (might be difficult)
+  - radial menu to quickly choose profile
+  - choose profile for ae2 and jei
+- configurable sort sound
+- animation?

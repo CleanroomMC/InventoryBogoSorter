@@ -1,22 +1,34 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.api.ISlot;
+import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
-import net.minecraft.entity.player.InventoryPlayer;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.PlayerInvWrapper;
-import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import org.jetbrains.annotations.Nullable;
+import ru.socol.expandableinventory.gui.ContainerExpandedInventory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GuiSortingContext {
+
+    private static Container currentContainer;
+    private static GuiSortingContext currentSortingContext;
+
+    public static GuiSortingContext getOrCreate(Container container) {
+        if (currentContainer != container) {
+            currentSortingContext = create(container);
+            currentContainer = container;
+        }
+        return currentSortingContext;
+    }
 
     public static GuiSortingContext create(Container container) {
         GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
@@ -30,82 +42,54 @@ public class GuiSortingContext {
         return builder.build();
     }
 
-    public static GuiSortingContext create(Container container, boolean player) {
-        if (player) {
-            GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
-            addPlayerInventory(builder, container);
-            return builder.build();
-        }
-        if (container instanceof ISortableContainer) {
-            GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
-            ((ISortableContainer) container).buildSortingContext(builder);
-            return builder.build();
-        }
-        if (BogoSortAPI.isValidSortable(container)) {
-            GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
-            BogoSortAPI.INSTANCE.getBuilder(container).accept(container, builder);
-            return builder.build();
-        }
-        return new GuiSortingContext(container, Collections.emptyList(), false);
-    }
-
     private final Container container;
-    private final List<Slot[][]> slots;
+    private final List<SlotGroup> slotGroups;
     private final boolean hasPlayer;
 
-    public GuiSortingContext(Container container, List<Slot[][]> slots, boolean hasPlayer) {
+    public GuiSortingContext(Container container, List<SlotGroup> slotGroups, boolean hasPlayer) {
+        slotGroups.sort(Comparator.comparingInt(SlotGroup::getPriority));
         this.container = container;
-        this.slots = slots;
+        this.slotGroups = slotGroups;
         this.hasPlayer = hasPlayer;
     }
 
     @Nullable
-    public Slot[][] getSlotGroup(int id) {
-        for (Slot[][] slotGroup : slots) {
-            for (Slot[] slotRow : slotGroup) {
-                for (Slot slot : slotRow) {
-                    if (id == slot.slotNumber) return slotGroup;
-                }
-            }
+    public SlotGroup getSlotGroup(int id) {
+        for (SlotGroup slotGroup : this.slotGroups) {
+            if (slotGroup.hasSlot(id)) return slotGroup;
         }
         return null;
     }
 
     @Nullable
-    public Slot[][] getNonPlayerSlotGroup() {
-        for (Slot[][] slotGroup : slots) {
-            if (slotGroup.length == 0 || slotGroup[0].length == 0) {
-                continue;
-            }
-            if (!BogoSortAPI.isPlayerSlot(slotGroup[0][0])) {
-                return slotGroup;
-            }
+    public SlotGroup getNonPlayerSlotGroup() {
+        for (SlotGroup slotGroup : this.slotGroups) {
+            if (!isEmpty() && !slotGroup.isPlayerInventory()) return slotGroup;
         }
         return null;
     }
 
     @Nullable
-    public Slot[][] getPlayerSlotGroup() {
-        for (Slot[][] slotGroup : slots) {
-            if (slotGroup.length == 0 || slotGroup[0].length == 0) {
-                continue;
-            }
-            if (BogoSortAPI.isPlayerSlot(slotGroup[0][0])) {
-                return slotGroup;
-            }
+    public SlotGroup getPlayerSlotGroup() {
+        for (SlotGroup slotGroup : this.slotGroups) {
+            if (slotGroup.isPlayerInventory() && !slotGroup.isHotbar()) return slotGroup;
         }
         return null;
     }
 
     public int getNonPlayerSlotGroupAmount() {
         if (this.hasPlayer) {
-            return this.slots.size() - 1;
+            return this.slotGroups.size() - 1;
         }
-        return this.slots.size();
+        return this.slotGroups.size();
     }
 
     public Container getContainer() {
         return container;
+    }
+
+    public List<SlotGroup> getSlotGroups() {
+        return slotGroups;
     }
 
     public boolean hasPlayer() {
@@ -113,53 +97,62 @@ public class GuiSortingContext {
     }
 
     public boolean isEmpty() {
-        return this.slots.isEmpty();
+        return this.slotGroups.isEmpty();
     }
 
     public static class Builder implements ISortingContextBuilder {
 
         private final Container container;
-        private final List<Slot[][]> slots = new ArrayList<>();
+        private final List<SlotGroup> slots = new ArrayList<>();
         private boolean player = false;
 
         public Builder(Container container) {
             this.container = container;
         }
 
-        public Builder addSlotGroup(Slot[][] slotGroup) {
+        @Override
+        public ISlotGroup addSlotGroupOf(List<Slot> slots, int rowSize) {
+            return addSlotGroup(slots.stream().map(BogoSortAPI.INSTANCE::getSlot).collect(Collectors.toList()), rowSize);
+        }
+
+        @Override
+        public ISlotGroup addSlotGroup(List<ISlot> slots, int rowSize) {
+            if (slots.size() < rowSize) {
+                throw new IllegalArgumentException("Slots must at least fill 1 row! Expected at least " + rowSize + " slot, but only found " + slots.size());
+            }
+            if (slots.size() < 2) {
+                throw new IllegalArgumentException("Slot group must have at least 2 slots!");
+            }
+            SlotGroup slotGroup = new SlotGroup(slots, rowSize);
             this.slots.add(slotGroup);
-            return this;
+            return slotGroup;
         }
 
-        public Builder addSlotGroup(int rowSize, int startIndex, int endIndex) {
-            return addSlotGroup(rowSize, container.inventorySlots.subList(startIndex, endIndex));
+        @Override
+        public ISlotGroup addSlotGroup(int startIndex, int endIndex, int rowSize) {
+            return addSlotGroupOf(this.container.inventorySlots.subList(startIndex, endIndex), rowSize);
         }
 
-        public Builder addSlotGroup(int rowSize, List<Slot> slots) {
-            // create new list just to be save
-            slots = new ArrayList<>(slots);
-            // sort slots so they have the correct order when put in grid
-            slots.sort((slot1, slot2) -> {
-                if (slot1.yPos == slot2.yPos) return Integer.compare(slot1.xPos, slot2.xPos);
-                return Integer.compare(slot1.yPos, slot2.yPos);
-            });
-            // determine row amount
-            int rows = slots.size() / rowSize;
-            if (slots.size() % rowSize != 0) rows++;
-            // put slots into 2d array
-            Slot[][] slotGroup = new Slot[rows][rowSize];
-            for (int i = 0; i < slots.size(); i++) {
-                slotGroup[i / rowSize][i % rowSize] = slots.get(i);
-            }
-            if (rows > slots.size() / rowSize) {
-                int nulls = 0;
-                Slot[] lastRow = slotGroup[rows - 1];
-                for (Slot slot : lastRow) {
-                    if (slot == null) nulls++;
+        @Override
+        public ISlotGroup addGenericSlotGroup() {
+            List<ISlot> slots = new ArrayList<>();
+            IntArraySet xValues = new IntArraySet();
+            for (Slot slot : this.container.inventorySlots) {
+                ISlot iSlot = BogoSortAPI.INSTANCE.getSlot(slot);
+                if (!BogoSortAPI.isPlayerSlot(iSlot)) {
+                    slots.add(iSlot);
+                    xValues.add(iSlot.bogo$getX());
                 }
-                slotGroup[rows - 1] = Arrays.copyOf(lastRow, lastRow.length - nulls);
             }
-            return addSlotGroup(slotGroup);
+            if (slots.size() < 2) {
+                return SlotGroup.EMPTY;
+            }
+            return addSlotGroup(slots, xValues.size());
+        }
+
+        @Override
+        public Container getContainer() {
+            return this.container;
         }
 
         public GuiSortingContext build() {
@@ -168,18 +161,27 @@ public class GuiSortingContext {
     }
 
     private static void addPlayerInventory(GuiSortingContext.Builder builder, Container container) {
-        List<Slot> slots = new ArrayList<>();
+        List<ISlot> slots = new ArrayList<>();
+        List<ISlot> hotbar = new ArrayList<>();
+        boolean all = BogoSorter.isExpandableInventoryLoaded() && container instanceof ContainerExpandedInventory;
         for (Slot slot : container.inventorySlots) {
-            if (slot.inventory instanceof InventoryPlayer ||
-                    (slot instanceof SlotItemHandler &&
-                            (((SlotItemHandler) slot).getItemHandler() instanceof PlayerMainInvWrapper || ((SlotItemHandler) slot).getItemHandler() instanceof PlayerInvWrapper))) {
-                if (slot.getSlotIndex() >= 9 && slot.getSlotIndex() < 36) {
-                    slots.add(slot);
-                }
-            }
+            if (BogoSortAPI.isPlayerSlot(slot)) {
+                if (slot.getSlotIndex() < 9) hotbar.add(BogoSortAPI.INSTANCE.getSlot(slot));
+                else slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
+            } else if (all) slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
         }
         if (!slots.isEmpty()) {
-            builder.addSlotGroup(9, slots);
+            SlotGroup slotGroup = new SlotGroup(true, false, slots, Math.min(9, slots.size()));
+            slotGroup.priority(-10000)
+                    .buttonPosSetter(BogoSortAPI.INSTANCE.getPlayerButtonPos(container));
+            builder.slots.add(slotGroup);
+            builder.player = true;
+        }
+        if (!hotbar.isEmpty()) {
+            SlotGroup slotGroup = new SlotGroup(true, true, hotbar, Math.min(9, hotbar.size()));
+            slotGroup.priority(-10000)
+                    .buttonPosSetter(null);
+            builder.slots.add(slotGroup);
             builder.player = true;
         }
     }

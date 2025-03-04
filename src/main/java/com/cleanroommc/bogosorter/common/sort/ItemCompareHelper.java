@@ -350,8 +350,8 @@ public class ItemCompareHelper {
         if (c != 0 || !isBlock(item1)) return c;
         Block block1 = getBlock(item1);
         Block block2 = getBlock(item2);
-        IBlockState state1 = block1.getStateFromMeta(item1.getMetadata());
-        IBlockState state2 = block2.getStateFromMeta(item2.getMetadata());
+        IBlockState state1 = getBlockState(block1, item1.getMetadata());
+        IBlockState state2 = getBlockState(block2, item2.getMetadata());
         c = Boolean.compare(state2.isFullBlock(), state1.isFullBlock());
         if (c != 0) return c;
         c = Boolean.compare(state2.isFullCube(), state1.isFullCube());
@@ -385,6 +385,14 @@ public class ItemCompareHelper {
 
     public static int compareColor(ItemStack item1, ItemStack item2) {
         return Integer.compare(ItemColorHelper.getItemColorHue(item1), ItemColorHelper.getItemColorHue(item2));
+    }
+
+    public static IBlockState getBlockState(Block block, int meta) {
+        try {
+            return block.getStateFromMeta(meta);
+        } catch (Exception e) {
+            return block.getDefaultState();
+        }
     }
 
     public static boolean isBlock(ItemStack stack) {

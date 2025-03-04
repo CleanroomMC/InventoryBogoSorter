@@ -12,9 +12,13 @@ on:
         description: 'Mod version'
         required: true
       release_type:
-        description: 'Release type (release, beta, alpha)'
+        description: 'Release type'
+        type: choice
         default: 'beta'
-        required: true
+        options:
+          - 'release'
+          - 'beta'
+          - 'alpha'
 
 jobs:
   build:
@@ -60,9 +64,9 @@ jobs:
           curseforge-id: 632327
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
-          #modrinth-id: Ecvd12QC
-          #modrinth-featured: true
-          #modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-id: CuLATCrJ
+          modrinth-featured: true
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           github-tag: "v${{ github.event.inputs.version }}"
           github-generate-changelog: true
@@ -81,8 +85,8 @@ jobs:
           game-versions: |
             1.12.2
           dependencies: |
-            mixin-booter | depends | 5.0
-            modularui | depends | 2.0.2
+            mixin-booter | depends | 8.3
+            modularui | depends | 2.1.0
             railcraft | recommends | *
             ender-io | recommends | *
             thermal-expansion | recommends | *
@@ -110,6 +114,13 @@ jobs:
             gregtech-ce-unofficial | recommends | *
             galacticraft-legacy | recommends | *
             ae2-extended-life | recommends | *
+            simply-backpacks | recommends | 1.4.9
+            improvedbackpacks | recommends | *
+            expandable-inventory | recommends | *
+            charm | recommends | *
+            cooking-for-blockheads | recommends | *
+            mekanism | recommends | *
+            constructs-armory | recommends | *
           java: |
             8
           retry-attempts: 2

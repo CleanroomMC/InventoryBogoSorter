@@ -1,0 +1,93 @@
+//file:noinspection DependencyNotationArgument
+// TODO remove when fixed in RFG ^
+/*
+ * Add your dependencies here. Supported configurations:
+ *  - api("group:name:version:classifier"): if you use the types from this dependency in the public API of this mod
+ *       Available at runtime and compiletime for mods depending on this mod
+ *  - implementation("g:n:v:c"): if you need this for internal implementation details of the mod, but none of it is visible via the public API
+ *       Available at runtime but not compiletime for mods depending on this mod
+ *  - compileOnly("g:n:v:c"): if the mod you're building doesn't need this dependency during runtime at all, e.g. for optional mods
+ *       Not available at all for mods depending on this mod, only visible at compiletime for this mod
+ *  - compileOnlyApi("g:n:v:c"): like compileOnly, but also visible at compiletime for mods depending on this mod
+ *       Available at compiletime but not runtime for mods depending on this mod
+ *  - runtimeOnlyNonPublishable("g:n:v:c"): if you want to include a mod in this mod's runClient/runServer runs, but not publish it as a dependency
+ *       Not available at all for mods depending on this mod, only visible at runtime for this mod
+ *  - devOnlyNonPublishable("g:n:v:c"): a combination of runtimeOnlyNonPublishable and compileOnly for dependencies present at both compiletime and runtime,
+ *       but not published as Maven dependencies - useful for RFG-deobfuscated dependencies or local testing
+ *  - runtimeOnly("g:n:v:c"): if you don't need this at compile time, but want it to be present at runtime
+ *       Available at runtime for mods depending on this mod
+ *  - annotationProcessor("g:n:v:c"): mostly for java compiler plugins, if you know you need this, use it, otherwise don't worry
+ *  - testCONFIG("g:n:v:c") - replace CONFIG by one of the above (except api), same as above but for the test sources instead of main
+ *
+ *  - shadowImplementation("g:n:v:c"): effectively the same as API, but the dependency is included in your jar under a renamed package name
+ *       Requires you to enable usesShadowedDependencies in gradle.properties
+ *       For more info, see https://github.com/GregTechCEu/Buildscripts/blob/master/docs/shadow.md
+ *
+ * You can exclude transitive dependencies (dependencies of the chosen dependency) by appending { transitive = false } if needed,
+ * but use this sparingly as it can break using your mod as another mod's dependency if you're not careful.
+ *
+ * To depend on obfuscated jars you can use `devOnlyNonPublishable(rfg.deobf("dep:spec:1.2.3"))` to fetch an obfuscated jar from maven,
+ * or `devOnlyNonPublishable(rfg.deobf(project.files("libs/my-mod-jar.jar")))` to use a file.
+ *
+ * To add a mod with CurseMaven, replace '("g:n:v:c")' in the above with 'rfg.deobf("curse.maven:project_slug-project_id:file_id")'
+ * Example: devOnlyNonPublishable(rfg.deobf("curse.maven:top-245211:2667280"))
+ *
+ * Gradle names for some of the configuration can be misleading, compileOnlyApi and runtimeOnly both get published as dependencies in Maven, but compileOnly does not.
+ * The buildscript adds runtimeOnlyNonPublishable to also have a runtime dependency that's not published.
+ *
+ * For more details, see https://docs.gradle.org/8.4/userguide/java_library_plugin.html#sec:java_library_configurations_graph
+ */
+dependencies {
+    implementation("com.cleanroommc:modularui:2.5.0-rc3") { transitive false }
+    //implementation files('libs/modularui-2.2.3-dev.jar') // for testing purpose
+    compileOnly rfg.deobf('curse.maven:iron_chests-228756:2747935')
+    compileOnly rfg.deobf('curse.maven:cofh_core-69162:2920433')
+    compileOnly rfg.deobf('curse.maven:thermal_expansion-69163:2926431')
+    compileOnly rfg.deobf('curse.maven:actually_additions-228404:3117927')
+    compileOnly rfg.deobf('curse.maven:ender_storage_1_8-245174:2755787')
+    compileOnly rfg.deobf('curse.maven:ae2_extended_life-570458:3811277')
+    compileOnly 'com.enderio:endercore:0.5.78'
+    compileOnly('crazypants:enderio:5.3.72') { transitive false }
+    compileOnly rfg.deobf('curse.maven:draconic_evolution-223565:3431261')
+    compileOnly rfg.deobf('curse.maven:gregtech_ce_unofficial-557242:4325257')
+    compileOnly rfg.deobf('curse.maven:future_mc-310059:3842790')
+    compileOnly rfg.deobf('curse.maven:tinkers_construct-74072:2902483')
+    compileOnly rfg.deobf('curse.maven:constructs_armory-287683:3174535')
+    compileOnly rfg.deobf('curse.maven:projecte-226410:2702991')
+    compileOnly rfg.deobf('curse.maven:immersive_engineering-231951:2974106')
+    compileOnly rfg.deobf('curse.maven:forestry-59751:2918418')
+    compileOnly rfg.deobf('curse.maven:industrial_craft-242638:3838713')
+    compileOnly rfg.deobf('curse.maven:metalchests-290145:2751488')
+    compileOnly rfg.deobf('curse.maven:travelers_backpack-321117:3150850')
+    compileOnly rfg.deobf('curse.maven:colossal_chests-237875:2718588')
+    compileOnly rfg.deobf('curse.maven:cyclops_core-232758:3159497')
+    compileOnly rfg.deobf('curse.maven:quark-243121:2924091')
+    compileOnly rfg.deobf('curse.maven:cyclic-239286:3722420')
+    compileOnly rfg.deobf('curse.maven:bibliocraft-228027:3647708')
+    compileOnly rfg.deobf('curse.maven:railcraft-51195:2687757')
+    compileOnly rfg.deobf('curse.maven:ic2_classic-242942:3093607')
+    compileOnly rfg.deobf('curse.maven:energy_control-373450:3829524')
+    compileOnly rfg.deobf('curse.maven:mrtjpcore-229002:2735197')
+    compileOnly rfg.deobf('curse.maven:project_red_exploration-229049:2745551')
+    compileOnly rfg.deobf('curse.maven:betweenlands-243363:3540287')
+    compileOnly rfg.deobf('curse.maven:terrafirmacraft-302973:3645502')
+    compileOnly rfg.deobf('curse.maven:galacticraft_legacy-564236:3919260')
+    compileOnly rfg.deobf('curse.maven:rustic-256141:3107974')
+    compileOnly rfg.deobf('curse.maven:charset_lib-284523:3656492')
+    compileOnly rfg.deobf('curse.maven:charset_storage_chests-298584:3656498')
+    compileOnly rfg.deobf('curse.maven:simply_backpacks-311595:3028832')
+    compileOnly rfg.deobf('curse.maven:avaritiaddons-248873:4745387')
+    compileOnly rfg.deobf('curse.maven:wanionlib-253043:4623135')
+    compileOnly rfg.deobf('curse.maven:improvedbackpacks-270457:2918455')
+    compileOnly rfg.deobf('curse.maven:expandable_inventory-304371:2751939')
+    compileOnly rfg.deobf('curse.maven:charm-318872:3146596')
+    compileOnly rfg.deobf('curse.maven:cooking_for_blockheads-231484:2862651')
+    compileOnly rfg.deobf('curse.maven:mekanism-268560:2835175')
+    compileOnly rfg.deobf("curse.maven:industrial-renewal-299849:3340876")
+    compileOnly rfg.deobf("curse.maven:rftools-224641:2861573")
+    compileOnly rfg.deobf("curse.maven:mcjtylib-233105:2745846")
+    compileOnly rfg.deobf("curse.maven:hbms-nuclear-tech-hamster-reloaded-862305:4939325")
+    compileOnly rfg.deobf("curse.maven:arcane-archives-311357:3057332")
+    //[IronBackpacks-1.12.2-3.0.8-12](https://www.curseforge.com/minecraft/mc-mods/iron-backpacks/files/2564573)
+    compileOnly(rfg.deobf("curse.maven:iron-backpacks-227049:2564573"))
+}

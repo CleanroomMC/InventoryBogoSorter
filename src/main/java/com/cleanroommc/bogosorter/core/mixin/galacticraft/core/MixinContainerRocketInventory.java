@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ContainerRocketInventory.class)
+@Mixin(value = ContainerRocketInventory.class, remap = false)
 public class MixinContainerRocketInventory implements ISortableContainer {
 
     @Shadow
@@ -19,7 +19,7 @@ public class MixinContainerRocketInventory implements ISortableContainer {
     public void buildSortingContext(ISortingContextBuilder builder) {
         int inventorySpace = rocketType.getInventorySpace() - 2;
         if (inventorySpace > 2) {
-            builder.addSlotGroup(9, 0, inventorySpace);
+            builder.addSlotGroup(0, inventorySpace, 9);
         }
     }
 }

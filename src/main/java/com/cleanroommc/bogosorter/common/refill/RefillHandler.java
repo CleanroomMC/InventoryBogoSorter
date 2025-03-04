@@ -29,7 +29,7 @@ public class RefillHandler {
     static {
         Class<?> clazz;
         try {
-            clazz = Class.forName("gregtech.api.items.toolitem.IGTTool");
+            clazz = Class.forName("gregtech.api.items.toolitem.IGTTool", false, RefillHandler.class.getClassLoader());
         } catch (Exception ignored) {
             clazz = null;
         }
@@ -50,7 +50,10 @@ public class RefillHandler {
 
     @SubscribeEvent
     public static void onDestroyItem(PlayerDestroyItemEvent event) {
-        if (!PlayerConfig.get(event.getEntityPlayer()).enableAutoRefill || event.getEntityPlayer().world.isRemote)
+        if (event.getEntityPlayer() == null ||
+                event.getEntityPlayer().world == null ||
+                event.getEntityPlayer().world.isRemote ||
+                !PlayerConfig.get(event.getEntityPlayer()).enableAutoRefill)
             return;
 
         if (event.getOriginal().getItem() instanceof ItemBlock && shouldHandleRefill(event.getEntityPlayer(), event.getOriginal())) {
@@ -206,8 +209,15 @@ public class RefillHandler {
     }
 
     private void refillItem(ItemStack refill, int refillIndex) {
+        ItemStack current = ItemStack.EMPTY;
+        if (!this.swapItems) current = getItem(this.hotbarIndex);
         setAndSyncSlot(hotbarIndex, refill.copy());
         setAndSyncSlot(refillIndex, swapItems ? brokenItem.copy() : ItemStack.EMPTY);
+        if (!current.isEmpty()) {
+            // the broken item replaced itself with something
+            // insert the item into another slot to prevent it from being lost
+            this.inventory.addItemStackToInventory(current);
+        }
 
         // the sound should be played for this player
         if (!NetworkUtils.isClient(player)) {
@@ -232,6 +242,12 @@ public class RefillHandler {
         if (!item.isEmpty()) {
             player.inventoryContainer.inventoryItemStacks.set(slot, ItemStack.EMPTY);
         }
+    }
+
+    private ItemStack getItem(int index) {
+        if (index < 36) return this.inventory.mainInventory.get(index);
+        if (index < 40) return this.inventory.mainInventory.get(index - 36);
+        return this.inventory.offHandInventory.get(0);
     }
 
     private static boolean matchTags(ItemStack stackA, ItemStack stackB) {

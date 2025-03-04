@@ -1,7 +1,6 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.api.SortRule;
-import com.cleanroommc.bogosorter.api.SortType;
 import net.minecraft.nbt.NBTBase;
 
 import java.util.Comparator;
@@ -12,7 +11,7 @@ public class NbtSortRule extends SortRule<NBTBase> {
     private final String tagPath;
 
     public NbtSortRule(String key, String tagPath, Comparator<NBTBase> comparator) {
-        super(key, SortType.NBT, createComparator(tagPath, comparator));
+        super(key, createComparator(tagPath, comparator));
         this.tagPath = tagPath;
     }
 

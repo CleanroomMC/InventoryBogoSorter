@@ -40,7 +40,7 @@ public class AvailableListItem<T> extends Widget<AvailableListItem<T>> implement
                     }
                     return false;
                 })
-                .background(GuiTextures.BUTTON/*, ModularUITextures.ARROW_RIGHT.withFixedSize(10, 10, 0, 5)*/);
+                .background(GuiTextures.BUTTON_CLEAN/*, ModularUITextures.ARROW_RIGHT.withFixedSize(10, 10, 0, 5)*/);
         children.add(content);
         children.add(moveButton);
 

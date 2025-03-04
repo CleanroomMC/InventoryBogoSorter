@@ -21,8 +21,6 @@ public class NetworkHandler {
     private static int packetId = 0;
 
     public static void init() {
-        registerC2S(CDropItems.class);
-        registerC2S(CDropSlots.class);
         registerC2S(CSlotSync.class);
         registerC2S(CShortcut.class);
         registerC2S(CConfigSync.class);

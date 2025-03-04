@@ -1,8 +1,9 @@
 package com.cleanroommc.bogosorter.common.network;
 
+import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.ShortcutHandler;
+import com.cleanroommc.bogosorter.api.ISlot;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
 
@@ -37,8 +38,8 @@ public class CShortcut implements IPacket {
     public IPacket executeServer(NetHandlerPlayServer handler) {
         Container container = handler.player.openContainer;
         if (container == null) throw new IllegalStateException("Expected open container on server");
-        Slot slot = container.getSlot(slotNumber);
-        if (!slot.canTakeStack(handler.player)) {
+        ISlot slot = BogoSortAPI.getSlot(container, slotNumber);//container.getSlot(slotNumber);
+        if (!slot.bogo$canTakeStack(handler.player)) {
             return null;
         }
         switch (type) {
@@ -54,12 +55,18 @@ public class CShortcut implements IPacket {
             case MOVE_SINGLE_EMPTY:
                 ShortcutHandler.moveSingleItem(handler.player, container, slot, true);
                 break;
+            case DROP_ALL:
+                ShortcutHandler.dropItems(handler.player, container, slot, false);
+                break;
+            case DROP_ALL_SAME:
+                ShortcutHandler.dropItems(handler.player, container, slot, true);
+                break;
         }
         container.detectAndSendChanges();
         return null;
     }
 
     public enum Type {
-        MOVE_ALL, MOVE_ALL_SAME, MOVE_SINGLE, MOVE_SINGLE_EMPTY
+        MOVE_ALL, MOVE_ALL_SAME, MOVE_SINGLE, MOVE_SINGLE_EMPTY, DROP_ALL, DROP_ALL_SAME
     }
 }

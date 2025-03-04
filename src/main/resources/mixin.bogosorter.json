@@ -8,10 +8,12 @@
     "ItemStackAccessor",
     "MixinContainerHorseInventory",
     "MixinEntityLivingBase",
-    "MixinItemStack"
+    "MixinItemStack",
+    "SlotMixin"
   ],
   "client": [
     "CreativeSlotMixin",
+    "GuiContainerMixin",
     "GuiEditSignMixin",
     "MixinMinecraft"
   ]

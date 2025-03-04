@@ -7,14 +7,20 @@ import net.minecraft.inventory.Container;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ContainerStrongbox.class)
+@Mixin(value = ContainerStrongbox.class, remap = false)
 public abstract class MixinContainerStrongbox implements ISortableContainer {
 
     @Shadow
     int rowSize;
 
+    @Shadow
+    int storageIndex;
+
+    @SuppressWarnings("all")
     @Override
     public void buildSortingContext(ISortingContextBuilder builder) {
-        builder.addSlotGroup(rowSize, 36, ((Container) (Object) this).inventorySlots.size());
+        if (storageIndex != 0) {
+            builder.addSlotGroup(36, ((Container) (Object) this).inventorySlots.size(), rowSize);
+        }
     }
 }

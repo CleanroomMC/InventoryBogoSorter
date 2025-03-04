@@ -1,13 +1,19 @@
 package com.cleanroommc.bogosorter.api;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
-import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -19,6 +25,23 @@ public interface IBogoSortAPI {
     }
 
     /**
+     * Register a function that converts a {@link Slot} to a {@link ISlot}. Useful if modders messed up.
+     *
+     * @param clazz    slot class
+     * @param function converter function
+     * @param <T>      slot type
+     */
+    <T extends Slot> void addSlotGetter(Class<T> clazz, Function<T, ISlot> function);
+
+    /**
+     * Registers a function which handles slot insertions in a custom way.
+     *
+     * @param clazz      container class
+     * @param insertable custom insertion function
+     */
+    void addCustomInsertable(Class<? extends Container> clazz, ICustomInsertable insertable);
+
+    /**
      * Adds sorting compat for a container class
      *
      * @param clazz   container class
@@ -26,6 +49,16 @@ public interface IBogoSortAPI {
      * @param <T>     container type
      */
     <T extends Container> void addCompat(Class<T> clazz, BiConsumer<T, ISortingContextBuilder> builder);
+
+    /**
+     * Adds generic sorting compat for a container class. Meaning the slots must layed out in a rectangular shape.
+     *
+     * @param clazz container class
+     * @param <T>   container type
+     */
+    default <T extends Container> void addGenericCompat(Class<T> clazz) {
+        addCompat(clazz, (container, builder) -> builder.addGenericSlotGroup());
+    }
 
     /**
      * Adds sorting compat for a container class.
@@ -39,6 +72,15 @@ public interface IBogoSortAPI {
     <T> void addCompatSimple(Class<T> clazz, BiConsumer<T, ISortingContextBuilder> builder);
 
     /**
+     * Registers a function to figure out where to place player inventory sort buttons.
+     *
+     * @param clazz     class of the container
+     * @param buttonPos pos function or null if no buttons are desired
+     * @throws IllegalArgumentException if the class is not of a container
+     */
+    void addPlayerSortButtonPosition(Class<?> clazz, @Nullable IPosSetter buttonPos);
+
+    /**
      * Removes sorting compat for a container class
      *
      * @param clazz container class
@@ -49,18 +91,9 @@ public interface IBogoSortAPI {
     /**
      * Registers a sorting rule for items
      *
-     * @param type           the type of which component will be compared
      * @param itemComparator comparator
      */
-    void registerItemSortingRule(String key, SortType type, Comparator<ItemStack> itemComparator);
-
-    /**
-     * This registers a sort rule which can compare client data like localized name or color on server side.
-     * This method is not API friendly! You will not get it to work by simply registering a rule. It is much more involved.
-     * Instead, contact the author (brachy84) if you want to add a client sort rule.
-     */
-    @ApiStatus.Internal
-    void registerClientItemSortingRule(String key, SortType type, Comparator<ItemStack> comparator, Comparator<ItemSortContainer> serverComparator);
+    void registerItemSortingRule(String key, Comparator<ItemStack> itemComparator);
 
     /**
      * Registers a sorting rule for NBT tags
@@ -89,4 +122,40 @@ public interface IBogoSortAPI {
      * @see net.minecraftforge.common.util.Constants.NBT for expectedType
      */
     <T> void registerNbtSortingRule(String key, String tagPath, int expectedType, Comparator<T> comparator, Function<NBTBase, T> converter);
+
+    /**
+     * Opens the bogosort config gui
+     */
+    @SideOnly(Side.CLIENT)
+    default void openConfigGui() {
+        openConfigGui(null);
+    }
+
+    @SideOnly(Side.CLIENT)
+    void openConfigGui(GuiScreen old);
+
+    /**
+     * Tries to sort a slot group with the given slot.
+     *
+     * @param slot slot of slot group to sort
+     * @return if the slot group will be sorted (on server side)
+     */
+    @SideOnly(Side.CLIENT)
+    boolean sortSlotGroup(Slot slot);
+
+    /**
+     * Turns a slot into a generic interface slot
+     *
+     * @param slot slot
+     * @return generic slot
+     */
+    ISlot getSlot(Slot slot);
+
+    /**
+     * Transforms a list of slots using {@link #getSlot(Slot)}
+     *
+     * @param slots list of slots
+     * @return list of generic slots
+     */
+    List<ISlot> getSlots(@NotNull List<Slot> slots);
 }
