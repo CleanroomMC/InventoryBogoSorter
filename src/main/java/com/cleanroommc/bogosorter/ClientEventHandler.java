@@ -56,6 +56,10 @@ public class ClientEventHandler {
             .lmb(true).rmb(false)
             .shift(false).ctrl(false).alt(false).space(true)
             .build();
+    public static final KeyBind moveStack = KeyBind.builder("move_stack")
+            .lmb(true).rmb(false)
+            .shift(true).ctrl(false).alt(false)
+            .build();
     public static final KeyBind moveSingle = KeyBind.builder("move_single")
             .lmb(true).rmb(false)
             .shift(false).ctrl(true).alt(false)
@@ -176,8 +180,11 @@ public class ClientEventHandler {
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onMouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
         KeyBind.checkKeys(getTicks());
-        if (event.getGui() instanceof GuiContainer && handleInput((GuiContainer) event.getGui())) {
-            event.setCanceled(true);
+
+        if (event.getGui() instanceof GuiContainer container) {
+            if (handleInput(container)) {
+                event.setCanceled(true);
+            }
         }
     }
 
@@ -192,6 +199,10 @@ public class ClientEventHandler {
                 return true;
             }
             if (moveAllSame.isFirstPress() && ShortcutHandler.moveAllItems(container, true)) {
+                shortcutAction();
+                return true;
+            }
+            if (moveStack.isPressed() && ShortcutHandler.moveItemStack(container, false)) {
                 shortcutAction();
                 return true;
             }
