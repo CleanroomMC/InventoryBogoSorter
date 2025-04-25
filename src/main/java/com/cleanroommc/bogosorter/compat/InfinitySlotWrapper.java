@@ -6,12 +6,12 @@ import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import wanion.avaritiaddons.block.chest.infinity.InfinitySlot;
 
-public class InfinitySlotWrapper extends SlotDelegate {
+public class InfinitySlotWrapper extends FixedLimitSlot {
 
     public final InfinitySlot infinitySlot;
 
     public InfinitySlotWrapper(InfinitySlot slot) {
-        super(slot);
+        super(slot, Integer.MAX_VALUE);
         this.infinitySlot = slot;
     }
 
@@ -24,16 +24,6 @@ public class InfinitySlotWrapper extends SlotDelegate {
     @Override
     public @NotNull ItemStack bogo$getStack() {
         return this.infinitySlot.getInfinityMatching().getStack();
-    }
-
-    @Override
-    public int bogo$getMaxStackSize(ItemStack itemStack) {
-        return Integer.MAX_VALUE;
-    }
-
-    @Override
-    public int bogo$getItemStackLimit(@NotNull ItemStack stack) {
-        return Integer.MAX_VALUE;
     }
 
     @Override

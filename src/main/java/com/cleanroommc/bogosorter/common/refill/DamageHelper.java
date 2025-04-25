@@ -14,17 +14,17 @@ public class DamageHelper {
         if (!playerConfig.enableAutoRefill || playerConfig.autoRefillDamageThreshold <= 0) return false;
 
         if (RefillHandler.shouldHandleRefill(player, itemStack) && isNotArmor(itemStack)) {
+            int index = player.inventory.currentItem;
             ItemStack handItem = player.getHeldItemMainhand();
             if (handItem != itemStack) {
                 handItem = player.getHeldItemOffhand();
-                if (handItem != itemStack) {
-                    return false;
-                }
+                if (handItem != itemStack) return false;
+                index = RefillHandler.OFFHAND_INDEX;
             }
 
             int durabilityLeft = itemStack.getMaxDamage() - itemStack.getItemDamage();
             if (durabilityLeft >= 0 && durabilityLeft < playerConfig.autoRefillDamageThreshold) {
-                return RefillHandler.handle(player.inventory.currentItem, itemStack, player, true);
+                return RefillHandler.handle(index, itemStack, player, true);
             }
         }
         return false;
