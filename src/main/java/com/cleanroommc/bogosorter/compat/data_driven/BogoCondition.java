@@ -2,7 +2,7 @@ package com.cleanroommc.bogosorter.compat.data_driven;
 
 import net.minecraftforge.fml.common.Loader;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author ZZZank
@@ -32,21 +32,29 @@ public interface BogoCondition {
         return () -> !condition.test();
     }
 
-    static BogoCondition and(BogoCondition... conditions) {
-        return switch (conditions.length) {
+    static BogoCondition and(List<BogoCondition> conditions) {
+        return switch (conditions.size()) {
             case 0 -> ALWAYS;
-            case 1 -> conditions[0];
-            case 2 -> () -> conditions[0].test() && conditions[1].test();
-            default -> () -> Arrays.stream(conditions).allMatch(BogoCondition::test);
+            case 1 -> conditions.get(0);
+            case 2 -> {
+                var cond1 = conditions.get(0);
+                var cond2 = conditions.get(1);
+                yield () -> cond1.test() && cond2.test();
+            }
+            default -> () -> conditions.stream().allMatch(BogoCondition::test);
         };
     }
 
-    static BogoCondition or(BogoCondition... conditions) {
-        return switch (conditions.length) {
+    static BogoCondition or(List<BogoCondition> conditions) {
+        return switch (conditions.size()) {
             case 0 -> NEVER;
-            case 1 -> conditions[0];
-            case 2 -> () -> conditions[0].test() || conditions[1].test();
-            default -> () -> Arrays.stream(conditions).anyMatch(BogoCondition::test);
+            case 1 -> conditions.get(0);
+            case 2 -> {
+                var cond1 = conditions.get(0);
+                var cond2 = conditions.get(1);
+                yield () -> cond1.test() || cond2.test();
+            }
+            default -> () -> conditions.stream().anyMatch(BogoCondition::test);
         };
     }
 

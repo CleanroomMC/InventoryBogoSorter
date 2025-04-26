@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.compat.data_driven;
 
-import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.FixedLimitSlot;
@@ -31,13 +30,13 @@ public class BogoCompatParser {
             return parseHandler(o);
         }
         return api -> {
-            if (parseCondition(condition.getAsJsonObject()).test()) {
+            if (BogoConditionParser.parse(condition.getAsJsonObject()).test()) {
                 parseHandler(o).handle(api);
             }
         };
     }
 
-    private static @NotNull BogoCompatHandler parseHandler(@NotNull JsonObject o) {
+    public static @NotNull BogoCompatHandler parseHandler(@NotNull JsonObject o) {
         var name = o.get("target").getAsString();
         return switch (o.get("type").getAsString()) {
             case "general" -> new GeneralCompatHandler(name);
@@ -47,56 +46,6 @@ public class BogoCompatParser {
             case "slot_mapped" -> parseMapped(o, name);
             default -> throw new IllegalArgumentException();
         };
-    }
-
-    @NotNull
-    static BogoCondition parseCondition(@NotNull JsonObject o) {
-        var conditions = new ArrayList<BogoCondition>();
-        for (var entry : o.entrySet()) {
-            var value = entry.getValue();
-            var condition = switch (entry.getKey()) {
-                case "mod" -> parseModCondition(entry.getValue());
-                case "not" -> BogoCondition.not(parseCondition(value.getAsJsonObject()));
-                case "and" -> BogoCondition.and(parseConditionList(value).toArray(new BogoCondition[0]));
-                case "or" -> BogoCondition.or(parseConditionList(value).toArray(new BogoCondition[0]));
-                default -> null;
-            };
-            if (condition != null) {
-                conditions.add(condition);
-            }
-        }
-        if (conditions.isEmpty()) {
-            BogoSorter.LOGGER.warn("no valid logics in: {}", o);
-            return BogoCondition.ALWAYS;
-        }
-        return BogoCondition.and(conditions.toArray(new BogoCondition[0]));
-    }
-
-    private static @NotNull ArrayList<BogoCondition> parseConditionList(JsonElement value) {
-        ArrayList<BogoCondition> parsed = new ArrayList<>();
-        for (JsonElement element : value.getAsJsonArray()) {
-            parsed.add(parseCondition(element.getAsJsonObject()));
-        }
-        return parsed;
-    }
-
-    private static BogoCondition parseModCondition(JsonElement element) {
-        if (element.isJsonPrimitive()) {
-            return BogoCondition.modloaded(element.getAsString());
-        }
-
-        var o = element.getAsJsonObject();
-        List<BogoCondition> conditions = new ArrayList<>();
-
-        var id = o.get("id").getAsString();
-        conditions.add(BogoCondition.modloaded(id));
-
-        var versionPattern = o.get("version_pattern");
-        if (versionPattern != null) {
-            conditions.add(BogoCondition.modVersionMatched(id, versionPattern.getAsString()));
-        }
-
-        return BogoCondition.and(conditions.toArray(new BogoCondition[0]));
     }
 
     /**
