@@ -25,7 +25,7 @@ public class DataDrivenBogoCompat {
 
     public static void handle(IBogoSortAPI api) {
         BogoSorter.LOGGER.info("adding data-driven compat");
-        for (BogoCompatHandler handler : scanDefault()) {
+        for (var handler : scanDefault()) {
             try {
                 handler.handle(api);
             } catch (Exception e) {
@@ -36,7 +36,9 @@ public class DataDrivenBogoCompat {
 
     public static ArrayList<BogoCompatHandler> scanDefault() {
         var parsed = new ArrayList<BogoCompatHandler>();
-        for (ModContainer mod : Loader.instance().getModList()) {
+
+        // mod
+        for (var mod : Loader.instance().getModList()) {
             var f = mod.getSource();
             if (!f.exists()) {
                 continue; //for some special mods like 'minecraft' or 'scalar' or 'mcp'
@@ -56,6 +58,8 @@ public class DataDrivenBogoCompat {
                 BogoSorter.LOGGER.error("error during reading '{}' in mod '{}'", COMPAT_FILE, mod.getModId(), e);
             }
         }
+
+        // path
         Path path = Loader.instance().getConfigDir().toPath().resolve("bogosorter").resolve(COMPAT_FILE);
         if (Files.exists(path)) {
             BogoSorter.LOGGER.info("found compat file in config directory");
@@ -66,12 +70,13 @@ public class DataDrivenBogoCompat {
                 BogoSorter.LOGGER.error("error when parsing compat file from config", e);
             }
         }
+
         return parsed;
     }
 
     private static ArrayList<BogoCompatHandler> parseAll(JsonArray all) {
         var parsed = new ArrayList<BogoCompatHandler>();
-        for (JsonElement element : all) {
+        for (var element : all) {
             try {
                 parsed.add(BogoCompatParser.parse(element.getAsJsonObject()));
             } catch (Exception e) {

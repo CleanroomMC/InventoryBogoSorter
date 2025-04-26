@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -23,15 +24,28 @@ import java.util.stream.Stream;
  */
 public class BogoCompatParser {
 
+    /// ```
+    /// {
+    ///     condition: {
+    ///         ...
+    ///     },
+    ///     target: "clazz.path.Here",
+    ///     type: "...",
+    /// }
+    /// ```
     @NotNull
     public static BogoCompatHandler parse(@NotNull JsonObject o) {
-        JsonElement condition = o.get("condition");
+        var condition = Optional.ofNullable(o.get("condition"))
+            .map(JsonElement::getAsJsonObject)
+            .map(BogoConditionParser::parse)
+            .orElse(null);
+        var handler = parseHandler(o);
         if (condition == null) {
-            return parseHandler(o);
+            return handler;
         }
         return api -> {
-            if (BogoConditionParser.parse(condition.getAsJsonObject()).test()) {
-                parseHandler(o).handle(api);
+            if (condition.test()) {
+                handler.handle(api);
             }
         };
     }
@@ -48,14 +62,14 @@ public class BogoCompatParser {
         };
     }
 
-    /**
-     * {@code {
-     *     "type": "...",
-     *     "start": 0,
-     *     "end": 1,
-     *     "row_size": 2
-     * }}
-     */
+    /// ```
+    /// {
+    ///     "type": "...",
+    ///     "start": 0,
+    ///     "end": 1,
+    ///     "row_size": 2
+    /// }
+    /// ```
     static RangedSlotCompatHandler parseRanged(@NotNull JsonObject o, String targetClassName) {
         int start = o.get("start").getAsNumber().intValue();
         int end = o.get("end").getAsNumber().intValue();
@@ -63,6 +77,15 @@ public class BogoCompatParser {
         return new RangedSlotCompatHandler(targetClassName, start, end, rowSize);
     }
 
+    /// ```
+    /// {
+    ///     row_size: int,
+    ///     filters?: array,
+    ///     mapper?: object
+    /// }
+    /// ```
+    /// @see #parseMappedFilter(JsonArray)
+    /// @see #parseMappedReducer(JsonObject)
     static MappedSlotCompatHandler parseMapped(@NotNull JsonObject o, String target) {
         int rowSize = o.get("row_size").getAsNumber().intValue();
         List<Predicate<Slot>> filters = o.has("filters")
@@ -80,6 +103,16 @@ public class BogoCompatParser {
         });
     }
 
+    /// ```
+    /// {
+    ///     type: "general"
+    /// }
+    /// or
+    /// {
+    ///     type: "custom_stack_limit",
+    ///     limit: int
+    /// }
+    /// ```
     static Function<Slot, ISlot> parseMappedReducer(@NotNull JsonObject o) {
         return switch (o.get("type").getAsString()) {
             case "general" -> IBogoSortAPI.getInstance()::getSlot;
@@ -91,25 +124,49 @@ public class BogoCompatParser {
         };
     }
 
-    static List<Predicate<Slot>> parseMappedFilter(@NotNull JsonArray filters) {
+    /// filter sequence, with each element matching:
+    /// ```
+    /// {
+    ///     type: "instanceof",
+    ///     class: "clazz.path.Here"
+    /// }
+    /// ```
+    /// or
+    /// ```
+    /// {
+    ///     type: "index_in_range",
+    ///     min: int,
+    ///     max: int
+    /// }
+    /// ```
+    /// or
+    /// ```
+    /// {
+    ///     type: "or",
+    ///     filters: filter[]
+    /// }
+    /// ```
+    static List<Predicate<Slot>> parseMappedFilter(@NotNull JsonArray filterJsons) {
         var compiled = new ArrayList<Predicate<Slot>>();
-        for (JsonElement filter : filters) {
-            var parts = filter.getAsJsonObject().entrySet().iterator().next();
-            Predicate<Slot> compiledAction = switch (parts.getKey()) {
-                case "instanceof" -> {
-                    Class<? extends Slot> typeFilter = CompatHandlerBase.toClass(parts.getValue().getAsString(), Slot.class);
-                    yield (slot) -> typeFilter.isAssignableFrom(slot.getClass());
-                }
+        for (var filterJson : filterJsons) {
+            var obj = filterJson.getAsJsonObject();
+            Predicate<Slot> filter = switch (obj.get("type").getAsString()) {
+                case "instanceof" -> CompatHandlerBase.toClass(
+                    obj.get("class").getAsString(),
+                    Slot.class
+                )::isInstance;
                 case "index_in_range" -> {
-                    JsonObject range = parts.getValue().getAsJsonObject();
-                    int min = range.get("min").getAsInt();
-                    int max = range.get("max").getAsInt();
+                    int min = obj.get("min").getAsInt();
+                    int max = obj.get("max").getAsInt();
                     yield (slot) -> slot.getSlotIndex() >= min && slot.getSlotIndex() <= max;
                 }
-                case "or" -> slot -> parseMappedFilter(parts.getValue().getAsJsonArray()).stream().anyMatch(p -> p.test(slot));
-                default -> throw new IllegalStateException("Unexpected value: " + parts.getKey());
+                case "or" -> {
+                    var filters = parseMappedFilter(obj.get("all").getAsJsonArray());
+                    yield slot -> filters.stream().anyMatch(p -> p.test(slot));
+                }
+                default -> throw new IllegalStateException("Unexpected type: " + obj.get("type"));
             };
-            compiled.add(compiledAction);
+            compiled.add(filter);
         }
         return compiled;
     }

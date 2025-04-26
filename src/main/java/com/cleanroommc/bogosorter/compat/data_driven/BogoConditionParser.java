@@ -19,7 +19,7 @@ public class BogoConditionParser {
         for (var entry : o.entrySet()) {
             var value = entry.getValue();
             var condition = switch (entry.getKey()) {
-                case "mod" -> parseModCondition(entry.getValue());
+                case "mod" -> parseMod(value);
                 case "not" -> BogoCondition.not(parse(value.getAsJsonObject()));
                 case "and" -> BogoCondition.and(parseList(value.getAsJsonArray()));
                 case "or" -> BogoCondition.or(parseList(value.getAsJsonArray()));
@@ -44,7 +44,7 @@ public class BogoConditionParser {
         return parsed;
     }
 
-    public static BogoCondition parseModCondition(JsonElement element) {
+    public static BogoCondition parseMod(JsonElement element) {
         if (element.isJsonPrimitive()) {
             return BogoCondition.modloaded(element.getAsString());
         }
