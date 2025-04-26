@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.compat.data_driven;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
+import com.cleanroommc.bogosorter.compat.FixedLimitSlot;
 import com.cleanroommc.bogosorter.compat.data_driven.handlers.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -133,10 +134,10 @@ public class BogoCompatParser {
     static Function<Slot, ISlot> parseMappedReducer(@NotNull JsonObject o) {
         return switch (o.get("type").getAsString()) {
             case "general" -> IBogoSortAPI.getInstance()::getSlot;
-//            case "custom_stack_limit" -> {
-//                int limit = o.get("limit").getAsInt();
-//                yield -> slot -> new FixedLimitSlot(slot, limit);
-//            }
+            case "custom_stack_limit" -> {
+                int limit = o.get("limit").getAsInt();
+                yield slot -> new FixedLimitSlot(slot, limit);
+            }
             default -> throw new IllegalStateException("Unexpected value: " + o.get("type"));
         };
     }
