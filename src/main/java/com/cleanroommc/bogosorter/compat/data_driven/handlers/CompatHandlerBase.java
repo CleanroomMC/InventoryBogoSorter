@@ -32,10 +32,10 @@ public abstract class CompatHandlerBase implements BogoCompatHandler {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        if (typeFilter.isAssignableFrom(c)) {
-            return (Class<? extends T>) c;
+        if (!typeFilter.isAssignableFrom(c)) {
+            throw new IllegalArgumentException(String.format("loaded class is not a subclass of %s", typeFilter.getName()));
         }
-        throw new IllegalArgumentException();
+        return (Class<? extends T>) c;
     }
 
     @Nullable

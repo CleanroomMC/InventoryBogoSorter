@@ -2,7 +2,6 @@ package com.cleanroommc.bogosorter.compat;
 
 import appeng.container.implementations.ContainerSkyChest;
 import blusunrize.immersiveengineering.common.gui.ContainerCrate;
-import c4.conarm.common.inventory.ContainerKnapsack;
 import cassiokf.industrialrenewal.gui.container.ContainerStorageChest;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.aranaira.arcanearchives.config.ConfigHandler;
@@ -20,7 +19,6 @@ import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
 import com.lothrazar.cyclicmagic.item.storagesack.ContainerStorage;
 import com.tiviacz.travelersbackpack.gui.container.ContainerTravelersBackpack;
-import com.zuxelus.energycontrol.containers.ContainerCardHolder;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import forestry.core.gui.ContainerNaturalistInventory;
 import forestry.storage.gui.ContainerBackpack;
@@ -41,8 +39,6 @@ import micdoodle8.mods.galacticraft.core.inventory.ContainerParaChest;
 import mods.railcraft.common.gui.containers.ContainerRCChest;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
-import net.blay09.mods.cookingforblockheads.container.ContainerCounter;
-import net.blay09.mods.cookingforblockheads.container.ContainerFridge;
 import net.dries007.tfc.objects.container.ContainerChestTFC;
 import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
@@ -50,7 +46,6 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
-import ru.socol.expandableinventory.gui.ContainerExpandedInventory;
 import rustic.common.tileentity.ContainerCabinet;
 import rustic.common.tileentity.ContainerCabinetDouble;
 import rustic.common.tileentity.ContainerVase;
@@ -444,10 +439,6 @@ public class DefaultCompat {
                 }
                 builder.addSlotGroup(slots, 9);
             });
-        }
-
-        if (Loader.isModLoaded("ironbackpacks")) {
-            api.addGenericCompat(gr8pefish.ironbackpacks.container.ContainerBackpack.class);
         }
 
         DataDrivenBogoCompat.handle(api);

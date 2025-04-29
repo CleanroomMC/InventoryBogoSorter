@@ -1,6 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.utils;
 
-import com.cleanroommc.bogosorter.compat.data_driven.BogoCompatParser;
+import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
@@ -27,18 +27,18 @@ public interface JsonTernary {
         return unwrapped == null ? element : unwrapped;
     }
 
-    /**
-     * {
-     *     "$if": "{@link com.cleanroommc.bogosorter.compat.data_driven.BogoCondition}, and it will be evaluated immediately",
-     *     "t": "this will be return if condition is 'true'",
-     *     "f": "this will be return if condition is 'false'"
-     * }
-     */
+    /// ```json
+    /// {
+    ///     "$if": "must be a valid BogoCondition, and it will be evaluated immediately",
+    ///     "t": "this will be return if condition is 'true'",
+    ///     "f": "this will be return if condition is 'false'"
+    /// }
+    /// ```
     @Nullable
     static JsonElement get(@NotNull JsonObject o) {
-        final var condition = o.get(KEY_IF);
-        final var ifTrue = o.get(KEY_IF_TRUE);
-        final var ifFalse = o.get(KEY_IF_FALSE);
+        var condition = o.get(KEY_IF);
+        var ifTrue = o.get(KEY_IF_TRUE);
+        var ifFalse = o.get(KEY_IF_FALSE);
         if (condition == null || !condition.isJsonObject() || ifTrue == null || ifFalse == null) {
             return null;
         }

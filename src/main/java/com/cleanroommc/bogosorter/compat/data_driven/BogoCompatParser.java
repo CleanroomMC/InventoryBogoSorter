@@ -36,14 +36,14 @@ public class BogoCompatParser {
     /// ```
     @NotNull
     public static BogoCompatHandler parse(@NotNull JsonObject o) {
-        var condition = Optional.ofNullable(o.get("condition"))
-            .map(JsonElement::getAsJsonObject)
-            .map(BogoCondition::read)
-            .orElse(null);
         var handler = parseHandler(o);
-        if (condition == null) {
+
+        var conditionJson = o.get("condition");
+        if (conditionJson == null) {
             return handler;
         }
+        var condition = BogoCondition.read(o.get("condition").getAsJsonObject());
+
         return api -> {
             if (condition.test()) {
                 handler.handle(api);
@@ -65,10 +65,10 @@ public class BogoCompatParser {
 
     /// ```
     /// {
-    ///     "type": "...",
-    ///     "start": 0,
-    ///     "end": 1,
-    ///     "row_size": 2
+    ///     "type": "ranged",
+    ///     "start": int,
+    ///     "end": int,
+    ///     "row_size": int
     /// }
     /// ```
     static RangedSlotCompatHandler parseRanged(@NotNull JsonObject o, String targetClassName) {
@@ -89,12 +89,17 @@ public class BogoCompatParser {
     /// @see #parseMappedReducer(JsonObject)
     static MappedSlotCompatHandler parseMapped(@NotNull JsonObject o, String target) {
         int rowSize = o.get("row_size").getAsNumber().intValue();
-        List<Predicate<Slot>> filters = o.has("filters")
-            ? parseMappedFilter(o.get("filters").getAsJsonArray())
-            : Collections.emptyList();
-        Function<Slot, ISlot> reducer = o.has("mapper")
-            ? parseMappedReducer(o.get("mapper").getAsJsonObject())
-            : IBogoSortAPI.getInstance()::getSlot;
+
+        var filters = Optional.ofNullable(o.get("filters"))
+            .map(JsonElement::getAsJsonArray)
+            .map(BogoCompatParser::parseMappedFilter)
+            .orElse(Collections.emptyList());
+
+        var reducer = Optional.ofNullable(o.get("mapper"))
+            .map(JsonElement::getAsJsonObject)
+            .map(BogoCompatParser::parseMappedReducer)
+            .orElseGet(() -> IBogoSortAPI.getInstance()::getSlot);
+
         return new MappedSlotCompatHandler(target, rowSize, slots -> {
             Stream<Slot> s = slots.stream();
             for (var filter : filters) {
@@ -162,7 +167,7 @@ public class BogoCompatParser {
                     yield (slot) -> slot.getSlotIndex() >= min && slot.getSlotIndex() <= max;
                 }
                 case "or" -> {
-                    var filters = parseMappedFilter(obj.get("all").getAsJsonArray());
+                    var filters = parseMappedFilter(obj.get("filters").getAsJsonArray());
                     yield slot -> filters.stream().anyMatch(p -> p.test(slot));
                 }
                 default -> throw new IllegalStateException("Unexpected type: " + obj.get("type"));

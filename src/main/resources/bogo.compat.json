@@ -1,42 +1,48 @@
 [
   {
     "condition": {
-      "mod": "ironbackpacks"
+      "type": "mod",
+      "id": "ironbackpacks"
     },
     "target": "gr8pefish.ironbackpacks.container.ContainerBackpack",
     "type": "general"
   },
   {
     "condition": {
-      "mod": "conarm"
+      "type": "mod",
+      "id": "conarm"
     },
     "target": "c4.conarm.common.inventory.ContainerKnapsack",
     "type": "general"
   },
   {
     "condition": {
-      "mod": "mekanism"
+      "type": "mod",
+      "id": "mekanism"
     },
     "target": "mekanism.common.inventory.container.ContainerPersonalChest",
     "type": "general"
   },
   {
     "condition": {
-      "mod": "cookingforblockheads"
+      "type": "mod",
+      "id": "cookingforblockheads"
     },
     "target": "net.blay09.mods.cookingforblockheads.container.ContainerCounter",
     "type": "general"
   },
   {
     "condition": {
-      "mod": "cookingforblockheads"
+      "type": "mod",
+      "id": "cookingforblockheads"
     },
     "target": "net.blay09.mods.cookingforblockheads.container.ContainerFridge",
     "type": "general"
   },
   {
     "condition": {
-      "mod": "charm"
+      "type": "mod",
+      "id": "charm"
     },
     "target": "svenhjol.charm.crafting.container.ContainerBarrel",
     "type": "slot_range",
@@ -46,7 +52,8 @@
   },
   {
     "condition": {
-      "mod": "projectred-exploration"
+      "type": "mod",
+      "id": "projectred-exploration"
     },
     "target": "mrtjp.projectred.exploration.ContainerBackpack",
     "type": "slot_range",
@@ -56,7 +63,8 @@
   },
   {
     "condition": {
-      "mod": "energycontrol"
+      "type": "mod",
+      "id": "energycontrol"
     },
     "target": "com.zuxelus.energycontrol.containers.ContainerCardHolder",
     "type": "slot_range",
@@ -66,7 +74,8 @@
   },
   {
     "condition": {
-      "mod": "expandableinventory"
+      "type": "mod",
+      "id": "expandableinventory"
     },
     "target": "ru.socol.expandableinventory.gui.ContainerExpandedInventory",
     "type": "mark_only"
