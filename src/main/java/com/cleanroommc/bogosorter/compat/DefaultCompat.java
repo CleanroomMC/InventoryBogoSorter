@@ -92,7 +92,6 @@ public class DefaultCompat {
         api.addCompat(ContainerShulkerBox.class, (container, builder) -> {
             builder.addGenericSlotGroup()
                     .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
-
         });
         // for horse inventory compat see MixinContainerHorseInventory
 
@@ -142,8 +141,6 @@ public class DefaultCompat {
                 builder.addSlotGroup(43, 85, 6)
                         .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
             });
-            api.addPlayerSortButtonPosition(CondenserContainer.class, IPosSetter.TOP_RIGHT_VERTICAL);
-            api.addPlayerSortButtonPosition(CondenserMK2Container.class, IPosSetter.TOP_RIGHT_VERTICAL);
         }
 
         if (Loader.isModLoaded("immersiveengineering")) {

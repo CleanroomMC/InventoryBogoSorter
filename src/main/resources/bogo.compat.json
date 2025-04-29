@@ -105,5 +105,23 @@
     "start": 0,
     "end": 36,
     "row_size": 9
+  },
+  {
+    "condition": {
+      "type": "mod",
+      "id": "projecte"
+    },
+    "target": "moze_intel.projecte.gameObjs.container.CondenserContainer",
+    "type": "set_button_pos",
+    "pos": "TOP_RIGHT_VERTICAL"
+  },
+  {
+    "condition": {
+      "type": "mod",
+      "id": "projecte"
+    },
+    "target": "moze_intel.projecte.gameObjs.container.CondenserMK2Container",
+    "type": "set_button_pos",
+    "pos": "TOP_RIGHT_VERTICAL"
   }
 ]

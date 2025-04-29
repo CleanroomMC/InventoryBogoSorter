@@ -59,7 +59,7 @@ public class BogoCompatParser {
             case "mark_only" -> new MarkOnlyHandler(name);
             case "slot_range" -> RangedSlotHandler.read(o, name);
             case "slot_mapped" -> parseMapped(o, name);
-            case "button_pos" -> SetPosHandler.read(o);
+            case "set_button_pos" -> SetPosHandler.read(o);
             default -> throw new IllegalArgumentException();
         };
     }
