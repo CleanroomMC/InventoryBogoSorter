@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.compat.data_driven.handlers;
+package com.cleanroommc.bogosorter.compat.data_driven.handler;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
@@ -6,9 +6,9 @@ import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 /**
  * @author ZZZank
  */
-public class GeneralCompatHandler extends CompatHandlerBase {
+public class GeneralHandler extends HandlerBase {
 
-    public GeneralCompatHandler(String className) {
+    public GeneralHandler(String className) {
         super(className);
         BogoSorter.LOGGER.info("constructed general bogo compat handler targeting: '{}'", className);
     }
