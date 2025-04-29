@@ -1,5 +1,9 @@
 [
   {
+    "target": "net.minecraft.inventory.ContainerPlayer",
+    "type": "mark_only"
+  },
+  {
     "condition": {
       "type": "mod",
       "id": "ironbackpacks"
@@ -79,5 +83,27 @@
     },
     "target": "ru.socol.expandableinventory.gui.ContainerExpandedInventory",
     "type": "mark_only"
+  },
+  {
+    "condition": {
+      "type": "mod",
+      "id": "futuremc"
+    },
+    "target": "thedarkcolour.futuremc.container.ContainerBarrel",
+    "type": "slot_range",
+    "start": 0,
+    "end": 27,
+    "row_size": 9
+  },
+  {
+    "condition": {
+      "type": "mod",
+      "id": "appliedenergistics2"
+    },
+    "target": "appeng.container.implementations.ContainerSkyChest",
+    "type": "slot_range",
+    "start": 0,
+    "end": 36,
+    "row_size": 9
   }
 ]

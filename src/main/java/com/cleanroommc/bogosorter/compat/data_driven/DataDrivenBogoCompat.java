@@ -1,12 +1,9 @@
 package com.cleanroommc.bogosorter.compat.data_driven;
 
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,18 +20,7 @@ public class DataDrivenBogoCompat {
     public static final String COMPAT_FILE = "bogo.compat.json";
     private static final Gson GSON = new Gson();
 
-    public static void handle(IBogoSortAPI api) {
-        BogoSorter.LOGGER.info("adding data-driven compat");
-        for (var handler : scanDefault()) {
-            try {
-                handler.handle(api);
-            } catch (Exception e) {
-                BogoSorter.LOGGER.error("error when adding data-driven compat",  e);
-            }
-        }
-    }
-
-    public static ArrayList<BogoCompatHandler> scanDefault() {
+    public static ArrayList<BogoCompatHandler> scanHandlers() {
         var parsed = new ArrayList<BogoCompatHandler>();
 
         // mod

@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.compat;
 
-import appeng.container.implementations.ContainerSkyChest;
 import blusunrize.immersiveengineering.common.gui.ContainerCrate;
 import cassiokf.industrialrenewal.gui.container.ContainerStorageChest;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
@@ -51,7 +50,6 @@ import rustic.common.tileentity.ContainerCabinetDouble;
 import rustic.common.tileentity.ContainerVase;
 import t145.metalchests.containers.ContainerMetalChest;
 import thebetweenlands.common.inventory.container.ContainerPouch;
-import thedarkcolour.futuremc.container.ContainerBarrel;
 import wanion.avaritiaddons.block.chest.compressed.ContainerCompressedChest;
 import wanion.avaritiaddons.block.chest.infinity.ContainerInfinityChest;
 import wanion.avaritiaddons.block.chest.infinity.InfinitySlot;
@@ -63,10 +61,15 @@ import java.util.Map;
 public class DefaultCompat {
 
     public static void init(IBogoSortAPI api) {
+        for (var handler : DataDrivenBogoCompat.scanHandlers()) {
+            try {
+                handler.handle(api);
+            } catch (Exception e) {
+                BogoSorter.LOGGER.error("error when adding data-driven compat",  e);
+            }
+        }
+
         // vanilla
-        api.addCompat(ContainerPlayer.class, (container, builder) -> {
-            // player slots are automatically added
-        });
         api.addPlayerSortButtonPosition(ContainerPlayer.class, (slotGroup, buttonPos) -> {
             if (BogoSorter.isQuarkLoaded() || Loader.isModLoaded("nutrition")) {
                 IPosSetter.TOP_RIGHT_VERTICAL.setButtonPos(slotGroup, buttonPos);
@@ -117,12 +120,6 @@ public class DefaultCompat {
             });
         }
 
-        if (Loader.isModLoaded("appliedenergistics2")) {
-            api.addCompat(ContainerSkyChest.class, (container, builder) -> {
-                builder.addSlotGroup(0, 36, 9);
-            });
-        }
-
         if (Loader.isModLoaded("draconicevolution")) {
             api.addCompatSimple(ContainerDraconiumChest.class, (container, builder) -> {
                 builder.addSlotGroup(0, 260, 26);
@@ -132,12 +129,6 @@ public class DefaultCompat {
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();
                 buttonPos.setPos(topRight.bogo$getX() + 17, topRight.bogo$getY() - 1);
-            });
-        }
-
-        if (Loader.isModLoaded("futuremc")) {
-            api.addCompatSimple(ContainerBarrel.class, (container, builder) -> {
-                builder.addSlotGroup(0, 27, 9);
             });
         }
 
@@ -440,8 +431,6 @@ public class DefaultCompat {
                 builder.addSlotGroup(slots, 9);
             });
         }
-
-        DataDrivenBogoCompat.handle(api);
     }
 
     private static ISlot avaritiaddons$findSlot(List<ISlot> slots, ItemStack itemStack, boolean emptyOnly) {
