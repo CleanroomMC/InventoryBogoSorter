@@ -42,7 +42,7 @@ public interface JsonTernary {
         if (condition == null || !condition.isJsonObject() || ifTrue == null || ifFalse == null) {
             return null;
         }
-        return BogoCompatParser.parseCondition(condition.getAsJsonObject()).test()
+        return BogoCondition.read(condition.getAsJsonObject()).test()
             ? ifTrue
             : ifFalse;
     }

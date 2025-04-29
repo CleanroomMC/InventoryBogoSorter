@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.compat.data_driven;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.FixedLimitSlot;
+import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.handlers.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -37,7 +38,7 @@ public class BogoCompatParser {
     public static BogoCompatHandler parse(@NotNull JsonObject o) {
         var condition = Optional.ofNullable(o.get("condition"))
             .map(JsonElement::getAsJsonObject)
-            .map(BogoConditionParser::parse)
+            .map(BogoCondition::read)
             .orElse(null);
         var handler = parseHandler(o);
         if (condition == null) {
