@@ -1,5 +1,8 @@
 package com.cleanroommc.bogosorter.compat.data_driven.utils;
 
+import com.cleanroommc.bogosorter.compat.data_driven.handler.GeneralHandler;
+import com.google.gson.JsonElement;
+
 import java.util.List;
 
 /**
@@ -8,6 +11,23 @@ import java.util.List;
  * @author ZZZank
  */
 public class DataDrivenReflection {
+
+    public static <T> Class<? extends T> toClass(JsonElement className, Class<T> filter) {
+        Class<?> c;
+        try {
+            c = Class.forName(
+                className.getAsString(),
+                false,
+                GeneralHandler.class.getClassLoader()
+            );
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if (!filter.isAssignableFrom(c)) {
+            throw new IllegalArgumentException(String.format("loaded class is not a subclass of %s", filter.getName()));
+        }
+        return (Class<? extends T>) c;
+    }
 
     public static <T> UnsafeMapper<Object, T> compile(String accessKey, Object instance, Class<T> expectedType) {
         Class<?> c = instance.getClass();

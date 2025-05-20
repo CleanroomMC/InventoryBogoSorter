@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.compat.data_driven.handler;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.google.gson.JsonObject;
+import net.minecraft.inventory.Container;
 
 import java.util.Locale;
 
@@ -23,13 +24,13 @@ public class SetPosHandler extends HandlerBase {
 
     private final IPosSetter posSetter;
 
-    public SetPosHandler(String className, IPosSetter posSetter) {
-        super(className);
+    public SetPosHandler(Class<? extends Container> target, IPosSetter posSetter) {
+        super(target);
         this.posSetter = posSetter;
     }
 
     @Override
     public void handle(IBogoSortAPI api) {
-        api.addPlayerSortButtonPosition(toClass(), posSetter);
+        api.addPlayerSortButtonPosition(target, posSetter);
     }
 }

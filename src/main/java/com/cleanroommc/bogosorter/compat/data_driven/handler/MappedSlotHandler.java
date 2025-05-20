@@ -3,33 +3,50 @@ package com.cleanroommc.bogosorter.compat.data_driven.handler;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author ZZZank
  */
 public class MappedSlotHandler extends HandlerBase {
     private final int rowSize;
-    private List<Predicate<Slot>> filters;
-    private Function<Slot, ISlot> reducer;
-    private final Function<List<Slot>, List<ISlot>> mapper;
+    private final List<Predicate<Slot>> filters;
+    private final Function<Slot, ISlot> reducer;
 
-    public MappedSlotHandler(String className, int rowSize, Function<List<Slot>, List<ISlot>> mapper) {
-        super(className);
-        BogoSorter.LOGGER.info("constructed mapped bogo compat handler targeting '{}' with row size '{}'", className, rowSize);
+    public MappedSlotHandler(
+        Class<? extends Container> target,
+        int rowSize,
+        List<Predicate<Slot>> filters,
+        Function<Slot, ISlot> reducer
+    ) {
+        super(target);
         this.rowSize = rowSize;
-        this.mapper = Objects.requireNonNull(mapper);
+        this.filters = filters;
+        this.reducer = reducer;
+        BogoSorter.LOGGER.info(
+            "constructed mapped bogo compat handler targeting '{}' with row size '{}'",
+            target.getName(),
+            rowSize
+        );
     }
 
     @Override
     public void handle(IBogoSortAPI api) {
-        api.addCompat(toClass(), (container, builder) -> additionalAction(
-            builder.addSlotGroup(mapper.apply(container.inventorySlots), rowSize))
+        api.addCompat(
+            target,
+            (container, builder) -> {
+                var s = container.inventorySlots.stream();
+                for (var filter : filters) {
+                    s = s.filter(filter);
+                }
+                builder.addSlotGroup(s.map(reducer).collect(Collectors.toList()), rowSize);
+            }
         );
     }
 }

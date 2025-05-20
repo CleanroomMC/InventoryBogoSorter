@@ -5,6 +5,7 @@ import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.FixedLimitSlot;
 import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.handler.*;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.DataDrivenReflection;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -17,8 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author ZZZank
@@ -52,13 +51,12 @@ public class BogoCompatParser {
     }
 
     public static @NotNull BogoCompatHandler parseHandler(@NotNull JsonObject o) {
-        var name = HandlerBase.readClass(o);
         return switch (o.get("type").getAsString()) {
-            case "general" -> new GeneralHandler(name);
-            case "remove" -> new RemoveHandler(name);
-            case "mark_only" -> new MarkOnlyHandler(name);
-            case "slot_range" -> RangedSlotHandler.read(o, name);
-            case "slot_mapped" -> parseMapped(o, name);
+            case "general" -> new GeneralHandler(o);
+            case "remove" -> new RemoveHandler(o);
+            case "mark_only" -> new MarkOnlyHandler(o);
+            case "slot_range" -> RangedSlotHandler.read(o);
+            case "slot_mapped" -> parseMapped(o);
             case "set_button_pos" -> SetPosHandler.read(o);
             default -> throw new IllegalArgumentException();
         };
@@ -73,7 +71,9 @@ public class BogoCompatParser {
     /// ```
     /// @see #parseMappedFilter(JsonArray)
     /// @see #parseMappedReducer(JsonObject)
-    static MappedSlotHandler parseMapped(@NotNull JsonObject o, String target) {
+    static MappedSlotHandler parseMapped(@NotNull JsonObject o) {
+        var target = HandlerBase.readClass(o);
+
         int rowSize = o.get("row_size").getAsNumber().intValue();
 
         var filters = Optional.ofNullable(o.get("filters"))
@@ -86,13 +86,7 @@ public class BogoCompatParser {
             .map(BogoCompatParser::parseMappedReducer)
             .orElseGet(() -> IBogoSortAPI.getInstance()::getSlot);
 
-        return new MappedSlotHandler(target, rowSize, slots -> {
-            Stream<Slot> s = slots.stream();
-            for (var filter : filters) {
-                s = s.filter(filter);
-            }
-            return s.map(reducer).collect(Collectors.toList());
-        });
+        return new MappedSlotHandler(target, rowSize, filters, reducer);
     }
 
     /// ```
@@ -143,8 +137,8 @@ public class BogoCompatParser {
         for (var filterJson : filterJsons) {
             var obj = filterJson.getAsJsonObject();
             Predicate<Slot> filter = switch (obj.get("type").getAsString()) {
-                case "instanceof" -> HandlerBase.toClass(
-                    obj.get("class").getAsString(),
+                case "instanceof" -> DataDrivenReflection.toClass(
+                    obj.get("class"),
                     Slot.class
                 )::isInstance;
                 case "index_in_range" -> {
