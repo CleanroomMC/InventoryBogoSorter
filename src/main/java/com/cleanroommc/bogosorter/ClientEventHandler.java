@@ -13,6 +13,7 @@ import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.screen.WarningScreen;
 import com.cleanroommc.modularui.factory.ClientGUI;
+import com.cleanroommc.modularui.screen.ModularScreen;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import net.minecraft.client.Minecraft;
@@ -115,6 +116,9 @@ public class ClientEventHandler {
                 warnings.add(1, "");
                 event.setGui(new WarningScreen(warnings));
             }
+        }
+        if (event.getGui() == null && ModularScreen.getCurrent() instanceof ConfigGui configGui) {
+            configGui.onCloseTemp();
         }
     }
 

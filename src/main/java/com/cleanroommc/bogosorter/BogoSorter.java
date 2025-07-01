@@ -58,6 +58,7 @@ public class BogoSorter {
     private static boolean quarkLoaded = false;
     private static boolean ae2Loaded = false;
     private static boolean expandableInventoryLoaded = false;
+    public static int muiRcVersion = 0;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
@@ -70,6 +71,11 @@ public class BogoSorter {
         if (anyIc2Loaded) {
             ModContainer container = Loader.instance().getIndexedModList().get("ic2");
             ic2ClassicLoaded = container.getName().endsWith("Classic");
+        }
+        ModContainer container = Loader.instance().getIndexedModList().get("modularui");
+        String version = container.getVersion();
+        if (version.contains("rc")) {
+            muiRcVersion = Integer.parseInt(version.substring(version.indexOf("rc") + 2));
         }
         NetworkHandler.init();
         OreDictHelper.init();
