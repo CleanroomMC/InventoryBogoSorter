@@ -41,10 +41,10 @@ public record ModCond(
         var mod = Loader.instance().getIndexedModList().get(id);
         if (mod == null) {
             return false;
-        } else if (versionPattern.isPresent()) {
-            return versionPattern.get().matcher(mod.getVersion()).matches();
         } else if (versionRange.isPresent()) {
             return versionRange.get().containsVersion(new DefaultArtifactVersion(mod.getVersion()));
+        } else if (versionPattern.isPresent()) {
+            return versionPattern.get().matcher(mod.getVersion()).matches();
         }
         return true;
     }
