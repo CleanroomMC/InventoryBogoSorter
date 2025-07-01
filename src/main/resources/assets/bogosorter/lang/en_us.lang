@@ -17,6 +17,8 @@ bogosort.gui.descending=Descending
 bogosort.gui.hotbar_scrolling=Enable hotbar column scrolling
 bogosort.gui.hotbar_scrolling.tooltip=Scroll though inventory column by holding ALT
 bogosort.gui.enabled=Enabled
+bogosort.gui.button.enabled=Enable sort and config buttons in GUI's
+bogosort.gui.button.color=Background color of sort buttons
 
 bogosort.command.config_relaod.success=Reloaded sorting config
 

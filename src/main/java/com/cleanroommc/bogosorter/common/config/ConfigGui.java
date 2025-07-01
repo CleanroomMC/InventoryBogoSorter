@@ -6,21 +6,21 @@ import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
+import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.modularui.api.IPanelHandler;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
+import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.drawable.GuiTextures;
 import com.cleanroommc.modularui.drawable.Rectangle;
 import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.CustomModularScreen;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
-import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
 import com.cleanroommc.modularui.theme.Theme;
-import com.cleanroommc.modularui.theme.ThemeAPI;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.value.BoolValue;
@@ -28,6 +28,7 @@ import com.cleanroommc.modularui.value.IntValue;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widget.Widget;
 import com.cleanroommc.modularui.widgets.*;
+import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import com.cleanroommc.modularui.widgets.layout.Row;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
@@ -39,7 +40,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ConfigGui extends CustomModularScreen {
 
@@ -109,12 +109,17 @@ public class ConfigGui extends CustomModularScreen {
 
     public IWidget createGeneralConfigUI(ModularPanel mainPanel, ModularGuiContext context) {
         Row row = new Row();
+        IPanelHandler colorPicker = IPanelHandler.simple(mainPanel, (parent, player) -> new ColorPickerDialog(val -> ButtonHandler.buttonColor = val, ButtonHandler.buttonColor, true)
+                .setDraggable(true), true);
+                //.relative(mainPanel)
+                //.top(0)
+                //.rightRel(1f), true);
         return new ListWidget<>()
                 .left(5).right(5).top(2).bottom(2)
                 .child(new Rectangle().setColor(0xFF606060).asWidget()
                                .top(1)
                                .left(32)
-                               .size(1, 56))
+                               .size(1, 92))
                 .child(new Row()
                                .widthRel(1f).height(14)
                                .margin(0, 2)
@@ -161,6 +166,42 @@ public class ConfigGui extends CustomModularScreen {
                                               .marginLeft(10)
                                               .height(14)
                                               .addTooltipLine(IKey.lang("bogosort.gui.hotbar_scrolling.tooltip"))
+                                              .tooltipShowUpTimer(10)))
+                .child(Flow.row()
+                               .widthRel(1f).height(14)
+                               .margin(0, 2)
+                               .child(new CycleButtonWidget()
+                                              .value(new BoolValue.Dynamic(() -> ButtonHandler.buttonEnabled, val -> ButtonHandler.buttonEnabled = val))
+                                              .stateOverlay(TOGGLE_BUTTON)
+                                              .disableHoverBackground()
+                                              .addTooltipLine(IKey.lang("bogosort.gui.button.enabled"))
+                                              .tooltipShowUpTimer(10)
+                                              .size(14, 14)
+                                              .margin(8, 0)
+                                              .background(IDrawable.EMPTY))
+                               .child(IKey.lang("bogosort.gui.button.enabled").asWidget()
+                                              .marginLeft(10)
+                                              .height(14)
+                                              .addTooltipLine(IKey.lang("bogosort.gui.button.enabled"))
+                                              .tooltipShowUpTimer(10)))
+                .child(Flow.row()
+                               .widthRel(1f).height(14)
+                               .margin(0, 2)
+                               .child(new ButtonWidget<>()
+                                              .size(14).margin(8, 0)
+                                              .background(((context1, x, y, width, height, widgetTheme) -> {
+                                                  GuiDraw.drawRect(0, 0, 14, 14, 0xFF000000);
+                                                  GuiDraw.drawRect(1, 1, 12, 12, ButtonHandler.buttonColor);
+                                              }))
+                                              .disableHoverBackground()
+                                              .onMousePressed(mouseButton -> {
+                                                  colorPicker.openPanel();
+                                                  return true;
+                                              }))
+                               .child(IKey.lang("bogosort.gui.button.color").asWidget()
+                                              .marginLeft(10)
+                                              .height(14)
+                                              .addTooltipLine(IKey.lang("bogosort.gui.button.color"))
                                               .tooltipShowUpTimer(10)));
 
     }
@@ -343,6 +384,14 @@ public class ConfigGui extends CustomModularScreen {
         if (this.old != null) {
             // open next tick, otherwise infinite loop
             ClientEventHandler.openNextTick(this.old);
+        }
+    }
+
+    @Deprecated
+    public void onCloseTemp() {
+        // onClose not being called is fixed in newer versions
+        if (BogoSorter.muiRcVersion <= 5) {
+            onClose();
         }
     }
 
