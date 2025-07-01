@@ -34,7 +34,7 @@ public class ButtonHandler {
             .adaptable(1)
             .build();
 
-    /*public static final UITexture BUTTON_SORT = UITexture.builder()
+    public static final UITexture BUTTON_SORT = UITexture.builder()
             .location(BogoSorter.ID, "gui/sort")
             .fullImage()
             .build();
@@ -42,7 +42,7 @@ public class ButtonHandler {
     public static final UITexture BUTTON_SETTINGS = UITexture.builder()
             .location(BogoSorter.ID, "gui/settings")
             .fullImage()
-            .build();*/
+            .build();
 
     public static boolean buttonEnabled = true;
     public static int buttonColor = 0xFFFFFFFF;
@@ -148,12 +148,12 @@ public class ButtonHandler {
                 } else if (this.hovered) {
                     color = 16777120;
                 }
-                //Color.setGlColor(color);
-                //UITexture texture = this.sort ? BUTTON_SORT : BUTTON_SETTINGS;
-                //texture.draw(this.x, this.y, this.width, this.height);
-                int y = this.y;
+                Color.setGlColor(color);
+                UITexture texture = this.sort ? BUTTON_SORT : BUTTON_SETTINGS;
+                texture.draw(this.x, this.y, this.width, this.height);
+                /*int y = this.y;
                 if (!this.sort) y -= 1;
-                this.drawCenteredString(mc.fontRenderer, this.displayString, this.x + this.width / 2, y, color);
+                this.drawCenteredString(mc.fontRenderer, this.displayString, this.x + this.width / 2, y, color);*/
             }
         }
 
