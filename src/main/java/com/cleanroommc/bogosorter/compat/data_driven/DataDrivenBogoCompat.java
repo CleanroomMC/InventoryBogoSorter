@@ -41,7 +41,7 @@ public class DataDrivenBogoCompat {
                 );
                 parsed.addAll(parseAll(arr));
             } catch (IOException e) {
-                BogoSorter.LOGGER.error("error during reading '{}' in mod '{}'", COMPAT_FILE, mod.getModId(), e);
+                BogoSorter.LOGGER.error("IO error during reading '{}' in mod '{}'", COMPAT_FILE, mod.getModId(), e);
             }
         }
 
@@ -49,11 +49,15 @@ public class DataDrivenBogoCompat {
         Path path = Loader.instance().getConfigDir().toPath().resolve("bogosorter").resolve(COMPAT_FILE);
         if (Files.exists(path)) {
             BogoSorter.LOGGER.info("found compat file in config directory");
+            JsonArray arr;
             try {
-                var arr = GSON.fromJson(Files.newBufferedReader(path), JsonArray.class);
-                parsed.addAll(parseAll(arr));
+                arr = GSON.fromJson(Files.newBufferedReader(path), JsonArray.class);
             } catch (IOException e) {
-                BogoSorter.LOGGER.error("error when parsing compat file from config", e);
+                BogoSorter.LOGGER.error("IO error when reading compat file from config", e);
+                arr = null;
+            }
+            if (arr != null) {
+                parsed.addAll(parseAll(arr));
             }
         }
 

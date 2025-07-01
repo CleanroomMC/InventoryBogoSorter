@@ -58,7 +58,7 @@ public class BogoCompatParser {
             case "slot_range" -> RangedSlotHandler.read(o);
             case "slot_mapped" -> parseMapped(o);
             case "set_button_pos" -> SetPosHandler.read(o);
-            default -> throw new IllegalArgumentException();
+            default -> throw new IllegalArgumentException("Unknown handler type: " + o.get("type"));
         };
     }
 
