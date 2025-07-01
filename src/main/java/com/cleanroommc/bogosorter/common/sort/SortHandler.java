@@ -45,7 +45,7 @@ public class SortHandler {
 
     @SideOnly(Side.CLIENT)
     public static void playSortSound() {
-        SoundEvent sound;
+        SoundEvent sound = sortSound;
         if (BogoSorter.isAprilFools()) {
             if (foolsSounds == null || foolsBuildTime - Minecraft.getSystemTime() > 300000) {
                 List<SoundEvent> sounds = new ArrayList<>(256);
@@ -60,8 +60,6 @@ public class SortHandler {
                 foolsBuildTime = Minecraft.getSystemTime();
             }
             sound = foolsSounds.get(BogoSorter.RND.nextInt(foolsSounds.size()));
-        } else {
-            sound = sortSound;
         }
         if (sound != null) {
             Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(sound, 1f));
