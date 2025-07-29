@@ -2,7 +2,7 @@ key.categories.bogosorter=物品栏Bogo排序整理
 key.sort_config=打开排序配置
 key.sort=排序物品栏
 
-bogosort.gui.title=整理配置
+bogosort.gui.title=排序配置
 bogosort.gui.tab.general.name=常规
 bogosort.gui.tab.profiles.name=配置文件
 bogosort.gui.tab.item_sort_rules.name=物品排序规则
@@ -17,8 +17,8 @@ bogosort.gui.descending=降序
 bogosort.gui.hotbar_scrolling=启用快捷栏纵列滚动
 bogosort.gui.hotbar_scrolling.tooltip=按住ALT键滚动选取物品栏对应列
 bogosort.gui.enabled=启用
-bogosort.gui.button.enabled=在GUI中启用整理和设置按钮
-bogosort.gui.button.color=整理按钮的背景颜色
+bogosort.gui.button.enabled=在GUI中启用排序和设置按钮
+bogosort.gui.button.color=排序按钮的背景颜色
 
 bogosort.command.config_relaod.success=重新加载排序配置
 
