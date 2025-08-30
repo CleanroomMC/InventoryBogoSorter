@@ -3,8 +3,12 @@ package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 /**
  * @author ZZZank
@@ -33,5 +37,13 @@ public interface JsonSchema<T> {
 
     default JsonSchema<T> describe(String title, String description, String examples, String $comment) {
         return new DescribingJsonSchema<>(this, title, description, examples, $comment);
+    }
+
+    default <C extends Collection<T>> JsonSchema<C> toCollection(IntFunction<C> collectionProvider) {
+        return new CollectionJsonSchema<>(this, collectionProvider);
+    }
+
+    default JsonSchema<List<T>> toList() {
+        return toCollection(ArrayList::new);
     }
 }
