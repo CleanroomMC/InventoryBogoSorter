@@ -1,8 +1,8 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import com.github.bsideup.jabel.Desugar;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.minecraftforge.fml.common.Loader;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
@@ -15,26 +15,17 @@ import java.util.regex.Pattern;
  * @author ZZZank
  */
 @Desugar
-public record ModCond(
+record ModCond(
     String id,
     Optional<Pattern> versionPattern,
     Optional<VersionRange> versionRange
 ) implements BogoCondition {
-    public static ModCond read(JsonObject object) {
-        return new ModCond(
-            object.get("id").getAsString(),
-            Optional.ofNullable(object.get("version_range")).map(JsonElement::getAsString).map(Pattern::compile),
-            Optional.ofNullable(object.get("version_pattern"))
-                .map(JsonElement::getAsString)
-                .map(spec -> {
-                    try {
-                        return VersionRange.createFromVersionSpec(spec);
-                    } catch (InvalidVersionSpecificationException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-        );
-    }
+    public static final ObjectJsonSchema<ModCond> SCHEMA = ObjectJsonSchema.of(
+        JsonSchema.STRING.toField("id"),
+        JsonSchema.STRING.map(Pattern::compile).toOptionalField("versionPattern"),
+        JsonSchema.STRING.map(ModCond::fromVersionSpecOrThrow).toOptionalField("versionRange"),
+        ModCond::new
+    );
 
     @Override
     public boolean test() {
@@ -47,5 +38,13 @@ public record ModCond(
             return versionPattern.get().matcher(mod.getVersion()).matches();
         }
         return true;
+    }
+
+    private static VersionRange fromVersionSpecOrThrow(String versionSpec) {
+        try {
+            return VersionRange.createFromVersionSpec(versionSpec);
+        } catch (InvalidVersionSpecificationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

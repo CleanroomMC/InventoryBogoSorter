@@ -1,16 +1,17 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import com.github.bsideup.jabel.Desugar;
-import com.google.gson.JsonObject;
 
 /**
  * @author ZZZank
  */
 @Desugar
-public record NotCond(BogoCondition condition) implements BogoCondition {
-    public static NotCond read(JsonObject object) {
-        return new NotCond(BogoCondition.read(object.get("value").getAsJsonObject()));
-    }
+record NotCond(BogoCondition condition) implements BogoCondition {
+    public static final ObjectJsonSchema<NotCond> SCHEMA = ObjectJsonSchema.of(
+        BogoCondition.SCHEMA.toField("condition"),
+        NotCond::new
+    );
 
     @Override
     public boolean test() {

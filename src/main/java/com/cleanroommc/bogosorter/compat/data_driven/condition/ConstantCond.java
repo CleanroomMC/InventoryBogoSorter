@@ -1,30 +1,26 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
-import com.google.gson.JsonObject;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 
 /**
  * @author ZZZank
  */
-public enum ConstantCond implements BogoCondition {
-    ALWAYS(true),
-    NEVER(false);
+enum ConstantCond implements BogoCondition {
+    ALWAYS,
+    NEVER;
 
-    public static ConstantCond read(JsonObject object) {
-        return of(object.get("value").getAsBoolean());
-    }
+    public static final JsonSchema<ConstantCond> SCHEMA_SIMPLE = JsonSchema.BOOL.map(ConstantCond::of);
+    public static final ObjectJsonSchema<ConstantCond> SCHEMA = ObjectJsonSchema.of(
+        JsonSchema.BOOL.toField("value"),
+        ConstantCond::of
+    );
 
     public static ConstantCond of(boolean value) {
         return value ? ALWAYS : NEVER ;
     }
 
-    private final boolean value;
-
-    ConstantCond(boolean value) {
-        this.value = value;
-    }
-
-    @Override
     public boolean test() {
-        return value;
+        return this == ALWAYS;
     }
 }

@@ -41,7 +41,7 @@ public class BogoCompatParser {
         if (conditionJson == null) {
             return handler;
         }
-        var condition = BogoCondition.read(o.get("condition").getAsJsonObject());
+        var condition = BogoCondition.SCHEMA.read(o.get("condition"));
 
         return api -> {
             if (condition.test()) {

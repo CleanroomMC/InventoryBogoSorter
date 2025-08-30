@@ -1,7 +1,7 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import com.github.bsideup.jabel.Desugar;
-import com.google.gson.JsonObject;
 
 import java.util.List;
 
@@ -9,10 +9,11 @@ import java.util.List;
  * @author ZZZank
  */
 @Desugar
-public record AndCond(List<BogoCondition> conditions) implements BogoCondition {
-    public static AndCond read(JsonObject object) {
-        return new AndCond(BogoCondition.readList(object.get("value").getAsJsonArray()));
-    }
+record AndCond(List<BogoCondition> conditions) implements BogoCondition {
+    public static final ObjectJsonSchema<AndCond> SCHEMA = ObjectJsonSchema.of(
+        BogoCondition.SCHEMA.toList().toField("conditions"),
+        AndCond::new
+    );
 
     @Override
     public boolean test() {

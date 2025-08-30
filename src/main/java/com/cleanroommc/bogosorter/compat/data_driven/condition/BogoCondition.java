@@ -1,36 +1,25 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import org.jetbrains.annotations.NotNull;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.DispatchJsonSchema;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author ZZZank
  */
 public interface BogoCondition {
-    String TYPE_KEY = "type";
-
-    static BogoCondition read(JsonObject object) {
-        return switch (object.get(TYPE_KEY).getAsString()) {
-            case "mod" -> ModCond.read(object);
-            case "not" -> NotCond.read(object);
-            case "and" -> AndCond.read(object);
-            case "or" -> OrCond.read(object);
-            case "constant" -> ConstantCond.read(object);
-            default -> throw new IllegalStateException("Unexpected condition type: " + object.get(TYPE_KEY));
-        };
-    }
-
-    static @NotNull List<BogoCondition> readList(JsonArray array) {
-        var parsed = new ArrayList<BogoCondition>(array.size());
-        for (var element : array) {
-            parsed.add(BogoCondition.read(element.getAsJsonObject()));
-        }
-        return parsed;
-    }
+    Map<String, ObjectJsonSchema<? extends BogoCondition>> REGISTRY = new HashMap<>();
+    JsonSchema<BogoCondition> SCHEMA = JsonSchema.lazy(() -> {
+        REGISTRY.put("and", AndCond.SCHEMA);
+        REGISTRY.put("or", OrCond.SCHEMA);
+        REGISTRY.put("not", NotCond.SCHEMA);
+        REGISTRY.put("mod", ModCond.SCHEMA);
+        REGISTRY.put("constant", ConstantCond.SCHEMA);
+        return new DispatchJsonSchema<>(REGISTRY, "type", null);
+    });
 
     boolean test();
 }
