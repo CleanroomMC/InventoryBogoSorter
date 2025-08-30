@@ -3,12 +3,10 @@ package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -21,6 +19,10 @@ public interface JsonSchema<T> {
     JsonSchema<Float> FLOAT = new PrimitiveJsonSchema<>(JsonElement::getAsFloat, "number");
     JsonSchema<Double> DOUBLE = new PrimitiveJsonSchema<>(JsonElement::getAsDouble, "number");
     JsonSchema<Boolean> BOOL = new PrimitiveJsonSchema<>(JsonElement::getAsBoolean, "boolean");
+
+    static <T> JsonSchema<T> lazy(Supplier<JsonSchema<T>> supplier) {
+        return new LazyJsonSchema<>(supplier);
+    }
 
     T read(JsonElement json);
 
@@ -45,5 +47,17 @@ public interface JsonSchema<T> {
 
     default JsonSchema<List<T>> toList() {
         return toCollection(ArrayList::new);
+    }
+
+    default ObjectSchemaComponent<T> toField(String name) {
+        return new ObjectSchemaComponent<>(this, name, false, null);
+    }
+
+    default ObjectSchemaComponent<T> toField(String name, T fallback) {
+        return new ObjectSchemaComponent<>(this, name, true, fallback);
+    }
+
+    default ObjectSchemaComponent<Optional<T>> toOptionalField(String name) {
+        return new ObjectSchemaComponent<>(new RemapJsonSchema<>(this, Optional::of), name, true, Optional.empty());
     }
 }
