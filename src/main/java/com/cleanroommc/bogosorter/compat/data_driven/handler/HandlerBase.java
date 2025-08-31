@@ -28,7 +28,8 @@ public abstract class HandlerBase implements BogoCompatHandler {
 
     @Override
     public void handle(IBogoSortAPI api) {
-        if (condition.isEmpty() || condition.get().test()) {
+        // no 'condition.isEmpty()' because '.isEmpty()' is introduced in Java 11
+        if (!condition.isPresent() || condition.get().test()) {
             handleImpl(api);
         }
     }

@@ -10,10 +10,7 @@ import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -26,7 +23,7 @@ public class MappedSlotHandler extends HandlerBase {
         TARGET_SCHEMA.toField("target"),
         JsonSchema.INT.toField("rowSize"),
         JsonSchema.JSON_OBJECT.map(BogoCompatParser::parseSingleMappedFilter).toList()
-            .toOptionalField("slotFilters", List.of()),
+            .toOptionalField("slotFilters", Collections.emptyList()),
         JsonSchema.JSON_OBJECT.map(BogoCompatParser::parseMappedReducer)
             .toOptionalField("slotReducer", IBogoSortAPI.getInstance()::getSlot),
         MappedSlotHandler::new

@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 
+import com.github.bsideup.jabel.Desugar;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -10,6 +11,7 @@ import java.util.function.Supplier;
 /**
  * @author ZZZank
  */
+@Desugar
 public record RemapJsonSchema<I, O>(
     JsonSchema<I> inner,
     Function<I, O> remapper
