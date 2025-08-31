@@ -4,7 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -25,10 +27,10 @@ public record CollectionJsonSchema<T, C extends Collection<T>>(
     }
 
     @Override
-    public JsonObject getSchema() {
+    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
         var obj = new JsonObject();
         obj.addProperty("type", "array");
-        obj.add("items", component.getSchema());
+        obj.add("items", component.getSchema(definitions));
         return obj;
     }
 }

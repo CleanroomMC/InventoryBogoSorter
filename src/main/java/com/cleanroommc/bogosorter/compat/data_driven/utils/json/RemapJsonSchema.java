@@ -3,7 +3,9 @@ package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -18,7 +20,7 @@ public record RemapJsonSchema<I, O>(
     }
 
     @Override
-    public JsonObject getSchema() {
-        return inner.getSchema();
+    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+        return inner.getSchema(definitions);
     }
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -29,7 +30,7 @@ public record DispatchJsonSchema<T>(
     }
 
     @Override
-    public JsonObject getSchema() {
+    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
         var obj = new JsonObject();
         obj.addProperty("type", "object");
 
@@ -51,7 +52,7 @@ public record DispatchJsonSchema<T>(
             for (var entry : schemas.entrySet()) {
                 var statement = new JsonObject();
                 statement.add("if", buildIfStatement(entry.getKey()));
-                statement.add("then", entry.getValue().getSchema());
+                statement.add("then", entry.getValue().getSchema(definitions));
                 anyOf.add(statement);
             }
             obj.add("anyOf", anyOf);

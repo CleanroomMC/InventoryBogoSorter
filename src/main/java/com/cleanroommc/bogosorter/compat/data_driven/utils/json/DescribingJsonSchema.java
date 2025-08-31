@@ -3,6 +3,9 @@ package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Map;
+import java.util.function.Supplier;
+
 /**
  * @author ZZZank
  */
@@ -19,8 +22,8 @@ public record DescribingJsonSchema<T>(
     }
 
     @Override
-    public JsonObject getSchema() {
-        var got = inner.getSchema();
+    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+        var got = inner.getSchema(definitions);
         addIfNotNull(got, "title", title);
         addIfNotNull(got, "description", description);
         addIfNotNull(got, "examples", examples);

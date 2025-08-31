@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -21,8 +22,8 @@ public final class LazyJsonSchema<T> implements JsonSchema<T>, Supplier<JsonSche
     }
 
     @Override
-    public JsonObject getSchema() {
-        return get().getSchema();
+    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+        return get().getSchema(definitions);
     }
 
     @Override

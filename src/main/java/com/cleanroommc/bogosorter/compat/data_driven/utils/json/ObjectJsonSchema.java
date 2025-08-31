@@ -4,6 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Map;
+import java.util.function.Supplier;
+
 /**
  * @author ZZZank
  */
@@ -42,14 +45,14 @@ public class ObjectJsonSchema<T> implements JsonSchema<T> {
     }
 
     @Override
-    public JsonObject getSchema() {
+    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
         var obj = new JsonObject();
         obj.addProperty("type", "object");
 
         {
             var properties = new JsonObject();
             for (var component : components) {
-                properties.add(component.id(), component.schema().getSchema());
+                properties.add(component.id(), component.schema().getSchema(definitions));
             }
             obj.add("properties", properties);
         }

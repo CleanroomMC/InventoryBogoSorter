@@ -29,7 +29,24 @@ public interface JsonSchema<T> {
 
     T read(JsonElement json);
 
-    JsonObject getSchema();
+    JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions);
+
+    default JsonObject getSchema() {
+        var definitions = new LinkedHashMap<String, Supplier<JsonObject>>();
+        var schema = getSchema(definitions);
+
+        var definitionsJson = new JsonObject();
+        for (var entry : definitions.entrySet()) {
+            definitionsJson.add(entry.getKey(), entry.getValue().get());
+        }
+        schema.add("definitions", definitionsJson);
+
+        return schema;
+    }
+
+    default JsonSchema<T> extractToDefinition(String referenceKey) {
+        return new AsDefinitionJsonSchema<>(this, referenceKey);
+    }
 
     default <T2> JsonSchema<T2> map(Function<T, T2> mapper) {
         Objects.requireNonNull(mapper);
