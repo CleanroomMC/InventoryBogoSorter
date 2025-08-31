@@ -44,7 +44,7 @@ public interface JsonSchema<T> {
         return schema;
     }
 
-    default JsonSchema<T> extractToDefinition(String referenceKey) {
+    default JsonSchema<T> extractToDefinitions(String referenceKey) {
         return new AsDefinitionJsonSchema<>(this, referenceKey);
     }
 

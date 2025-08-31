@@ -18,7 +18,8 @@ public interface BogoCondition {
         REGISTRY.put("not", NotCond.SCHEMA);
         REGISTRY.put("mod", ModCond.SCHEMA);
         REGISTRY.put("constant", ConstantCond.SCHEMA);
-        return new DispatchJsonSchema<>(REGISTRY, "type", null);
+        return new DispatchJsonSchema<>(REGISTRY, "type", null)
+            .extractToDefinitions("condition");
     });
 
     boolean test();
