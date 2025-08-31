@@ -30,7 +30,7 @@ public record DescribingJsonSchema<T>(
         addIfNotNull(got, "description", description);
         addIfNotNull(got, "examples", examples);
         addIfNotNull(got, "$comment", $comment);
-        return null;
+        return got;
     }
 
     private void addIfNotNull(JsonObject target, String id, String value) {

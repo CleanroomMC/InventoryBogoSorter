@@ -57,6 +57,10 @@ public interface JsonSchema<T> {
         return new DescribingJsonSchema<>(this, null, description, null, null);
     }
 
+    default JsonSchema<T> describe(String title, String description) {
+        return new DescribingJsonSchema<>(this, title, description, null, null);
+    }
+
     default JsonSchema<T> describe(String title, String description, String examples, String $comment) {
         return new DescribingJsonSchema<>(this, title, description, examples, $comment);
     }
