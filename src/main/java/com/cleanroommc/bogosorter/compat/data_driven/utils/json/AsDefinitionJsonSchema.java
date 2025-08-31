@@ -22,7 +22,7 @@ public record AsDefinitionJsonSchema<T>(
 
     @Override
     public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
-        definitions.put(refKey, inner::getSchema);
+        definitions.computeIfAbsent(refKey, (ignored) -> () -> inner.getSchema(definitions));
 
         var result = new JsonObject();
         result.addProperty("$ref", "#/definitions/" + refKey);
