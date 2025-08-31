@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * @author ZZZank
  */
 @Desugar
-public record RemapJsonSchema<I, O>(
+record RemapJsonSchema<I, O>(
     JsonSchema<I> inner,
     Function<I, O> remapper
 ) implements JsonSchema<O> {

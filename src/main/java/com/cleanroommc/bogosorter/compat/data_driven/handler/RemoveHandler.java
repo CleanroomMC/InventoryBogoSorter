@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * @author ZZZank
  */
-public class RemoveHandler extends HandlerBase {
+class RemoveHandler extends HandlerBase {
     public static final ObjectJsonSchema<RemoveHandler> SCHEMA = ObjectJsonSchema.of(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),

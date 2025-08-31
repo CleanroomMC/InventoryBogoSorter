@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * @author ZZZank
  */
 @Desugar
-public record AsDefinitionJsonSchema<T>(
+record AsDefinitionJsonSchema<T>(
     JsonSchema<T> inner,
     String refKey
 ) implements JsonSchema<T> {

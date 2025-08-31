@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * @author ZZZank
  */
-public class SetPosHandler extends HandlerBase {
+class SetPosHandler extends HandlerBase {
     public static final JsonSchema<SetPosHandler> SCHEMA = ObjectJsonSchema.of(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),

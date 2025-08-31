@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * @author ZZZank
  */
 @Desugar
-public record DispatchJsonSchema<T>(
+record DispatchJsonSchema<T>(
     Map<String, ? extends JsonSchema<? extends T>> schemas,
     String dispatchKey,
     JsonSchema<T> fallback

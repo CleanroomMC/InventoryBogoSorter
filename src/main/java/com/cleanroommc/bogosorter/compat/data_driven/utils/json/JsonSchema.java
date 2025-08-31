@@ -27,6 +27,14 @@ public interface JsonSchema<T> {
         return new LazyJsonSchema<>(supplier);
     }
 
+    static <T> JsonSchema<T> dispatch(Map<String, ? extends JsonSchema<? extends T>> schemas, String dispatchKey, JsonSchema<T> fallback) {
+        return new DispatchJsonSchema<>(Objects.requireNonNull(schemas), Objects.requireNonNull(dispatchKey), fallback);
+    }
+
+    static <T> JsonSchema<T> dispatch(Map<String, ? extends JsonSchema<? extends T>> schemas) {
+        return dispatch(schemas, "type", null);
+    }
+
     T read(JsonElement json);
 
     JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions);
@@ -82,6 +90,6 @@ public interface JsonSchema<T> {
     }
 
     default ObjectSchemaComponent<Optional<T>> toOptionalField(String name) {
-        return new ObjectSchemaComponent<>(new RemapJsonSchema<>(this, Optional::of), name, true, Optional.empty());
+        return new ObjectSchemaComponent<>(this.map(Optional::of), name, true, Optional.empty());
     }
 }

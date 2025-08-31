@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * @author ZZZank
  */
-public class MarkOnlyHandler extends HandlerBase {
+class MarkOnlyHandler extends HandlerBase {
     public static final ObjectJsonSchema<MarkOnlyHandler> SCHEMA = ObjectJsonSchema.of(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),

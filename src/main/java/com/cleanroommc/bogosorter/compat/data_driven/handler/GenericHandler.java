@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * @author ZZZank
  */
-public class GenericHandler extends HandlerBase {
+class GenericHandler extends HandlerBase {
     public static final JsonSchema<GenericHandler> SCHEMA = ObjectJsonSchema.of(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),

@@ -1,0 +1,276 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "set_button_pos",
+          "slot_mapped",
+          "generic",
+          "remove",
+          "slot_range",
+          "mark_only"
+        ]
+      }
+    },
+    "oneOf": [
+      {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "#/definitions/condition"
+          },
+          "target": {
+            "type": "string",
+            "description": "class name, for example `net.minecraft.inventory.Container`"
+          },
+          "pos": {
+            "type": "string"
+          },
+          "type": {
+            "const": "set_button_pos"
+          }
+        },
+        "required": [
+          "target",
+          "pos",
+          "type"
+        ]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "#/definitions/condition"
+          },
+          "target": {
+            "type": "string",
+            "description": "class name, for example `net.minecraft.inventory.Container`"
+          },
+          "rowSize": {
+            "type": "number"
+          },
+          "slotFilters": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "slotReducer": {
+            "type": "object"
+          },
+          "type": {
+            "const": "slot_mapped"
+          }
+        },
+        "required": [
+          "target",
+          "rowSize",
+          "type"
+        ]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "#/definitions/condition"
+          },
+          "target": {
+            "type": "string",
+            "description": "class name, for example `net.minecraft.inventory.Container`"
+          },
+          "type": {
+            "const": "generic"
+          }
+        },
+        "required": [
+          "target",
+          "type"
+        ]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "#/definitions/condition"
+          },
+          "target": {
+            "type": "string",
+            "description": "class name, for example `net.minecraft.inventory.Container`"
+          },
+          "type": {
+            "const": "remove"
+          }
+        },
+        "required": [
+          "target",
+          "type"
+        ]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "#/definitions/condition"
+          },
+          "target": {
+            "type": "string",
+            "description": "class name, for example `net.minecraft.inventory.Container`"
+          },
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "rowSize": {
+            "type": "number"
+          },
+          "type": {
+            "const": "slot_range"
+          }
+        },
+        "required": [
+          "target",
+          "start",
+          "end",
+          "rowSize",
+          "type"
+        ]
+      },
+      {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "#/definitions/condition"
+          },
+          "target": {
+            "type": "string",
+            "description": "class name, for example `net.minecraft.inventory.Container`"
+          },
+          "type": {
+            "const": "mark_only"
+          }
+        },
+        "required": [
+          "target",
+          "type"
+        ]
+      }
+    ],
+    "required": [
+      "type"
+    ]
+  },
+  "definitions": {
+    "condition": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "not",
+            "or",
+            "mod",
+            "constant",
+            "and"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "condition": {
+              "$ref": "#/definitions/condition"
+            },
+            "type": {
+              "const": "not"
+            }
+          },
+          "required": [
+            "condition",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/condition"
+              }
+            },
+            "type": {
+              "const": "or"
+            }
+          },
+          "required": [
+            "conditions",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "versionPattern": {
+              "type": "string"
+            },
+            "versionRange": {
+              "type": "string"
+            },
+            "type": {
+              "const": "mod"
+            }
+          },
+          "required": [
+            "id",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "constant"
+            }
+          },
+          "required": [
+            "value",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "conditions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/condition"
+              }
+            },
+            "type": {
+              "const": "and"
+            }
+          },
+          "required": [
+            "conditions",
+            "type"
+          ]
+        }
+      ],
+      "required": [
+        "type"
+      ]
+    }
+  }
+}

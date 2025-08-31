@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * @author ZZZank
  */
-public final class LazyJsonSchema<T> implements JsonSchema<T>, Supplier<JsonSchema<T>> {
+final class LazyJsonSchema<T> implements JsonSchema<T>, Supplier<JsonSchema<T>> {
     private volatile Object supplierOrInstance;
 
     public LazyJsonSchema(Supplier<JsonSchema<T>> supplier) {

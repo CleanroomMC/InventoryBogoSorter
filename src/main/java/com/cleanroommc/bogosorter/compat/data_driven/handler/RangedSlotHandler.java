@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * @author ZZZank
  */
-public class RangedSlotHandler extends HandlerBase {
+class RangedSlotHandler extends HandlerBase {
     public static final JsonSchema<RangedSlotHandler> SCHEMA = ObjectJsonSchema.of(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),

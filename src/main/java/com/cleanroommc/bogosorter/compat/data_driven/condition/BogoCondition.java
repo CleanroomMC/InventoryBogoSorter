@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.DispatchJsonSchema;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 
@@ -18,8 +17,7 @@ public interface BogoCondition {
         REGISTRY.put("not", NotCond.SCHEMA);
         REGISTRY.put("mod", ModCond.SCHEMA);
         REGISTRY.put("constant", ConstantCond.SCHEMA);
-        return new DispatchJsonSchema<>(REGISTRY, "type", null)
-            .extractToDefinitions("condition");
+        return JsonSchema.dispatch(REGISTRY).extractToDefinitions("condition");
     });
 
     boolean test();

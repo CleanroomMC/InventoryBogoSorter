@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 /**
  * @author ZZZank
  */
-public class MappedSlotHandler extends HandlerBase {
+class MappedSlotHandler extends HandlerBase {
     public static final JsonSchema<MappedSlotHandler> SCHEMA = ObjectJsonSchema.of(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
@@ -64,7 +64,7 @@ public class MappedSlotHandler extends HandlerBase {
                 Predicate<Slot> pred1 = iter.next(), pred2 = iter.next(), pred3 = iter.next();
                 return slot -> pred1.test(slot) && pred2.test(slot) && pred3.test(slot);
         }
-        var predicates =(Predicate<Slot>[]) filters.toArray(new Predicate[0]);
+        var predicates = filters.toArray((Predicate<Slot>[]) new Predicate[0]);
         return slot -> {
             for (var predicate : predicates) {
                 if (!predicate.test(slot)) {

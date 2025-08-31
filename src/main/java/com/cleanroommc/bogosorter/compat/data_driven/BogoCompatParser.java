@@ -3,7 +3,7 @@ package com.cleanroommc.bogosorter.compat.data_driven;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.FixedLimitSlot;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.DataDrivenReflection;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.ReflectUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.Slot;
@@ -74,7 +74,7 @@ public class BogoCompatParser {
 
     public static @NotNull Predicate<Slot> parseSingleMappedFilter(JsonObject obj) {
         return switch (obj.get("type").getAsString()) {
-            case "instanceof" -> DataDrivenReflection.toClass(
+            case "instanceof" -> ReflectUtils.toClass(
                 obj.get("class"),
                 Slot.class
             )::isInstance;

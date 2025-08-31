@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * @author ZZZank
  */
 @Desugar
-public record DescribingJsonSchema<T>(
+record DescribingJsonSchema<T>(
     JsonSchema<T> inner,
     String title,
     String description,

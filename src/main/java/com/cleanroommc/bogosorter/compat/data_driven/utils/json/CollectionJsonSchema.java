@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  * @author ZZZank
  */
 @Desugar
-public record CollectionJsonSchema<T, C extends Collection<T>>(
+record CollectionJsonSchema<T, C extends Collection<T>>(
     JsonSchema<T> component,
     IntFunction<C> collection
 ) implements JsonSchema<C> {

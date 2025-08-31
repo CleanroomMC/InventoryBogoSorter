@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.compat.data_driven;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.compat.data_driven.handler.BogoCompatHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import net.minecraftforge.fml.common.Loader;
