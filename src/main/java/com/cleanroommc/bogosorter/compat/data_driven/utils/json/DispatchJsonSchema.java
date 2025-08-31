@@ -41,6 +41,7 @@ public record DispatchJsonSchema<T>(
 
             var dispatch = new JsonObject();
             dispatch.addProperty("type", "string");
+
             var allowed = new JsonArray();
             schemas.keySet().forEach(allowed::add);
             dispatch.add("enum", allowed);
@@ -50,30 +51,27 @@ public record DispatchJsonSchema<T>(
         }
 
         {
-            var anyOf = new JsonArray();
+            var oneOf = new JsonArray();
             for (var entry : schemas.entrySet()) {
-                var statement = new JsonObject();
-                statement.add("if", buildIfStatement(entry.getKey()));
-                statement.add("then", entry.getValue().getSchema(definitions));
-                anyOf.add(statement);
+                var schema = entry.getValue().getSchema(definitions);
+
+                schema.getAsJsonArray("required").add(dispatchKey);
+
+                var dispatchJson = new JsonObject();
+                dispatchJson.addProperty("const", entry.getKey());
+                schema.getAsJsonObject("properties").add(dispatchKey, dispatchJson);
+
+                oneOf.add(schema);
             }
-            obj.add("anyOf", anyOf);
+            obj.add("oneOf", oneOf);
+        }
+
+        {
+            var required = new JsonArray();
+            required.add(this.dispatchKey);
+            obj.add("required", required);
         }
 
         return obj;
-    }
-
-    private JsonObject buildIfStatement(String requiredValue) {
-        var if_ = new JsonObject();
-        {
-            var properties = new JsonObject();
-            {
-                var value = new JsonObject();
-                value.addProperty("const", requiredValue);
-                properties.add(dispatchKey, value);
-            }
-            if_.add("properties", properties);
-        }
-        return if_;
     }
 }
