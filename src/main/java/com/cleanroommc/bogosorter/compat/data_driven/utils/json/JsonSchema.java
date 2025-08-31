@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -19,6 +20,8 @@ public interface JsonSchema<T> {
     JsonSchema<Float> FLOAT = new PrimitiveJsonSchema<>(JsonElement::getAsFloat, "number");
     JsonSchema<Double> DOUBLE = new PrimitiveJsonSchema<>(JsonElement::getAsDouble, "number");
     JsonSchema<Boolean> BOOL = new PrimitiveJsonSchema<>(JsonElement::getAsBoolean, "boolean");
+    JsonSchema<JsonArray> JSON_ARRAY = new PrimitiveJsonSchema<>(JsonElement::getAsJsonArray, "array");
+    JsonSchema<JsonObject> JSON_OBJECT = new PrimitiveJsonSchema<>(JsonElement::getAsJsonObject, "object");
 
     static <T> JsonSchema<T> lazy(Supplier<JsonSchema<T>> supplier) {
         return new LazyJsonSchema<>(supplier);
@@ -53,7 +56,7 @@ public interface JsonSchema<T> {
         return new ObjectSchemaComponent<>(this, name, false, null);
     }
 
-    default ObjectSchemaComponent<T> toField(String name, T fallback) {
+    default ObjectSchemaComponent<T> toOptionalField(String name, T fallback) {
         return new ObjectSchemaComponent<>(this, name, true, fallback);
     }
 

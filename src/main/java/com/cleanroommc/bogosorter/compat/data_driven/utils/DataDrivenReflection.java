@@ -1,6 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.utils;
 
-import com.cleanroommc.bogosorter.compat.data_driven.handler.GeneralHandler;
+import com.cleanroommc.bogosorter.compat.data_driven.handler.GenericHandler;
 import com.google.gson.JsonElement;
 
 import java.util.List;
@@ -13,13 +13,13 @@ import java.util.List;
 public class DataDrivenReflection {
 
     public static <T> Class<? extends T> toClass(JsonElement className, Class<T> filter) {
+        return toClass(className.getAsString(), filter);
+    }
+
+    public static <T> Class<? extends T> toClass(String className, Class<T> filter) {
         Class<?> c;
         try {
-            c = Class.forName(
-                className.getAsString(),
-                false,
-                GeneralHandler.class.getClassLoader()
-            );
+            c = Class.forName(className, false, GenericHandler.class.getClassLoader());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -10,7 +10,7 @@ import java.util.Map;
  * @author ZZZank
  */
 public record DispatchJsonSchema<T>(
-    Map<String, ? extends ObjectJsonSchema<? extends T>> schemas,
+    Map<String, ? extends JsonSchema<? extends T>> schemas,
     String dispatchKey,
     JsonSchema<T> fallback
 ) implements JsonSchema<T> {

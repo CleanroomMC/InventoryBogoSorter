@@ -68,7 +68,7 @@ public class DataDrivenBogoCompat {
         var parsed = new ArrayList<BogoCompatHandler>();
         for (var element : all) {
             try {
-                parsed.add(BogoCompatParser.parse(element.getAsJsonObject()));
+                parsed.add(BogoCompatHandler.SCHEMA.read(element.getAsJsonObject()));
             } catch (Exception e) {
                 BogoSorter.LOGGER.error("error when parsing handler json: {}", element,  e);
             }
