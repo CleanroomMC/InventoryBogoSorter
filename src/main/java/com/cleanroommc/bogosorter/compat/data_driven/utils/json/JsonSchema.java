@@ -14,9 +14,9 @@ import java.util.function.Supplier;
  */
 public interface JsonSchema<T> {
     JsonSchema<String> STRING = new PrimitiveJsonSchema<>(JsonElement::getAsString, "string");
-    JsonSchema<Integer> INT = new PrimitiveJsonSchema<>(JsonElement::getAsInt, "number");
-    JsonSchema<Short> SHORT = new PrimitiveJsonSchema<>(JsonElement::getAsShort, "number");
-    JsonSchema<Long> LONG = new PrimitiveJsonSchema<>(JsonElement::getAsLong, "number");
+    JsonSchema<Integer> INT = new PrimitiveJsonSchema<>(JsonElement::getAsInt, "integer");
+    JsonSchema<Short> SHORT = new PrimitiveJsonSchema<>(JsonElement::getAsShort, "integer");
+    JsonSchema<Long> LONG = new PrimitiveJsonSchema<>(JsonElement::getAsLong, "integer");
     JsonSchema<Float> FLOAT = new PrimitiveJsonSchema<>(JsonElement::getAsFloat, "number");
     JsonSchema<Double> DOUBLE = new PrimitiveJsonSchema<>(JsonElement::getAsDouble, "number");
     JsonSchema<Boolean> BOOL = new PrimitiveJsonSchema<>(JsonElement::getAsBoolean, "boolean");
