@@ -12,14 +12,22 @@ public class ReflectUtils {
     }
 
     public static <T> Class<? extends T> toClass(String className, Class<T> filter) {
+        return requireSubClassOf(toClass(className), filter);
+    }
+
+    public static Class<?> toClass(String className) {
         Class<?> c;
         try {
             c = Class.forName(className, false, ReflectUtils.class.getClassLoader());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+        return c;
+    }
+
+    public static <T> Class<? extends T> requireSubClassOf(Class<?> c, Class<T> filter) {
         if (!filter.isAssignableFrom(c)) {
-            throw new IllegalArgumentException(String.format("loaded class is not a subclass of %s", filter.getName()));
+            throw new IllegalArgumentException(String.format("class '%s' is not a subclass of '%s'", c, filter.getName()));
         }
         return (Class<? extends T>) c;
     }

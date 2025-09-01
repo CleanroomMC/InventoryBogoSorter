@@ -3,7 +3,6 @@ package com.cleanroommc.bogosorter.compat.data_driven.handler;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
-import com.cleanroommc.bogosorter.compat.data_driven.BogoCompatParser;
 import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
@@ -22,9 +21,9 @@ class MappedSlotHandler extends HandlerBase {
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         JsonSchema.INT.toField("rowSize"),
-        JsonSchema.JSON_OBJECT.map(BogoCompatParser::parseSingleMappedFilter).toList()
+        MappedSlotActions.FILTER_SCHEMA.toList()
             .toOptionalField("slotFilters", Collections.emptyList()),
-        JsonSchema.JSON_OBJECT.map(BogoCompatParser::parseMappedReducer)
+        MappedSlotActions.REDUCER_SCHEMA
             .toOptionalField("slotReducer", IBogoSortAPI.getInstance()::getSlot),
         MappedSlotHandler::new
     );

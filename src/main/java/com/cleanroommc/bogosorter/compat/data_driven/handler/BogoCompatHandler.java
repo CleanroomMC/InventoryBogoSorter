@@ -14,9 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author ZZZank
  */
 public interface BogoCompatHandler {
-    JsonSchema<Class<? extends Container>> TARGET_SCHEMA = JsonSchema.STRING
+    JsonSchema<Class<?>> CLASS_SCHEMA = JsonSchema.STRING.map(ReflectUtils::toClass);
+    JsonSchema<Class<? extends Container>> TARGET_SCHEMA = CLASS_SCHEMA
         .describe("class name, for example `net.minecraft.inventory.Container`")
-        .map(name -> ReflectUtils.toClass(name, Container.class));
+        .map(c -> ReflectUtils.requireSubClassOf(c, Container.class));
     Map<String, JsonSchema<? extends BogoCompatHandler>> REGISTRY = new ConcurrentHashMap<>();
     JsonSchema<BogoCompatHandler> SCHEMA = JsonSchema.lazy(() -> {
         REGISTRY.put("generic", GenericHandler.SCHEMA);
