@@ -4,6 +4,7 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.DataDrivenUtils;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import net.minecraft.inventory.Container;
@@ -41,37 +42,13 @@ class MappedSlotHandler extends HandlerBase {
     ) {
         super(condition, target);
         this.rowSize = rowSize;
-        this.filter = buildAllMatchFilter(filters);
+        this.filter = DataDrivenUtils.buildAllMatchFilter(filters);
         this.reducer = reducer;
         BogoSorter.LOGGER.info(
             "constructed mapped bogo compat handler targeting '{}' with row size '{}'",
             target.getName(),
             rowSize
         );
-    }
-
-    private static Predicate<Slot> buildAllMatchFilter(Collection<? extends Predicate<Slot>> filters) {
-        var iter = filters.iterator();
-        switch (filters.size()) {
-            case 0:
-                return (slot) -> true;
-            case 1:
-                return iter.next();
-            case 2:
-                return iter.next().and(iter.next());
-            case 3:
-                Predicate<Slot> pred1 = iter.next(), pred2 = iter.next(), pred3 = iter.next();
-                return slot -> pred1.test(slot) && pred2.test(slot) && pred3.test(slot);
-        }
-        var predicates = filters.toArray((Predicate<Slot>[]) new Predicate[0]);
-        return slot -> {
-            for (var predicate : predicates) {
-                if (!predicate.test(slot)) {
-                    return false;
-                }
-            }
-            return true;
-        };
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.cleanroommc.bogosorter.compat.data_driven.handler;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.FixedLimitSlot;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.ReflectUtils;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.DataDrivenUtils;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.PrimitiveJsonSchema;
@@ -36,7 +36,7 @@ class MappedSlotActions {
         .extractToDefinitions("mapped_slot_filter");
     public static final ObjectJsonSchema<Predicate<Slot>> FILTER_SCHEMA_INSTANCEOF = ObjectJsonSchema.of(
         BogoCompatHandler.CLASS_SCHEMA
-            .<Class<? extends Slot>>map(c -> ReflectUtils.requireSubClassOf(c, Slot.class))
+            .<Class<? extends Slot>>map(c -> DataDrivenUtils.requireSubClassOf(c, Slot.class))
             .toField("class"),
         c -> c::isInstance
     );
@@ -50,11 +50,15 @@ class MappedSlotActions {
     );
     public static final ObjectJsonSchema<Predicate<Slot>> FILTER_SCHEMA_AND = ObjectJsonSchema.of(
         FILTER_SCHEMA.toList().toField("filters"),
-        filters -> slot -> filters.stream().allMatch(p -> p.test(slot))
+        DataDrivenUtils::buildAllMatchFilter
     );
     public static final ObjectJsonSchema<Predicate<Slot>> FILTER_SCHEMA_OR = ObjectJsonSchema.of(
         FILTER_SCHEMA.toList().toField("filters"),
-        filters -> slot -> filters.stream().anyMatch(p -> p.test(slot))
+        DataDrivenUtils::buildAnyMatchFilter
+    );
+    public static final ObjectJsonSchema<Predicate<Slot>> FILTER_SCHEMA_NOT = ObjectJsonSchema.of(
+        FILTER_SCHEMA.toField("filter"),
+        Predicate::negate
     );
 
     static {
@@ -62,5 +66,6 @@ class MappedSlotActions {
         FILTER_REGISTRY.put("index_in_range", FILTER_SCHEMA_RANGED);
         FILTER_REGISTRY.put("and", FILTER_SCHEMA_AND);
         FILTER_REGISTRY.put("or", FILTER_SCHEMA_OR);
+        FILTER_REGISTRY.put("not", FILTER_SCHEMA_NOT);
     }
 }
