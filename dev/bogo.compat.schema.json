@@ -50,16 +50,16 @@
             "description": "class name, for example `net.minecraft.inventory.Container`"
           },
           "rowSize": {
-            "type": "number"
+            "type": "integer"
           },
           "slotFilters": {
             "type": "array",
             "items": {
-              "type": "object"
+              "$ref": "#/definitions/mapped_slot_filter"
             }
           },
           "slotReducer": {
-            "type": "object"
+            "$ref": "#/definitions/mapped_slot_reducer"
           },
           "type": {
             "const": "slot_mapped"
@@ -120,13 +120,13 @@
             "description": "class name, for example `net.minecraft.inventory.Container`"
           },
           "start": {
-            "type": "number"
+            "type": "integer"
           },
           "end": {
-            "type": "number"
+            "type": "integer"
           },
           "rowSize": {
-            "type": "number"
+            "type": "integer"
           },
           "type": {
             "const": "slot_range"
@@ -264,6 +264,154 @@
           },
           "required": [
             "conditions",
+            "type"
+          ]
+        }
+      ],
+      "required": [
+        "type"
+      ]
+    },
+    "mapped_slot_filter": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "instanceof",
+            "index_in_range",
+            "and",
+            "or",
+            "not"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "class": {
+              "type": "string"
+            },
+            "type": {
+              "const": "instanceof"
+            }
+          },
+          "required": [
+            "class",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "min": {
+              "type": "integer"
+            },
+            "max": {
+              "type": "integer"
+            },
+            "type": {
+              "const": "index_in_range"
+            }
+          },
+          "required": [
+            "min",
+            "max",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filters": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/mapped_slot_filter"
+              }
+            },
+            "type": {
+              "const": "and"
+            }
+          },
+          "required": [
+            "filters",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filters": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/mapped_slot_filter"
+              }
+            },
+            "type": {
+              "const": "or"
+            }
+          },
+          "required": [
+            "filters",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "$ref": "#/definitions/mapped_slot_filter"
+            },
+            "type": {
+              "const": "not"
+            }
+          },
+          "required": [
+            "filter",
+            "type"
+          ]
+        }
+      ],
+      "required": [
+        "type"
+      ]
+    },
+    "mapped_slot_reducer": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "general",
+            "custom_stack_limit"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "general"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer"
+            },
+            "type": {
+              "const": "custom_stack_limit"
+            }
+          },
+          "required": [
+            "limit",
             "type"
           ]
         }

@@ -21,6 +21,11 @@ public class DataDrivenBogoCompat {
     public static final String COMPAT_FILE = "bogo.compat.json";
     private static final Gson GSON = new Gson();
 
+    public static void main(String[] args) {
+        var schema = BogoCompatHandler.SCHEMA.toList().getSchema();
+        System.out.println(GSON.toJson(schema));
+    }
+
     public static ArrayList<BogoCompatHandler> scanHandlers() {
         var parsed = new ArrayList<BogoCompatHandler>();
 
@@ -69,7 +74,7 @@ public class DataDrivenBogoCompat {
         var parsed = new ArrayList<BogoCompatHandler>();
         for (var element : all) {
             try {
-                parsed.add(BogoCompatHandler.SCHEMA.read(element.getAsJsonObject()));
+                parsed.add(BogoCompatHandler.SCHEMA.read(element));
             } catch (Exception e) {
                 BogoSorter.LOGGER.error("error when parsing handler json: {}", element,  e);
             }

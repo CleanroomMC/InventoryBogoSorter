@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 @Desugar
 record RemapJsonSchema<I, O>(
     JsonSchema<I> inner,
-    Function<I, O> remapper
+    Function<? super I, ? extends O> remapper
 ) implements JsonSchema<O> {
     @Override
     public O read(JsonElement json) {

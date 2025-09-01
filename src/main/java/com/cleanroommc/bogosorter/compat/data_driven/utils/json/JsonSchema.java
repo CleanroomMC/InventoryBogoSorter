@@ -56,7 +56,7 @@ public interface JsonSchema<T> {
         return new AsDefinitionJsonSchema<>(this, referenceKey);
     }
 
-    default <T2> JsonSchema<T2> map(Function<T, T2> mapper) {
+    default <T2> JsonSchema<T2> map(Function<? super T, ? extends T2> mapper) {
         Objects.requireNonNull(mapper);
         return new RemapJsonSchema<>(this, mapper);
     }

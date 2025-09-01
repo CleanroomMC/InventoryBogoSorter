@@ -19,7 +19,10 @@ import java.util.function.Predicate;
  */
 class MappedSlotActions {
     public static final Map<String, JsonSchema<Function<Slot, ISlot>>> REDUCER_REGISTRY = new LinkedHashMap<>();
-    public static final JsonSchema<Function<Slot, ISlot>> REDUCER_SCHEMA = JsonSchema.lazy(() -> {
+    public static final JsonSchema<Function<Slot, ISlot>> REDUCER_SCHEMA = JsonSchema.dispatch(REDUCER_REGISTRY)
+        .extractToDefinitions("mapped_slot_reducer");
+
+    static {
         REDUCER_REGISTRY.put("general", new PrimitiveJsonSchema<>(
             ignored -> IBogoSortAPI.getInstance()::getSlot,
             "object"
@@ -28,8 +31,7 @@ class MappedSlotActions {
             JsonSchema.INT.toField("limit"),
             limit -> slot -> new FixedLimitSlot(slot, limit)
         ));
-        return JsonSchema.dispatch(REDUCER_REGISTRY);
-    });
+    }
 
     public static final Map<String, JsonSchema<Predicate<Slot>>> FILTER_REGISTRY = new LinkedHashMap<>();
     public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA = JsonSchema.dispatch(FILTER_REGISTRY)
