@@ -74,12 +74,6 @@ record DispatchJsonSchema<T>(
         var result = new JsonObject();
 
         {
-            var required = new JsonArray();
-            required.add(dispatchKey);
-            result.add("required", required);
-        }
-
-        {
             var properties = new JsonObject();
             {
                 var dispatchKeyJson = new JsonObject();
