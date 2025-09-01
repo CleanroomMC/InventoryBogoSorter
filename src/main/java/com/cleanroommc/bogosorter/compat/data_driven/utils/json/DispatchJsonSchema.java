@@ -1,5 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 
+import com.cleanroommc.bogosorter.compat.data_driven.utils.DataDrivenUtils;
 import com.github.bsideup.jabel.Desugar;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -55,13 +56,7 @@ record DispatchJsonSchema<T>(
             for (var entry : schemas.entrySet()) {
                 var schema = entry.getValue().getSchema(definitions);
 
-                schema.getAsJsonArray("required").add(dispatchKey);
-
-                var dispatchJson = new JsonObject();
-                dispatchJson.addProperty("const", entry.getKey());
-                schema.getAsJsonObject("properties").add(dispatchKey, dispatchJson);
-
-                oneOf.add(schema);
+                oneOf.add(DataDrivenUtils.mergeJson(schema, buildDispatchJson(entry.getKey())));
             }
             obj.add("oneOf", oneOf);
         }
@@ -73,5 +68,27 @@ record DispatchJsonSchema<T>(
         }
 
         return obj;
+    }
+
+    private JsonObject buildDispatchJson(String dispatchValue) {
+        var result = new JsonObject();
+
+        {
+            var required = new JsonArray();
+            required.add(dispatchKey);
+            result.add("required", required);
+        }
+
+        {
+            var properties = new JsonObject();
+            {
+                var dispatchKeyJson = new JsonObject();
+                dispatchKeyJson.addProperty("const", dispatchValue);
+                properties.add(dispatchKey, dispatchKeyJson);
+            }
+            result.add("properties", properties);
+        }
+
+        return result;
     }
 }
