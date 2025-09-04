@@ -12,10 +12,10 @@ import java.util.Optional;
  */
 class MarkOnlyHandler extends HandlerBase {
     public static final JsonSchema<MarkOnlyHandler> SCHEMA = JsonSchema.object(
-        BogoCondition.SCHEMA.toOptionalField("condition"),
+        CONDITION_SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         MarkOnlyHandler::new
-    );
+    ).describe("Marks the container, but do nothing");
 
     protected MarkOnlyHandler(Optional<BogoCondition> condition, Class<? extends Container> target) {
         super(condition, target);

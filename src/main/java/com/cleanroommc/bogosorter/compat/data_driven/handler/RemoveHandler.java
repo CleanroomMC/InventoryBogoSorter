@@ -12,10 +12,10 @@ import java.util.Optional;
  */
 class RemoveHandler extends HandlerBase {
     public static final JsonSchema<RemoveHandler> SCHEMA = JsonSchema.object(
-        BogoCondition.SCHEMA.toOptionalField("condition"),
+        CONDITION_SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         RemoveHandler::new
-    );
+    ).describe("Remove sorting compat for the container");
 
     protected RemoveHandler(
         Optional<BogoCondition> condition,

@@ -13,13 +13,13 @@ import java.util.Optional;
  */
 class RangedSlotHandler extends HandlerBase {
     public static final JsonSchema<RangedSlotHandler> SCHEMA = JsonSchema.object(
-        BogoCondition.SCHEMA.toOptionalField("condition"),
+        CONDITION_SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
-        JsonSchema.INT.toField("start"),
-        JsonSchema.INT.toField("end"),
-        JsonSchema.INT.toField("rowSize"),
+        JsonSchema.INT.describe("index of the first slot (including)").toField("start"),
+        JsonSchema.INT.describe("index of the end slot (excluding)").toField("end"),
+        ROW_SIZE_SCHEMA.toField("rowSize"),
         RangedSlotHandler::new
-    );
+    ).describe("Register a slot group for slots with index in [start, end) range");
 
     protected RangedSlotHandler(
         Optional<BogoCondition> condition,

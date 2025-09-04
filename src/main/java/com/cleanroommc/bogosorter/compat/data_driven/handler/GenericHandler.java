@@ -12,10 +12,12 @@ import java.util.Optional;
  */
 class GenericHandler extends HandlerBase {
     public static final JsonSchema<GenericHandler> SCHEMA = JsonSchema.object(
-        BogoCondition.SCHEMA.toOptionalField("condition"),
+        CONDITION_SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         GenericHandler::new
-    );
+    ).describe("""
+        Creates and registers a generic slot group.
+        It assumes that all non player slots belong to the same group and that the slot group has a rectangular shape.""");
 
     protected GenericHandler(Optional<BogoCondition> condition, Class<? extends Container> target) {
         super(condition, target);

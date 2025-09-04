@@ -14,7 +14,7 @@ import java.util.Optional;
  */
 class SetPosHandler extends HandlerBase {
     public static final JsonSchema<SetPosHandler> SCHEMA = JsonSchema.object(
-        BogoCondition.SCHEMA.toOptionalField("condition"),
+        CONDITION_SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         JsonSchema.STRING.map(SetPosHandler::readPosSetter).toField("pos"),
         SetPosHandler::new

@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Collection;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -27,6 +29,11 @@ public class DataDrivenUtils {
             throw new IllegalArgumentException(String.format("class '%s' is not a subclass of '%s'", c, filter.getName()));
         }
         return (Class<? extends T>) c;
+    }
+
+    public static <T> Function<Class<?>, Class<? extends T>> requireSubClassOf(Class<T> filter) {
+        Objects.requireNonNull(filter);
+        return c -> requireSubClassOf(c, filter);
     }
 
     public static JsonElement deepCopy(JsonElement json) {

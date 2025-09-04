@@ -13,7 +13,7 @@ enum ConstantCond implements BogoCondition {
     public static final JsonSchema<ConstantCond> SCHEMA = JsonSchema.object(
         JsonSchema.BOOL.toField("value"),
         ConstantCond::of
-    );
+    ).describe("Return the value in 'value' field");
 
     public static ConstantCond of(boolean value) {
         return value ? ALWAYS : NEVER ;

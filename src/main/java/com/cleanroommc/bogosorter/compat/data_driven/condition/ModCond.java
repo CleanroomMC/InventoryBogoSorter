@@ -24,7 +24,7 @@ record ModCond(
         JsonSchema.STRING.map(Pattern::compile).toOptionalField("versionPattern"),
         JsonSchema.STRING.map(ModCond::fromVersionSpecOrThrow).toOptionalField("versionRange"),
         ModCond::new
-    );
+    ).describe("Return `true` if there's a mod with matching id and/or version");
 
     @Override
     public boolean test() {

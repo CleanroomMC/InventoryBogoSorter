@@ -13,7 +13,7 @@ record OrCond(List<BogoCondition> conditions) implements BogoCondition {
     public static final JsonSchema<AndCond> SCHEMA = JsonSchema.object(
         BogoCondition.SCHEMA.toList().toField("conditions"),
         AndCond::new
-    );
+    ).describe("Return `true` if any of the sub conditions returned `true`");
 
     @Override
     public boolean test() {
