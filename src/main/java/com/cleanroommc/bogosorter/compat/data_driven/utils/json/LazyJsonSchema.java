@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -11,6 +12,7 @@ import java.util.function.Supplier;
  */
 final class LazyJsonSchema<T> implements JsonSchema<T>, Supplier<JsonSchema<T>> {
     private volatile Object supplierOrInstance;
+    private volatile boolean initialized;
 
     public LazyJsonSchema(Supplier<JsonSchema<T>> supplier) {
         this.supplierOrInstance = supplier;
@@ -28,10 +30,11 @@ final class LazyJsonSchema<T> implements JsonSchema<T>, Supplier<JsonSchema<T>> 
 
     @Override
     public JsonSchema<T> get() {
-        if (supplierOrInstance instanceof Supplier<?>) {
+        if (!initialized) {
             synchronized (this) {
-                if (supplierOrInstance instanceof Supplier<?> supplier) {
-                    supplierOrInstance = supplier.get();
+                if (!initialized) {
+                    initialized = true;
+                    supplierOrInstance = ((Supplier<?>) supplierOrInstance).get();
                 }
             }
         }
