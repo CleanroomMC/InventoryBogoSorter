@@ -107,12 +107,11 @@ public interface JsonSchema<T> {
     }
 
     default JsonSchema<T> extractToDefinitions(String referenceKey) {
-        return new AsDefinitionJsonSchema<>(this, referenceKey);
+        return new AsDefinitionJsonSchema<>(this, Objects.requireNonNull(referenceKey));
     }
 
     default <T2> JsonSchema<T2> map(Function<? super T, ? extends T2> mapper) {
-        Objects.requireNonNull(mapper);
-        return new RemapJsonSchema<>(this, mapper);
+        return new RemapJsonSchema<>(this, Objects.requireNonNull(mapper));
     }
 
     default JsonSchema<T> describe(String description) {
@@ -128,7 +127,7 @@ public interface JsonSchema<T> {
     }
 
     default <C extends Collection<T>> JsonSchema<C> toCollection(IntFunction<C> collectionProvider) {
-        return new CollectionJsonSchema<>(this, collectionProvider);
+        return new CollectionJsonSchema<>(this, Objects.requireNonNull(collectionProvider));
     }
 
     default JsonSchema<List<T>> toList() {
@@ -136,14 +135,19 @@ public interface JsonSchema<T> {
     }
 
     default ObjectSchemaComponent<T> toField(String name) {
-        return new ObjectSchemaComponent<>(this, name, false, null);
+        return new ObjectSchemaComponent<>(this, Objects.requireNonNull(name), false, null);
     }
 
     default ObjectSchemaComponent<T> toOptionalField(String name, T fallback) {
-        return new ObjectSchemaComponent<>(this, name, true, fallback);
+        return new ObjectSchemaComponent<>(this, Objects.requireNonNull(name), true, fallback);
     }
 
     default ObjectSchemaComponent<Optional<T>> toOptionalField(String name) {
-        return new ObjectSchemaComponent<>(this.map(Optional::of), name, true, Optional.empty());
+        return new ObjectSchemaComponent<>(
+            this.map(Optional::of),
+            Objects.requireNonNull(name),
+            true,
+            Optional.empty()
+        );
     }
 }

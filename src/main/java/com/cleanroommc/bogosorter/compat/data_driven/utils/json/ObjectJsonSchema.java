@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -15,8 +16,12 @@ class ObjectJsonSchema<T> implements JsonSchema<T> {
     private final Combiner<T> combiner;
 
     ObjectJsonSchema(Combiner<T> combiner, ObjectSchemaComponent<?>... components) {
-        this.components = components;
-        this.combiner = combiner;
+        this.components = Objects.requireNonNull(components);
+        this.combiner = Objects.requireNonNull(combiner);
+
+        for (var component : components) {
+            Objects.requireNonNull(component);
+        }
     }
 
     @Override

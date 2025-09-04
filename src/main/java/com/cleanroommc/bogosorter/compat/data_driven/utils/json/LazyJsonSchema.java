@@ -15,7 +15,7 @@ final class LazyJsonSchema<T> implements JsonSchema<T>, Supplier<JsonSchema<T>> 
     private volatile boolean initialized;
 
     public LazyJsonSchema(Supplier<JsonSchema<T>> supplier) {
-        this.supplierOrInstance = supplier;
+        this.supplierOrInstance = Objects.requireNonNull(supplier);
     }
 
     @Override
