@@ -1,6 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.github.bsideup.jabel.Desugar;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Desugar
 record OrCond(List<BogoCondition> conditions) implements BogoCondition {
-    public static final ObjectJsonSchema<AndCond> SCHEMA = ObjectJsonSchema.of(
+    public static final JsonSchema<AndCond> SCHEMA = JsonSchema.object(
         BogoCondition.SCHEMA.toList().toField("conditions"),
         AndCond::new
     );

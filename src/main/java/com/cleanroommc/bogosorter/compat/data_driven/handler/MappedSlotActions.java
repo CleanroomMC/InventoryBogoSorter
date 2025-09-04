@@ -5,7 +5,6 @@ import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.FixedLimitSlot;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.DataDrivenUtils;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.PrimitiveJsonSchema;
 import net.minecraft.inventory.Slot;
 
@@ -27,7 +26,7 @@ class MappedSlotActions {
             ignored -> IBogoSortAPI.getInstance()::getSlot,
             "object"
         ));
-        REDUCER_REGISTRY.put("custom_stack_limit", ObjectJsonSchema.of(
+        REDUCER_REGISTRY.put("custom_stack_limit", JsonSchema.object(
             JsonSchema.INT.toField("limit"),
             limit -> slot -> new FixedLimitSlot(slot, limit)
         ));
@@ -36,13 +35,13 @@ class MappedSlotActions {
     public static final Map<String, JsonSchema<Predicate<Slot>>> FILTER_REGISTRY = new LinkedHashMap<>();
     public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA = JsonSchema.dispatch(FILTER_REGISTRY)
         .extractToDefinitions("mapped_slot_filter");
-    public static final ObjectJsonSchema<Predicate<Slot>> FILTER_SCHEMA_INSTANCEOF = ObjectJsonSchema.of(
+    public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA_INSTANCEOF = JsonSchema.object(
         BogoCompatHandler.CLASS_SCHEMA
             .<Class<? extends Slot>>map(c -> DataDrivenUtils.requireSubClassOf(c, Slot.class))
             .toField("class"),
         c -> c::isInstance
     );
-    public static final ObjectJsonSchema<Predicate<Slot>> FILTER_SCHEMA_RANGED = ObjectJsonSchema.of(
+    public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA_RANGED = JsonSchema.object(
         JsonSchema.INT.toField("min"),
         JsonSchema.INT.toField("max"),
         (min, max) -> (slot) -> {
@@ -50,15 +49,15 @@ class MappedSlotActions {
             return slotIndex >= min && slotIndex <= max;
         }
     );
-    public static final ObjectJsonSchema<Predicate<Slot>> FILTER_SCHEMA_AND = ObjectJsonSchema.of(
+    public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA_AND = JsonSchema.object(
         FILTER_SCHEMA.toList().toField("filters"),
         DataDrivenUtils::buildAllMatchFilter
     );
-    public static final ObjectJsonSchema<Predicate<Slot>> FILTER_SCHEMA_OR = ObjectJsonSchema.of(
+    public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA_OR = JsonSchema.object(
         FILTER_SCHEMA.toList().toField("filters"),
         DataDrivenUtils::buildAnyMatchFilter
     );
-    public static final ObjectJsonSchema<Predicate<Slot>> FILTER_SCHEMA_NOT = ObjectJsonSchema.of(
+    public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA_NOT = JsonSchema.object(
         FILTER_SCHEMA.toField("filter"),
         Predicate::negate
     );

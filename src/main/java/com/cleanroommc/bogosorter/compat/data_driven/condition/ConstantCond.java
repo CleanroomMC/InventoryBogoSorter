@@ -1,7 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 
 /**
  * @author ZZZank
@@ -11,7 +10,7 @@ enum ConstantCond implements BogoCondition {
     NEVER;
 
     public static final JsonSchema<ConstantCond> SCHEMA_SIMPLE = JsonSchema.BOOL.map(ConstantCond::of);
-    public static final ObjectJsonSchema<ConstantCond> SCHEMA = ObjectJsonSchema.of(
+    public static final JsonSchema<ConstantCond> SCHEMA = JsonSchema.object(
         JsonSchema.BOOL.toField("value"),
         ConstantCond::of
     );

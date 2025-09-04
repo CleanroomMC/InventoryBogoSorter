@@ -1,6 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.github.bsideup.jabel.Desugar;
 
 /**
@@ -8,7 +8,7 @@ import com.github.bsideup.jabel.Desugar;
  */
 @Desugar
 record NotCond(BogoCondition condition) implements BogoCondition {
-    public static final ObjectJsonSchema<NotCond> SCHEMA = ObjectJsonSchema.of(
+    public static final JsonSchema<NotCond> SCHEMA = JsonSchema.object(
         BogoCondition.SCHEMA.toField("condition"),
         NotCond::new
     );

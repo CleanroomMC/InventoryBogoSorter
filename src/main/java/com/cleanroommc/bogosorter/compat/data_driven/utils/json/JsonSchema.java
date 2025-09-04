@@ -35,6 +35,60 @@ public interface JsonSchema<T> {
         return dispatch(schemas, "type", null);
     }
 
+    static <I0, O> JsonSchema<O> object(ObjectSchemaComponent<I0> i0, ObjectJsonSchema.Combiner1<I0, O> combiner) {
+        return new ObjectJsonSchema<>(combiner, i0);
+    }
+
+    static <I0, I1, O> JsonSchema<O> object(
+        ObjectSchemaComponent<I0> i0,
+        ObjectSchemaComponent<I1> i1,
+        ObjectJsonSchema.Combiner2<I0, I1, O> combiner
+    ) {
+        return new ObjectJsonSchema<>(combiner, i0, i1);
+    }
+
+    static <I0, I1, I2, O> JsonSchema<O> object(
+        ObjectSchemaComponent<I0> i0,
+        ObjectSchemaComponent<I1> i1,
+        ObjectSchemaComponent<I2> i2,
+        ObjectJsonSchema.Combiner3<I0, I1, I2, O> combiner
+    ) {
+        return new ObjectJsonSchema<>(combiner, i0, i1, i2);
+    }
+
+    static <I0, I1, I2, I3, O> JsonSchema<O> object(
+        ObjectSchemaComponent<I0> i0,
+        ObjectSchemaComponent<I1> i1,
+        ObjectSchemaComponent<I2> i2,
+        ObjectSchemaComponent<I3> i3,
+        ObjectJsonSchema.Combiner4<I0, I1, I2, I3, O> combiner
+    ) {
+        return new ObjectJsonSchema<>(combiner, i0, i1, i2, i3);
+    }
+
+    static <I0, I1, I2, I3, I4, O> JsonSchema<O> object(
+        ObjectSchemaComponent<I0> i0,
+        ObjectSchemaComponent<I1> i1,
+        ObjectSchemaComponent<I2> i2,
+        ObjectSchemaComponent<I3> i3,
+        ObjectSchemaComponent<I4> i4,
+        ObjectJsonSchema.Combiner5<I0, I1, I2, I3, I4, O> combiner
+    ) {
+        return new ObjectJsonSchema<>(combiner, i0, i1, i2, i3, i4);
+    }
+
+    static <I0, I1, I2, I3, I4, I5, O> JsonSchema<O> object(
+        ObjectSchemaComponent<I0> i0,
+        ObjectSchemaComponent<I1> i1,
+        ObjectSchemaComponent<I2> i2,
+        ObjectSchemaComponent<I3> i3,
+        ObjectSchemaComponent<I4> i4,
+        ObjectSchemaComponent<I5> i5,
+        ObjectJsonSchema.Combiner6<I0, I1, I2, I3, I4, I5, O> combiner
+    ) {
+        return new ObjectJsonSchema<>(combiner, i0, i1, i2, i3, i4, i5);
+    }
+
     T read(JsonElement json);
 
     JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions);

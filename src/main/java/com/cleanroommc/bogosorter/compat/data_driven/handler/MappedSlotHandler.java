@@ -6,7 +6,6 @@ import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.DataDrivenUtils;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 
@@ -18,7 +17,7 @@ import java.util.function.Predicate;
  * @author ZZZank
  */
 class MappedSlotHandler extends HandlerBase {
-    public static final JsonSchema<MappedSlotHandler> SCHEMA = ObjectJsonSchema.of(
+    public static final JsonSchema<MappedSlotHandler> SCHEMA = JsonSchema.object(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         JsonSchema.INT.toField("rowSize"),

@@ -2,7 +2,7 @@ package com.cleanroommc.bogosorter.compat.data_driven.handler;
 
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import net.minecraft.inventory.Container;
 
 import java.util.Optional;
@@ -11,7 +11,7 @@ import java.util.Optional;
  * @author ZZZank
  */
 class RemoveHandler extends HandlerBase {
-    public static final ObjectJsonSchema<RemoveHandler> SCHEMA = ObjectJsonSchema.of(
+    public static final JsonSchema<RemoveHandler> SCHEMA = JsonSchema.object(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         RemoveHandler::new

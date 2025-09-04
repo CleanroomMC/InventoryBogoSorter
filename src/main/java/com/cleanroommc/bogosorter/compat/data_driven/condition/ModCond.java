@@ -1,7 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import com.github.bsideup.jabel.Desugar;
 import net.minecraftforge.fml.common.Loader;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
@@ -20,7 +19,7 @@ record ModCond(
     Optional<Pattern> versionPattern,
     Optional<VersionRange> versionRange
 ) implements BogoCondition {
-    public static final ObjectJsonSchema<ModCond> SCHEMA = ObjectJsonSchema.of(
+    public static final JsonSchema<ModCond> SCHEMA = JsonSchema.object(
         JsonSchema.STRING.toField("id"),
         JsonSchema.STRING.map(Pattern::compile).toOptionalField("versionPattern"),
         JsonSchema.STRING.map(ModCond::fromVersionSpecOrThrow).toOptionalField("versionRange"),

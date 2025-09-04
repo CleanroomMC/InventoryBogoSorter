@@ -10,11 +10,11 @@ import java.util.function.Supplier;
 /**
  * @author ZZZank
  */
-public class ObjectJsonSchema<T> implements JsonSchema<T> {
+class ObjectJsonSchema<T> implements JsonSchema<T> {
     private final ObjectSchemaComponent<?>[] components;
     private final Combiner<T> combiner;
 
-    private ObjectJsonSchema(Combiner<T> combiner, ObjectSchemaComponent<?>... components) {
+    ObjectJsonSchema(Combiner<T> combiner, ObjectSchemaComponent<?>... components) {
         this.components = components;
         this.combiner = combiner;
     }
@@ -85,10 +85,6 @@ public class ObjectJsonSchema<T> implements JsonSchema<T> {
         }
     }
 
-    public static <I0, O> ObjectJsonSchema<O> of(ObjectSchemaComponent<I0> i0, Combiner1<I0, O> combiner) {
-        return new ObjectJsonSchema<>(combiner, i0);
-    }
-
     public interface Combiner2<I0, I1, O> extends Combiner<O> {
 
         O apply(I0 i0, I1 i1);
@@ -98,10 +94,6 @@ public class ObjectJsonSchema<T> implements JsonSchema<T> {
         default O applyUnsafe(Object... args) {
             return apply((I0) args[0], (I1) args[1]);
         }
-    }
-
-    public static <I0, I1, O> ObjectJsonSchema<O> of(ObjectSchemaComponent<I0> i0, ObjectSchemaComponent<I1> i1, Combiner2<I0, I1, O> combiner) {
-        return new ObjectJsonSchema<>(combiner, i0, i1);
     }
 
     public interface Combiner3<I0, I1, I2, O> extends Combiner<O> {
@@ -115,10 +107,6 @@ public class ObjectJsonSchema<T> implements JsonSchema<T> {
         }
     }
 
-    public static <I0, I1, I2, O> ObjectJsonSchema<O> of(ObjectSchemaComponent<I0> i0, ObjectSchemaComponent<I1> i1, ObjectSchemaComponent<I2> i2, Combiner3<I0, I1, I2, O> combiner) {
-        return new ObjectJsonSchema<>(combiner, i0, i1, i2);
-    }
-
     public interface Combiner4<I0, I1, I2, I3, O> extends Combiner<O> {
 
         O apply(I0 i0, I1 i1, I2 i2, I3 i3);
@@ -128,10 +116,6 @@ public class ObjectJsonSchema<T> implements JsonSchema<T> {
         default O applyUnsafe(Object... args) {
             return apply((I0) args[0], (I1) args[1], (I2) args[2], (I3) args[3]);
         }
-    }
-
-    public static <I0, I1, I2, I3, O> ObjectJsonSchema<O> of(ObjectSchemaComponent<I0> i0, ObjectSchemaComponent<I1> i1, ObjectSchemaComponent<I2> i2, ObjectSchemaComponent<I3> i3, Combiner4<I0, I1, I2, I3, O> combiner) {
-        return new ObjectJsonSchema<>(combiner, i0, i1, i2, i3);
     }
 
     public interface Combiner5<I0, I1, I2, I3, I4, O> extends Combiner<O> {
@@ -145,10 +129,6 @@ public class ObjectJsonSchema<T> implements JsonSchema<T> {
         }
     }
 
-    public static <I0, I1, I2, I3, I4, O> ObjectJsonSchema<O> of(ObjectSchemaComponent<I0> i0, ObjectSchemaComponent<I1> i1, ObjectSchemaComponent<I2> i2, ObjectSchemaComponent<I3> i3, ObjectSchemaComponent<I4> i4, Combiner5<I0, I1, I2, I3, I4, O> combiner) {
-        return new ObjectJsonSchema<>(combiner, i0, i1, i2, i3, i4);
-    }
-
     public interface Combiner6<I0, I1, I2, I3, I4, I5, O> extends Combiner<O> {
 
         O apply(I0 i0, I1 i1, I2 i2, I3 i3, I4 i4, I5 i5);
@@ -160,7 +140,4 @@ public class ObjectJsonSchema<T> implements JsonSchema<T> {
         }
     }
 
-    public static <I0, I1, I2, I3, I4, I5, O> ObjectJsonSchema<O> of(ObjectSchemaComponent<I0> i0, ObjectSchemaComponent<I1> i1, ObjectSchemaComponent<I2> i2, ObjectSchemaComponent<I3> i3, ObjectSchemaComponent<I4> i4, ObjectSchemaComponent<I5> i5, Combiner6<I0, I1, I2, I3, I4, I5, O> combiner) {
-        return new ObjectJsonSchema<>(combiner, i0, i1, i2, i3, i4, i5);
-    }
 }

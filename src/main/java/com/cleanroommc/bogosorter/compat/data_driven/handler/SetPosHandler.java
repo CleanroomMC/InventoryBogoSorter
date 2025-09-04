@@ -4,7 +4,6 @@ import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import net.minecraft.inventory.Container;
 
 import java.util.Locale;
@@ -14,7 +13,7 @@ import java.util.Optional;
  * @author ZZZank
  */
 class SetPosHandler extends HandlerBase {
-    public static final JsonSchema<SetPosHandler> SCHEMA = ObjectJsonSchema.of(
+    public static final JsonSchema<SetPosHandler> SCHEMA = JsonSchema.object(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         JsonSchema.STRING.map(SetPosHandler::readPosSetter).toField("pos"),

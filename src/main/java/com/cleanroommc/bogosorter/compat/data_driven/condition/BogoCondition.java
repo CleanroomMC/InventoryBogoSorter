@@ -1,7 +1,6 @@
 package com.cleanroommc.bogosorter.compat.data_driven.condition;
 
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.Map;
  * @author ZZZank
  */
 public interface BogoCondition {
-    Map<String, ObjectJsonSchema<? extends BogoCondition>> REGISTRY = new HashMap<>();
+    Map<String, JsonSchema<? extends BogoCondition>> REGISTRY = new HashMap<>();
     JsonSchema<BogoCondition> SCHEMA = JsonSchema.lazy(() -> {
         REGISTRY.put("and", AndCond.SCHEMA);
         REGISTRY.put("or", OrCond.SCHEMA);

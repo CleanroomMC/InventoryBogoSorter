@@ -3,7 +3,6 @@ package com.cleanroommc.bogosorter.compat.data_driven.handler;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
-import com.cleanroommc.bogosorter.compat.data_driven.utils.json.ObjectJsonSchema;
 import com.google.common.base.Preconditions;
 import net.minecraft.inventory.Container;
 
@@ -13,7 +12,7 @@ import java.util.Optional;
  * @author ZZZank
  */
 class RangedSlotHandler extends HandlerBase {
-    public static final JsonSchema<RangedSlotHandler> SCHEMA = ObjectJsonSchema.of(
+    public static final JsonSchema<RangedSlotHandler> SCHEMA = JsonSchema.object(
         BogoCondition.SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         JsonSchema.INT.toField("start"),
