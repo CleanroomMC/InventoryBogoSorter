@@ -27,6 +27,22 @@ public interface JsonSchema<T> {
         return new LazyJsonSchema<>(supplier);
     }
 
+    static <T> JsonSchema<T> CONST(T value) {
+        return new ConstJsonSchema<>(value, null);
+    }
+
+    static <T> JsonSchema<T> CONST(T value, JsonElement jsonRepresentation) {
+        return new ConstJsonSchema<>(value, jsonRepresentation);
+    }
+
+    static <T extends Enum<T>> JsonSchema<T> forEnum(Class<T> type) {
+        return new EnumJsonSchema<>(type, false, false);
+    }
+
+    static <T extends Enum<T>> JsonSchema<T> forEnum(Class<T> type, boolean ignoreCase, boolean includeOrdinal) {
+        return new EnumJsonSchema<>(type, ignoreCase, includeOrdinal);
+    }
+
     static <T> JsonSchema<T> dispatch(Map<String, ? extends JsonSchema<? extends T>> schemas, String dispatchKey, JsonSchema<T> fallback) {
         return new DispatchJsonSchema<>(Objects.requireNonNull(schemas), Objects.requireNonNull(dispatchKey), fallback);
     }
