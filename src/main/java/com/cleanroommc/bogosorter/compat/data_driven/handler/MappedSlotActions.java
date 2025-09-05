@@ -21,12 +21,13 @@ class MappedSlotActions {
     public static final JsonSchema<Function<Slot, ISlot>> REDUCER_SCHEMA = JsonSchema.dispatch(REDUCER_REGISTRY)
         .describe("Convert slot definition to the one recognizable by BogoSorter")
         .extractToDefinitions("mapped_slot_reducer");
+    public static final Function<Slot, ISlot> DEFAULT_SLOT_REDUCER = IBogoSortAPI.getInstance()::getSlot;
 
     static {
         REDUCER_REGISTRY.put("general", new PrimitiveJsonSchema<>(
-            ignored -> (Function<Slot, ISlot>) IBogoSortAPI.getInstance()::getSlot,
+            ignored -> DEFAULT_SLOT_REDUCER,
             "object"
-        ).describe("Default reducer used by Bogo"));
+        ).describe("Default slot representation used by BogoSorter"));
         REDUCER_REGISTRY.put("custom_stack_limit", JsonSchema.object(
             JsonSchema.INT.toField("limit"),
             limit -> (Function<Slot, ISlot>)slot -> new FixedLimitSlot(slot, limit)
@@ -41,12 +42,13 @@ class MappedSlotActions {
     public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA_INSTANCEOF = JsonSchema.object(
         BogoCompatHandler.CLASS_SCHEMA
             .map(DataDrivenUtils.requireSubClassOf(Slot.class))
+            .describe("Class name, for example `net.minecraft.inventory.Slot`")
             .toField("class"),
         c -> (Predicate<Slot>) c::isInstance
     ).describe("Accept slots that are instance of the `class`");
     public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA_RANGED = JsonSchema.object(
-        JsonSchema.INT.describe("index of the first slot (including)").toField("start"),
-        JsonSchema.INT.describe("index of the end slot (excluding)").toField("end"),
+        JsonSchema.INT.describe("Index of the first slot (including)").toField("start"),
+        JsonSchema.INT.describe("Index of the end slot (excluding)").toField("end"),
         (min, max) -> (Predicate<Slot>) (slot) -> {
             var slotIndex = slot.getSlotIndex();
             return slotIndex >= min && slotIndex <= max;

@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 /**
  * @author ZZZank
  */
+@SuppressWarnings("unused")
 public interface JsonSchema<T> {
     JsonSchema<String> STRING = new PrimitiveJsonSchema<>(JsonElement::getAsString, "string");
     JsonSchema<Integer> INT = new PrimitiveJsonSchema<>(JsonElement::getAsInt, "integer");
@@ -43,7 +44,11 @@ public interface JsonSchema<T> {
         return new EnumJsonSchema<>(type, ignoreCase, includeOrdinal);
     }
 
-    static <T> JsonSchema<T> dispatch(Map<String, ? extends JsonSchema<? extends T>> schemas, String dispatchKey, JsonSchema<T> fallback) {
+    static <T> JsonSchema<T> dispatch(
+        Map<String, ? extends JsonSchema<? extends T>> schemas,
+        String dispatchKey,
+        JsonSchema<T> fallback
+    ) {
         return new DispatchJsonSchema<>(Objects.requireNonNull(schemas), Objects.requireNonNull(dispatchKey), fallback);
     }
 

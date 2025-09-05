@@ -1,7 +1,8 @@
 [
   {
     "target": "net.minecraft.inventory.ContainerPlayer",
-    "type": "mark_only"
+    "type": "mark_only",
+    "$comment": "player slots are automatically added"
   },
   {
     "condition": {

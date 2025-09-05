@@ -20,11 +20,11 @@ class MappedSlotHandler extends HandlerBase {
         TARGET_SCHEMA.toField("target"),
         ROW_SIZE_SCHEMA.toField("rowSize"),
         MappedSlotActions.FILTER_SCHEMA
-            .toOptionalField("slot_filter", ignored -> true),
+            .toOptionalField("slot_filter", slot -> true),
         MappedSlotActions.REDUCER_SCHEMA
-            .toOptionalField("slot_reducer", IBogoSortAPI.getInstance()::getSlot),
+            .toOptionalField("slot_reducer", MappedSlotActions.DEFAULT_SLOT_REDUCER),
         MappedSlotHandler::new
-    );
+    ).describe("Registry slot group with optional custom slot filtering and slot converter");
 
     private final int rowSize;
     private final Predicate<Slot> filter;
