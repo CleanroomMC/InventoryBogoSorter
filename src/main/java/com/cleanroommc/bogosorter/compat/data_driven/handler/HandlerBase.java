@@ -6,15 +6,16 @@ import net.minecraft.inventory.Container;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
  */
 abstract class HandlerBase implements BogoCompatHandler {
-    protected final Class<? extends Container> target;
-    protected final Optional<BogoCondition> condition;
+    private final Supplier<Class<? extends Container>> target;
+    private final Optional<BogoCondition> condition;
 
-    protected HandlerBase(Optional<BogoCondition> condition, Class<? extends Container> target) {
+    protected HandlerBase(Optional<BogoCondition> condition, Supplier<Class<? extends Container>> target) {
         this.target = Objects.requireNonNull(target);
         this.condition = Objects.requireNonNull(condition);
     }
@@ -30,7 +31,7 @@ abstract class HandlerBase implements BogoCompatHandler {
     protected abstract void handleImpl(IBogoSortAPI api);
 
     public final Class<? extends Container> target() {
-        return target;
+        return target.get();
     }
 
     public final Optional<BogoCondition> condition() {

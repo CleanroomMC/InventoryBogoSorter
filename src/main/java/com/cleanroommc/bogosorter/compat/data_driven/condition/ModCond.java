@@ -20,9 +20,17 @@ record ModCond(
     Optional<VersionRange> versionRange
 ) implements BogoCondition {
     public static final JsonSchema<ModCond> SCHEMA = JsonSchema.object(
-        JsonSchema.STRING.toField("id"),
-        JsonSchema.STRING.map(Pattern::compile).toOptionalField("versionPattern"),
-        JsonSchema.STRING.map(ModCond::fromVersionSpecOrThrow).toOptionalField("versionRange"),
+        JsonSchema.STRING
+            .describe("Mod id")
+            .toField("id"),
+        JsonSchema.STRING
+            .map(Pattern::compile)
+            .describe("RegEx describing the pattern that expected version should match")
+            .toOptionalField("version_pattern"),
+        JsonSchema.STRING
+            .map(ModCond::fromVersionSpecOrThrow)
+            .describe("Mod version range, using Maven Version Range syntax. Example: `[1.2,)`, `[3.0, 5.0]`, `(,2.0], [2.2,)`")
+            .toOptionalField("version_range"),
         ModCond::new
     ).describe("Return `true` if there's a mod with matching id and/or version");
 

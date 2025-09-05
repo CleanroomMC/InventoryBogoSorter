@@ -6,6 +6,7 @@ import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import net.minecraft.inventory.Container;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -17,12 +18,12 @@ class MarkOnlyHandler extends HandlerBase {
         MarkOnlyHandler::new
     ).describe("Marks the container, but do nothing");
 
-    protected MarkOnlyHandler(Optional<BogoCondition> condition, Class<? extends Container> target) {
+    protected MarkOnlyHandler(Optional<BogoCondition> condition, Supplier<Class<? extends Container>> target) {
         super(condition, target);
     }
 
     @Override
     protected void handleImpl(IBogoSortAPI api) {
-        api.addCompat(target, (a, b) -> {});
+        api.addCompat(target(), (a, b) -> {});
     }
 }

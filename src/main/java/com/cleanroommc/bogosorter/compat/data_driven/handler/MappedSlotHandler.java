@@ -10,6 +10,7 @@ import net.minecraft.inventory.Slot;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -18,7 +19,7 @@ class MappedSlotHandler extends HandlerBase {
     public static final JsonSchema<MappedSlotHandler> SCHEMA = JsonSchema.object(
         CONDITION_SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
-        ROW_SIZE_SCHEMA.toField("rowSize"),
+        ROW_SIZE_SCHEMA.toField("row_size"),
         MappedSlotActions.FILTER_SCHEMA
             .toOptionalField("slot_filter", slot -> true),
         MappedSlotActions.REDUCER_SCHEMA
@@ -32,7 +33,7 @@ class MappedSlotHandler extends HandlerBase {
 
     public MappedSlotHandler(
         Optional<BogoCondition> condition,
-        Class<? extends Container> target,
+        Supplier<Class<? extends Container>> target,
         int rowSize,
         Predicate<Slot> filter,
         Function<Slot, ISlot> reducer

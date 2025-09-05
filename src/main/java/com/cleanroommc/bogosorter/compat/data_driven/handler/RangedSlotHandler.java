@@ -7,6 +7,7 @@ import com.google.common.base.Preconditions;
 import net.minecraft.inventory.Container;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -23,7 +24,7 @@ class RangedSlotHandler extends HandlerBase {
 
     protected RangedSlotHandler(
         Optional<BogoCondition> condition,
-        Class<? extends Container> target,
+        Supplier<Class<? extends Container>> target,
         int start,
         int end,
         int rowSize

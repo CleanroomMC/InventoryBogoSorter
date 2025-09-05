@@ -4,7 +4,7 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.compat.data_driven.handler.BogoCompatHandler;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import net.minecraftforge.fml.common.Loader;
 
 import java.io.BufferedReader;
@@ -32,6 +32,18 @@ public class DataDrivenBogoCompat {
             i -> i
         );
         System.out.println(GSON.toJson(jsonSchema.getSchema()));
+
+//        try (var reader = Files.newBufferedReader(Paths.get("src/main/resources/bogo.compat.json"))) {
+//            var json = GSON.fromJson(reader, JsonObject.class);
+//            var handlers = parseAll(json);
+//
+//            var api = IBogoSortAPI.getInstance();
+//            for (var handler : handlers) {
+//                handler.handle(api);
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     public static ArrayList<BogoCompatHandler> scanHandlers() {
@@ -49,11 +61,11 @@ public class DataDrivenBogoCompat {
                     continue;
                 }
                 BogoSorter.LOGGER.info("found '{}' in mod '{}'", COMPAT_FILE, mod.getModId());
-                var arr = GSON.fromJson(
+                var json = GSON.fromJson(
                     new BufferedReader(new InputStreamReader(zip.getInputStream(entry))),
-                    JsonArray.class
+                    JsonObject.class
                 );
-                parsed.addAll(parseAll(arr));
+                parsed.addAll(parseAll(json));
             } catch (IOException e) {
                 BogoSorter.LOGGER.error("IO error during reading '{}' in mod '{}'", COMPAT_FILE, mod.getModId(), e);
             }
@@ -63,24 +75,20 @@ public class DataDrivenBogoCompat {
         Path path = Loader.instance().getConfigDir().toPath().resolve("bogosorter").resolve(COMPAT_FILE);
         if (Files.exists(path)) {
             BogoSorter.LOGGER.info("found compat file in config directory");
-            JsonArray arr;
             try {
-                arr = GSON.fromJson(Files.newBufferedReader(path), JsonArray.class);
+                var json = GSON.fromJson(Files.newBufferedReader(path), JsonObject.class);
+                parsed.addAll(parseAll(json));
             } catch (IOException e) {
                 BogoSorter.LOGGER.error("IO error when reading compat file from config", e);
-                arr = null;
-            }
-            if (arr != null) {
-                parsed.addAll(parseAll(arr));
             }
         }
 
         return parsed;
     }
 
-    private static ArrayList<BogoCompatHandler> parseAll(JsonArray all) {
+    private static ArrayList<BogoCompatHandler> parseAll(JsonObject obj) {
         var parsed = new ArrayList<BogoCompatHandler>();
-        for (var element : all) {
+        for (var element : obj.get("actions").getAsJsonArray()) {
             try {
                 parsed.add(BogoCompatHandler.SCHEMA.read(element));
             } catch (Exception e) {

@@ -294,13 +294,16 @@
             "type": "object",
             "properties": {
               "id": {
-                "type": "string"
+                "type": "string",
+                "description": "Mod id"
               },
-              "versionPattern": {
-                "type": "string"
+              "version_pattern": {
+                "type": "string",
+                "description": "RegEx describing the pattern that expected version should match"
               },
-              "versionRange": {
-                "type": "string"
+              "version_range": {
+                "type": "string",
+                "description": "Mod version range, using Maven Version Range syntax. Example: `[1.2,)`, `[3.0, 5.0]`, `(,2.0], [2.2,)`"
               }
             },
             "required": [

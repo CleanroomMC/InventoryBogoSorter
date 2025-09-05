@@ -6,6 +6,7 @@ import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import net.minecraft.inventory.Container;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -17,15 +18,12 @@ class RemoveHandler extends HandlerBase {
         RemoveHandler::new
     ).describe("Remove sorting compat for the container");
 
-    protected RemoveHandler(
-        Optional<BogoCondition> condition,
-        Class<? extends Container> target
-    ) {
+    protected RemoveHandler(Optional<BogoCondition> condition, Supplier<Class<? extends Container>> target) {
         super(condition, target);
     }
 
     @Override
     protected void handleImpl(IBogoSortAPI api) {
-        api.removeCompat(target);
+        api.removeCompat(target());
     }
 }

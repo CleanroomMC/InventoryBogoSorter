@@ -133,6 +133,10 @@ public interface JsonSchema<T> {
         return schema;
     }
 
+    default JsonSchema<Supplier<T>> deferred() {
+        return new DeferredJsonSchema<>(this);
+    }
+
     default JsonSchema<T> extractToDefinitions(String referenceKey) {
         return new AsDefinitionJsonSchema<>(this, Objects.requireNonNull(referenceKey));
     }

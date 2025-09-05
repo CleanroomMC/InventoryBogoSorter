@@ -11,6 +11,7 @@ import net.minecraft.inventory.Container;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -53,7 +54,7 @@ class SetPosHandler extends HandlerBase {
 
     protected SetPosHandler(
         Optional<BogoCondition> condition,
-        Class<? extends Container> target,
+        Supplier<Class<? extends Container>> target,
         IPosSetter posSetter
     ) {
         super(condition, target);
