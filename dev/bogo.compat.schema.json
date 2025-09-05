@@ -1,170 +1,224 @@
 {
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "type": {
-        "type": "string",
-        "enum": [
-          "set_button_pos",
-          "slot_mapped",
-          "generic",
-          "remove",
-          "slot_range",
-          "mark_only"
-        ]
+  "type": "object",
+  "properties": {
+    "actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/action"
       }
-    },
-    "oneOf": [
-      {
-        "type": "object",
-        "properties": {
-          "condition": {
-            "$ref": "#/definitions/condition"
-          },
-          "target": {
-            "type": "string",
-            "description": "class name, for example `net.minecraft.inventory.Container`"
-          },
-          "pos": {
-            "type": "string"
-          },
-          "type": {
-            "const": "set_button_pos"
-          }
-        },
-        "required": [
-          "target",
-          "pos",
-          "type"
-        ]
+    }
+  },
+  "required": [
+    "actions"
+  ],
+  "definitions": {
+    "action": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "set_button_pos",
+            "slot_mapped",
+            "generic",
+            "remove",
+            "slot_range",
+            "mark_only"
+          ]
+        }
       },
-      {
-        "type": "object",
-        "properties": {
-          "condition": {
-            "$ref": "#/definitions/condition"
-          },
-          "target": {
-            "type": "string",
-            "description": "class name, for example `net.minecraft.inventory.Container`"
-          },
-          "rowSize": {
-            "type": "integer"
-          },
-          "slotFilters": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/mapped_slot_filter"
+      "required": [
+        "type"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "set_button_pos"
+              }
             }
           },
-          "slotReducer": {
-            "$ref": "#/definitions/mapped_slot_reducer"
-          },
-          "type": {
-            "const": "slot_mapped"
+          "then": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "$ref": "#/definitions/condition",
+                "description": "The action will be applied when the condition returned `true`"
+              },
+              "target": {
+                "type": "string",
+                "description": "class name, for example `net.minecraft.inventory.Container`"
+              },
+              "pos_setter": {
+                "$ref": "#/definitions/button_pos_setter"
+              }
+            },
+            "required": [
+              "target",
+              "pos_setter"
+            ],
+            "description": "Set position of sorting button"
           }
         },
-        "required": [
-          "target",
-          "rowSize",
-          "type"
-        ]
-      },
-      {
-        "type": "object",
-        "properties": {
-          "condition": {
-            "$ref": "#/definitions/condition"
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "slot_mapped"
+              }
+            }
           },
-          "target": {
-            "type": "string",
-            "description": "class name, for example `net.minecraft.inventory.Container`"
-          },
-          "type": {
-            "const": "generic"
+          "then": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "$ref": "#/definitions/condition",
+                "description": "The action will be applied when the condition returned `true`"
+              },
+              "target": {
+                "type": "string",
+                "description": "class name, for example `net.minecraft.inventory.Container`"
+              },
+              "row_size": {
+                "type": "integer",
+                "description": "Mostly used for determining the button position.\nIf the container shape is not rectangular, try to use the row size of the first row"
+              },
+              "slot_filter": {
+                "$ref": "#/definitions/mapped_slot_filter"
+              },
+              "slot_reducer": {
+                "$ref": "#/definitions/mapped_slot_reducer"
+              }
+            },
+            "required": [
+              "target",
+              "row_size"
+            ],
+            "description": "Registry slot group with optional custom slot filtering and slot converter"
           }
         },
-        "required": [
-          "target",
-          "type"
-        ]
-      },
-      {
-        "type": "object",
-        "properties": {
-          "condition": {
-            "$ref": "#/definitions/condition"
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "generic"
+              }
+            }
           },
-          "target": {
-            "type": "string",
-            "description": "class name, for example `net.minecraft.inventory.Container`"
-          },
-          "type": {
-            "const": "remove"
+          "then": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "$ref": "#/definitions/condition",
+                "description": "The action will be applied when the condition returned `true`"
+              },
+              "target": {
+                "type": "string",
+                "description": "class name, for example `net.minecraft.inventory.Container`"
+              }
+            },
+            "required": [
+              "target"
+            ],
+            "description": "Creates and registers a generic slot group.\nIt assumes that all non player slots belong to the same group and that the slot group has a rectangular shape."
           }
         },
-        "required": [
-          "target",
-          "type"
-        ]
-      },
-      {
-        "type": "object",
-        "properties": {
-          "condition": {
-            "$ref": "#/definitions/condition"
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "remove"
+              }
+            }
           },
-          "target": {
-            "type": "string",
-            "description": "class name, for example `net.minecraft.inventory.Container`"
-          },
-          "start": {
-            "type": "integer"
-          },
-          "end": {
-            "type": "integer"
-          },
-          "rowSize": {
-            "type": "integer"
-          },
-          "type": {
-            "const": "slot_range"
+          "then": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "$ref": "#/definitions/condition",
+                "description": "The action will be applied when the condition returned `true`"
+              },
+              "target": {
+                "type": "string",
+                "description": "class name, for example `net.minecraft.inventory.Container`"
+              }
+            },
+            "required": [
+              "target"
+            ],
+            "description": "Remove sorting compat for the container"
           }
         },
-        "required": [
-          "target",
-          "start",
-          "end",
-          "rowSize",
-          "type"
-        ]
-      },
-      {
-        "type": "object",
-        "properties": {
-          "condition": {
-            "$ref": "#/definitions/condition"
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "slot_range"
+              }
+            }
           },
-          "target": {
-            "type": "string",
-            "description": "class name, for example `net.minecraft.inventory.Container`"
-          },
-          "type": {
-            "const": "mark_only"
+          "then": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "$ref": "#/definitions/condition",
+                "description": "The action will be applied when the condition returned `true`"
+              },
+              "target": {
+                "type": "string",
+                "description": "class name, for example `net.minecraft.inventory.Container`"
+              },
+              "start": {
+                "type": "integer",
+                "description": "index of the first slot (including)"
+              },
+              "end": {
+                "type": "integer",
+                "description": "index of the end slot (excluding)"
+              },
+              "row_size": {
+                "type": "integer",
+                "description": "Mostly used for determining the button position.\nIf the container shape is not rectangular, try to use the row size of the first row"
+              }
+            },
+            "required": [
+              "target",
+              "start",
+              "end",
+              "row_size"
+            ],
+            "description": "Register a slot group for slots with index in [start, end) range"
           }
         },
-        "required": [
-          "target",
-          "type"
-        ]
-      }
-    ],
-    "required": [
-      "type"
-    ]
-  },
-  "definitions": {
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "mark_only"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "$ref": "#/definitions/condition",
+                "description": "The action will be applied when the condition returned `true`"
+              },
+              "target": {
+                "type": "string",
+                "description": "class name, for example `net.minecraft.inventory.Container`"
+              }
+            },
+            "required": [
+              "target"
+            ],
+            "description": "Marks the container, but do nothing"
+          }
+        }
+      ]
+    },
     "condition": {
       "type": "object",
       "properties": {
@@ -179,97 +233,210 @@
           ]
         }
       },
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "condition": {
-              "$ref": "#/definitions/condition"
-            },
-            "type": {
-              "const": "not"
-            }
-          },
-          "required": [
-            "condition",
-            "type"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "conditions": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/condition"
-              }
-            },
-            "type": {
-              "const": "or"
-            }
-          },
-          "required": [
-            "conditions",
-            "type"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "versionPattern": {
-              "type": "string"
-            },
-            "versionRange": {
-              "type": "string"
-            },
-            "type": {
-              "const": "mod"
-            }
-          },
-          "required": [
-            "id",
-            "type"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "value": {
-              "type": "boolean"
-            },
-            "type": {
-              "const": "constant"
-            }
-          },
-          "required": [
-            "value",
-            "type"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "conditions": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/condition"
-              }
-            },
-            "type": {
-              "const": "and"
-            }
-          },
-          "required": [
-            "conditions",
-            "type"
-          ]
-        }
-      ],
       "required": [
         "type"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "not"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "condition": {
+                "$ref": "#/definitions/condition"
+              }
+            },
+            "required": [
+              "condition"
+            ],
+            "description": "Return `true` if the sub condition did not"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "or"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/condition"
+                }
+              }
+            },
+            "required": [
+              "conditions"
+            ],
+            "description": "Return `true` if any of the sub conditions returned `true`"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "mod"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "versionPattern": {
+                "type": "string"
+              },
+              "versionRange": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "description": "Return `true` if there\u0027s a mod with matching id and/or version"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "constant"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "description": "Return the value in \u0027value\u0027 field"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "and"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "conditions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/condition"
+                }
+              }
+            },
+            "required": [
+              "conditions"
+            ],
+            "description": "Return `true` if all sub conditions returned `true`"
+          }
+        }
+      ]
+    },
+    "button_pos_setter": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "top_right_horizontal",
+            "top_right_vertical",
+            "custom"
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "top_right_horizontal"
+              }
+            }
+          },
+          "then": {}
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "top_right_vertical"
+              }
+            }
+          },
+          "then": {}
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "custom"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "at_container_left": {
+                "type": "boolean",
+                "description": "If `true`, buttons will be placed next to the first slot.\nIf `false`, buttons will be placed next to the last slot in the first row."
+              },
+              "x_offset": {
+                "type": "integer"
+              },
+              "y_offset": {
+                "type": "integer"
+              },
+              "alignment": {
+                "enum": [
+                  "TOP_LEFT",
+                  "BOTTOM_RIGHT",
+                  "TOP_RIGHT",
+                  "BOTTOM_LEFT"
+                ],
+                "description": "How should buttons align to the selected slot"
+              },
+              "layout": {
+                "enum": [
+                  "VERTICAL",
+                  "HORIZONTAL"
+                ],
+                "description": "Button layout"
+              }
+            },
+            "required": [
+              "at_container_left",
+              "x_offset",
+              "y_offset"
+            ]
+          }
+        }
       ]
     },
     "mapped_slot_filter": {
@@ -286,96 +453,130 @@
           ]
         }
       },
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "class": {
-              "type": "string"
-            },
-            "type": {
-              "const": "instanceof"
-            }
-          },
-          "required": [
-            "class",
-            "type"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "min": {
-              "type": "integer"
-            },
-            "max": {
-              "type": "integer"
-            },
-            "type": {
-              "const": "index_in_range"
-            }
-          },
-          "required": [
-            "min",
-            "max",
-            "type"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "filters": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/mapped_slot_filter"
-              }
-            },
-            "type": {
-              "const": "and"
-            }
-          },
-          "required": [
-            "filters",
-            "type"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "filters": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/mapped_slot_filter"
-              }
-            },
-            "type": {
-              "const": "or"
-            }
-          },
-          "required": [
-            "filters",
-            "type"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "filter": {
-              "$ref": "#/definitions/mapped_slot_filter"
-            },
-            "type": {
-              "const": "not"
-            }
-          },
-          "required": [
-            "filter",
-            "type"
-          ]
-        }
-      ],
       "required": [
         "type"
-      ]
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "instanceof"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "class": {
+                "type": "string",
+                "description": "Class name, for example `net.minecraft.inventory.Slot`"
+              }
+            },
+            "required": [
+              "class"
+            ],
+            "description": "Accept slots that are instance of the `class`"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "index_in_range"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "description": "Index of the first slot (including)"
+              },
+              "end": {
+                "type": "integer",
+                "description": "Index of the end slot (excluding)"
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "description": "Accept slots with index in [start, end) range"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "and"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "filters": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/mapped_slot_filter"
+                }
+              }
+            },
+            "required": [
+              "filters"
+            ],
+            "description": "Accept slots accepted by all sub filters"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "or"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "filters": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/mapped_slot_filter"
+                }
+              }
+            },
+            "required": [
+              "filters"
+            ],
+            "description": "Accept slots accepted by any of the sub filters"
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "not"
+              }
+            }
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "filter": {
+                "$ref": "#/definitions/mapped_slot_filter"
+              }
+            },
+            "required": [
+              "filter"
+            ],
+            "description": "Accept slots denied by the sub filter"
+          }
+        }
+      ],
+      "description": "Only accepted slots will be added to slot group"
     },
     "mapped_slot_reducer": {
       "type": "object",
@@ -388,37 +589,46 @@
           ]
         }
       },
-      "oneOf": [
+      "required": [
+        "type"
+      ],
+      "allOf": [
         {
-          "type": "object",
-          "required": [
-            "type"
-          ],
-          "properties": {
-            "type": {
-              "const": "general"
+          "if": {
+            "properties": {
+              "type": {
+                "const": "general"
+              }
             }
+          },
+          "then": {
+            "type": "object",
+            "description": "Default slot representation used by BogoSorter"
           }
         },
         {
-          "type": "object",
-          "properties": {
-            "limit": {
-              "type": "integer"
-            },
-            "type": {
-              "const": "custom_stack_limit"
+          "if": {
+            "properties": {
+              "type": {
+                "const": "custom_stack_limit"
+              }
             }
           },
-          "required": [
-            "limit",
-            "type"
-          ]
+          "then": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "limit"
+            ],
+            "description": "Slot with customizable stack limit"
+          }
         }
       ],
-      "required": [
-        "type"
-      ]
+      "description": "Convert slot definition to the one recognizable by BogoSorter"
     }
   }
 }

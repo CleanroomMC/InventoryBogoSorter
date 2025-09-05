@@ -17,7 +17,7 @@ class RangedSlotHandler extends HandlerBase {
         TARGET_SCHEMA.toField("target"),
         JsonSchema.INT.describe("index of the first slot (including)").toField("start"),
         JsonSchema.INT.describe("index of the end slot (excluding)").toField("end"),
-        ROW_SIZE_SCHEMA.toField("rowSize"),
+        ROW_SIZE_SCHEMA.toField("row_size"),
         RangedSlotHandler::new
     ).describe("Register a slot group for slots with index in [start, end) range");
 

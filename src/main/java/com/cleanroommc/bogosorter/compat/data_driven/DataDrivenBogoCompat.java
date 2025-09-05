@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.compat.data_driven;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.compat.data_driven.handler.BogoCompatHandler;
+import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import net.minecraftforge.fml.common.Loader;
@@ -22,8 +23,15 @@ public class DataDrivenBogoCompat {
     private static final Gson GSON = new Gson();
 
     public static void main(String[] args) {
-        var schema = BogoCompatHandler.SCHEMA.toList().getSchema();
-        System.out.println(GSON.toJson(schema));
+        // use object to allow adding "$schema"
+        var jsonSchema = JsonSchema.object(
+            BogoCompatHandler.SCHEMA
+                .extractToDefinitions("action")
+                .toList()
+                .toField("actions"),
+            i -> i
+        );
+        System.out.println(GSON.toJson(jsonSchema.getSchema()));
     }
 
     public static ArrayList<BogoCompatHandler> scanHandlers() {
