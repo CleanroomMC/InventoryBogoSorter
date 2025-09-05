@@ -114,8 +114,14 @@ public interface JsonSchema<T> {
         var schema = getSchema(definitions);
 
         var definitionsJson = new JsonObject();
-        for (var entry : definitions.entrySet()) {
-            definitionsJson.add(entry.getKey(), entry.getValue().get());
+        var usedNames = new HashSet<String>();
+        while (usedNames.size() != definitions.size()) {
+            // handle definition references in definition
+            for (var entry : definitions.entrySet()) {
+                if (usedNames.add(entry.getKey())) {
+                    definitionsJson.add(entry.getKey(), entry.getValue().get());
+                }
+            }
         }
         schema.add("definitions", definitionsJson);
 
