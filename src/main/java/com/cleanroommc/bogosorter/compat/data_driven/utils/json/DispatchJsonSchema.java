@@ -52,6 +52,12 @@ record DispatchJsonSchema<T>(
         }
 
         {
+            var required = new JsonArray();
+            required.add(this.dispatchKey);
+            obj.add("required", required);
+        }
+
+        {
             var oneOf = new JsonArray();
             for (var entry : schemas.entrySet()) {
                 var schema = entry.getValue().getSchema(definitions);
@@ -59,12 +65,6 @@ record DispatchJsonSchema<T>(
                 oneOf.add(DataDrivenUtils.mergeJson(schema, buildDispatchJson(entry.getKey())));
             }
             obj.add("oneOf", oneOf);
-        }
-
-        {
-            var required = new JsonArray();
-            required.add(this.dispatchKey);
-            obj.add("required", required);
         }
 
         return obj;
@@ -81,6 +81,12 @@ record DispatchJsonSchema<T>(
                 properties.add(dispatchKey, dispatchKeyJson);
             }
             result.add("properties", properties);
+        }
+
+        {
+            var required = new JsonArray();
+            required.add(dispatchKey);
+            result.add("required", required);
         }
 
         return result;
