@@ -52,7 +52,7 @@ public class DataDrivenBogoCompat {
         // mod
         for (var mod : Loader.instance().getModList()) {
             var f = mod.getSource();
-            if (!f.exists()) {
+            if (f == null || !f.exists()) {
                 continue; //for some special mods like 'minecraft' or 'scalar' or 'mcp'
             }
             try (var zip = new ZipFile(f)) {
