@@ -5,9 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * @author ZZZank
@@ -23,6 +25,8 @@ public interface JsonSchema<T> {
     JsonSchema<Boolean> BOOL = new PrimitiveJsonSchema<>(JsonElement::getAsBoolean, "boolean");
     JsonSchema<JsonArray> JSON_ARRAY = new PrimitiveJsonSchema<>(JsonElement::getAsJsonArray, "array");
     JsonSchema<JsonObject> JSON_OBJECT = new PrimitiveJsonSchema<>(JsonElement::getAsJsonObject, "object");
+    JsonSchema<Pattern> REGEX = STRING.map(Pattern::compile)
+        .modifySchema(schema -> schema.addProperty("format", "regex"));
 
     static <T> JsonSchema<T> lazy(Supplier<JsonSchema<T>> supplier) {
         return new LazyJsonSchema<>(supplier);
@@ -141,8 +145,27 @@ public interface JsonSchema<T> {
         return new AsDefinitionJsonSchema<>(this, Objects.requireNonNull(referenceKey));
     }
 
+    default <T2> JsonSchema<T2> map(
+        Function<? super T, ? extends T2> mapper,
+        Function<? super JsonObject, JsonObject> schemaMapper
+    ) {
+        return new RemapJsonSchema<>(this, Objects.requireNonNull(mapper), Objects.requireNonNull(schemaMapper));
+    }
+
     default <T2> JsonSchema<T2> map(Function<? super T, ? extends T2> mapper) {
-        return new RemapJsonSchema<>(this, Objects.requireNonNull(mapper));
+        return map(mapper, Function.identity());
+    }
+
+    default JsonSchema<T> mapSchema(Function<? super JsonObject, JsonObject> mapper) {
+        return map(Function.identity(), mapper);
+    }
+
+    default JsonSchema<T> modifySchema(Consumer<JsonObject> modifier) {
+        Objects.requireNonNull(modifier);
+        return map(Function.identity(), schema -> {
+            modifier.accept(schema);
+            return schema;
+        });
     }
 
     default JsonSchema<T> describe(String description) {

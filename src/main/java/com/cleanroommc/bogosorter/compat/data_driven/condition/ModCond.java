@@ -23,8 +23,7 @@ record ModCond(
         JsonSchema.STRING
             .describe("Mod id")
             .toField("id"),
-        JsonSchema.STRING
-            .map(Pattern::compile)
+        JsonSchema.REGEX
             .describe("RegEx describing the pattern that expected version should match")
             .toOptionalField("version_pattern"),
         JsonSchema.STRING

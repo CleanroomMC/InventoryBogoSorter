@@ -14,15 +14,16 @@ import java.util.function.Supplier;
 @Desugar
 record RemapJsonSchema<I, O>(
     JsonSchema<I> inner,
-    Function<? super I, ? extends O> remapper
+    Function<? super I, ? extends O> objectRemapper,
+    Function<? super JsonObject, JsonObject> schemaRemapper
 ) implements JsonSchema<O> {
     @Override
     public O read(JsonElement json) {
-        return remapper.apply(inner.read(json));
+        return objectRemapper.apply(inner.read(json));
     }
 
     @Override
     public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
-        return inner.getSchema(definitions);
+        return schemaRemapper.apply(inner.getSchema(definitions));
     }
 }
