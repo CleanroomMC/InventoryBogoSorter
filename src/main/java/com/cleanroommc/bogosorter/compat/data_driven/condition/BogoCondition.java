@@ -18,6 +18,8 @@ public interface BogoCondition {
         REGISTRY.put("constant", ConstantCond.SCHEMA);
         return JsonSchema.dispatch(REGISTRY).extractToDefinitions("condition");
     });
+    BogoCondition ALWAYS = ConstantCond.ALWAYS;
+    BogoCondition NEVER = ConstantCond.NEVER;
 
     boolean test();
 }

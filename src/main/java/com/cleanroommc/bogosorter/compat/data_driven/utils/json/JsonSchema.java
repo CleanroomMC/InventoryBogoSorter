@@ -5,10 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.regex.Pattern;
 
 /**
@@ -135,10 +132,6 @@ public interface JsonSchema<T> {
         schema.add("definitions", definitionsJson);
 
         return schema;
-    }
-
-    default JsonSchema<Supplier<T>> deferred() {
-        return new DeferredJsonSchema<>(this);
     }
 
     default JsonSchema<T> extractToDefinitions(String referenceKey) {

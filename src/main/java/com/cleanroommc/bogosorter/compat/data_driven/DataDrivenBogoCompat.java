@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.compat.data_driven;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.handler.BogoCompatHandler;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.google.gson.Gson;
@@ -20,6 +21,12 @@ import java.util.zip.ZipFile;
  */
 public class DataDrivenBogoCompat {
     public static final String COMPAT_FILE = "bogo.compat.json";
+    private static final JsonSchema<BogoCondition> CONDITION_OBJECT_SCHEMA = JsonSchema.object(
+        BogoCondition.SCHEMA
+            .describe("The action will be applied when the condition returned `true`")
+            .toOptionalField("condition"),
+        cond -> cond.orElse(BogoCondition.ALWAYS)
+    );
     private static final Gson GSON = new Gson();
 
     public static void main(String[] args) {
@@ -88,11 +95,13 @@ public class DataDrivenBogoCompat {
 
     private static ArrayList<BogoCompatHandler> parseAll(JsonObject obj) {
         var parsed = new ArrayList<BogoCompatHandler>();
-        for (var element : obj.get("actions").getAsJsonArray()) {
+        for (var json : obj.get("actions").getAsJsonArray()) {
             try {
-                parsed.add(BogoCompatHandler.SCHEMA.read(element));
+                if (CONDITION_OBJECT_SCHEMA.read(json).test()) {
+                    parsed.add(BogoCompatHandler.SCHEMA.read(json));
+                }
             } catch (Exception e) {
-                BogoSorter.LOGGER.error("error when parsing handler json: {}", element,  e);
+                BogoSorter.LOGGER.error("error when parsing handler json: {}", json,  e);
             }
         }
         return parsed;

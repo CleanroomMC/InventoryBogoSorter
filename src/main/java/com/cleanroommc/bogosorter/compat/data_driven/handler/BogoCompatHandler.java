@@ -1,27 +1,22 @@
 package com.cleanroommc.bogosorter.compat.data_driven.handler;
 
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
-import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.DataDrivenUtils;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import net.minecraft.inventory.Container;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
  */
 public interface BogoCompatHandler {
-    JsonSchema<Class<?>> CLASS_SCHEMA = JsonSchema.STRING.map(DataDrivenUtils::toClass);
-    JsonSchema<Supplier<Class<? extends Container>>> TARGET_SCHEMA = CLASS_SCHEMA
+    JsonSchema<Class<? extends Container>> TARGET_SCHEMA = JsonSchema.STRING
+        .map(DataDrivenUtils::toClass)
         .map(DataDrivenUtils.requireSubClassOf(Container.class))
         .describe("""
-            class name, for example `net.minecraft.inventory.Container`""")
-        .deferred();
-    JsonSchema<BogoCondition> CONDITION_SCHEMA = BogoCondition.SCHEMA
-        .describe("The action will be applied when the condition returned `true`");
+            class name, for example `net.minecraft.inventory.Container`""");
     JsonSchema<Integer> ROW_SIZE_SCHEMA = JsonSchema.INT
         .describe("""
             Mostly used for determining the button position.

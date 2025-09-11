@@ -40,7 +40,8 @@ class MappedSlotActions {
         .extractToDefinitions("mapped_slot_filter");
 
     public static final JsonSchema<Predicate<Slot>> FILTER_SCHEMA_INSTANCEOF = JsonSchema.object(
-        BogoCompatHandler.CLASS_SCHEMA
+        JsonSchema.STRING
+            .map(DataDrivenUtils::toClass)
             .map(DataDrivenUtils.requireSubClassOf(Slot.class))
             .describe("Class name, for example `net.minecraft.inventory.Slot`")
             .toField("class"),

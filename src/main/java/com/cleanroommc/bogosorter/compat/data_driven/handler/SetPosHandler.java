@@ -4,24 +4,25 @@ import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.IButtonPos;
 import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.api.ISlot;
-import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
+import com.github.bsideup.jabel.Desugar;
 import net.minecraft.inventory.Container;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
  */
-class SetPosHandler extends HandlerBase {
+@Desugar
+record SetPosHandler(
+    Class<? extends Container> target,
+    IPosSetter posSetter
+) implements BogoCompatHandler {
     public static final Map<String, JsonSchema<IPosSetter>> POS_SETTER_REGISTRY = new LinkedHashMap<>();
     public static final JsonSchema<IPosSetter> POS_SETTER_SCHEMA = JsonSchema.dispatch(POS_SETTER_REGISTRY)
         .extractToDefinitions("button_pos_setter");
     public static final JsonSchema<SetPosHandler> SCHEMA = JsonSchema.object(
-        CONDITION_SCHEMA.toOptionalField("condition"),
         TARGET_SCHEMA.toField("target"),
         POS_SETTER_SCHEMA.toField("pos_setter"),
         SetPosHandler::new
@@ -50,17 +51,6 @@ class SetPosHandler extends HandlerBase {
         );
     }
 
-    private final IPosSetter posSetter;
-
-    protected SetPosHandler(
-        Optional<BogoCondition> condition,
-        Supplier<Class<? extends Container>> target,
-        IPosSetter posSetter
-    ) {
-        super(condition, target);
-        this.posSetter = posSetter;
-    }
-
     private static IPosSetter createCustomPosSetter(
         boolean forLeft,
         int xOffset,
@@ -82,7 +72,7 @@ class SetPosHandler extends HandlerBase {
     }
 
     @Override
-    protected void handleImpl(IBogoSortAPI api) {
-        api.addPlayerSortButtonPosition(target(), posSetter);
+    public void handle(IBogoSortAPI api) {
+        api.addPlayerSortButtonPosition(target, posSetter);
     }
 }
