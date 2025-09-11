@@ -25,6 +25,9 @@
             "slot_range",
             "mark_only"
           ]
+        },
+        "condition": {
+          "$ref": "#/definitions/condition"
         }
       },
       "required": [
@@ -42,10 +45,6 @@
           "then": {
             "type": "object",
             "properties": {
-              "condition": {
-                "$ref": "#/definitions/condition",
-                "description": "The action will be applied when the condition returned `true`"
-              },
               "target": {
                 "type": "string",
                 "description": "class name, for example `net.minecraft.inventory.Container`"
@@ -72,10 +71,6 @@
           "then": {
             "type": "object",
             "properties": {
-              "condition": {
-                "$ref": "#/definitions/condition",
-                "description": "The action will be applied when the condition returned `true`"
-              },
               "target": {
                 "type": "string",
                 "description": "class name, for example `net.minecraft.inventory.Container`"
@@ -109,10 +104,6 @@
           "then": {
             "type": "object",
             "properties": {
-              "condition": {
-                "$ref": "#/definitions/condition",
-                "description": "The action will be applied when the condition returned `true`"
-              },
               "target": {
                 "type": "string",
                 "description": "class name, for example `net.minecraft.inventory.Container`"
@@ -135,10 +126,6 @@
           "then": {
             "type": "object",
             "properties": {
-              "condition": {
-                "$ref": "#/definitions/condition",
-                "description": "The action will be applied when the condition returned `true`"
-              },
               "target": {
                 "type": "string",
                 "description": "class name, for example `net.minecraft.inventory.Container`"
@@ -161,10 +148,6 @@
           "then": {
             "type": "object",
             "properties": {
-              "condition": {
-                "$ref": "#/definitions/condition",
-                "description": "The action will be applied when the condition returned `true`"
-              },
               "target": {
                 "type": "string",
                 "description": "class name, for example `net.minecraft.inventory.Container`"
@@ -202,10 +185,6 @@
           "then": {
             "type": "object",
             "properties": {
-              "condition": {
-                "$ref": "#/definitions/condition",
-                "description": "The action will be applied when the condition returned `true`"
-              },
               "target": {
                 "type": "string",
                 "description": "class name, for example `net.minecraft.inventory.Container`"
@@ -299,6 +278,7 @@
               },
               "version_pattern": {
                 "type": "string",
+                "format": "regex",
                 "description": "RegEx describing the pattern that expected version should match"
               },
               "version_range": {

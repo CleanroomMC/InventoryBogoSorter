@@ -5,6 +5,7 @@ import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.handler.BogoCompatHandler;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraftforge.fml.common.Loader;
 
@@ -14,6 +15,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.function.Supplier;
 import java.util.zip.ZipFile;
 
 /**
@@ -21,18 +24,33 @@ import java.util.zip.ZipFile;
  */
 public class DataDrivenBogoCompat {
     public static final String COMPAT_FILE = "bogo.compat.json";
+    private static final String COND_FIELD_NAME = "condition";
     private static final JsonSchema<BogoCondition> CONDITION_OBJECT_SCHEMA = JsonSchema.object(
         BogoCondition.SCHEMA
             .describe("The action will be applied when the condition returned `true`")
-            .toOptionalField("condition"),
+            .toOptionalField(COND_FIELD_NAME),
         cond -> cond.orElse(BogoCondition.ALWAYS)
     );
     private static final Gson GSON = new Gson();
 
     public static void main(String[] args) {
+        var actionSchema = new JsonSchema<BogoCompatHandler>() {
+            @Override
+            public BogoCompatHandler read(JsonElement json) {
+                throw new IllegalStateException("for Json generation purpose only");
+            }
+
+            @Override
+            public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+                var condSchema = BogoCondition.SCHEMA.getSchema(definitions);
+                var schema = BogoCompatHandler.SCHEMA.getSchema(definitions);
+                schema.get("properties").getAsJsonObject().add(COND_FIELD_NAME, condSchema);
+                return schema;
+            }
+        };
         // use object to allow adding "$schema"
         var jsonSchema = JsonSchema.object(
-            BogoCompatHandler.SCHEMA
+            actionSchema
                 .extractToDefinitions("action")
                 .toList()
                 .toField("actions"),
