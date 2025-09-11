@@ -1,13 +1,11 @@
 package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 
-import com.cleanroommc.bogosorter.compat.data_driven.utils.DataDrivenUtils;
 import com.github.bsideup.jabel.Desugar;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -33,7 +31,7 @@ record DispatchJsonSchema<T>(
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
         var obj = new JsonObject();
         obj.addProperty("type", "object");
 

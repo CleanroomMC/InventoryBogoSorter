@@ -113,21 +113,23 @@ public interface JsonSchema<T> {
 
     T read(JsonElement json);
 
-    JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions);
+    JsonObject getSchema(Map<String, JsonSchema<?>> definitions);
 
     default JsonObject getSchema() {
-        var definitions = new LinkedHashMap<String, Supplier<JsonObject>>();
+        var definitions = new LinkedHashMap<String, JsonSchema<?>>();
         var schema = getSchema(definitions);
 
         var definitionsJson = new JsonObject();
         var usedNames = new HashSet<String>();
-        while (usedNames.size() != definitions.size()) {
-            // handle definition references in definition
+        while (!definitions.isEmpty()) {
+            // handle definition referenced by definition
+            var collectedDefinitions = new LinkedHashMap<String, JsonSchema<?>>();
             for (var entry : definitions.entrySet()) {
                 if (usedNames.add(entry.getKey())) {
-                    definitionsJson.add(entry.getKey(), entry.getValue().get());
+                    definitionsJson.add(entry.getKey(), entry.getValue().getSchema(collectedDefinitions));
                 }
             }
+            definitions = collectedDefinitions;
         }
         schema.add("definitions", definitionsJson);
 
@@ -155,10 +157,12 @@ public interface JsonSchema<T> {
 
     default JsonSchema<T> modifySchema(Consumer<JsonObject> modifier) {
         Objects.requireNonNull(modifier);
-        return map(Function.identity(), schema -> {
-            modifier.accept(schema);
-            return schema;
-        });
+        return map(
+            Function.identity(), schema -> {
+                modifier.accept(schema);
+                return schema;
+            }
+        );
     }
 
     default JsonSchema<T> describe(String description) {

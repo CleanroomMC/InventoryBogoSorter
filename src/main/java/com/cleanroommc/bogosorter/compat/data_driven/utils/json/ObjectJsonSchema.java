@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -50,7 +49,7 @@ class ObjectJsonSchema<T> implements JsonSchema<T> {
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
         var obj = new JsonObject();
         obj.addProperty("type", "object");
 

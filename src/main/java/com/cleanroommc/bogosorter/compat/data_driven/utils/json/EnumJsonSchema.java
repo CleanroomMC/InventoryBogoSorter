@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.*;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -47,7 +46,7 @@ final class EnumJsonSchema<T extends Enum<T>> implements JsonSchema<T> {
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
         var result = new JsonObject();
 
         var enum_ = new JsonArray();

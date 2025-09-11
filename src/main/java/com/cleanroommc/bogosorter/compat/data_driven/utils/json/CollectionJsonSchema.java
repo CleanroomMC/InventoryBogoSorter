@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.IntFunction;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -29,7 +28,7 @@ record CollectionJsonSchema<T, C extends Collection<T>>(
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
         var obj = new JsonObject();
         obj.addProperty("type", "array");
         obj.add("items", component.getSchema(definitions));

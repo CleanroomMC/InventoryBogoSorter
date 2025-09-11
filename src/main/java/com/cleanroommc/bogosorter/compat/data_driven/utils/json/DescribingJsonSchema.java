@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -24,7 +23,7 @@ record DescribingJsonSchema<T>(
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
         var got = inner.getSchema(definitions);
         addIfNotNull(got, "title", title);
         addIfNotNull(got, "description", description);

@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -23,7 +22,7 @@ record RemapJsonSchema<I, O>(
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
         return schemaRemapper.apply(inner.getSchema(definitions));
     }
 }

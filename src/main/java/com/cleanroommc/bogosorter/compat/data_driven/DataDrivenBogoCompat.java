@@ -16,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.zip.ZipFile;
 
 /**
@@ -41,7 +40,7 @@ public class DataDrivenBogoCompat {
             }
 
             @Override
-            public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+            public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
                 var condSchema = BogoCondition.SCHEMA.getSchema(definitions);
                 var schema = BogoCompatHandler.SCHEMA.getSchema(definitions);
                 schema.get("properties").getAsJsonObject().add(COND_FIELD_NAME, condSchema);

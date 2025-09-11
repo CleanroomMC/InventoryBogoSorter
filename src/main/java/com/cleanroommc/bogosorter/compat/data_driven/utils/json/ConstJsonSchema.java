@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -18,7 +17,7 @@ record ConstJsonSchema<T>(T value, JsonElement jsonRepresentation) implements Js
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
         var result = new JsonObject();
         if (this.jsonRepresentation != null) {
             result.add("const", jsonRepresentation);

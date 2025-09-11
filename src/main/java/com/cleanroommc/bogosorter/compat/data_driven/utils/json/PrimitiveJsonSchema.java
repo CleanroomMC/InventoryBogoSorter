@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -23,7 +22,7 @@ public record PrimitiveJsonSchema<T>(
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
         var jsonObject = new JsonObject();
         jsonObject.addProperty("type", type);
         return jsonObject;

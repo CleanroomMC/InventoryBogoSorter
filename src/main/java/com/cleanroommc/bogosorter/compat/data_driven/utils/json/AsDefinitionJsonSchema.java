@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * @author ZZZank
@@ -21,8 +20,8 @@ record AsDefinitionJsonSchema<T>(
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
-        definitions.put(refKey, () -> inner.getSchema(definitions));
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
+        definitions.put(refKey, inner);
 
         var result = new JsonObject();
         result.addProperty("$ref", "#/definitions/" + refKey);

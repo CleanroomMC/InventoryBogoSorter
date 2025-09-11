@@ -24,7 +24,7 @@ final class LazyJsonSchema<T> implements JsonSchema<T>, Supplier<JsonSchema<T>> 
     }
 
     @Override
-    public JsonObject getSchema(Map<String, Supplier<JsonObject>> definitions) {
+    public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
         return get().getSchema(definitions);
     }
 
