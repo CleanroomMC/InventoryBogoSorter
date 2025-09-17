@@ -1,0 +1,75 @@
+key.categories.bogosorter=인벤토리 보고소트
+key.sort_config=정리 설정 열기
+key.sort=인벤토리 정리
+
+bogosort.gui.title=정리 설정
+bogosort.gui.tab.general.name=일반
+bogosort.gui.tab.profiles.name=프로필
+bogosort.gui.tab.item_sort_rules.name=아이템 정리 규칙
+bogosort.gui.tab.nbt_sort_rules.name=NBT 정리 규칙
+bogosort.gui.available_sort_rules=사용 가능한 정리 규칙
+bogosort.gui.configured_sort_rules=구성된 정리 규칙
+bogosort.gui.enable_refill=자동 핫바 채우기 활성화
+bogosort.gui.refill_comment=Quark 모드가 설치되어 있습니다. 이 옵션을 비활성화해도 Quark의 기능은 활성화되어 있을 수 있습니다. '관리' -> '자동 도구 재공급'에서 해당 설정을 찾을 수 있습니다.
+bogosort.gui.refill_threshold=자동 채우기 내구도 임계값
+bogosort.gui.ascending=오름차순
+bogosort.gui.descending=내림차순
+bogosort.gui.hotbar_scrolling=핫바 열 스크롤 활성화
+bogosort.gui.hotbar_scrolling.tooltip=ALT 키를 누른 채로 인벤토리 열을 스크롤하세요
+bogosort.gui.enabled=활성화
+bogosort.gui.button.enabled=GUI에 정리 및 설정 버튼 활성화
+bogosort.gui.button.color=정리 버튼 배경색
+
+bogosort.command.config_relaod.success=정리 설정을 다시 불러왔습니다
+
+bogosort.sortrules.item.mod.name=모드 이름
+bogosort.sortrules.item.id.name=레지스트리 이름
+bogosort.sortrules.item.meta.name=메타 값
+bogosort.sortrules.item.registry_order.name=레지스트리 순서
+bogosort.sortrules.item.display_name.name=표시 이름
+bogosort.sortrules.item.nbt_size.name=NBT 태그 크기
+bogosort.sortrules.item.nbt_has.name=NBT 태그 보유 여부
+bogosort.sortrules.item.nbt_rules.name=NBT 규칙
+bogosort.sortrules.item.nbt_all_values.name=모든 NBT 값
+bogosort.sortrules.item.count.name=스택 크기
+bogosort.sortrules.item.ore_dict.name=광물 사전
+bogosort.sortrules.item.material.name=재료
+bogosort.sortrules.item.ore_prefix.name=광물 접두사
+bogosort.sortrules.item.burn_time.name=연소 시간
+bogosort.sortrules.item.block_type.name=블록 유형
+bogosort.sortrules.item.hunger.name=허기
+bogosort.sortrules.item.saturation.name=포만감
+bogosort.sortrules.item.emc.name=EMC 값
+bogosort.sortrules.item.color.name=색상
+
+bogosort.sortrules.item.mod.description=모드 이름의 알파벳순으로 아이템을 정리합니다
+bogosort.sortrules.item.id.description=레지스트리 이름(모드 제외)의 알파벳순으로 아이템을 정리합니다
+bogosort.sortrules.item.meta.description=메타 값의 숫자 순서로 아이템을 정리합니다
+bogosort.sortrules.item.registry_order.description=레지스트리 순서의 숫자 순서로 아이템을 정리합니다
+bogosort.sortrules.item.display_name.description=표시 이름의 알파벳순으로 아이템을 정리합니다
+bogosort.sortrules.item.nbt_size.description=NBT 태그 크기의 숫자 순서로 아이템을 정리합니다
+bogosort.sortrules.item.nbt_has.description=NBT 태그 유무에 따라 아이템을 정리합니다
+bogosort.sortrules.item.nbt_rules.description=구성된 NBT 정리 규칙에 따라 아이템을 정리합니다
+bogosort.sortrules.item.nbt_all_values.description=모든 nbt 태그와 하위 태그를 비교하여 아이템을 정리합니다
+bogosort.sortrules.item.count.description=스택 크기의 숫자 순서로 아이템을 정리합니다
+bogosort.sortrules.item.ore_dict.description=광물 사전의 숫자 및/또는 알파벳순으로 아이템을 정리합니다
+bogosort.sortrules.item.material.description=재료 이름(예: 철, 금, 구리...)의 알파벳순으로 아이템을 정리합니다
+bogosort.sortrules.item.ore_prefix.description=광물 접두사(예: 주괴, 조각, 판, 톱니바퀴...)에 따라 아이템을 정리합니다
+bogosort.sortrules.item.burn_time.description=연료 연소 시간의 숫자 순서로 아이템을 정리합니다
+bogosort.sortrules.item.block_type.description=아이템의 블록 유형(예: 전체 블록, 반 블록, 계단...)에 따라 아이템을 정리합니다
+bogosort.sortrules.item.hunger.description=허기 회복량의 숫자 순서로 아이템을 정리합니다
+bogosort.sortrules.item.saturation.description=포만감 회복량의 숫자 순서로 아이템을 정리합니다
+bogosort.sortrules.item.emc.description=EMC 값의 숫자 순서로 아이템을 정리합니다
+bogosort.sortrules.item.color.description=색상 색조 값의 숫자 순서로 아이템을 정리합니다
+
+bogosort.sortrules.nbt.potion.name=물약
+bogosort.sortrules.nbt.enchantment.name=마법 부여
+bogosort.sortrules.nbt.enchantment_book.name=마법이 부여된 책
+bogosort.sortrules.nbt.gt_circ_config.name=GT 프로그래밍 가능한 회로
+bogosort.sortrules.nbt.gt_item_damage.name=GT 도구 손상도
+
+bogosort.sortrules.nbt.potion.description=효과와 레벨에 따라 물약을 정리합니다
+bogosort.sortrules.nbt.enchantment.description=효과와 레벨에 따라 마법이 부여된 아이템을 정리합니다
+bogosort.sortrules.nbt.enchantment_book.description=효과와 레벨에 따라 마법이 부여된 책을 정리합니다
+bogosort.sortrules.nbt.gt_circ_config.description=구성(configuration)에 따라 그레그테크 프로그래밍 회로를 정리합니다
+bogosort.sortrules.nbt.gt_item_damage.description=손상도에 따라 그레그테크 도구를 정리합니다
