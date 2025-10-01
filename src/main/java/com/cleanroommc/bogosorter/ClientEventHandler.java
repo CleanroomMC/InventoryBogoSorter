@@ -117,9 +117,6 @@ public class ClientEventHandler {
                 event.setGui(new WarningScreen(warnings));
             }
         }
-        if (event.getGui() == null && ModularScreen.getCurrent() instanceof ConfigGui configGui) {
-            configGui.onCloseTemp();
-        }
     }
 
     private static void shortcutAction() {

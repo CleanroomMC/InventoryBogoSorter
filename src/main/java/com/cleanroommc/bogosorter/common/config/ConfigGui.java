@@ -9,6 +9,8 @@ import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
 import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.modularui.api.IPanelHandler;
+import com.cleanroommc.modularui.api.ITheme;
+import com.cleanroommc.modularui.api.IThemeApi;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
@@ -44,8 +46,8 @@ import java.util.Map;
 public class ConfigGui extends CustomModularScreen {
 
     public static boolean wasOpened = false;
-    public static final UITexture TOGGLE_BUTTON = UITexture.fullImage("bogosorter:gui/toggle_config", false);
-    public static final UITexture ARROW_DOWN_UP = UITexture.fullImage("bogosorter:gui/arrow_down_up", false);
+    public static final UITexture TOGGLE_BUTTON = UITexture.fullImage("bogosorter:gui/toggle_config");
+    public static final UITexture ARROW_DOWN_UP = UITexture.fullImage("bogosorter:gui/arrow_down_up");
     private static final int DARK_GREY = 0xFF404040;
 
     public static boolean closeCurrent() {
@@ -79,7 +81,7 @@ public class ConfigGui extends CustomModularScreen {
 
         PagedWidget.Controller controller = new PagedWidget.Controller();
 
-        panel.child(new TextWidget(IKey.lang("bogosort.gui.title"))
+        panel.child(new TextWidget<>(IKey.lang("bogosort.gui.title"))
                             .leftRel(0.5f)
                             .top(5))
                 .child(new Rectangle().setColor(DARK_GREY).asWidget()
@@ -248,7 +250,7 @@ public class ConfigGui extends CustomModularScreen {
             items.put(sortRule, new SortableListWidget.Item<>(sortRule).child(item -> new Row()
                     .child(new Widget<>()
                                    .addTooltipLine(IKey.lang(sortRule.getDescriptionLangKey()))
-                                   .widgetTheme(Theme.BUTTON)
+                                   .widgetTheme(IThemeApi.BUTTON)
                                    //.background(GuiTextures.BUTTON_CLEAN)
                                    .overlay(IKey.lang(sortRule.getNameLangKey()))
                                    .expanded().heightRel(1f))
@@ -376,7 +378,6 @@ public class ConfigGui extends CustomModularScreen {
 
     @Override
     public void onClose() {
-        super.onClose();
         Serializer.saveConfig();
         PlayerConfig.syncToServer();
         MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
@@ -384,14 +385,6 @@ public class ConfigGui extends CustomModularScreen {
         if (this.old != null) {
             // open next tick, otherwise infinite loop
             ClientEventHandler.openNextTick(this.old);
-        }
-    }
-
-    @Deprecated
-    public void onCloseTemp() {
-        // onClose not being called is fixed in newer versions
-        if (BogoSorter.muiRcVersion <= 5) {
-            onClose();
         }
     }
 

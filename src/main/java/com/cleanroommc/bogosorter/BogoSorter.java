@@ -38,7 +38,7 @@ import java.time.Month;
         name = BogoSorter.NAME,
         version = BogoSorter.VERSION,
         dependencies =
-                "required-after:modularui@[2.5.0-rc3,3.0.0);" +
+                "required-after:modularui@[2.5.0,3.0.0);" +
                 "required-after:mixinbooter@[8.0,)")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
@@ -58,7 +58,6 @@ public class BogoSorter {
     private static boolean quarkLoaded = false;
     private static boolean ae2Loaded = false;
     private static boolean expandableInventoryLoaded = false;
-    public static int muiRcVersion = 0;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
@@ -75,7 +74,7 @@ public class BogoSorter {
         ModContainer container = Loader.instance().getIndexedModList().get("modularui");
         String version = container.getVersion();
         if (version.contains("rc")) {
-            muiRcVersion = Integer.parseInt(version.substring(version.indexOf("rc") + 2));
+            throw new IllegalStateException("Update ModularUI to 2.5.0 (no rc suffix)");
         }
         NetworkHandler.init();
         OreDictHelper.init();
