@@ -38,7 +38,7 @@ import java.time.Month;
         name = BogoSorter.NAME,
         version = BogoSorter.VERSION,
         dependencies =
-                "required-after:modularui@[2.5.0,3.0.0);" +
+                "required-after:modularui@[3.0.0,4.0.0);" +
                 "required-after:mixinbooter@[8.0,)")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
@@ -70,11 +70,6 @@ public class BogoSorter {
         if (anyIc2Loaded) {
             ModContainer container = Loader.instance().getIndexedModList().get("ic2");
             ic2ClassicLoaded = container.getName().endsWith("Classic");
-        }
-        ModContainer container = Loader.instance().getIndexedModList().get("modularui");
-        String version = container.getVersion();
-        if (version.contains("rc")) {
-            throw new IllegalStateException("Update ModularUI to 2.5.0 (no rc suffix)");
         }
         NetworkHandler.init();
         OreDictHelper.init();
