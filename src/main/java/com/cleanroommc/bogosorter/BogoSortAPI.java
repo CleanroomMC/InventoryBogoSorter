@@ -293,7 +293,7 @@ public class BogoSortAPI implements IBogoSortAPI {
         return itemHandler instanceof PlayerMainInvWrapper || itemHandler instanceof PlayerInvWrapper;
     }
 
-    public static final Hash.Strategy<ItemStack> ITEM_META_NBT_HASH_STRATEGY = new Hash.Strategy<ItemStack>() {
+    public static final Hash.Strategy<ItemStack> ITEM_META_NBT_HASH_STRATEGY = new Hash.Strategy<>() {
 
         @Override
         public int hashCode(ItemStack o) {

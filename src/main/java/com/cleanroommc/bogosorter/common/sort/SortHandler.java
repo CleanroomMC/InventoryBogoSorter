@@ -303,9 +303,9 @@ public class SortHandler {
              * The slot should only be marked as inaccessible if all three conditions return false.
              */
             boolean canTake = slot.bogo$canTakeStack(player);
-            boolean canInsert = slot.bogo$isItemValid(slot.bogo$getStack().copy());
             boolean isEmpty = slot.bogo$getStack().isEmpty();
-            if (canTake || canInsert || isEmpty) result.add(slot);
+            boolean canInsert = isEmpty || slot.bogo$isItemValid(slot.bogo$getStack().copy());
+            if (canTake || canInsert) result.add(slot);
         }
         return result;
     }
