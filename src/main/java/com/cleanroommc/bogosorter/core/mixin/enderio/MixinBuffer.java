@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.core.mixin.enderio;
 import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
+
 import crazypants.enderio.machines.machine.buffer.ContainerBuffer;
 import crazypants.enderio.machines.machine.buffer.TileBuffer;
 import org.spongepowered.asm.mixin.Mixin;

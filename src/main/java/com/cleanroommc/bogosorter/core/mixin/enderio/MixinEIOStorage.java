@@ -3,14 +3,16 @@ package com.cleanroommc.bogosorter.core.mixin.enderio;
 import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
+
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.Slot;
+
 import crazypants.enderio.base.item.darksteel.upgrade.storage.StorageCap;
 import crazypants.enderio.base.item.darksteel.upgrade.storage.StorageContainer;
 import crazypants.enderio.util.EIOCombinedInvWrapper;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.List;

@@ -13,10 +13,7 @@ import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.screen.WarningScreen;
 import com.cleanroommc.modularui.factory.ClientGUI;
-import com.kbp.client.KBPMod;
-import com.kbp.client.api.IPatchedKeyBinding;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -40,6 +37,11 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import com.kbp.client.KBPMod;
+import com.kbp.client.api.IPatchedKeyBinding;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -57,7 +59,7 @@ public class ClientEventHandler {
     public static final String BOGO_CATEGORY = "bogosort.key.categories";
     public static final String KEY_PREFIX = "bogosort.key.";
     public static final KeyBinding configGuiKey = new KeyBinding("bogosort.key.sort_config", KeyConflictContext.UNIVERSAL, Keyboard.KEY_K,
-                                                                 BOGO_CATEGORY);
+            BOGO_CATEGORY);
     public static final KeyBinding sortKey = new KeyBinding("bogosort.key.sort", KeyConflictContext.GUI, -98, BOGO_CATEGORY);
 
     public static final int LMB = 0;
@@ -327,7 +329,7 @@ public class ClientEventHandler {
             boolean name = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("display_name"));
             NetworkHandler.sendToServer(
                     new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules,
-                              slot.bogo$getSlotNumber(), slotGroup.isPlayerInventory()));
+                            slot.bogo$getSlotNumber(), slotGroup.isPlayerInventory()));
             SortHandler.playSortSound();
             return true;
         }

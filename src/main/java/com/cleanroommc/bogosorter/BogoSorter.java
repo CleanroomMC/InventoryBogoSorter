@@ -14,7 +14,7 @@ import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
 import com.cleanroommc.modularui.keybind.KeyBindAPI;
-import gregtech.GregTechVersion;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,6 +28,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import gregtech.GregTechVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,8 +41,8 @@ import java.time.Month;
         version = BogoSorter.VERSION,
         dependencies =
                 "required-after-client:modularui@[3.0.2,4.0.0);" +
-                "required-after-client:key_binding_patch@[1.3.3.3,);" +
-                "required-after:mixinbooter@[8.0,)")
+                        "required-after-client:key_binding_patch@[1.3.3.3,);" +
+                        "required-after:mixinbooter@[8.0,)")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
 

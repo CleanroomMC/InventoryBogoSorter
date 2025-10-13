@@ -9,9 +9,7 @@ import com.cleanroommc.bogosorter.common.McUtils;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.network.CSlotSync;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,10 +21,20 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SortHandler {
@@ -87,7 +95,7 @@ public class SortHandler {
             int result;
             for (SortRule<ItemStack> sortRule : itemSortRules) {
                 result = sortRule instanceof ClientItemSortRule ? ((ClientItemSortRule) sortRule).compareServer(container1, container2) :
-                         sortRule.compare(container1.getItemStack(), container2.getItemStack());
+                        sortRule.compare(container1.getItemStack(), container2.getItemStack());
                 if (result != 0) return result;
             }
             result = ItemCompareHelper.compareRegistryOrder(container1.getItemStack(), container2.getItemStack());
@@ -138,7 +146,7 @@ public class SortHandler {
             }
 
             int max = Math.min(slot.bogo$getItemStackLimit(itemSortContainer.getItemStack()),
-                               slot.bogo$getMaxStackSize(itemSortContainer.getItemStack()));
+                    slot.bogo$getMaxStackSize(itemSortContainer.getItemStack()));
             if (max <= 0) continue;
             slot.bogo$putStack(itemSortContainer.makeStack(max));
 

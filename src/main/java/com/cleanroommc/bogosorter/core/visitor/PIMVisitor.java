@@ -1,7 +1,9 @@
 package com.cleanroommc.bogosorter.core.visitor;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;

@@ -1,9 +1,11 @@
 package com.cleanroommc.bogosorter.common.network;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;

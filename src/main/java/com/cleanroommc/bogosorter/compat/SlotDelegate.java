@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.compat;
 
 import com.cleanroommc.bogosorter.api.ISlot;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;

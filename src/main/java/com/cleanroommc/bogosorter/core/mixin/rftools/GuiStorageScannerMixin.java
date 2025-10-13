@@ -1,8 +1,10 @@
 package com.cleanroommc.bogosorter.core.mixin.rftools;
 
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
-import mcjty.rftools.blocks.storagemonitor.GuiStorageScanner;
+
 import net.minecraft.item.ItemStack;
+
+import mcjty.rftools.blocks.storagemonitor.GuiStorageScanner;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;

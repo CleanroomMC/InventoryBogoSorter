@@ -18,10 +18,10 @@ package com.cleanroommc.bogosorter.common.sort.color;
  * available at http://lokeshdhakar.com/projects/color-thief/
  */
 
-import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.Arrays;
+import javax.annotation.Nullable;
 
 @SuppressWarnings("ALL")
 public class ColorThief {

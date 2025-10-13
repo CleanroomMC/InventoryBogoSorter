@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.common.network;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;

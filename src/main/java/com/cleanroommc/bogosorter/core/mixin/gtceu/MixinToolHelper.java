@@ -1,10 +1,12 @@
 package com.cleanroommc.bogosorter.core.mixin.gtceu;
 
 import com.cleanroommc.bogosorter.common.refill.DamageHelper;
-import gregtech.api.items.toolitem.ToolHelper;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+
+import gregtech.api.items.toolitem.ToolHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

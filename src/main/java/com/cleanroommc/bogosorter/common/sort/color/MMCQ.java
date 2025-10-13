@@ -18,12 +18,12 @@ package com.cleanroommc.bogosorter.common.sort.color;
  * available at http://lokeshdhakar.com/projects/color-thief/
  */
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @SuppressWarnings("ALL")
 public class MMCQ {
@@ -52,6 +52,7 @@ public class MMCQ {
      * 3D color space box.
      */
     public static class VBox {
+
         int r1;
         int r2;
         int g1;
