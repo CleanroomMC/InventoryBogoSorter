@@ -2,6 +2,13 @@ bogosort.key.categories=인벤토리 보고소트
 bogosort.key.sort_config=정리 설정 열기
 bogosort.key.sort=인벤토리 정리
 
+bogosort.key.move_all=Move all
+bogosort.key.move_all_same=Move all similar
+bogosort.key.move_single=Move single
+bogosort.key.move_single_empty=Move Single to empty
+bogosort.key.throw_all_same=Throw all similar
+bogosort.key.throw_all=Throw all
+
 bogosort.gui.title=정리 설정
 bogosort.gui.tab.general.name=일반
 bogosort.gui.tab.profiles.name=프로필

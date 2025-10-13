@@ -2,19 +2,30 @@ bogosort.key.categories=Classificador Bogo de Inventário
 bogosort.key.sort_config=Abrir configuração de classificação
 bogosort.key.sort=Classificação do Inventário
 
+bogosort.key.move_all=Move all
+bogosort.key.move_all_same=Move all similar
+bogosort.key.move_single=Move single
+bogosort.key.move_single_empty=Move Single to empty
+bogosort.key.throw_all_same=Throw all similar
+bogosort.key.throw_all=Throw all
+
 bogosort.gui.title=Configuração da Classificação
 bogosort.gui.tab.general.name=Geral
+bogosort.gui.tab.profiles.name=Profiles
 bogosort.gui.tab.item_sort_rules.name=Regras de classificação de itens
 bogosort.gui.tab.nbt_sort_rules.name=regras de classificação NBT
 bogosort.gui.available_sort_rules=Regras de classificação disponíveis
 bogosort.gui.configured_sort_rules=Regras de classificação configuradas
 bogosort.gui.enable_refill=Ativar recarga automática da hotbar
+bogosort.gui.refill_comment=Quark is installed. If this option is disabled, theirs might still be enabled. You can find the config at 'Management' -> 'Automatic Tool Restock'.
 bogosort.gui.refill_threshold=Limiar de dano de recarga automática
 bogosort.gui.ascending=Ascendente
 bogosort.gui.descending=descendente
 bogosort.gui.hotbar_scrolling=Rolagem da coluna Hotbar
 bogosort.gui.hotbar_scrolling.tooltip=Percorra a coluna de inventário segurando ALT
 bogosort.gui.enabled=Habilitado
+bogosort.gui.button.enabled=Enable sort and config buttons in GUI's
+bogosort.gui.button.color=Background color of sort buttons
 
 bogosort.command.config_relaod.success=Configuração de classificação recarregada
 
@@ -32,7 +43,7 @@ bogosort.sortrules.item.ore_dict.name=Ditado de Minério
 bogosort.sortrules.item.material.name=Material
 bogosort.sortrules.item.ore_prefix.name=Prefixo de minério
 bogosort.sortrules.item.burn_time.name=Tempo de queima
-bogosort.sortrules.item.is_block.name=É bloco
+bogosort.sortrules.item.block_type.name=Block Type
 bogosort.sortrules.item.hunger.name=Fome
 bogosort.sortrules.item.saturation.name=Saturação
 bogosort.sortrules.item.emc.name=Valor EMC
@@ -52,7 +63,7 @@ bogosort.sortrules.item.ore_dict.description=Classifica os itens numericamente e
 bogosort.sortrules.item.material.description=Classifica os itens em ordem alfabética pelo nome do material (por exemplo, Ferro, Ouro, Cobre...)
 bogosort.sortrules.item.ore_prefix.description=Classifica os itens por seu prefixo de minério (por exemplo, lingote, pepita, placa, engrenagem...)
 bogosort.sortrules.item.burn_time.description=Classifica os itens numericamente por seu tempo de queima de combustível
-bogosort.sortrules.item.is_block.description=Classifica itens com base em se o item é um bloco ou não
+bogosort.sortrules.item.block_type.description=Sorts items based on what type of block the item is (f.e. full block, slab, stairs ...)bogosort.key.move_all=Move allbogosort.key.move_all=Move allbogosort.key.move_all=Move all
 bogosort.sortrules.item.hunger.description=Classifica os itens numericamente por seu valor de reabastecimento de fome
 bogosort.sortrules.item.saturation.description=Classifica os itens numericamente por seu valor de recarga de saturação
 bogosort.sortrules.item.emc.description==Classifica os itens numericamente por seu valor EMC
@@ -68,4 +79,4 @@ bogosort.sortrules.nbt.potion.description=Classifica poções por efeito e níve
 bogosort.sortrules.nbt.enchantment.description=Classifica itens encantados por efeito e nível
 bogosort.sortrules.nbt.enchantment_book.description=Classifica livros encantados por efeito e nível
 bogosort.sortrules.nbt.gt_circ_config.description=Classifica os circuitos programáveis GregTech por sua configuração
-bogosort.sortrules.nbt.gt_item_damage.description=Classifica as ferramentas GregTech por seu dano
+bogosort.sortrules.nbt.gt_item_damage.description=Classifica as ferramentas GregTech por seu danobogosort.key.move_all=Move all

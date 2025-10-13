@@ -2,6 +2,13 @@ bogosort.key.categories=物品栏Bogo排序整理
 bogosort.key.sort_config=打开排序配置
 bogosort.key.sort=排序物品栏
 
+bogosort.key.move_all=Move all
+bogosort.key.move_all_same=Move all similar
+bogosort.key.move_single=Move single
+bogosort.key.move_single_empty=Move Single to empty
+bogosort.key.throw_all_same=Throw all similar
+bogosort.key.throw_all=Throw all
+
 bogosort.gui.title=排序配置
 bogosort.gui.tab.general.name=常规
 bogosort.gui.tab.profiles.name=配置文件
