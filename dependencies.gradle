@@ -39,6 +39,7 @@
  */
 dependencies {
     implementation("com.cleanroommc:modularui:3.0.2") { transitive false }
+    implementation rfg.deobf('curse.maven:key_binding_patch-928895:5951859')
     //implementation files('libs/modularui-2.2.3-dev.jar') // for testing purpose
     compileOnly rfg.deobf('curse.maven:iron_chests-228756:2747935')
     compileOnly rfg.deobf('curse.maven:cofh_core-69162:2920433')

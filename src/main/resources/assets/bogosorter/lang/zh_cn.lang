@@ -1,6 +1,6 @@
-key.categories.bogosorter=物品栏Bogo排序整理
-key.sort_config=打开排序配置
-key.sort=排序物品栏
+bogosort.key.categories=物品栏Bogo排序整理
+bogosort.key.sort_config=打开排序配置
+bogosort.key.sort=排序物品栏
 
 bogosort.gui.title=排序配置
 bogosort.gui.tab.general.name=常规

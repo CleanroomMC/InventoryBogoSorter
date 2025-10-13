@@ -1,6 +1,6 @@
-key.categories.bogosorter=Classificador Bogo de Inventário
-key.sort_config=Abrir configuração de classificação
-key.sort=Classificação do Inventário
+bogosort.key.categories=Classificador Bogo de Inventário
+bogosort.key.sort_config=Abrir configuração de classificação
+bogosort.key.sort=Classificação do Inventário
 
 bogosort.gui.title=Configuração da Classificação
 bogosort.gui.tab.general.name=Geral

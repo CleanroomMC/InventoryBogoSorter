@@ -1,6 +1,6 @@
-key.categories.bogosorter=Инвентарь Bogo Sorter
-key.sort_config=Открыть конфигурацию сортировки
-key.sort=Сортировать инвентарь
+bogosort.key.categories=Инвентарь Bogo Sorter
+bogosort.key.sort_config=Открыть конфигурацию сортировки
+bogosort.key.sort=Сортировать инвентарь
 
 bogosort.gui.title=Конфигурация сортировки
 bogosort.gui.tab.general.name=Общие
