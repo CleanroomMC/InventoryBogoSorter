@@ -7,6 +7,7 @@ import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.GuiScreenWrapper;
 import com.cleanroommc.modularui.utils.Color;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -16,11 +17,15 @@ import net.minecraft.inventory.Container;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Objects;
 
+@SideOnly(Side.CLIENT)
 public class ButtonHandler {
 
     // highly optimized button ids (they came to me in a dream)
@@ -160,8 +165,8 @@ public class ButtonHandler {
         public void drawTooltip(int mouseX, int mouseY) {
             if (this.enabled && this.hovered) {
                 GuiScreen guiScreen = Objects.requireNonNull(Minecraft.getMinecraft().currentScreen);
-                GuiUtils.drawHoveringText(Collections.singletonList(I18n.format(this.sort ? "key.sort" : "key.sort_config")), mouseX,
-                                          mouseY, guiScreen.width, guiScreen.height, 300, Minecraft.getMinecraft().fontRenderer);
+                GuiUtils.drawHoveringText(Collections.singletonList(I18n.format(this.sort ? "bogosort.key.sort" : "bogosort.key.sort_config")), mouseX,
+                        mouseY, guiScreen.width, guiScreen.height, 300, Minecraft.getMinecraft().fontRenderer);
             }
         }
     }
