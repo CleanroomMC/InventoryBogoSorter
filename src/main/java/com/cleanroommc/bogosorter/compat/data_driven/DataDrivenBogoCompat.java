@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.zip.ZipFile;
 
 /**
@@ -32,56 +33,29 @@ public class DataDrivenBogoCompat {
             .toOptionalField(COND_FIELD_NAME),
         cond -> cond.orElse(BogoCondition.ALWAYS)
     );
+    public static final JsonSchema<Optional<BogoCompatHandler>> SCHEMA_SINGLE = new JsonSchema<>() {
+        @Override
+        public Optional<BogoCompatHandler> read(JsonElement json) {
+            if (CONDITION_OBJECT_SCHEMA.read(json).test()) {
+                return Optional.of(BogoCompatHandler.SCHEMA.read(json));
+            }
+            return Optional.empty();
+        }
+
+        @Override
+        public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
+            var condSchema = BogoCondition.SCHEMA.getSchema(definitions);
+            var schema = BogoCompatHandler.SCHEMA.getSchema(definitions);
+            schema.get("properties").getAsJsonObject().add(COND_FIELD_NAME, condSchema);
+            return schema;
+        }
+    };
     private static final Gson GSON = new Gson();
 
     public static void main(String[] args) {
         System.out.println(GSON.toJson(generateJsonSchema()));
 
         validateCompatFile(Paths.get("src/main/resources/bogo.compat.json"));
-    }
-
-    /// generate JSON Schema for Bogo compat file
-    private static JsonObject generateJsonSchema() {
-        var actionSchema = new JsonSchema<BogoCompatHandler>() {
-            @Override
-            public BogoCompatHandler read(JsonElement json) {
-                throw new IllegalStateException("for Json generation purpose only");
-            }
-
-            @Override
-            public JsonObject getSchema(Map<String, JsonSchema<?>> definitions) {
-                var condSchema = BogoCondition.SCHEMA.getSchema(definitions);
-                var schema = BogoCompatHandler.SCHEMA.getSchema(definitions);
-                schema.get("properties").getAsJsonObject().add(COND_FIELD_NAME, condSchema);
-                return schema;
-            }
-        };
-        // use object to allow adding "$schema"
-        var jsonSchema = JsonSchema.object(
-            actionSchema
-                .extractToDefinitions("action")
-                .toList()
-                .toField("actions"),
-            i -> i
-        );
-        return jsonSchema.getSchema();
-    }
-
-    /// parse and do basic validation on a Bogo compat file.
-    ///
-    /// Exceptions will be thrown if anything goes wrong
-    private static void validateCompatFile(Path path) {
-        try (var reader = Files.newBufferedReader(path)) {
-            var json = GSON.fromJson(reader, JsonObject.class);
-            var handlers = parseAll(json);
-
-            var api = IBogoSortAPI.getInstance();
-            for (var handler : handlers) {
-                handler.handle(api);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static ArrayList<BogoCompatHandler> scanHandlers() {
@@ -128,13 +102,41 @@ public class DataDrivenBogoCompat {
         var parsed = new ArrayList<BogoCompatHandler>();
         for (var json : obj.get("actions").getAsJsonArray()) {
             try {
-                if (CONDITION_OBJECT_SCHEMA.read(json).test()) {
-                    parsed.add(BogoCompatHandler.SCHEMA.read(json));
-                }
+                SCHEMA_SINGLE.read(json).ifPresent(parsed::add);
             } catch (Exception e) {
                 BogoSorter.LOGGER.error("error when parsing handler json: {}", json,  e);
             }
         }
         return parsed;
+    }
+
+    /// generate JSON Schema for Bogo compat file
+    private static JsonObject generateJsonSchema() {
+        // use object to allow adding "$schema"
+        var jsonSchema = JsonSchema.object(
+            SCHEMA_SINGLE
+                .extractToDefinitions("action")
+                .toList()
+                .toField("actions"),
+            i -> i
+        );
+        return jsonSchema.getSchema();
+    }
+
+    /// parse and do basic validation on a Bogo compat file.
+    ///
+    /// Exceptions will be thrown if anything goes wrong
+    private static void validateCompatFile(Path path) {
+        try (var reader = Files.newBufferedReader(path)) {
+            var json = GSON.fromJson(reader, JsonObject.class);
+            var handlers = parseAll(json);
+
+            var api = IBogoSortAPI.getInstance();
+            for (var handler : handlers) {
+                handler.handle(api);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
