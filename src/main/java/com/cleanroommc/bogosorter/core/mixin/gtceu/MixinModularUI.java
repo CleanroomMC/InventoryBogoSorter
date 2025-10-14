@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.core.mixin.gtceu;
 
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
+
 import gregtech.api.gui.ModularUI;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -13,7 +14,7 @@ public class MixinModularUI implements IModularSortable {
 
     @Unique
     @Final
-    private Object2IntMap<String> rowSizes = new Object2IntOpenHashMap<>();
+    private final Object2IntMap<String> rowSizes = new Object2IntOpenHashMap<>();
 
     @Override
     public void addSortArea(String key, int rowSize) {

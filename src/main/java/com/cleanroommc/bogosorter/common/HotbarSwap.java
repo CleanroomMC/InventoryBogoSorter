@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.common;
 
 import com.cleanroommc.bogosorter.common.network.CHotbarSwap;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
@@ -15,6 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+
 import org.lwjgl.input.Mouse;
 
 public class HotbarSwap {

@@ -1,6 +1,13 @@
-key.categories.bogosorter=Inventory Bogo Sorter
-key.sort_config=Open Sort Config
-key.sort=Sort Inventory
+bogosort.key.categories=Inventory Bogo Sorter
+bogosort.key.sort_config=Open Sort Config
+bogosort.key.sort=Sort Inventory
+
+bogosort.key.move_all=Move all
+bogosort.key.move_all_same=Move all similar
+bogosort.key.move_single=Move single
+bogosort.key.move_single_empty=Move Single to empty
+bogosort.key.throw_all_same=Throw all similar
+bogosort.key.throw_all=Throw all
 
 bogosort.gui.title=Sort Config
 bogosort.gui.tab.general.name=General
@@ -17,6 +24,8 @@ bogosort.gui.descending=Descending
 bogosort.gui.hotbar_scrolling=Enable hotbar column scrolling
 bogosort.gui.hotbar_scrolling.tooltip=Scroll though inventory column by holding ALT
 bogosort.gui.enabled=Enabled
+bogosort.gui.button.enabled=Enable sort and config buttons in GUI's
+bogosort.gui.button.color=Background color of sort buttons
 
 bogosort.command.config_relaod.success=Reloaded sorting config
 

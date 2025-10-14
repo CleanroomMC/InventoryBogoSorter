@@ -6,9 +6,11 @@ import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
-import it.unimi.dsi.fastutil.ints.IntArraySet;
+
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+
+import it.unimi.dsi.fastutil.ints.IntArraySet;
 import org.jetbrains.annotations.Nullable;
 import ru.socol.expandableinventory.gui.ContainerExpandedInventory;
 

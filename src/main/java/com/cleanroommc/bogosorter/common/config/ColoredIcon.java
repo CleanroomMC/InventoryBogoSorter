@@ -9,7 +9,7 @@ import com.cleanroommc.modularui.utils.Color;
 public class ColoredIcon implements IDrawable {
 
     private final UITexture drawable;
-    private int color;
+    private final int color;
 
     public ColoredIcon(UITexture drawable, int color) {
         this.drawable = drawable;

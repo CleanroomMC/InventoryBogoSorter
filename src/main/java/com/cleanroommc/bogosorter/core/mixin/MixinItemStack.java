@@ -1,8 +1,10 @@
 package com.cleanroommc.bogosorter.core.mixin;
 
 import com.cleanroommc.bogosorter.common.refill.DamageHelper;
+
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

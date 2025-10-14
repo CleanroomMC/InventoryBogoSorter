@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.api;
 
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;

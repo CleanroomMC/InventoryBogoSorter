@@ -1,9 +1,10 @@
 package com.cleanroommc.bogosorter.compat.gtce;
 
-import gregtech.api.gui.widgets.SlotWidget;
 import net.minecraft.inventory.IInventory;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+
+import gregtech.api.gui.widgets.SlotWidget;
 import org.jetbrains.annotations.Nullable;
 
 public class SortableSlotWidget extends SlotWidget {

@@ -13,8 +13,7 @@ import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.screen.WarningScreen;
 import com.cleanroommc.modularui.factory.ClientGUI;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -36,44 +35,77 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import com.kbp.client.KBPMod;
+import com.kbp.client.api.IPatchedKeyBinding;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+@SideOnly(Side.CLIENT)
 public class ClientEventHandler {
 
     public static final List<ItemStack> allItems = new ArrayList<>();
-    public static final KeyBinding configGuiKey = new KeyBinding("key.sort_config", KeyConflictContext.UNIVERSAL, Keyboard.KEY_K, "key.categories.bogosorter");
-    public static final KeyBinding sortKey = new KeyBinding("key.sort", KeyConflictContext.GUI, -98, "key.categories.bogosorter");
+    public static final String BOGO_CATEGORY = "bogosort.key.categories";
+    public static final String KEY_PREFIX = "bogosort.key.";
+    public static final KeyBinding configGuiKey = new KeyBinding("bogosort.key.sort_config", KeyConflictContext.UNIVERSAL, Keyboard.KEY_K,
+            BOGO_CATEGORY);
+    public static final KeyBinding sortKey = new KeyBinding("bogosort.key.sort", KeyConflictContext.GUI, -98, BOGO_CATEGORY);
 
-    public static final KeyBind moveAllSame = KeyBind.builder("move_all_same")
-            .lmb(true).rmb(false)
-            .shift(false).ctrl(false).alt(true).space(false)
-            .build();
-    public static final KeyBind moveAll = KeyBind.builder("move_all")
-            .lmb(true).rmb(false)
-            .shift(false).ctrl(false).alt(false).space(true)
-            .build();
-    public static final KeyBind moveSingle = KeyBind.builder("move_single")
-            .lmb(true).rmb(false)
-            .shift(false).ctrl(true).alt(false)
-            .build();
-    public static final KeyBind moveSingleEmpty = KeyBind.builder("move_single_empty")
-            .lmb(false).rmb(true)
-            .shift(false).ctrl(true).alt(false)
-            .build();
-    public static final KeyBind throwAllSame = KeyBind.builder("throw_all_same")
-            .lmb(false).rmb(false)
-            .shift(false).ctrl(false).alt(true).space(false)
-            .validator(() -> isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop))
-            .build();
-    public static final KeyBind throwAll = KeyBind.builder("throw_all")
-            .lmb(false).rmb(false)
-            .shift(false).ctrl(false).alt(false).space(true)
-            .validator(() -> isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop))
-            .build();
+    public static final int LMB = 0;
+    public static final int RMB = 1;
+    public static final int WHEEL = 2;
+    public static final int ALT = Keyboard.KEY_LMENU;
+    public static final int CTRL = Minecraft.IS_RUNNING_ON_MAC ? 219 : 29;
+    public static final int SHIFT = Keyboard.KEY_LSHIFT;
+    public static final int SPACE = Keyboard.KEY_SPACE;
+
+    public static final IPatchedKeyBinding moveAllSame = KBPMod.newBuilder(KEY_PREFIX + "move_all_same")
+            .withCategory(BOGO_CATEGORY)
+            .withMouseButton(LMB)
+            .withCmbKeys(ALT)
+            .withConflictContext(KeyConflictContext.GUI)
+            .buildAndRegis();
+    public static final IPatchedKeyBinding moveAll = KBPMod.newBuilder(KEY_PREFIX + "move_all")
+            .withCategory(BOGO_CATEGORY)
+            .withMouseButton(LMB)
+            .withCmbKeys(SPACE)
+            .withConflictContext(KeyConflictContext.GUI)
+            .buildAndRegis();
+    public static final IPatchedKeyBinding moveSingle = KBPMod.newBuilder(KEY_PREFIX + "move_single")
+            .withCategory(BOGO_CATEGORY)
+            .withMouseButton(LMB)
+            .withCmbKeys(CTRL)
+            .withConflictContext(KeyConflictContext.GUI)
+            .buildAndRegis();
+    public static final IPatchedKeyBinding moveSingleEmpty = KBPMod.newBuilder(KEY_PREFIX + "move_single_empty")
+            .withCategory(BOGO_CATEGORY)
+            .withMouseButton(RMB)
+            .withCmbKeys(CTRL)
+            .withConflictContext(KeyConflictContext.GUI)
+            .buildAndRegis();
+    public static final IPatchedKeyBinding throwAllSame = KBPMod.newBuilder(KEY_PREFIX + "throw_all_same")
+            .withCategory(BOGO_CATEGORY)
+            .withKey(Keyboard.KEY_Q)
+            .withCmbKeys(ALT)
+            .withConflictContext(KeyConflictContext.GUI)
+            .buildAndRegis();
+    public static final IPatchedKeyBinding throwAll = KBPMod.newBuilder(KEY_PREFIX + "throw_all")
+            .withCategory(BOGO_CATEGORY)
+            .withKey(Keyboard.KEY_Q)
+            .withCmbKeys(SPACE)
+            .withConflictContext(KeyConflictContext.GUI)
+            .buildAndRegis();
 
     private static long timeConfigGui = 0;
     private static long timeSort = 0;
@@ -140,7 +172,6 @@ public class ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onGuiKeyInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-        KeyBind.checkKeys(getTicks());
         if (!(event.getGui() instanceof GuiContainer)) return;
         if (handleInput((GuiContainer) event.getGui())) {
             event.setCanceled(true);
@@ -175,7 +206,6 @@ public class ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onMouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
-        KeyBind.checkKeys(getTicks());
         if (event.getGui() instanceof GuiContainer && handleInput((GuiContainer) event.getGui())) {
             event.setCanceled(true);
         }
@@ -187,27 +217,29 @@ public class ClientEventHandler {
             return false;
         }
         if (container != null && canDoShortcutAction()) {
-            if (moveAll.isFirstPress() && ShortcutHandler.moveAllItems(container, false)) {
+            if (moveAll.getKeyBinding().isPressed() && ShortcutHandler.moveAllItems(container, false)) {
                 shortcutAction();
                 return true;
             }
-            if (moveAllSame.isFirstPress() && ShortcutHandler.moveAllItems(container, true)) {
+            if (moveAllSame.getKeyBinding().isPressed() && ShortcutHandler.moveAllItems(container, true)) {
                 shortcutAction();
                 return true;
             }
-            if (moveSingle.isFirstPressOrHeldLong(15) && ShortcutHandler.moveSingleItem(container, false)) {
+            // TODO should also activate after holding for 15 ticks
+            if ((moveSingle.getKeyBinding().isPressed()) && ShortcutHandler.moveSingleItem(container, false)) {
                 shortcutAction();
                 return true;
             }
-            if (moveSingleEmpty.isFirstPressOrHeldLong(15) && ShortcutHandler.moveSingleItem(container, true)) {
+            // TODO should also activate after holding for 15 ticks
+            if ((moveSingleEmpty.getKeyBinding().isPressed()) && ShortcutHandler.moveSingleItem(container, true)) {
                 shortcutAction();
                 return true;
             }
-            if (throwAll.isFirstPress() && ShortcutHandler.dropItems(container, false)) {
+            if (throwAll.getKeyBinding().isPressed() && ShortcutHandler.dropItems(container, false)) {
                 shortcutAction();
                 return true;
             }
-            if (throwAllSame.isFirstPress() && ShortcutHandler.dropItems(container, true)) {
+            if (throwAllSame.getKeyBinding().isPressed() && ShortcutHandler.dropItems(container, true)) {
                 shortcutAction();
                 return true;
             }
@@ -239,7 +271,8 @@ public class ClientEventHandler {
 
     private static boolean canSort(@Nullable ISlot slot) {
         return !Minecraft.getMinecraft().player.isCreative() ||
-                sortKey.getKeyModifier().isActive(null) != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyModifier().isActive(null) ||
+                sortKey.getKeyModifier().isActive(null) !=
+                        Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyModifier().isActive(null) ||
                 sortKey.getKeyCode() != Minecraft.getMinecraft().gameSettings.keyBindPickBlock.getKeyCode() ||
                 (Minecraft.getMinecraft().player.inventory.getItemStack().isEmpty() && (slot == null || slot.bogo$getStack().isEmpty()));
     }
@@ -294,7 +327,9 @@ public class ClientEventHandler {
             List<SortRule<ItemStack>> sortRules = BogoSorterConfig.sortRules;
             boolean color = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("color"));
             boolean name = sortRules.contains(BogoSortAPI.INSTANCE.getItemSortRule("display_name"));
-            NetworkHandler.sendToServer(new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules, slot.bogo$getSlotNumber(), slotGroup.isPlayerInventory()));
+            NetworkHandler.sendToServer(
+                    new CSort(createSortData(slotGroup, color, name), BogoSorterConfig.sortRules, BogoSorterConfig.nbtSortRules,
+                            slot.bogo$getSlotNumber(), slotGroup.isPlayerInventory()));
             SortHandler.playSortSound();
             return true;
         }
@@ -305,7 +340,9 @@ public class ClientEventHandler {
         if (!color && !name) return Collections.emptyList();
         Map<ItemStack, ClientSortData> map = new Object2ObjectOpenCustomHashMap<>(BogoSortAPI.ITEM_META_NBT_HASH_STRATEGY);
         for (ISlot slot1 : slotGroup.getSlots()) {
-            map.computeIfAbsent(slot1.bogo$getStack(), stack -> ClientSortData.of(stack, color, name)).getSlotNumbers().add(slot1.bogo$getSlotNumber());
+            map.computeIfAbsent(slot1.bogo$getStack(), stack -> ClientSortData.of(stack, color, name))
+                    .getSlotNumbers()
+                    .add(slot1.bogo$getSlotNumber());
         }
         return map.values();
     }

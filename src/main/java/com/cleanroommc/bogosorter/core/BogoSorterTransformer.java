@@ -2,7 +2,9 @@ package com.cleanroommc.bogosorter.core;
 
 import com.cleanroommc.bogosorter.core.visitor.EntityPlayerVisitor;
 import com.cleanroommc.bogosorter.core.visitor.PIMVisitor;
+
 import net.minecraft.launchwrapper.IClassTransformer;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 

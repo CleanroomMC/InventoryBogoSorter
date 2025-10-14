@@ -1,7 +1,8 @@
 package com.cleanroommc.bogosorter.core.mixin.enderio;
 
-import crazypants.enderio.base.item.darksteel.upgrade.storage.StorageUpgrade;
 import net.minecraft.inventory.EntityEquipmentSlot;
+
+import crazypants.enderio.base.item.darksteel.upgrade.storage.StorageUpgrade;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 

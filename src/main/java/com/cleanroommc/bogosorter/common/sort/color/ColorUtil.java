@@ -1,8 +1,9 @@
 package com.cleanroommc.bogosorter.common.sort.color;
 
-import java.awt.Color;
+import java.awt.*;
 
 public final class ColorUtil {
+
     private ColorUtil() {
 
     }

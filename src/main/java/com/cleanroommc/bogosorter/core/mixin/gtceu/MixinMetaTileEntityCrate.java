@@ -2,12 +2,14 @@ package com.cleanroommc.bogosorter.core.mixin.gtceu;
 
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.items.ItemStackHandler;
+
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.resources.TextureArea;
 import gregtech.common.metatileentities.storage.MetaTileEntityCrate;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.items.ItemStackHandler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;

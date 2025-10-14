@@ -1,10 +1,5 @@
 package com.cleanroommc.bogosorter.core.mixin.galacticraft.planets;
 
-import micdoodle8.mods.galacticraft.api.entity.IEntityBreathable;
-import micdoodle8.mods.galacticraft.core.entities.player.GCPlayerStats;
-import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
-import micdoodle8.mods.galacticraft.planets.mars.MarsModuleClient;
-import micdoodle8.mods.galacticraft.planets.mars.entities.EntitySlimeling;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,6 +10,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+
+import micdoodle8.mods.galacticraft.api.entity.IEntityBreathable;
+import micdoodle8.mods.galacticraft.core.entities.player.GCPlayerStats;
+import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
+import micdoodle8.mods.galacticraft.planets.mars.MarsModuleClient;
+import micdoodle8.mods.galacticraft.planets.mars.entities.EntitySlimeling;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -88,7 +89,7 @@ public abstract class MixinEntitySlimeling extends EntityTameable implements IEn
                 if (this.rand.nextInt(3) == 0) {
                     this.setTamed(true);
                     this.getNavigator().clearPath();
-                    this.setAttackTarget((EntityLivingBase) null);
+                    this.setAttackTarget(null);
                     this.setSittingAI(true);
                     this.setHealth(20.0F);
                     this.setOwnerId(player.getUniqueID());

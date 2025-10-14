@@ -1,9 +1,11 @@
 package com.cleanroommc.bogosorter.common.network;
 
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
-import io.netty.buffer.Unpooled;
+
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
+
+import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
 

@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.core.mixin.galacticraft.core;
 
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
+
 import micdoodle8.mods.galacticraft.api.entity.IRocketType;
 import micdoodle8.mods.galacticraft.core.inventory.ContainerRocketInventory;
 import org.spongepowered.asm.mixin.Final;

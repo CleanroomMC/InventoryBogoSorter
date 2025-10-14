@@ -1,8 +1,9 @@
 package com.cleanroommc.bogosorter;
 
+import net.minecraftforge.fml.common.Loader;
+
 import com.google.common.collect.ImmutableList;
 import gregtech.GregTechVersion;
-import net.minecraftforge.fml.common.Loader;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
 import java.util.List;
