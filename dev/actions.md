@@ -100,22 +100,6 @@ Registers a slot group for slots within a specific index range.
 }
 ```
 
-### 6. mark_only
-Marks a container without applying any changes.
-
-**Properties:**
-- `type`: "mark_only" (required)
-- `condition`: Condition object (optional), see [Condition System](condition.md) for documentation
-- `target`: Container class name (required)
-
-**Example:**
-```json
-{
-  "type": "mark_only",
-  "target": "net.minecraft.inventory.Container"
-}
-```
-
 ## Button Position Setters
 
 ### 1. top_right_horizontal

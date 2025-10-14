@@ -70,6 +70,9 @@ public class DefaultCompat {
         }
 
         // vanilla
+        api.addCompat(ContainerPlayer.class, (container, builder) -> {
+            // player slots are automatically added
+        });
         api.addPlayerSortButtonPosition(ContainerPlayer.class, (slotGroup, buttonPos) -> {
             if (BogoSorter.isQuarkLoaded() || Loader.isModLoaded("nutrition")) {
                 IPosSetter.TOP_RIGHT_VERTICAL.setButtonPos(slotGroup, buttonPos);

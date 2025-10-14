@@ -22,8 +22,7 @@
             "slot_mapped",
             "generic",
             "remove",
-            "slot_range",
-            "mark_only"
+            "slot_range"
           ]
         },
         "condition": {
@@ -172,28 +171,6 @@
               "row_size"
             ],
             "description": "Register a slot group for slots with index in [start, end) range"
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "type": {
-                "const": "mark_only"
-              }
-            }
-          },
-          "then": {
-            "type": "object",
-            "properties": {
-              "target": {
-                "type": "string",
-                "description": "class name, for example `net.minecraft.inventory.Container`"
-              }
-            },
-            "required": [
-              "target"
-            ],
-            "description": "Marks the container, but do nothing"
           }
         }
       ]

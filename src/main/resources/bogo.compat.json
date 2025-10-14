@@ -2,11 +2,6 @@
   "$schema": "../../../dev/bogo.compat.schema.json",
   "actions": [
     {
-      "target": "net.minecraft.inventory.ContainerPlayer",
-      "type": "mark_only",
-      "$comment": "player slots are automatically added"
-    },
-    {
       "condition": {
         "type": "mod",
         "id": "ironbackpacks"

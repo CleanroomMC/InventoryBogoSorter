@@ -25,7 +25,6 @@ public interface BogoCompatHandler {
     JsonSchema<BogoCompatHandler> SCHEMA = JsonSchema.lazy(() -> {
         REGISTRY.put("generic", GenericHandler.SCHEMA);
         REGISTRY.put("remove", RemoveHandler.SCHEMA);
-        REGISTRY.put("mark_only", MarkOnlyHandler.SCHEMA);
         REGISTRY.put("slot_range", RangedSlotHandler.SCHEMA);
         REGISTRY.put("slot_mapped", MappedSlotHandler.SCHEMA);
         REGISTRY.put("set_button_pos", SetPosHandler.SCHEMA);
