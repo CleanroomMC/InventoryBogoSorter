@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.compat.data_driven;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.compat.data_driven.condition.BogoCondition;
 import com.cleanroommc.bogosorter.compat.data_driven.handler.BogoCompatHandler;
 import com.cleanroommc.bogosorter.compat.data_driven.utils.json.JsonSchema;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.zip.ZipFile;
@@ -33,6 +35,13 @@ public class DataDrivenBogoCompat {
     private static final Gson GSON = new Gson();
 
     public static void main(String[] args) {
+        System.out.println(GSON.toJson(generateJsonSchema()));
+
+        validateCompatFile(Paths.get("src/main/resources/bogo.compat.json"));
+    }
+
+    /// generate JSON Schema for Bogo compat file
+    private static JsonObject generateJsonSchema() {
         var actionSchema = new JsonSchema<BogoCompatHandler>() {
             @Override
             public BogoCompatHandler read(JsonElement json) {
@@ -55,19 +64,24 @@ public class DataDrivenBogoCompat {
                 .toField("actions"),
             i -> i
         );
-        System.out.println(GSON.toJson(jsonSchema.getSchema()));
+        return jsonSchema.getSchema();
+    }
 
-//        try (var reader = Files.newBufferedReader(Paths.get("src/main/resources/bogo.compat.json"))) {
-//            var json = GSON.fromJson(reader, JsonObject.class);
-//            var handlers = parseAll(json);
-//
-//            var api = IBogoSortAPI.getInstance();
-//            for (var handler : handlers) {
-//                handler.handle(api);
-//            }
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+    /// parse and do basic validation on a Bogo compat file.
+    ///
+    /// Exceptions will be thrown if anything goes wrong
+    private static void validateCompatFile(Path path) {
+        try (var reader = Files.newBufferedReader(path)) {
+            var json = GSON.fromJson(reader, JsonObject.class);
+            var handlers = parseAll(json);
+
+            var api = IBogoSortAPI.getInstance();
+            for (var handler : handlers) {
+                handler.handle(api);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static ArrayList<BogoCompatHandler> scanHandlers() {
