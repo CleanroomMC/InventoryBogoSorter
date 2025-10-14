@@ -27,7 +27,11 @@ record DispatchJsonSchema<T>(
             }
             return fallback.read(json);
         }
-        return schemas.get(dispatch.getAsString()).read(json);
+        var schema = schemas.get(dispatch.getAsString());
+        if (schema == null) {
+            throw new NullPointerException("No schema registered for key: " + dispatch);
+        }
+        return schema.read(json);
     }
 
     @Override
