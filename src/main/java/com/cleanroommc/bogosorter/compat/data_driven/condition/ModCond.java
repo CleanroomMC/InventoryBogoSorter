@@ -36,14 +36,14 @@ record ModCond(
     @Override
     public boolean test() {
         var mod = Loader.instance().getIndexedModList().get(id);
-        if (mod == null) {
-            return false;
-        } else if (versionRange.isPresent()) {
-            return versionRange.get().containsVersion(new DefaultArtifactVersion(mod.getVersion()));
-        } else if (versionPattern.isPresent()) {
-            return versionPattern.get().matcher(mod.getVersion()).matches();
+        var result = mod != null;
+        if (versionRange.isPresent()) {
+            result = result && versionRange.get().containsVersion(new DefaultArtifactVersion(mod.getVersion()));
         }
-        return true;
+        if (versionPattern.isPresent()) {
+            result = result && versionPattern.get().matcher(mod.getVersion()).matches();
+        }
+        return result;
     }
 
     private static VersionRange fromVersionSpecOrThrow(String versionSpec) {

@@ -1,6 +1,6 @@
 # BogoSorter JSON Configuration Wiki
 
-## Condition System
+## Condition
 
 Condition determines whether the action should be applied.
 
@@ -50,8 +50,6 @@ Checks for mod presence and version.
 - `id`: Mod ID (required)
 - `version_pattern`: RegEx pattern for version matching (optional)
 - `version_range`: Maven Version Range syntax (optional)
-
-Note: when both of `version_pattern` and `version_range` are present, `version_pattern` will be ignored.
 
 **Example:**
 ```json
