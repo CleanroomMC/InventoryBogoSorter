@@ -1,6 +1,5 @@
 package com.cleanroommc.bogosorter.compat.data_driven.utils.json;
 
-import com.github.bsideup.jabel.Desugar;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -10,7 +9,6 @@ import java.util.*;
 /**
  * @author ZZZank
  */
-@Desugar
 final class EnumJsonSchema<T extends Enum<T>> implements JsonSchema<T> {
     private final boolean ignoreCase;
     private final boolean includeOrdinal;
