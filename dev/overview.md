@@ -4,6 +4,24 @@
 
 This JSON configuration format allows you to customize how BogoSorter handles different container types in Minecraft. The configuration centers around defining `actions` that specify sorting behavior, button placement, and slot grouping rules.
 
+## Quick setup for schema and template file
+
+You can set up schema and template file for Data-driven Bogo compat by running this command in-game:
+
+```
+/bogosorter datadriven init
+```
+
+Schema and template file are located at `<your instance folder>/config/bogosorter/`
+
+## Syntax check
+
+Run this command in-game to perform syntax check on `<your instance folder>/config/bogosorter/bogo.compat.json`:
+
+```
+/bogosorter datadriven syntax
+```
+
 ## Root Object
 
 The root object contains a single required property:

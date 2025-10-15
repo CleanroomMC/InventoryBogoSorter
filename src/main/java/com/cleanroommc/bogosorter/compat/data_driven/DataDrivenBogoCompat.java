@@ -111,7 +111,7 @@ public class DataDrivenBogoCompat {
     }
 
     /// generate JSON Schema for Bogo compat file
-    private static JsonObject generateJsonSchema() {
+    public static JsonObject generateJsonSchema() {
         // use object to allow adding "$schema"
         var jsonSchema = JsonSchema.object(
             SCHEMA_SINGLE
