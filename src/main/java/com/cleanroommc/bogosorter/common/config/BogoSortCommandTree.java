@@ -41,6 +41,7 @@ public class BogoSortCommandTree extends CommandTreeBase {
                 }
             }
         });
+        addSubcommand(new DataDrivenCommand());
     }
 
     @Override

@@ -1,0 +1,130 @@
+{
+  "$schema": "../../../dev/bogo.compat.schema.json",
+  "actions": [
+    {
+      "condition": {
+        "type": "mod",
+        "id": "ironbackpacks"
+      },
+      "target": "gr8pefish.ironbackpacks.container.ContainerBackpack",
+      "type": "generic"
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "conarm"
+      },
+      "target": "c4.conarm.common.inventory.ContainerKnapsack",
+      "type": "generic"
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "mekanism"
+      },
+      "target": "mekanism.common.inventory.container.ContainerPersonalChest",
+      "type": "generic"
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "cookingforblockheads"
+      },
+      "target": "net.blay09.mods.cookingforblockheads.container.ContainerCounter",
+      "type": "generic"
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "cookingforblockheads"
+      },
+      "target": "net.blay09.mods.cookingforblockheads.container.ContainerFridge",
+      "type": "generic"
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "charm"
+      },
+      "target": "svenhjol.charm.crafting.container.ContainerBarrel",
+      "type": "slot_range",
+      "start": 0,
+      "end": 27,
+      "row_size": 9
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "projectred-exploration"
+      },
+      "target": "mrtjp.projectred.exploration.ContainerBackpack",
+      "type": "slot_range",
+      "start": 0,
+      "end": 27,
+      "row_size": 9
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "energycontrol"
+      },
+      "target": "com.zuxelus.energycontrol.containers.ContainerCardHolder",
+      "type": "slot_range",
+      "start": 0,
+      "end": 54,
+      "row_size": 9
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "expandableinventory"
+      },
+      "target": "ru.socol.expandableinventory.gui.ContainerExpandedInventory",
+      "type": "mark_only"
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "futuremc"
+      },
+      "target": "thedarkcolour.futuremc.container.ContainerBarrel",
+      "type": "slot_range",
+      "start": 0,
+      "end": 27,
+      "row_size": 9
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "appliedenergistics2"
+      },
+      "target": "appeng.container.implementations.ContainerSkyChest",
+      "type": "slot_range",
+      "start": 0,
+      "end": 36,
+      "row_size": 9
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "projecte"
+      },
+      "target": "moze_intel.projecte.gameObjs.container.CondenserContainer",
+      "type": "set_button_pos",
+      "pos_setter": {
+        "type": "top_right_vertical"
+      }
+    },
+    {
+      "condition": {
+        "type": "mod",
+        "id": "projecte"
+      },
+      "target": "moze_intel.projecte.gameObjs.container.CondenserMK2Container",
+      "type": "set_button_pos",
+      "pos_setter": {
+        "type": "top_right_vertical"
+      }
+    }
+  ]
+}

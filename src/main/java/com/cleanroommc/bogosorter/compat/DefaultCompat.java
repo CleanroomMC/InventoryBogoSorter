@@ -5,6 +5,7 @@ import com.cleanroommc.bogosorter.ShortcutHandler;
 import com.cleanroommc.bogosorter.api.IBogoSortAPI;
 import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.api.ISlot;
+import com.cleanroommc.bogosorter.compat.data_driven.DataDrivenBogoCompat;
 import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
 import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
 import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
@@ -20,9 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import appeng.container.implementations.ContainerSkyChest;
 import blusunrize.immersiveengineering.common.gui.ContainerCrate;
-import c4.conarm.common.inventory.ContainerKnapsack;
 import cassiokf.industrialrenewal.gui.container.ContainerStorageChest;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import com.aranaira.arcanearchives.config.ConfigHandler;
@@ -31,7 +30,6 @@ import com.aranaira.arcanearchives.inventory.slots.SlotExtended;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
 import com.lothrazar.cyclicmagic.item.storagesack.ContainerStorage;
 import com.tiviacz.travelersbackpack.gui.container.ContainerTravelersBackpack;
-import com.zuxelus.energycontrol.containers.ContainerCardHolder;
 import de.ellpeck.actuallyadditions.mod.inventory.ContainerGiantChest;
 import forestry.core.gui.ContainerNaturalistInventory;
 import forestry.storage.gui.ContainerBackpack;
@@ -57,18 +55,14 @@ import micdoodle8.mods.galacticraft.core.inventory.ContainerParaChest;
 import mods.railcraft.common.gui.containers.ContainerRCChest;
 import moze_intel.projecte.gameObjs.container.CondenserContainer;
 import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
-import net.blay09.mods.cookingforblockheads.container.ContainerCounter;
-import net.blay09.mods.cookingforblockheads.container.ContainerFridge;
 import net.dries007.tfc.objects.container.ContainerChestTFC;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
-import ru.socol.expandableinventory.gui.ContainerExpandedInventory;
 import rustic.common.tileentity.ContainerCabinet;
 import rustic.common.tileentity.ContainerCabinetDouble;
 import rustic.common.tileentity.ContainerVase;
 import t145.metalchests.containers.ContainerMetalChest;
 import thebetweenlands.common.inventory.container.ContainerPouch;
-import thedarkcolour.futuremc.container.ContainerBarrel;
 import wanion.avaritiaddons.block.chest.compressed.ContainerCompressedChest;
 import wanion.avaritiaddons.block.chest.infinity.ContainerInfinityChest;
 import wanion.avaritiaddons.block.chest.infinity.InfinitySlot;
@@ -80,6 +74,14 @@ import java.util.Map;
 public class DefaultCompat {
 
     public static void init(IBogoSortAPI api) {
+        for (var handler : DataDrivenBogoCompat.scanHandlers()) {
+            try {
+                handler.handle(api);
+            } catch (Exception e) {
+                BogoSorter.LOGGER.error("error when adding data-driven compat",  e);
+            }
+        }
+
         // vanilla
         api.addCompat(ContainerPlayer.class, (container, builder) -> {
             // player slots are automatically added
@@ -106,7 +108,6 @@ public class DefaultCompat {
         api.addCompat(ContainerShulkerBox.class, (container, builder) -> {
             builder.addGenericSlotGroup()
                     .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
-
         });
         // for horse inventory compat see MixinContainerHorseInventory
 
@@ -134,12 +135,6 @@ public class DefaultCompat {
             });
         }
 
-        if (Loader.isModLoaded("appliedenergistics2")) {
-            api.addCompat(ContainerSkyChest.class, (container, builder) -> {
-                builder.addSlotGroup(0, 36, 9);
-            });
-        }
-
         if (Loader.isModLoaded("draconicevolution")) {
             api.addCompatSimple(ContainerDraconiumChest.class, (container, builder) -> {
                 builder.addSlotGroup(0, 260, 26);
@@ -149,12 +144,6 @@ public class DefaultCompat {
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();
                 buttonPos.setPos(topRight.bogo$getX() + 17, topRight.bogo$getY() - 1);
-            });
-        }
-
-        if (Loader.isModLoaded("futuremc")) {
-            api.addCompatSimple(ContainerBarrel.class, (container, builder) -> {
-                builder.addSlotGroup(0, 27, 9);
             });
         }
 
@@ -168,8 +157,6 @@ public class DefaultCompat {
                 builder.addSlotGroup(43, 85, 6)
                         .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
             });
-            api.addPlayerSortButtonPosition(CondenserContainer.class, IPosSetter.TOP_RIGHT_VERTICAL);
-            api.addPlayerSortButtonPosition(CondenserMK2Container.class, IPosSetter.TOP_RIGHT_VERTICAL);
         }
 
         if (Loader.isModLoaded("immersiveengineering")) {
@@ -363,18 +350,6 @@ public class DefaultCompat {
             });
         }
 
-        if (Loader.isModLoaded("energycontrol")) {
-            api.addCompat(ContainerCardHolder.class, (container, builder) -> {
-                builder.addSlotGroup(0, 54, 9);
-            });
-        }
-
-        if (Loader.isModLoaded("projectred-exploration")) {
-            api.addCompat(mrtjp.projectred.exploration.ContainerBackpack.class, (container, builder) -> {
-                builder.addSlotGroup(0, 27, 9);
-            });
-        }
-
         if (Loader.isModLoaded("thebetweenlands")) {
             api.addCompat(ContainerPouch.class, (container, builder) -> {
                 IInventory inventory = container.getItemInventory();
@@ -435,18 +410,6 @@ public class DefaultCompat {
             });
         }
 
-        if (BogoSorter.isExpandableInventoryLoaded()) {
-            // mark as sortable
-            api.addCompat(ContainerExpandedInventory.class, (container, builder) -> {
-            });
-        }
-
-        if (Loader.isModLoaded("charm")) {
-            api.addCompat(svenhjol.charm.crafting.container.ContainerBarrel.class, (container, builder) -> {
-                builder.addSlotGroup(0, 27, 9);
-            });
-        }
-
         if (Loader.isModLoaded("industrialrenewal")) {
             api.addCompat(ContainerStorageChest.class, (container, builder) -> {
                 builder.addGenericSlotGroup().buttonPosSetter((slotGroup, buttonPos) -> {
@@ -466,19 +429,6 @@ public class DefaultCompat {
             });
         }
 
-        if (Loader.isModLoaded("cookingforblockheads")) {
-            api.addGenericCompat(ContainerCounter.class);
-            api.addGenericCompat(ContainerFridge.class);
-        }
-
-        if (Loader.isModLoaded("mekanism")) {
-            api.addGenericCompat(mekanism.common.inventory.container.ContainerPersonalChest.class);
-        }
-
-        if (Loader.isModLoaded("conarm")) {
-            api.addGenericCompat(ContainerKnapsack.class);
-        }
-
         if (Loader.isModLoaded("arcanearchives")) {
             api.addCompat(ContainerRadiantChest.class, (chest, builder) -> {
                 var slots = new ArrayList<ISlot>();
@@ -492,10 +442,6 @@ public class DefaultCompat {
                 }
                 builder.addSlotGroup(slots, 9);
             });
-        }
-
-        if (Loader.isModLoaded("ironbackpacks")) {
-            api.addGenericCompat(gr8pefish.ironbackpacks.container.ContainerBackpack.class);
         }
     }
 
