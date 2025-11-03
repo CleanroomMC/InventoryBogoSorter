@@ -766,16 +766,18 @@ jar {
 }
 
 if (enableModernJavaSyntax.toBoolean()) {
-    // downgrade code runClient/runServer/build
-    shadeDowngradedApi {
-        archiveClassifier = "dev" // debug session will use the "-dev" jar
-    }
-    jar {
-        archiveClassifier = "dev-undowngraded"
-        finalizedBy(shadeDowngradedApi)
-    }
+    // downgrade code for build
     tasks.named('reobfJar', ReobfuscatedJar) {
         inputJar.set((shadeDowngradedApi as Jar).archiveFile)
+        dependsOn(shadeDowngradedApi)
+    }
+    // downgrade code for runClient/runServer
+    // modern run task, e.g. runClient17, are left as-is, to allow dev to test raw (before downgrading) logic
+    for (runTask in ['runClient', 'runServer']) {
+        tasks.named(runTask, RunMinecraftTask) {
+            classpath = classpath - layout.files(jar) + layout.files(shadeDowngradedApi)
+            dependsOn(shadeDowngradedApi)
+        }
     }
 }
 
