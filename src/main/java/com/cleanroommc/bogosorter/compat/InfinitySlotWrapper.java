@@ -1,8 +1,10 @@
 package com.cleanroommc.bogosorter.compat;
 
 import com.cleanroommc.bogosorter.core.mixin.avaritiaddons.InfinityMatchingAccessor;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
 import org.jetbrains.annotations.NotNull;
 import wanion.avaritiaddons.block.chest.infinity.InfinitySlot;
 

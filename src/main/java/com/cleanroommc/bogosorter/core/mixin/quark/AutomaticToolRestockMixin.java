@@ -1,7 +1,9 @@
 package com.cleanroommc.bogosorter.core.mixin.quark;
 
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
+
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

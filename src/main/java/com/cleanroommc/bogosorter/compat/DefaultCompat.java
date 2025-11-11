@@ -1,5 +1,25 @@
 package com.cleanroommc.bogosorter.compat;
 
+import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.ShortcutHandler;
+import com.cleanroommc.bogosorter.api.IBogoSortAPI;
+import com.cleanroommc.bogosorter.api.IPosSetter;
+import com.cleanroommc.bogosorter.api.ISlot;
+import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
+import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
+import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
+
+import net.minecraft.inventory.ContainerChest;
+import net.minecraft.inventory.ContainerDispenser;
+import net.minecraft.inventory.ContainerHopper;
+import net.minecraft.inventory.ContainerPlayer;
+import net.minecraft.inventory.ContainerShulkerBox;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.items.ItemHandlerHelper;
+
 import appeng.container.implementations.ContainerSkyChest;
 import blusunrize.immersiveengineering.common.gui.ContainerCrate;
 import c4.conarm.common.inventory.ContainerKnapsack;
@@ -9,14 +29,6 @@ import com.aranaira.arcanearchives.config.ConfigHandler;
 import com.aranaira.arcanearchives.inventory.ContainerRadiantChest;
 import com.aranaira.arcanearchives.inventory.slots.SlotExtended;
 import com.brandon3055.draconicevolution.inventory.ContainerDraconiumChest;
-import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.ShortcutHandler;
-import com.cleanroommc.bogosorter.api.IBogoSortAPI;
-import com.cleanroommc.bogosorter.api.IPosSetter;
-import com.cleanroommc.bogosorter.api.ISlot;
-import com.cleanroommc.bogosorter.compat.gtce.IModularSortable;
-import com.cleanroommc.bogosorter.compat.gtce.SortableSlotWidget;
-import com.cleanroommc.bogosorter.core.mixin.colossalchests.ContainerColossalChestAccessor;
 import com.lothrazar.cyclicmagic.item.storagesack.ContainerStorage;
 import com.tiviacz.travelersbackpack.gui.container.ContainerTravelersBackpack;
 import com.zuxelus.energycontrol.containers.ContainerCardHolder;
@@ -28,7 +40,12 @@ import gregtech.api.gui.Widget;
 import gregtech.api.gui.impl.ModularUIContainer;
 import ic2.core.block.personal.TileEntityPersonalChest;
 import ic2.core.block.personal.container.ContainerPersonalChest;
-import ic2.core.block.storage.box.*;
+import ic2.core.block.storage.box.TileEntityBronzeStorageBox;
+import ic2.core.block.storage.box.TileEntityIridiumStorageBox;
+import ic2.core.block.storage.box.TileEntityIronStorageBox;
+import ic2.core.block.storage.box.TileEntitySteelStorageBox;
+import ic2.core.block.storage.box.TileEntityStorageBox;
+import ic2.core.block.storage.box.TileEntityWoodenStorageBox;
 import ic2.core.gui.dynamic.DynamicContainer;
 import ic2.core.inventory.slots.SlotGhoest;
 import ic2.core.item.inv.container.ContainerToolBox;
@@ -43,10 +60,6 @@ import moze_intel.projecte.gameObjs.container.CondenserMK2Container;
 import net.blay09.mods.cookingforblockheads.container.ContainerCounter;
 import net.blay09.mods.cookingforblockheads.container.ContainerFridge;
 import net.dries007.tfc.objects.container.ContainerChestTFC;
-import net.minecraft.inventory.*;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.items.ItemHandlerHelper;
 import org.cyclops.colossalchests.inventory.container.ContainerColossalChest;
 import org.cyclops.colossalchests.inventory.container.ContainerUncolossalChest;
 import ru.socol.expandableinventory.gui.ContainerExpandedInventory;
@@ -257,8 +270,7 @@ public class DefaultCompat {
                 Map<String, List<Slot>> sortableSlots = new Object2ObjectOpenHashMap<>();
 
                 for (Widget widget : container.getModularUI().getFlatVisibleWidgetCollection()) {
-                    if (widget instanceof SortableSlotWidget) {
-                        SortableSlotWidget sortableSlotWidget = (SortableSlotWidget) widget;
+                    if (widget instanceof SortableSlotWidget sortableSlotWidget) {
                         if (sortableSlotWidget.getSortArea() != null) {
                             sortableSlots.computeIfAbsent(sortableSlotWidget.getSortArea(), (key) -> new ArrayList<>()).add(sortableSlotWidget.getHandle());
                         }

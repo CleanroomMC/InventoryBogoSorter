@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.common.sort;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+
 import net.minecraft.item.ItemStack;
 
 import java.util.Objects;

@@ -5,6 +5,7 @@ import com.cleanroommc.bogosorter.common.network.CShortcut;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 import com.cleanroommc.bogosorter.common.sort.SlotGroup;
+
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -128,7 +129,6 @@ public class ShortcutHandler {
                 player.dropItem(stackInSlot, true);
             }
         }
-        return;
     }
 
     public static ItemStack insertToSlots(List<ISlot> slots, ItemStack stack, boolean emptyOnly) {

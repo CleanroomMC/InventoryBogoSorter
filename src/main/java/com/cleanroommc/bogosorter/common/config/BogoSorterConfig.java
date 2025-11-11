@@ -4,20 +4,22 @@ import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
+import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.modularui.utils.JsonHelper;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,8 +34,6 @@ public class BogoSorterConfig {
     public static final Object2IntOpenHashMap<String> ORE_PREFIXES = new Object2IntOpenHashMap<>();
     public static final List<String> ORE_PREFIXES_LIST = new ArrayList<>();
 
-    public static int buttonColor = 0xFFFFFFFF;
-
     @SideOnly(Side.CLIENT)
     public static void save(JsonObject json) {
         PlayerConfig playerConfig = PlayerConfig.getClient();
@@ -42,7 +42,9 @@ public class BogoSorterConfig {
         general.addProperty("refillDmgThreshold", playerConfig.autoRefillDamageThreshold);
         general.addProperty("enableHotbarSwap", HotbarSwap.isEnabled());
         general.addProperty("sortSound", SortHandler.getSortSoundName());
-        general.addProperty("buttonColor", "#" + Integer.toHexString(buttonColor));
+        general.addProperty("buttonColor", "#" + Integer.toHexString(ButtonHandler.buttonColor));
+        general.addProperty("buttonEnabled", ButtonHandler.buttonEnabled);
+
         // general.addProperty("_comment", "By setting the chance below to 0 you agree to have no humor and that you are boring.");
 
         json.add("General", general);
@@ -83,7 +85,8 @@ public class BogoSorterConfig {
                 SoundEvent soundEvent = SoundEvent.REGISTRY.getObject(new ResourceLocation(element.getAsString()));
                 return soundEvent != null ? soundEvent : SoundEvents.UI_BUTTON_CLICK;
             }, "sortSound");
-            buttonColor = JsonHelper.getColor(general, 0xFFFFFFFF, "buttonColor");
+            ButtonHandler.buttonColor = JsonHelper.getColor(general, 0xFFFFFFFF, "buttonColor");
+            ButtonHandler.buttonEnabled = JsonHelper.getBoolean(general, true, "buttonEnabled");
         }
         sortRules.clear();
         if (json.has("ItemSortRules")) {

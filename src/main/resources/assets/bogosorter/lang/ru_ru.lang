@@ -1,6 +1,13 @@
-key.categories.bogosorter=Инвентарь Bogo Sorter
-key.sort_config=Открыть конфигурацию сортировки
-key.sort=Сортировать инвентарь
+bogosort.key.categories=Инвентарь Bogo Sorter
+bogosort.key.sort_config=Открыть конфигурацию сортировки
+bogosort.key.sort=Сортировать инвентарь
+
+bogosort.key.move_all=Move all
+bogosort.key.move_all_same=Move all similar
+bogosort.key.move_single=Move single
+bogosort.key.move_single_empty=Move Single to empty
+bogosort.key.throw_all_same=Throw all similar
+bogosort.key.throw_all=Throw all
 
 bogosort.gui.title=Конфигурация сортировки
 bogosort.gui.tab.general.name=Общие
@@ -10,12 +17,15 @@ bogosort.gui.tab.nbt_sort_rules.name=Правила сортировки NBT
 bogosort.gui.available_sort_rules=Доступные правила сортировки
 bogosort.gui.configured_sort_rules=Настроенные правила сортировки
 bogosort.gui.enable_refill=Включить автопополнение панели быстрого доступа
+bogosort.gui.refill_comment=Quark is installed. If this option is disabled, theirs might still be enabled. You can find the config at 'Management' -> 'Automatic Tool Restock'.
 bogosort.gui.refill_threshold=Порог урона автопополнения
 bogosort.gui.ascending=По возрастанию
 bogosort.gui.descending=По убыванию
 bogosort.gui.hotbar_scrolling=Включить прокрутку стобцов на панели быстрого доступа
 bogosort.gui.hotbar_scrolling.tooltip=Прокручивание стобцов инвентаря при зажатой клавише ALT
 bogosort.gui.enabled=Включено
+bogosort.gui.button.enabled=Enable sort and config buttons in GUI's
+bogosort.gui.button.color=Background color of sort buttons
 
 bogosort.command.config_relaod.success=Перезагружен конфиг сортировки
 

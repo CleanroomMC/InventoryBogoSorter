@@ -5,10 +5,7 @@ import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.network.SRefillSound;
-import gregtech.api.items.toolitem.IGTTool;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntListIterator;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -19,10 +16,20 @@ import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import gregtech.api.items.toolitem.IGTTool;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
+
 import java.util.Set;
 import java.util.function.BiPredicate;
 
 public class RefillHandler {
+
+    /**
+     * A marker index for the offhand.
+     */
+    public static final int OFFHAND_INDEX = 40;
 
     private static final Class<?> gtToolClass;
 
@@ -69,7 +76,7 @@ public class RefillHandler {
         if (!PlayerConfig.get(player).enableAutoRefill) return;
 
         if (shouldHandleRefill(player, brokenItem)) {
-            int index = hand == EnumHand.MAIN_HAND ? player.inventory.currentItem : 40;
+            int index = hand == EnumHand.MAIN_HAND ? player.inventory.currentItem : OFFHAND_INDEX;
             handle(index, brokenItem, player, false);
         }
     }
@@ -100,7 +107,7 @@ public class RefillHandler {
 
     public RefillHandler(int hotbarIndex, ItemStack brokenItem, EntityPlayer player, boolean swapItems) {
         this.hotbarIndex = hotbarIndex;
-        this.slots = new IntArrayList(INVENTORY_PROXIMITY_MAP[hotbarIndex == 40 ? player.inventory.currentItem : hotbarIndex]);
+        this.slots = new IntArrayList(INVENTORY_PROXIMITY_MAP[hotbarIndex == OFFHAND_INDEX ? player.inventory.currentItem : hotbarIndex]);
         this.brokenItem = brokenItem;
         this.player = player;
         this.inventory = player.inventory;
@@ -226,13 +233,13 @@ public class RefillHandler {
     }
 
     private void setAndSyncSlot(int index, ItemStack item) {
-        if (index < 0 || index > 40) return;
+        if (index < 0 || index > OFFHAND_INDEX) return;
         int slot = index;
         if (index < 36) {
             inventory.mainInventory.set(index, item);
             if (index < 9) slot += 36;
             else slot += 9;
-        } else if (index < 40) {
+        } else if (index < OFFHAND_INDEX) {
             inventory.armorInventory.set(index - 36, item);
             slot += 5;
         } else {
@@ -246,7 +253,7 @@ public class RefillHandler {
 
     private ItemStack getItem(int index) {
         if (index < 36) return this.inventory.mainInventory.get(index);
-        if (index < 40) return this.inventory.mainInventory.get(index - 36);
+        if (index < OFFHAND_INDEX) return this.inventory.mainInventory.get(index - 36);
         return this.inventory.offHandInventory.get(0);
     }
 

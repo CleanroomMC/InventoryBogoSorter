@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.core.mixin.ironchests;
 import com.cleanroommc.bogosorter.api.IPosSetter;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
+
 import cpw.mods.ironchest.common.blocks.shulker.IronShulkerBoxType;
 import cpw.mods.ironchest.common.gui.shulker.ContainerIronShulkerBox;
 import org.jetbrains.annotations.Nullable;

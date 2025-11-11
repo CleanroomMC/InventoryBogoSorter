@@ -14,7 +14,7 @@ import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
 import com.cleanroommc.modularui.keybind.KeyBindAPI;
-import gregtech.GregTechVersion;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,6 +28,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import gregtech.GregTechVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,8 +40,9 @@ import java.time.Month;
         name = BogoSorter.NAME,
         version = BogoSorter.VERSION,
         dependencies =
-                "required-after:modularui@[2.5.0-rc3,3.0.0);" +
-                "required-after:mixinbooter@[8.0,)")
+                "required-after-client:modularui@[3.0.3,4.0.0);" +
+                        "required-after-client:key_binding_patch@[1.3.3.3,);" +
+                        "required-after:mixinbooter@[8.0,)")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
 
@@ -93,6 +96,12 @@ public class BogoSorter {
             ClientRegistry.registerKeyBinding(ClientEventHandler.sortKey);
             KeyBindAPI.forceCheckKeyBind(ClientEventHandler.configGuiKey);
             KeyBindAPI.forceCheckKeyBind(ClientEventHandler.sortKey);
+            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.moveAll.getKeyBinding());
+            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.moveAllSame.getKeyBinding());
+            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.moveSingle.getKeyBinding());
+            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.moveSingleEmpty.getKeyBinding());
+            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.throwAll.getKeyBinding());
+            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.throwAllSame.getKeyBinding());
             KeyBindAPI.setCompatible(ClientEventHandler.sortKey, Minecraft.getMinecraft().gameSettings.keyBindPickBlock);
         }
     }
