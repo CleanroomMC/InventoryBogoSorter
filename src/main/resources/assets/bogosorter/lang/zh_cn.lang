@@ -2,12 +2,12 @@ bogosort.key.categories=物品栏Bogo排序整理
 bogosort.key.sort_config=打开排序配置
 bogosort.key.sort=排序物品栏
 
-bogosort.key.move_all=Move all
-bogosort.key.move_all_same=Move all similar
-bogosort.key.move_single=Move single
-bogosort.key.move_single_empty=Move Single to empty
-bogosort.key.throw_all_same=Throw all similar
-bogosort.key.throw_all=Throw all
+bogosort.key.move_all=移动所有
+bogosort.key.move_all_same=移动所有相似项
+bogosort.key.move_single=移动单个
+bogosort.key.move_single_empty=移动单个至空槽位
+bogosort.key.throw_all_same=丢出所有相似项
+bogosort.key.throw_all=丢出所有
 
 bogosort.gui.title=排序配置
 bogosort.gui.tab.general.name=常规
@@ -80,3 +80,4 @@ bogosort.sortrules.nbt.enchantment.description=根据效果和等级对附魔物
 bogosort.sortrules.nbt.enchantment_book.description=根据效果和等级对附魔书排序
 bogosort.sortrules.nbt.gt_circ_config.description=根据配置对格雷科技的编程电路排序
 bogosort.sortrules.nbt.gt_item_damage.description=根据耐久对格雷科技的工具排序
+
