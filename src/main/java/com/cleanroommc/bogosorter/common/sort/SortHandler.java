@@ -300,12 +300,24 @@ public class SortHandler {
              * Although this might risk changing actually inaccessible slots, most likely, those slots would not be
              * empty.
              *
+             * 4. Is the slot locked by ItemFavorites?
+             * If yes, we should skip it during sorting.
+             *
              * The slot should only be marked as inaccessible if all three conditions return false.
              */
             boolean canTake = slot.bogo$canTakeStack(player);
             boolean isEmpty = slot.bogo$getStack().isEmpty();
             boolean canInsert = isEmpty || slot.bogo$isItemValid(slot.bogo$getStack().copy());
-            if (canTake || canInsert) result.add(slot);
+            
+            // Check if the slot is locked by ItemFavorites
+            boolean isLocked = false;
+            try {
+                isLocked = com.cleanroommc.bogosorter.compat.itemfavorites.ItemFavoritesCompat.isSlotLocked(slot);
+            } catch (Exception ignored) {
+                // If compatibility check fails, default to not locked
+            }
+            
+            if ((canTake || canInsert) && !isLocked) result.add(slot);
         }
         return result;
     }
