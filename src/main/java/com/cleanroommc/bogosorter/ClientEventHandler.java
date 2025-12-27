@@ -307,6 +307,9 @@ public class ClientEventHandler {
 
     public static boolean sort(GuiScreen guiScreen, @Nullable ISlot slot) {
         if (guiScreen instanceof GuiContainer) {
+            if (!SortHandler.enableHotbarSorting && BogoSortAPI.isPlayerHotbarSlot(slot)) {
+                return false;
+            }
             Container container = ((GuiContainer) guiScreen).inventorySlots;
             GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
             if (sortingContext.isEmpty()) return false;

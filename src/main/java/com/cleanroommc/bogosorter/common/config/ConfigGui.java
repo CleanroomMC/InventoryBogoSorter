@@ -8,6 +8,7 @@ import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
 import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
+import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.modularui.api.IPanelHandler;
 import com.cleanroommc.modularui.api.IThemeApi;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
@@ -125,6 +126,21 @@ public class ConfigGui extends CustomModularScreen {
                         .top(1)
                         .left(32)
                         .size(1, 92))
+                .child(Flow.row()
+                        .widthRel(1f).height(14)
+                        .margin(0, 2)
+                        .child(new CycleButtonWidget()
+                                .value(new BoolValue.Dynamic(() -> SortHandler.enableHotbarSorting, val -> SortHandler.enableHotbarSorting = val))
+                                .stateOverlay(TOGGLE_BUTTON)
+                                .disableHoverBackground()
+                                .addTooltipLine(IKey.lang("bogosort.gui.hotbar_sorting.enabled"))
+                                .tooltipShowUpTimer(10)
+                                .size(14, 14)
+                                .margin(8, 0)
+                                .background(IDrawable.EMPTY))
+                        .child(IKey.lang("bogosort.gui.hotbar_sorting.enabled").asWidget()
+                                .marginLeft(10)
+                                .height(14)))
                 .child(new Row()
                         .widthRel(1f).height(14)
                         .margin(0, 2)

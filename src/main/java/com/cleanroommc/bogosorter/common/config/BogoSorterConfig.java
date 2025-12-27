@@ -44,6 +44,7 @@ public class BogoSorterConfig {
         general.addProperty("sortSound", SortHandler.getSortSoundName());
         general.addProperty("buttonColor", "#" + Integer.toHexString(ButtonHandler.buttonColor));
         general.addProperty("buttonEnabled", ButtonHandler.buttonEnabled);
+        general.addProperty("enableHotbarSorting", SortHandler.enableHotbarSorting);
 
         // general.addProperty("_comment", "By setting the chance below to 0 you agree to have no humor and that you are boring.");
 
@@ -87,6 +88,7 @@ public class BogoSorterConfig {
             }, "sortSound");
             ButtonHandler.buttonColor = JsonHelper.getColor(general, 0xFFFFFFFF, "buttonColor");
             ButtonHandler.buttonEnabled = JsonHelper.getBoolean(general, true, "buttonEnabled");
+            SortHandler.enableHotbarSorting = JsonHelper.getBoolean(general, false, "enableHotbarSorting");
         }
         sortRules.clear();
         if (json.has("ItemSortRules")) {

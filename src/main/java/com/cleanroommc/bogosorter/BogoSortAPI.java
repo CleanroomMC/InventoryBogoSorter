@@ -289,6 +289,10 @@ public class BogoSortAPI implements IBogoSortAPI {
         return false;
     }
 
+    public static boolean isPlayerHotbarSlot(ISlot slot) {
+        return isPlayerSlot(slot) && slot.bogo$getSlotIndex() < 9;
+    }
+
     public static boolean isPlayerInventory(IItemHandler itemHandler) {
         return itemHandler instanceof PlayerMainInvWrapper || itemHandler instanceof PlayerInvWrapper;
     }

@@ -44,6 +44,8 @@ public class SortHandler {
     public static final AtomicReference<List<NbtSortRule>> currentNbtSortRules = new AtomicReference<>(Collections.emptyList());
 
     @Nullable public static SoundEvent sortSound = SoundEvents.UI_BUTTON_CLICK;
+    // only available on client
+    public static boolean enableHotbarSorting = false;
     private static List<SoundEvent> foolsSounds = null;
     private static long foolsBuildTime = 0;
 

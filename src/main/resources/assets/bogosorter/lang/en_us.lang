@@ -26,6 +26,7 @@ bogosort.gui.hotbar_scrolling.tooltip=Scroll though inventory column by holding 
 bogosort.gui.enabled=Enabled
 bogosort.gui.button.enabled=Enable sort and config buttons in GUI's
 bogosort.gui.button.color=Background color of sort buttons
+bogosort.gui.hotbar_sorting.enabled=Enable sorting of player hotbar slots
 
 bogosort.command.config_relaod.success=Reloaded sorting config
 
