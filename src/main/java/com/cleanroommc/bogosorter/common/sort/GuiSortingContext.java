@@ -6,6 +6,7 @@ import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
+import com.cleanroommc.modularui.screen.ModularContainer;
 
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -36,8 +37,10 @@ public class GuiSortingContext {
         GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
         addPlayerInventory(builder, container);
 
-        if (container instanceof ISortableContainer) {
-            ((ISortableContainer) container).buildSortingContext(builder);
+        if (container instanceof ISortableContainer sc) {
+            sc.buildSortingContext(builder);
+        } else if (container instanceof ModularContainer mc) {
+            mc.buildSortingContext(builder);
         } else if (BogoSortAPI.isValidSortable(container)) {
             BogoSortAPI.INSTANCE.getBuilder(container).accept(container, builder);
         }
