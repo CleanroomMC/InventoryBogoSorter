@@ -79,19 +79,15 @@ public class ConfigGui extends CustomModularScreen {
     public @NotNull ModularPanel buildUI(ModularGuiContext context) {
         this.availableElements = new Object2ObjectOpenHashMap<>();
         this.availableElementsNbt = new Object2ObjectOpenHashMap<>();
-        ModularPanel panel = new ModularPanel("bogo_config") {
-            @Override
-            public boolean shouldAnimate() {
-                return super.shouldAnimate() && ConfigGui.this.old == null;
-            }
-        }.size(300, 250).align(Alignment.Center);
+        ModularPanel panel = new ModularPanel("bogo_config")
+                .size(300, 250).align(Alignment.Center);
 
         PagedWidget.Controller controller = new PagedWidget.Controller();
 
         panel.child(new TextWidget<>(IKey.lang("bogosort.gui.title"))
                         .leftRel(0.5f)
                         .top(5))
-                .child(new Rectangle().setColor(DARK_GREY).asWidget()
+                .child(new Rectangle().color(DARK_GREY).asWidget()
                         .left(4)
                         .right(4)
                         .height(1)
@@ -125,7 +121,7 @@ public class ConfigGui extends CustomModularScreen {
         //.rightRel(1f), true);
         return new ListWidget<>()
                 .left(5).right(5).top(2).bottom(2)
-                .child(new Rectangle().setColor(0xFF606060).asWidget()
+                .child(new Rectangle().color(0xFF606060).asWidget()
                         .top(1)
                         .left(32)
                         .size(1, 92))
@@ -154,7 +150,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .setNumbers(0, Short.MAX_VALUE)
                                 .setTextAlignment(Alignment.Center)
                                 .setTextColor(IKey.TEXT_COLOR)
-                                .background(new Rectangle().setColor(0xFFb1b1b1))
+                                .background(new Rectangle().color(0xFFb1b1b1))
                                 .size(30, 14))
                         .child(IKey.lang("bogosort.gui.refill_threshold").asWidget()
                                 .marginLeft(10)
@@ -219,7 +215,7 @@ public class ConfigGui extends CustomModularScreen {
         PagedWidget.Controller controller = new PagedWidget.Controller();
         return new ParentWidget<>()
                 .widthRel(1f).top(2).bottom(0)
-                .child(new Rectangle().setColor(DARK_GREY).asWidget()
+                .child(new Rectangle().color(DARK_GREY).asWidget()
                         .top(0)
                         .bottom(4)
                         .width(1)
@@ -280,7 +276,7 @@ public class ConfigGui extends CustomModularScreen {
         final Map<SortRule<ItemStack>, SortableListWidget.Item<SortRule<ItemStack>>> items = getSortListItemMap(allValues);
         SortableListWidget<SortRule<ItemStack>> sortableListWidget = new SortableListWidget<SortRule<ItemStack>>()
                 .children(BogoSorterConfig.sortRules, items::get)
-                .debugName("sortable item list");
+                .name("sortable item list");
         List<List<AvailableElement>> availableMatrix = Grid.mapToMatrix(2, allValues, (index, value) -> {
             AvailableElement availableElement = new AvailableElement()
                     .overlay(IKey.lang(value.getNameLangKey()))
@@ -334,7 +330,7 @@ public class ConfigGui extends CustomModularScreen {
         final Map<NbtSortRule, SortableListWidget.Item<NbtSortRule>> items = getSortListItemMap(allValues);
         SortableListWidget<NbtSortRule> sortableListWidget = new SortableListWidget<NbtSortRule>()
                 .children(BogoSorterConfig.nbtSortRules, items::get)
-                .debugName("sortable nbt list");
+                .name("sortable nbt list");
         List<List<AvailableElement>> availableMatrix = Grid.mapToMatrix(2, allValues, (index, value) -> {
             AvailableElement availableElement = new AvailableElement()
                     .overlay(IKey.lang(value.getNameLangKey()))
