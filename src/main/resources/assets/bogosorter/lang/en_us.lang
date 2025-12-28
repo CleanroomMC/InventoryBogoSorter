@@ -30,6 +30,11 @@ bogosort.gui.button.color=Background color of sort buttons
 bogosort.gui.hotbar_sorting.enabled=Enable sorting of player hotbar slots
 
 bogosort.command.config_relaod.success=Reloaded sorting config
+bogosort.command.datadriven.init.schema=Generating JSON Schema for Data-driven Bogo Compat
+bogosort.command.datadriven.init.template=Generating Template file for Data-driven Bogo Compat
+bogosort.command.datadriven.syntax.missing_file=No Data-driven Bogo Compat file (%s) found, skipping
+bogosort.command.datadriven.syntax.success=No syntax error found in Data-driven Bogo Compat file
+bogosort.command.datadriven.syntax.error=Found error when checking Data-driven Bogo Compat file: %s
 
 bogosort.sortrules.item.mod.name=Mod name
 bogosort.sortrules.item.id.name=Registry name
