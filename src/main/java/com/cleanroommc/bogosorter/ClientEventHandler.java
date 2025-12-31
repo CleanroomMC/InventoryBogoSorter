@@ -34,6 +34,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -48,6 +49,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -110,6 +112,16 @@ public class ClientEventHandler {
     public static final int SHIFT = Keyboard.KEY_LSHIFT;
     public static final int SPACE = Keyboard.KEY_SPACE;
 
+    // we need to track press time ourselves, because mc is too stupid to do it properly
+    private static final int[] timeTracker = new int[6];
+
+    private static final int moveAllSameIndex = 0;
+    private static final int moveAllIndex = 1;
+    private static final int moveSingleIndex = 2;
+    private static final int moveSingleEmptyIndex = 3;
+    private static final int throwAllSameIndex = 4;
+    private static final int throwAllIndex = 5;
+
     public static final IPatchedKeyBinding moveAllSame = KBPMod.newBuilder(KEY_PREFIX + "move_all_same")
             .withCategory(BOGO_CATEGORY)
             .withMouseButton(LMB)
@@ -147,9 +159,15 @@ public class ClientEventHandler {
             .withConflictContext(KeyConflictContext.GUI)
             .buildAndRegis();
 
+    static {
+        Arrays.fill(timeTracker, -1);
+    }
+
     private static long timeConfigGui = 0;
     private static long timeSort = 0;
     private static long timeShortcut = 0;
+    private static long ticks = 0;
+    private static long lastTickChecked = -1;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onGuiOpen(GuiOpenEvent event) {
@@ -157,7 +175,11 @@ public class ClientEventHandler {
             WarningScreen.wasOpened = true;
             List<String> warnings = new ArrayList<>();
             if (Loader.isModLoaded("inventorytweaks")) {
-                warnings.add("InventoryTweaks is loaded. This will cause issues!");
+                warnings.add("- InventoryTweaks is loaded. This will cause issues!");
+                warnings.add("Consider removing the mod and reload the game.");
+            }
+            if (BogoSorter.Mods.ITEM_FAVORITES.isLoaded()) {
+                warnings.add("- Item Favorites is loaded. BogoSorter implements all its features and is obsolete.");
                 warnings.add("Consider removing the mod and reload the game.");
             }
             if (!warnings.isEmpty()) {
@@ -165,6 +187,37 @@ public class ClientEventHandler {
                 warnings.add(1, "");
                 event.setGui(new WarningScreen(warnings));
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            ticks++;
+            if (Minecraft.getMinecraft().world != null) checkInput();
+        }
+    }
+
+    private static void checkInput() {
+        if (lastTickChecked != ticks) {
+            checkKey(moveAllSameIndex, moveAllSame);
+            checkKey(moveAllIndex, moveAll);
+            checkKey(moveSingleIndex, moveSingle);
+            checkKey(moveSingleEmptyIndex, moveSingleEmpty);
+            checkKey(throwAllSameIndex, throwAllSame);
+            checkKey(throwAllIndex, throwAll);
+        }
+    }
+
+    private static boolean isPressed(int i) {
+        return timeTracker[i] == 0;
+    }
+
+    private static void checkKey(int i, IPatchedKeyBinding key) {
+        if (key.getKeyBinding().isKeyDown()) {
+            timeTracker[i]++;
+        } else {
+            timeTracker[i] = -1;
         }
     }
 
@@ -180,16 +233,19 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.KeyInputEvent event) {
+        checkInput();
         handleInput(null);
     }
 
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseInputEvent event) {
+        checkInput();
         handleInput(null);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onGuiKeyInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
+        checkInput();
         if (!(event.getGui() instanceof GuiContainer gui)) return;
         if (handleInput(gui) || SlotLock.onGuiKeyInput(gui)) {
             event.setCanceled(true);
@@ -224,6 +280,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onGuiMouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
+        checkInput();
         if (event.getGui() instanceof GuiContainer gui && (handleInput(gui) || SlotLock.onGuiMouseInput(gui))) {
             event.setCanceled(true);
         }
@@ -235,29 +292,29 @@ public class ClientEventHandler {
             return false;
         }
         if (container != null && canDoShortcutAction()) {
-            if (moveAll.getKeyBinding().isPressed() && ShortcutHandler.moveAllItems(container, false)) {
+            if (isPressed(moveAllIndex) && ShortcutHandler.moveAllItems(container, false)) {
                 shortcutAction();
                 return true;
             }
-            if (moveAllSame.getKeyBinding().isPressed() && ShortcutHandler.moveAllItems(container, true)) {
-                shortcutAction();
-                return true;
-            }
-            // TODO should also activate after holding for 15 ticks
-            if ((moveSingle.getKeyBinding().isPressed()) && ShortcutHandler.moveSingleItem(container, false)) {
+            if (isPressed(moveAllSameIndex) && ShortcutHandler.moveAllItems(container, true)) {
                 shortcutAction();
                 return true;
             }
             // TODO should also activate after holding for 15 ticks
-            if ((moveSingleEmpty.getKeyBinding().isPressed()) && ShortcutHandler.moveSingleItem(container, true)) {
+            if ((isPressed(moveSingleIndex)) && ShortcutHandler.moveSingleItem(container, false)) {
                 shortcutAction();
                 return true;
             }
-            if (throwAll.getKeyBinding().isPressed() && ShortcutHandler.dropItems(container, false)) {
+            // TODO should also activate after holding for 15 ticks
+            if ((isPressed(moveSingleEmptyIndex)) && ShortcutHandler.moveSingleItem(container, true)) {
                 shortcutAction();
                 return true;
             }
-            if (throwAllSame.getKeyBinding().isPressed() && ShortcutHandler.dropItems(container, true)) {
+            if (isPressed(throwAllIndex) && ShortcutHandler.dropItems(container, false)) {
+                shortcutAction();
+                return true;
+            }
+            if (isPressed(throwAllSameIndex) && ShortcutHandler.dropItems(container, true)) {
                 shortcutAction();
                 return true;
             }

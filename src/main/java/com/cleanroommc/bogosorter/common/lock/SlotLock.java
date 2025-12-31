@@ -19,12 +19,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializer;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraftforge.client.resource.IResourceType;
 import net.minecraftforge.client.resource.ISelectiveResourceReloadListener;
 import net.minecraftforge.client.resource.VanillaResourceType;
@@ -35,35 +30,10 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import java.io.IOException;
 import java.util.function.Predicate;
 
 @SideOnly(Side.CLIENT)
 public class SlotLock implements ISelectiveResourceReloadListener {
-
-    private static final DataSerializer<Long> LONG_SERIALIZER = new DataSerializer<>() {
-
-        @Override
-        public void write(PacketBuffer buf, Long value) {
-            buf.writeLong(value);
-        }
-
-        @Override
-        public Long read(PacketBuffer buf) throws IOException {
-            return buf.readLong();
-        }
-
-        @Override
-        public DataParameter<Long> createKey(int id) {
-            return new DataParameter<>(id, this);
-        }
-
-        @Override
-        public Long copyValue(Long value) {
-            return value;
-        }
-    };
-    private static DataParameter<Long> dp = EntityDataManager.createKey(EntityPlayer.class, LONG_SERIALIZER);
 
     private static LockSlotCapability clientCap;
 

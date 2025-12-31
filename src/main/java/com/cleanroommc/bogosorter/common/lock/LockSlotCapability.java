@@ -1,8 +1,12 @@
 package com.cleanroommc.bogosorter.common.lock;
 
+import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 
+import com.cleanroommc.bogosorter.api.ISlot;
+
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.util.EnumFacing;
@@ -39,6 +43,14 @@ public interface LockSlotCapability extends INBTSerializable<NBTTagLong> {
 
     default void toggleLock(int index) {
         setSlotLocked(index, !isSlotLocked(index));
+    }
+
+    default boolean isSlotLocked(Slot slot) {
+        return isSlotLocked((ISlot) slot);
+    }
+
+    default boolean isSlotLocked(ISlot slot) {
+        return BogoSortAPI.isPlayerSlot(slot) && isSlotLocked(slot.bogo$getSlotIndex());
     }
 
     @Override

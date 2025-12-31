@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter;
 
 import com.cleanroommc.bogosorter.api.ISlot;
+import com.cleanroommc.bogosorter.common.lock.SlotLock;
 import com.cleanroommc.bogosorter.common.network.CShortcut;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
@@ -23,7 +24,7 @@ public class ShortcutHandler {
     @SideOnly(Side.CLIENT)
     public static boolean moveSingleItem(GuiContainer guiContainer, boolean emptySlot) {
         Slot slot = guiContainer.getSlotUnderMouse();
-        if (slot == null || slot.getStack().isEmpty()) return false;
+        if (slot == null || slot.getStack().isEmpty() || SlotLock.getClientCap().isSlotLocked(slot)) return false;
         NetworkHandler.sendToServer(new CShortcut(emptySlot ? CShortcut.Type.MOVE_SINGLE_EMPTY : CShortcut.Type.MOVE_SINGLE, slot.slotNumber));
         return true;
     }
