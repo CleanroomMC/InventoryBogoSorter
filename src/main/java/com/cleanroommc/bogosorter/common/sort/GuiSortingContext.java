@@ -143,7 +143,7 @@ public class GuiSortingContext {
             IntArraySet xValues = new IntArraySet();
             for (Slot slot : this.container.inventorySlots) {
                 ISlot iSlot = BogoSortAPI.INSTANCE.getSlot(slot);
-                if (!BogoSortAPI.isPlayerSlot(iSlot)) {
+                if (!BogoSortAPI.isPlayerMainInvSlot(iSlot)) {
                     slots.add(iSlot);
                     xValues.add(iSlot.bogo$getX());
                 }
@@ -170,7 +170,7 @@ public class GuiSortingContext {
         boolean all = BogoSorter.Mods.EXPANDABLE_INVENTORY.isLoaded() && container instanceof ContainerExpandedInventory;
         LockSlotCapability cap = LockSlotCapability.getForPlayer(player);
         for (Slot slot : container.inventorySlots) {
-            if (BogoSortAPI.isPlayerSlot(slot)) {
+            if (BogoSortAPI.isPlayerMainInvSlot(slot)) {
                 if (!cap.isSlotLocked(slot.getSlotIndex())) {
                     if (slot.getSlotIndex() < 9) hotbar.add(BogoSortAPI.INSTANCE.getSlot(slot));
                     else slots.add(BogoSortAPI.INSTANCE.getSlot(slot));

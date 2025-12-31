@@ -55,7 +55,7 @@ public abstract class ContainerInfinityChestMixin {
         GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container, entityPlayer);
 
         SlotGroup slots = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
-        SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
+        SlotGroup otherSlots = BogoSortAPI.isPlayerMainInvSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
         if (otherSlots == null || slots == otherSlots) {
             cir.setReturnValue(ItemStack.EMPTY);
             return;

@@ -28,6 +28,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -186,7 +187,7 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onKeyInput(InputEvent.MouseInputEvent event) {
+    public static void onMouseInput(InputEvent.MouseInputEvent event) {
         handleInput(null);
     }
 
@@ -225,8 +226,8 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onMouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
-        if (event.getGui() instanceof GuiContainer && handleInput((GuiContainer) event.getGui())) {
+    public static void onGuiMouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
+        if (event.getGui() instanceof GuiContainer gui && (handleInput(gui) || SlotLock.onGuiMouseInput(gui))) {
             event.setCanceled(true);
         }
     }
@@ -370,13 +371,23 @@ public class ClientEventHandler {
     public static SortHandler createSortHandler(GuiContainer guiScreen, @Nullable ISlot slot) {
         if (slot != null) {
 
-            Container container = ((GuiContainer) guiScreen).inventorySlots;
-            boolean player = BogoSortAPI.isPlayerSlot(slot);
+            Container container = guiScreen.inventorySlots;
+            boolean player = BogoSortAPI.isPlayerMainInvSlot(slot);
 
             if (!player && !isSortableContainer(guiScreen)) return null;
 
             return new SortHandler(Minecraft.getMinecraft().player, container, Int2ObjectMaps.emptyMap());
         }
         return null;
+    }
+
+    @SubscribeEvent
+    public static void onRenderOverlayEvent(RenderGameOverlayEvent.Post e) {
+        if (e.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE && e.getType() != RenderGameOverlayEvent.ElementType.JUMPBAR) {
+            return;
+        }
+        if (Minecraft.getMinecraft().world != null && Minecraft.getMinecraft().player != null && !Minecraft.getMinecraft().player.isSpectator()) {
+            SlotLock.drawHotbarOverlay();
+        }
     }
 }

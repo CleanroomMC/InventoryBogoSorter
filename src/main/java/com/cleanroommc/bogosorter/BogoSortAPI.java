@@ -255,7 +255,7 @@ public class BogoSortAPI implements IBogoSortAPI {
 
     public static ItemStack insert(Container container, List<ISlot> slots, ItemStack stack) {
         if (slots.isEmpty()) return stack;
-        ICustomInsertable insertable = INSTANCE.getInsertable(container, isPlayerSlot(slots.get(0)));
+        ICustomInsertable insertable = INSTANCE.getInsertable(container, isPlayerMainInvSlot(slots.get(0)));
         if (stack.isStackable()) {
             stack = insertable.insert(container, slots, stack, false);
         }
@@ -267,7 +267,7 @@ public class BogoSortAPI implements IBogoSortAPI {
 
     public static ItemStack insert(Container container, List<ISlot> slots, ItemStack stack, boolean emptyOnly) {
         if (slots.isEmpty()) return stack;
-        return INSTANCE.getInsertable(container, isPlayerSlot(slots.get(0))).insert(container, slots, stack, emptyOnly);
+        return INSTANCE.getInsertable(container, isPlayerMainInvSlot(slots.get(0))).insert(container, slots, stack, emptyOnly);
     }
 
     public static boolean isValidSortable(Container container) {
@@ -279,17 +279,21 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     public static boolean isPlayerSlot(ISlot slot) {
-        if (slot == null) return false;
-        if (slot.bogo$getInventory() instanceof InventoryPlayer ||
+        return slot != null && (slot.bogo$getInventory() instanceof InventoryPlayer ||
                 (slot instanceof SlotItemHandler && isPlayerInventory(((SlotItemHandler) slot).getItemHandler())) ||
-                (BogoSorter.Mods.AE2.isLoaded() && slot instanceof AppEngSlot && isPlayerInventory(((AppEngSlot) slot).getItemHandler()))) {
-            return slot.bogo$getSlotIndex() >= 0 && slot.bogo$getSlotIndex() < 36;
-        }
-        return false;
+                (BogoSorter.Mods.AE2.isLoaded() && slot instanceof AppEngSlot && isPlayerInventory(((AppEngSlot) slot).getItemHandler())));
+    }
+
+    public static boolean isPlayerMainInvSlot(Slot slot) {
+        return isPlayerMainInvSlot((ISlot) slot);
+    }
+
+    public static boolean isPlayerMainInvSlot(ISlot slot) {
+        return isPlayerSlot(slot) && slot.bogo$getSlotIndex() >= 0 && slot.bogo$getSlotIndex() < 36;
     }
 
     public static boolean isPlayerHotbarSlot(ISlot slot) {
-        return isPlayerSlot(slot) && slot.bogo$getSlotIndex() < 9;
+        return isPlayerMainInvSlot(slot) && slot.bogo$getSlotIndex() < 9;
     }
 
     public static boolean isPlayerInventory(IItemHandler itemHandler) {
