@@ -66,8 +66,7 @@ public class BogoSortAPI implements IBogoSortAPI {
 
     private static final ICustomInsertable DEFAULT_INSERTABLE = (container, slots, stack, emptyOnly) -> ShortcutHandler.insertToSlots(slots, stack, emptyOnly);
 
-    private BogoSortAPI() {
-    }
+    private BogoSortAPI() {}
 
     private final Map<Class<?>, BiConsumer<Container, ISortingContextBuilder>> COMPAT_MAP = new Object2ObjectOpenHashMap<>();
     private final Map<Class<?>, IPosSetter> playerButtonPos = new Object2ObjectOpenHashMap<>();
@@ -283,7 +282,7 @@ public class BogoSortAPI implements IBogoSortAPI {
         if (slot == null) return false;
         if (slot.bogo$getInventory() instanceof InventoryPlayer ||
                 (slot instanceof SlotItemHandler && isPlayerInventory(((SlotItemHandler) slot).getItemHandler())) ||
-                (BogoSorter.isAe2Loaded() && slot instanceof AppEngSlot && isPlayerInventory(((AppEngSlot) slot).getItemHandler()))) {
+                (BogoSorter.Mods.AE2.isLoaded() && slot instanceof AppEngSlot && isPlayerInventory(((AppEngSlot) slot).getItemHandler()))) {
             return slot.bogo$getSlotIndex() >= 0 && slot.bogo$getSlotIndex() < 36;
         }
         return false;

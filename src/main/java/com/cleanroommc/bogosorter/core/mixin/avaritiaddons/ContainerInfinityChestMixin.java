@@ -52,7 +52,7 @@ public abstract class ContainerInfinityChestMixin {
         ItemStack toInsert = stack.copy();
         int amount = Math.min(stack.getCount(), stack.getMaxStackSize());
         toInsert.setCount(amount);
-        GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
+        GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container, entityPlayer);
 
         SlotGroup slots = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
         SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();

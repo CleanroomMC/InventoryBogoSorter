@@ -69,7 +69,7 @@ public class ItemCompareHelper {
         if (item.getItem() instanceof ItemFood) {
             return ((ItemFood) item.getItem()).getSaturationModifier(item);
         }
-        if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof MetaItem) {
+        if (BogoSorter.Mods.GT_ANY.isLoaded() && item.getItem() instanceof MetaItem) {
             MetaItem<?>.MetaValueItem valueItem = ((MetaItem<?>) item.getItem()).getItem(item);
             if (valueItem.getUseManager() instanceof FoodUseManager) {
                 IFoodBehavior stats = ((FoodUseManager) valueItem.getUseManager()).getFoodStats();
@@ -83,7 +83,7 @@ public class ItemCompareHelper {
         if (item.getItem() instanceof ItemFood) {
             return ((ItemFood) item.getItem()).getHealAmount(item);
         }
-        if (BogoSorter.isAnyGtLoaded() && item.getItem() instanceof MetaItem) {
+        if (BogoSorter.Mods.GT_ANY.isLoaded() && item.getItem() instanceof MetaItem) {
             MetaItem<?>.MetaValueItem valueItem = ((MetaItem<?>) item.getItem()).getItem(item);
             if (valueItem.getUseManager() instanceof FoodUseManager) {
                 IFoodBehavior stats = ((FoodUseManager) valueItem.getUseManager()).getFoodStats();

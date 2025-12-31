@@ -5,6 +5,7 @@ import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.config.ConfigGui;
+import com.cleanroommc.bogosorter.common.lock.SlotLock;
 import com.cleanroommc.bogosorter.common.network.CSort;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.sort.ClientSortData;
@@ -12,7 +13,6 @@ import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.screen.WarningScreen;
-import com.cleanroommc.modularui.factory.ClientGUI;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -20,6 +20,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -58,9 +59,28 @@ public class ClientEventHandler {
     public static final List<ItemStack> allItems = new ArrayList<>();
     public static final String BOGO_CATEGORY = "bogosort.key.categories";
     public static final String KEY_PREFIX = "bogosort.key.";
-    public static final KeyBinding configGuiKey = new KeyBinding("bogosort.key.sort_config", KeyConflictContext.UNIVERSAL, Keyboard.KEY_K,
-            BOGO_CATEGORY);
-    public static final KeyBinding sortKey = new KeyBinding("bogosort.key.sort", KeyConflictContext.GUI, -98, BOGO_CATEGORY);
+    public static final KeyBinding configGuiKey = new KeyBinding(KEY_PREFIX + "sort_config", KeyConflictContext.UNIVERSAL, Keyboard.KEY_K, BOGO_CATEGORY);
+    public static final KeyBinding sortKey = new KeyBinding(KEY_PREFIX + "sort", KeyConflictContext.GUI, -98, BOGO_CATEGORY);
+    public static final KeyBinding keyLockSlot = new KeyBinding(KEY_PREFIX + "lockitem", KeyConflictContext.GUI, 19, BOGO_CATEGORY);
+    public static final KeyBinding keyDropReplacement = new KeyBinding("key.drop", 16, "key.categories.inventory") {
+        public boolean isActiveAndMatches(int keyCode) {
+            if (!super.isActiveAndMatches(keyCode)) return false;
+            EntityPlayer player = Minecraft.getMinecraft().player;
+            if (player != null && Minecraft.getMinecraft().currentScreen == null) {
+                return !SlotLock.getClientCap().isSlotLocked(player.inventory.currentItem);
+            }
+            return true;
+        }
+
+        public boolean isKeyDown() {
+            if (!super.isKeyDown()) return false;
+            EntityPlayer player = Minecraft.getMinecraft().player;
+            if (player != null && Minecraft.getMinecraft().currentScreen == null) {
+                return !SlotLock.getClientCap().isSlotLocked(player.inventory.currentItem);
+            }
+            return true;
+        }
+    };
 
     public static final int LMB = 0;
     public static final int RMB = 1;
@@ -127,10 +147,10 @@ public class ClientEventHandler {
         if (event.phase == TickEvent.Phase.START) {
             ticks++;
         }
-        if (ClientEventHandler.nextGui != null) {
+        /*if (ClientEventHandler.nextGui != null) {
             ClientGUI.open(ClientEventHandler.nextGui);
             ClientEventHandler.nextGui = null;
-        }
+        }*/
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -172,8 +192,8 @@ public class ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onGuiKeyInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-        if (!(event.getGui() instanceof GuiContainer)) return;
-        if (handleInput((GuiContainer) event.getGui())) {
+        if (!(event.getGui() instanceof GuiContainer gui)) return;
+        if (handleInput(gui) || SlotLock.onGuiKeyInput(gui)) {
             event.setCanceled(true);
             return;
         }
@@ -181,8 +201,8 @@ public class ClientEventHandler {
         if (FMLLaunchHandler.isDeobfuscatedEnvironment()) {
             // clear
             if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD1)) {
-                ISlot slot = getSlot(event.getGui());
-                SortHandler sortHandler = createSortHandler(event.getGui(), slot);
+                ISlot slot = getSlot(gui);
+                SortHandler sortHandler = createSortHandler(gui, slot);
                 if (sortHandler == null) return;
                 sortHandler.clearAllItems(slot);
                 return;
@@ -196,8 +216,8 @@ public class ClientEventHandler {
                         allItems.addAll(subItems);
                     }
                 }
-                ISlot slot = getSlot(event.getGui());
-                SortHandler sortHandler = createSortHandler(event.getGui(), slot);
+                ISlot slot = getSlot(gui);
+                SortHandler sortHandler = createSortHandler(gui, slot);
                 if (sortHandler == null) return;
                 sortHandler.randomizeItems(slot);
             }
@@ -298,11 +318,8 @@ public class ClientEventHandler {
     }
 
     @Nullable
-    public static ISlot getSlot(GuiScreen guiScreen) {
-        if (guiScreen instanceof GuiContainer) {
-            return (ISlot) ((GuiContainer) guiScreen).getSlotUnderMouse();
-        }
-        return null;
+    public static ISlot getSlot(GuiContainer gui) {
+        return (ISlot) gui.getSlotUnderMouse();
     }
 
     public static boolean sort(GuiScreen guiScreen, @Nullable ISlot slot) {
@@ -311,7 +328,7 @@ public class ClientEventHandler {
                 return false;
             }
             Container container = ((GuiContainer) guiScreen).inventorySlots;
-            GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
+            GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container, Minecraft.getMinecraft().player);
             if (sortingContext.isEmpty()) return false;
             SlotGroup slotGroup = null;
             if (slot == null) {
@@ -350,8 +367,8 @@ public class ClientEventHandler {
         return map.values();
     }
 
-    public static SortHandler createSortHandler(GuiScreen guiScreen, @Nullable ISlot slot) {
-        if (slot != null && guiScreen instanceof GuiContainer) {
+    public static SortHandler createSortHandler(GuiContainer guiScreen, @Nullable ISlot slot) {
+        if (slot != null) {
 
             Container container = ((GuiContainer) guiScreen).inventorySlots;
             boolean player = BogoSortAPI.isPlayerSlot(slot);

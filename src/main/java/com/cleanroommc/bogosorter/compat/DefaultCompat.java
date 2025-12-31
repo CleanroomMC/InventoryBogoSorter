@@ -85,7 +85,7 @@ public class DefaultCompat {
             // player slots are automatically added
         });
         api.addPlayerSortButtonPosition(ContainerPlayer.class, (slotGroup, buttonPos) -> {
-            if (BogoSorter.isQuarkLoaded() || Loader.isModLoaded("nutrition")) {
+            if (BogoSorter.Mods.QUARK.isLoaded() || Loader.isModLoaded("nutrition")) {
                 IPosSetter.TOP_RIGHT_VERTICAL.setButtonPos(slotGroup, buttonPos);
             } else {
                 IPosSetter.TOP_RIGHT_HORIZONTAL.setButtonPos(slotGroup, buttonPos);
@@ -94,7 +94,7 @@ public class DefaultCompat {
         api.addCompat(ContainerChest.class, (container, builder) -> {
             // quark adds a search bar
             builder.addGenericSlotGroup()
-                    .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
+                    .buttonPosSetter(BogoSorter.Mods.QUARK.isLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
         });
         api.addCompat(ContainerDispenser.class, (container, builder) -> {
             builder.addGenericSlotGroup()
@@ -105,7 +105,7 @@ public class DefaultCompat {
         });
         api.addCompat(ContainerShulkerBox.class, (container, builder) -> {
             builder.addGenericSlotGroup()
-                    .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
+                    .buttonPosSetter(BogoSorter.Mods.QUARK.isLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
 
         });
         // for horse inventory compat see MixinContainerHorseInventory
@@ -211,7 +211,7 @@ public class DefaultCompat {
             api.addPlayerSortButtonPosition(ContainerNaturalistInventory.class, IPosSetter.TOP_RIGHT_VERTICAL);
         }
 
-        if (BogoSorter.isIc2ExpLoaded()) {
+        if (BogoSorter.Mods.IC2_EXP.isLoaded()) {
             api.addCompat(DynamicContainer.class, (container, builder) -> {
                 if (container.base instanceof TileEntityStorageBox) {
                     if (container.base instanceof TileEntityWoodenStorageBox) {
@@ -238,7 +238,7 @@ public class DefaultCompat {
             });
         }
 
-        if (BogoSorter.isIc2ClassicLoaded()) {
+        if (BogoSorter.Mods.IC2_CLASSIC.isLoaded()) {
             api.addCompat(ContainerPersonalChest.class, (container, builder) -> {
                 // make sure player can edit this chest
                 if (!(container.inventorySlots.get(0) instanceof SlotGhoest)) {
@@ -265,7 +265,7 @@ public class DefaultCompat {
             });
         }
 
-        if (BogoSorter.isGTCEuLoaded()) {
+        if (BogoSorter.Mods.GTCEu.isLoaded()) {
             api.addCompat(ModularUIContainer.class, (container, builder) -> {
                 Map<String, List<Slot>> sortableSlots = new Object2ObjectOpenHashMap<>();
 
@@ -331,7 +331,7 @@ public class DefaultCompat {
             });
         }
 
-        if (BogoSorter.isQuarkLoaded()) {
+        if (BogoSorter.Mods.QUARK.isLoaded()) {
             api.addCompat(vazkii.quark.oddities.inventory.ContainerBackpack.class, (container, builder) -> {
                 builder.addSlotGroup(46, 46 + 27, 9)
                         .buttonPosSetter(IPosSetter.TOP_RIGHT_VERTICAL);
@@ -401,16 +401,16 @@ public class DefaultCompat {
         if (Loader.isModLoaded("rustic")) {
             api.addCompat(ContainerCabinet.class, (container, builder) -> {
                 builder.addGenericSlotGroup()
-                        .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
+                        .buttonPosSetter(BogoSorter.Mods.QUARK.isLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
             });
             api.addCompat(ContainerCabinetDouble.class, (container, builder) -> {
                 builder.addGenericSlotGroup()
-                        .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
+                        .buttonPosSetter(BogoSorter.Mods.QUARK.isLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL);
             });
             api.addCompat(rustic.common.tileentity.ContainerBarrel.class, (container, builder) -> builder.addGenericSlotGroup()
-                    .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL));
+                    .buttonPosSetter(BogoSorter.Mods.QUARK.isLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL));
             api.addCompat(ContainerVase.class, (container, builder) -> builder.addGenericSlotGroup()
-                    .buttonPosSetter(BogoSorter.isQuarkLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL));
+                    .buttonPosSetter(BogoSorter.Mods.QUARK.isLoaded() ? IPosSetter.TOP_RIGHT_VERTICAL : IPosSetter.TOP_RIGHT_HORIZONTAL));
         }
 
         if (Loader.isModLoaded("avaritiaddons")) {
@@ -435,10 +435,9 @@ public class DefaultCompat {
             });
         }
 
-        if (BogoSorter.isExpandableInventoryLoaded()) {
+        if (BogoSorter.Mods.EXPANDABLE_INVENTORY.isLoaded()) {
             // mark as sortable
-            api.addCompat(ContainerExpandedInventory.class, (container, builder) -> {
-            });
+            api.addCompat(ContainerExpandedInventory.class, (container, builder) -> {});
         }
 
         if (Loader.isModLoaded("charm")) {

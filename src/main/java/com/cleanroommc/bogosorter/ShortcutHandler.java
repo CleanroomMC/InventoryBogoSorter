@@ -40,7 +40,7 @@ public class ShortcutHandler {
         toInsert.setCount(amount);
 
         if (BogoSortAPI.isValidSortable(container)) {
-            GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
+            GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container, player);
 
             SlotGroup slots = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
             SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
@@ -90,7 +90,7 @@ public class ShortcutHandler {
         if (slot == null || !BogoSortAPI.isValidSortable(container)) return;
         ItemStack stack = slot.bogo$getStack().copy();
         if (sameItemOnly && stack.isEmpty()) return;
-        GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
+        GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container, player);
 
         SlotGroup slots = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
         SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
@@ -120,7 +120,7 @@ public class ShortcutHandler {
     public static void dropItems(EntityPlayer player, Container container, ISlot slot, boolean onlySameType) {
         ItemStack stack = slot.bogo$getStack();
         if (onlySameType && stack.isEmpty()) return;
-        SlotGroup slots = GuiSortingContext.getOrCreate(container).getSlotGroup(slot.bogo$getSlotNumber());
+        SlotGroup slots = GuiSortingContext.getOrCreate(container, player).getSlotGroup(slot.bogo$getSlotNumber());
         if (slots == null) return;
         for (ISlot slot1 : slots.getSlots()) {
             ItemStack stackInSlot = slot1.bogo$getStack();

@@ -56,7 +56,7 @@ public class ButtonHandler {
     public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
         if (buttonEnabled && ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
             Container container = ((GuiContainer) event.getGui()).inventorySlots;
-            GuiSortingContext context = GuiSortingContext.getOrCreate(container);
+            GuiSortingContext context = GuiSortingContext.getOrCreate(container, Minecraft.getMinecraft().player);
             event.getButtonList().removeIf(guiButton -> guiButton instanceof SortButton);
             for (SlotGroup slotGroup : context.getSlotGroups()) {
                 if (slotGroup.canBeSorted() && slotGroup.getPosSetter() != null) {
@@ -72,7 +72,7 @@ public class ButtonHandler {
         if (buttonEnabled && ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
             GuiContainer gui = (GuiContainer) event.getGui();
             IGuiContainerAccessor guiAccess = (IGuiContainerAccessor) gui;
-            GuiSortingContext context = GuiSortingContext.getOrCreate(gui.inventorySlots);
+            GuiSortingContext context = GuiSortingContext.getOrCreate(gui.inventorySlots, Minecraft.getMinecraft().player);
             ButtonPos buttonPos = new ButtonPos();
             for (SlotGroup slotGroup : context.getSlotGroups()) {
                 if (slotGroup.getPosSetter() == null) continue;
@@ -96,7 +96,7 @@ public class ButtonHandler {
                 slotGroup.getPosSetter().setButtonPos(slotGroup, buttonPos);
                 sortButton.enabled = buttonPos.isEnabled();
                 settingsButton.enabled = buttonPos.isEnabled();
-                buttonPos.applyPos(guiAccess.getGuiLeft(), guiAccess.getGuiTop(), sortButton, settingsButton);
+                buttonPos.applyPos(gui.getGuiLeft(), gui.getGuiTop(), sortButton, settingsButton);
             }
         }
     }

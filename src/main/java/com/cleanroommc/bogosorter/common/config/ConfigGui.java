@@ -155,7 +155,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .height(14)
                                 .marginLeft(10)
                                 .expanded())
-                        .childIf(BogoSorter.isQuarkLoaded(), () -> new ColoredIcon(GuiTextures.EXCLAMATION, Color.RED.main).asWidget()
+                        .childIf(BogoSorter.Mods.QUARK.isLoaded(), () -> new ColoredIcon(GuiTextures.EXCLAMATION, Color.RED.main).asWidget()
                                 .size(14)
                                 .tooltip(tooltip -> tooltip.addLine(IKey.lang("bogosort.gui.refill_comment")))))
                 .child(new Row()
@@ -403,10 +403,10 @@ public class ConfigGui extends CustomModularScreen {
         PlayerConfig.syncToServer();
         MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
         wasOpened = false;
-        if (this.old != null) {
+        //if (this.old != null) {
             // open next tick, otherwise infinite loop
-            ClientEventHandler.openNextTick(this.old);
-        }
+        //    ClientEventHandler.openNextTick(this.old);
+        //}
     }
 
     private static class AvailableElement extends ButtonWidget<AvailableElement> {
