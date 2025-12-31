@@ -15,7 +15,6 @@ import com.cleanroommc.bogosorter.core.mixin.ItemStackAccessor;
 import com.cleanroommc.modularui.factory.ClientGUI;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -221,8 +220,8 @@ public class BogoSortAPI implements IBogoSortAPI {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void openConfigGui(GuiScreen old) {
-        ClientGUI.open(new ConfigGui(old));
+    public void openConfigGui() {
+        ClientGUI.open(new ConfigGui());
     }
 
     @SideOnly(Side.CLIENT)

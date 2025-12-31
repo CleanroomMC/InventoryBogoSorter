@@ -34,7 +34,6 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -151,28 +150,6 @@ public class ClientEventHandler {
     private static long timeConfigGui = 0;
     private static long timeSort = 0;
     private static long timeShortcut = 0;
-    private static long ticks = 0;
-
-    private static GuiScreen nextGui = null;
-
-    public static void openNextTick(GuiScreen screen) {
-        ClientEventHandler.nextGui = screen;
-    }
-
-    public static long getTicks() {
-        return ticks;
-    }
-
-    @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            ticks++;
-        }
-        /*if (ClientEventHandler.nextGui != null) {
-            ClientGUI.open(ClientEventHandler.nextGui);
-            ClientEventHandler.nextGui = null;
-        }*/
-    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onGuiOpen(GuiOpenEvent event) {
@@ -290,7 +267,7 @@ public class ClientEventHandler {
             long t = Minecraft.getSystemTime();
             if (t - timeConfigGui > 500) {
                 if (!ConfigGui.closeCurrent()) {
-                    BogoSortAPI.INSTANCE.openConfigGui(Minecraft.getMinecraft().currentScreen);
+                    BogoSortAPI.INSTANCE.openConfigGui();
                 }
                 timeConfigGui = t;
                 return true;

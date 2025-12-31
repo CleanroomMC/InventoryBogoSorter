@@ -2,7 +2,6 @@ package com.cleanroommc.bogosorter.common.config;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
@@ -41,11 +40,11 @@ import com.cleanroommc.modularui.widgets.layout.Grid;
 import com.cleanroommc.modularui.widgets.layout.Row;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -53,7 +52,6 @@ import java.util.Map;
 
 public class ConfigGui extends CustomModularScreen {
 
-    public static boolean wasOpened = false;
     public static final UITexture TOGGLE_BUTTON = UITexture.fullImage("bogosorter:gui/toggle_config");
     public static final UITexture ARROW_DOWN_UP = UITexture.fullImage("bogosorter:gui/arrow_down_up");
     private static final int DARK_GREY = 0xFF404040;
@@ -67,19 +65,18 @@ public class ConfigGui extends CustomModularScreen {
         return false;
     }
 
-    private final GuiScreen old;
     private Map<SortRule<ItemStack>, AvailableElement> availableElements;
     private Map<NbtSortRule, AvailableElement> availableElementsNbt;
 
-    public ConfigGui(GuiScreen old) {
+    public ConfigGui() {
         super(BogoSorter.ID);
-        this.old = old;
+        openParentOnClose(true);
     }
 
     @Override
     public @NotNull ModularPanel buildUI(ModularGuiContext context) {
-        this.availableElements = new Object2ObjectOpenHashMap<>();
-        this.availableElementsNbt = new Object2ObjectOpenHashMap<>();
+        this.availableElements = new Reference2ObjectOpenHashMap<>();
+        this.availableElementsNbt = new Reference2ObjectOpenHashMap<>();
         ModularPanel panel = new ModularPanel("bogo_config")
                 .size(300, 250).align(Alignment.Center);
 
@@ -402,11 +399,6 @@ public class ConfigGui extends CustomModularScreen {
         Serializer.saveConfig();
         PlayerConfig.syncToServer();
         MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
-        wasOpened = false;
-        //if (this.old != null) {
-            // open next tick, otherwise infinite loop
-        //    ClientEventHandler.openNextTick(this.old);
-        //}
     }
 
     private static class AvailableElement extends ButtonWidget<AvailableElement> {
