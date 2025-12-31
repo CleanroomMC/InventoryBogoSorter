@@ -1,6 +1,7 @@
 bogosort.key.categories=Inventory Bogo Sorter
 bogosort.key.sort_config=Open Sort Config
 bogosort.key.sort=Sort Inventory
+bogosort.key.lock_slot=Lock player slot in GUI
 
 bogosort.key.move_all=Move all
 bogosort.key.move_all_same=Move all similar

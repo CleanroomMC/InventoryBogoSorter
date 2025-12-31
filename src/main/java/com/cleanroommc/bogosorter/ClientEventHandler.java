@@ -62,7 +62,7 @@ public class ClientEventHandler {
     public static final String KEY_PREFIX = "bogosort.key.";
     public static final KeyBinding configGuiKey = new KeyBinding(KEY_PREFIX + "sort_config", KeyConflictContext.UNIVERSAL, Keyboard.KEY_K, BOGO_CATEGORY);
     public static final KeyBinding sortKey = new KeyBinding(KEY_PREFIX + "sort", KeyConflictContext.GUI, -98, BOGO_CATEGORY);
-    public static final KeyBinding keyLockSlot = new KeyBinding(KEY_PREFIX + "lockitem", KeyConflictContext.GUI, 19, BOGO_CATEGORY);
+    public static final KeyBinding keyLockSlot = new KeyBinding(KEY_PREFIX + "lock_slot", KeyConflictContext.GUI, 19, BOGO_CATEGORY);
     public static final KeyBinding keyDropReplacement = new KeyBinding("key.drop", 16, "key.categories.inventory") {
         public boolean isActiveAndMatches(int keyCode) {
             if (!super.isActiveAndMatches(keyCode)) return false;
@@ -78,6 +78,26 @@ public class ClientEventHandler {
             EntityPlayer player = Minecraft.getMinecraft().player;
             if (player != null && Minecraft.getMinecraft().currentScreen == null) {
                 return !SlotLock.getClientCap().isSlotLocked(player.inventory.currentItem);
+            }
+            return true;
+        }
+    };
+
+    public static final KeyBinding keySwapHandReplacement = new KeyBinding("key.swapHands", 33, "key.categories.inventory") {
+        public boolean isActiveAndMatches(int keyCode) {
+            if (!super.isActiveAndMatches(keyCode)) return false;
+            EntityPlayer player = Minecraft.getMinecraft().player;
+            if (player != null && Minecraft.getMinecraft().currentScreen == null) {
+                return !SlotLock.getClientCap().isSlotLocked(player.inventory.currentItem) && !SlotLock.getClientCap().isSlotLocked(40);
+            }
+            return true;
+        }
+
+        public boolean isKeyDown() {
+            if (!super.isKeyDown()) return false;
+            EntityPlayer player = Minecraft.getMinecraft().player;
+            if (player != null && Minecraft.getMinecraft().currentScreen == null) {
+                return !SlotLock.getClientCap().isSlotLocked(player.inventory.currentItem) && !SlotLock.getClientCap().isSlotLocked(40);
             }
             return true;
         }

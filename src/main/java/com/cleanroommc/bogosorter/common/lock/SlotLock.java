@@ -76,8 +76,8 @@ public class SlotLock {
     public static final long HOTBAR_AND_OFFHAND_SLOTS = HOTBAR_SLOTS | (1L << 40);
 
     public static Align.Corner alignment = Align.Corner.TOP_LEFT;
-    public static int iconOffsetX = 0;
-    public static int iconOffsetY = 0;
+    public static int iconOffsetX = -1;
+    public static int iconOffsetY = -1;
     public static int iconWidth = 7;
     public static int iconHeight = 9;
     public static float iconScale = 0.5f;
@@ -112,7 +112,7 @@ public class SlotLock {
         }
 
         if (cap.isSlotLocked(40) && !Minecraft.getMinecraft().player.inventory.offHandInventory.get(0).isEmpty()) {
-            drawLock(194, (res.getScaledHeight() - 18) * 2, 18, 18);
+            drawLock((res.getScaledWidth() / 2 - 116), (res.getScaledHeight() - 18), 18, 18);
         }
         GlStateManager.enableDepth();
     }

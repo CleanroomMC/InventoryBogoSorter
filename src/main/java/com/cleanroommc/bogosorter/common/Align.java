@@ -2,15 +2,15 @@ package com.cleanroommc.bogosorter.common;
 
 public interface Align {
 
-    int apply(int parentPos, int parentSize, int selfSize);
-
-    default int apply(int parentPos, int parentSize, int selfSize, int offset) {
-        return apply(parentPos, parentSize, selfSize + offset);
+    default int apply(int parentPos, int parentSize, int selfSize) {
+        return apply(parentPos, parentSize, selfSize, 0);
     }
 
-    Align START = (parentPos, parentSize, selfSize) -> parentPos;
+    int apply(int parentPos, int parentSize, int selfSize, int offset);
 
-    Align END = (parentPos, parentSize, selfSize) -> parentPos + parentSize - selfSize;
+    Align START = (parentPos, parentSize, selfSize, offset) -> parentPos + offset;
+
+    Align END = (parentPos, parentSize, selfSize, offset) -> parentPos + parentSize - selfSize - offset;
 
     enum Corner {
 

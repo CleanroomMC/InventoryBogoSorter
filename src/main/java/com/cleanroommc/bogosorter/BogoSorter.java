@@ -19,15 +19,14 @@ import com.cleanroommc.modularui.keybind.KeyBindAPI;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -45,7 +44,6 @@ import gregtech.GregTechVersion;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDate;
@@ -99,15 +97,8 @@ public class BogoSorter {
             ClientRegistry.registerKeyBinding(ClientEventHandler.keyLockSlot);
 
             GameSettings s = Minecraft.getMinecraft().gameSettings;
-            // replace mc drop keybind with custom version
-            int i = ArrayUtils.indexOf(s.keyBindings, s.keyBindDrop);
-            if (i < 0) {
-                s.keyBindings = ArrayUtils.add(s.keyBindings, ClientEventHandler.keyDropReplacement);
-            } else {
-                s.keyBindings[i] = ClientEventHandler.keyDropReplacement;
-            }
-            ClientEventHandler.keyDropReplacement.setKeyModifierAndCode(s.keyBindDrop.getKeyModifier(), s.keyBindDrop.getKeyCode());
-            s.keyBindDrop = ClientEventHandler.keyDropReplacement;
+            s.keyBindDrop = replaceKeybind(s.keyBindDrop, ClientEventHandler.keyDropReplacement);
+            s.keyBindSwapHands = replaceKeybind(s.keyBindSwapHands, ClientEventHandler.keySwapHandReplacement);
 
             KeyBindAPI.forceCheckKeyBind(ClientEventHandler.configGuiKey);
             KeyBindAPI.forceCheckKeyBind(ClientEventHandler.sortKey);
@@ -120,6 +111,19 @@ public class BogoSorter {
             KeyBindAPI.forceCheckKeyBind(ClientEventHandler.throwAllSame.getKeyBinding());
             KeyBindAPI.setCompatible(ClientEventHandler.sortKey, Minecraft.getMinecraft().gameSettings.keyBindPickBlock);
         }
+    }
+
+    private static KeyBinding replaceKeybind(KeyBinding old, KeyBinding newKey) {
+        GameSettings s = Minecraft.getMinecraft().gameSettings;
+        // replace mc drop keybind with custom version
+        int i = ArrayUtils.indexOf(s.keyBindings, old);
+        if (i < 0) {
+            s.keyBindings = ArrayUtils.add(s.keyBindings, newKey);
+        } else {
+            s.keyBindings[i] = ClientEventHandler.keyDropReplacement;
+        }
+        ClientEventHandler.keyDropReplacement.setKeyModifierAndCode(old.getKeyModifier(), old.getKeyCode());
+        return newKey;
     }
 
     @Mod.EventHandler
