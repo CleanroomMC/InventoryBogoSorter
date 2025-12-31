@@ -2,9 +2,12 @@ package com.cleanroommc.bogosorter.common.config;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.common.Align;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
+import com.cleanroommc.bogosorter.common.lock.SlotLock;
 import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
@@ -21,18 +24,23 @@ import com.cleanroommc.modularui.screen.CustomModularScreen;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.screen.viewport.ModularGuiContext;
+import com.cleanroommc.modularui.theme.WidgetThemeEntry;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.value.BoolValue;
+import com.cleanroommc.modularui.value.EnumValue;
+import com.cleanroommc.modularui.value.FloatValue;
 import com.cleanroommc.modularui.value.IntValue;
 import com.cleanroommc.modularui.widget.ParentWidget;
 import com.cleanroommc.modularui.widget.Widget;
 import com.cleanroommc.modularui.widgets.ButtonWidget;
 import com.cleanroommc.modularui.widgets.ColorPickerDialog;
 import com.cleanroommc.modularui.widgets.CycleButtonWidget;
+import com.cleanroommc.modularui.widgets.ItemDisplayWidget;
 import com.cleanroommc.modularui.widgets.ListWidget;
 import com.cleanroommc.modularui.widgets.PageButton;
 import com.cleanroommc.modularui.widgets.PagedWidget;
+import com.cleanroommc.modularui.widgets.SliderWidget;
 import com.cleanroommc.modularui.widgets.SortableListWidget;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
@@ -40,9 +48,12 @@ import com.cleanroommc.modularui.widgets.layout.Grid;
 import com.cleanroommc.modularui.widgets.layout.Row;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -112,8 +123,12 @@ public class ConfigGui extends CustomModularScreen {
 
     public IWidget createGeneralConfigUI(ModularPanel mainPanel, ModularGuiContext context) {
         Row row = new Row();
-        IPanelHandler colorPicker = IPanelHandler.simple(mainPanel, (parent, player) -> new ColorPickerDialog(val -> ButtonHandler.buttonColor = val, ButtonHandler.buttonColor, true)
-                .setDraggable(true), true);
+        IPanelHandler buttonColorPicker = IPanelHandler.simple(mainPanel, (parent, player) ->
+                new ColorPickerDialog("button_color", val -> ButtonHandler.buttonColor = val, ButtonHandler.buttonColor, true)
+                        .setDraggable(true), true);
+        IPanelHandler lockIconColorPicker = IPanelHandler.simple(mainPanel, (parent, player) ->
+                new ColorPickerDialog("lock_color", val -> SlotLock.iconColor = val, SlotLock.iconColor, false)
+                        .setDraggable(true), true);
         //.relative(mainPanel)
         //.top(0)
         //.rightRel(1f), true);
@@ -122,7 +137,7 @@ public class ConfigGui extends CustomModularScreen {
                 .child(new Rectangle().color(0xFF606060).asWidget()
                         .top(1)
                         .left(32)
-                        .size(1, 92))
+                        .size(1, 106))
                 .child(Flow.row()
                         .widthRel(1f).height(14)
                         .margin(0, 2)
@@ -210,20 +225,107 @@ public class ConfigGui extends CustomModularScreen {
                         .child(new ButtonWidget<>()
                                 .size(14).margin(8, 0)
                                 .background(((context1, x, y, width, height, widgetTheme) -> {
-                                    GuiDraw.drawRect(0, 0, 14, 14, 0xFF000000);
-                                    GuiDraw.drawRect(1, 1, 12, 12, ButtonHandler.buttonColor);
+                                    GuiTextures.CHECKBOARD.draw(context, x, y, width, height, widgetTheme);
+                                    //GuiDraw.drawRect(0, 0, 14, 14, 0xFF000000);
+                                    GuiDraw.drawRect(x + 1, y + 1, width - 2, height - 2, ButtonHandler.buttonColor);
                                 }))
                                 .disableHoverBackground()
                                 .onMousePressed(mouseButton -> {
-                                    colorPicker.openPanel();
+                                    buttonColorPicker.openPanel();
                                     return true;
                                 }))
                         .child(IKey.lang("bogosort.gui.button.color").asWidget()
                                 .marginLeft(10)
                                 .height(14)
                                 .addTooltipLine(IKey.lang("bogosort.gui.button.color"))
-                                .tooltipShowUpTimer(10)));
+                                .tooltipShowUpTimer(10)))
+                .child(new Rectangle().color(0xFF606060).asWidget()
+                        .fullWidth()
+                        .height(1)
+                        .margin(2, 4))
+                .child(IKey.lang("bogosort.gui.slot_lock.title").style(IKey.UNDERLINE).asWidget())
+                .child(IKey.lang("bogosort.gui.slot_lock.desc", ClientEventHandler.keyLockSlot.getDisplayName()).asWidget().fullWidth().scale(0.7f).margin(0, 2))
+                .child(Flow.row()
+                        .fullWidth().height(14)
+                        .child(new ButtonWidget<>()
+                                .fullHeight().expanded().marginRight(2)
+                                .overlay(IKey.lang("bogosort.gui.slot_lock.reset_style"))
+                                .onMousePressed(b -> {
+                                    SlotLock.alignment = Align.Corner.TOP_LEFT;
+                                    SlotLock.iconColor = Color.BLUE.main;
+                                    SlotLock.iconOffsetX = -1;
+                                    SlotLock.iconOffsetY = -1;
+                                    SlotLock.iconScale = 0.5f;
+                                    return true;
+                                }))
+                        .child(new ButtonWidget<>()
+                                .fullHeight().expanded().marginLeft(2)
+                                .overlay(IKey.lang("bogosort.gui.slot_lock.unlock_all"))
+                                .onMousePressed(b -> {
+                                    SlotLock.getClientCap().setLockedSlots(0);
+                                    return true;
+                                })))
+                .child(Flow.row()
+                        .widthRel(1f).height(14)
+                        .margin(0, 2)
+                        .child(IKey.lang("bogosort.gui.slot_lock.icon_align").asWidget()
+                                .marginRight(8)
+                                .height(14))
+                        .child(new CycleButtonWidget()
+                                .value(new EnumValue.Dynamic<>(Align.Corner.class, () -> SlotLock.alignment, val -> SlotLock.alignment = val))
+                                .stateOverlay(Align.Corner.TOP_LEFT, IKey.lang("bogosort.gui.corner.tl"))
+                                .stateOverlay(Align.Corner.TOP_RIGHT, IKey.lang("bogosort.gui.corner.tr"))
+                                .stateOverlay(Align.Corner.BOTTOM_LEFT, IKey.lang("bogosort.gui.corner.bl"))
+                                .stateOverlay(Align.Corner.BOTTOM_RIGHT, IKey.lang("bogosort.gui.corner.br"))
+                                .disableHoverBackground()
+                                .size(100, 14)))
+                .child(Flow.row()
+                        .fullWidth().height(14)
+                        .margin(0, 2)
+                        .child(IKey.lang("bogosort.gui.slot_lock.icon_scale").asWidget().marginRight(4))
+                        .child(new SliderWidget()
+                                .expanded()
+                                .fullHeight()
+                                .value(new FloatValue.Dynamic(() -> SlotLock.iconScale, val -> SlotLock.iconScale = val))
+                                .bounds(0.01, 10)
+                                .stopper(genLogStopper())
+                                .stopperTexture(null)
+                                .background(new Rectangle().color(Color.withAlpha(Color.WHITE.main, 0.5f)).asIcon().height(1))
+                                .overlay(IKey.dynamic(() -> String.format("%.2f", SlotLock.iconScale)))))
+                .child(Flow.row()
+                        .fullWidth().height(14)
+                        .margin(0, 2)
+                        .child(IKey.lang("bogosort.gui.slot_lock.icon_color").asWidget().marginRight(4))
+                        .child(new ButtonWidget<>()
+                                .size(14).margin(0, 0)
+                                .background(((context1, x, y, width, height, widgetTheme) -> {
+                                    GuiTextures.CHECKBOARD.draw(context, x, y, width, height, widgetTheme);
+                                    //GuiDraw.drawRect(0, 0, 14, 14, 0xFF000000);
+                                    GuiDraw.drawRect(x + 1, y + 1, width - 2, height - 2, SlotLock.iconColor);
+                                }))
+                                .disableHoverBackground()
+                                .onMousePressed(mouseButton -> {
+                                    lockIconColorPicker.openPanel();
+                                    return true;
+                                })))
+                .child(Flow.row()
+                        .fullWidth().height(18)
+                        .margin(0, 2)
+                        .child(IKey.lang("bogosort.gui.slot_lock.icon_preview").asWidget().marginRight(10))
+                        .child(new LockIconPreview().item(new ItemStack(Items.DIAMOND)))
+                        .child(new LockIconPreview().item(new ItemStack(Blocks.SANDSTONE))));
 
+    }
+
+    private static double[] genLogStopper() {
+        DoubleArrayList d = new DoubleArrayList();
+        for (float f = 0.01f; f <= 2f; f += 0.01f) {
+            d.add(f);
+        }
+        for (float f = 2.1f; f <= 10f; f += 0.1f) {
+            d.add(f);
+        }
+        return d.elements();
     }
 
     public IWidget createProfilesConfig(ModularPanel mainPanel, ModularGuiContext context) {
@@ -419,6 +521,15 @@ public class ConfigGui extends CustomModularScreen {
         @Override
         public IDrawable getBackground() {
             return this.available ? activeBackground : background;
+        }
+    }
+
+    private static class LockIconPreview extends ItemDisplayWidget {
+
+        @Override
+        public void drawOverlay(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
+            SlotLock.drawLock(1, 1, getArea().w() - 2, getArea().h() - 2);
+            super.drawOverlay(context, widgetTheme);
         }
     }
 }

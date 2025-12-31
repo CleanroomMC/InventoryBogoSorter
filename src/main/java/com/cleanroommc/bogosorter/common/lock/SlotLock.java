@@ -11,11 +11,13 @@ import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.theme.WidgetTheme;
 import com.cleanroommc.modularui.utils.Color;
+import com.cleanroommc.modularui.utils.ImageUtil;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -23,16 +25,21 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializer;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraftforge.client.resource.IResourceType;
+import net.minecraftforge.client.resource.ISelectiveResourceReloadListener;
+import net.minecraftforge.client.resource.VanillaResourceType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
+import java.util.function.Predicate;
 
 @SideOnly(Side.CLIENT)
-public class SlotLock {
+public class SlotLock implements ISelectiveResourceReloadListener {
 
     private static final DataSerializer<Long> LONG_SERIALIZER = new DataSerializer<>() {
 
@@ -86,6 +93,18 @@ public class SlotLock {
     private static final ColorType lockColor = new ColorType("bogo_lock_color", w -> iconColor);
     private static final UITexture lockTexture = UITexture.fullImage(BogoSorter.ID, "gui/lock", lockColor);
 
+    private static void onTextureReload() {
+        long s = ImageUtil.readImageSize(lockTexture.getLocation());
+        if (s < 0) {
+            BogoSorter.LOGGER.error("Failed to read lock texture size. Message: {}", ImageUtil.getError(s));
+            iconWidth = 7;
+            iconHeight = 9;
+        } else {
+            iconWidth = ImageUtil.getWidth(s);
+            iconHeight = ImageUtil.getHeight(s);
+        }
+    }
+
     public static void drawLock(int slotX, int slotY, int slotW, int slotH) {
         int iw = (int) (iconWidth * iconScale);
         int ih = (int) (iconHeight * iconScale);
@@ -100,6 +119,7 @@ public class SlotLock {
         ScaledResolution res = new ScaledResolution(Minecraft.getMinecraft());
         GlStateManager.disableDepth();
         GlStateManager.disableLighting();
+        int s = 15; // I have no idea why this has to be 15, but otherwise it looks wrong
         if ((cap.getLockedSlots() & HOTBAR_SLOTS) != 0) {
             for (int i = 0; i < 9; i++) {
                 if (!cap.isSlotLocked(i)) {
@@ -107,12 +127,12 @@ public class SlotLock {
                 }
 
                 int x = (res.getScaledWidth() / 2 - 87) + (i * 20), y = res.getScaledHeight() - 18;
-                drawLock(x, y, 18, 18);
+                drawLock(x, y, s, s);
             }
         }
 
         if (cap.isSlotLocked(40) && !Minecraft.getMinecraft().player.inventory.offHandInventory.get(0).isEmpty()) {
-            drawLock((res.getScaledWidth() / 2 - 116), (res.getScaledHeight() - 18), 18, 18);
+            drawLock((res.getScaledWidth() / 2 - 116), (res.getScaledHeight() - 18), s, s);
         }
         GlStateManager.enableDepth();
     }
@@ -150,5 +170,12 @@ public class SlotLock {
             return slot != null && BogoSortAPI.isPlayerSlot(slot) && getClientCap().isSlotLocked(slot.getSlotIndex());
         }
         return false;
+    }
+
+    @Override
+    public void onResourceManagerReload(@NotNull IResourceManager resourceManager, Predicate<IResourceType> resourcePredicate) {
+        if (resourcePredicate.test(VanillaResourceType.TEXTURES)) {
+            onTextureReload();
+        }
     }
 }

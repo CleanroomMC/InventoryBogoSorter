@@ -29,6 +29,18 @@ bogosort.gui.enabled=Enabled
 bogosort.gui.button.enabled=Enable sort and config buttons in GUI's
 bogosort.gui.button.color=Background color of sort buttons
 bogosort.gui.hotbar_sorting.enabled=Enable sorting of player hotbar slots
+bogosort.gui.slot_lock.title=Slot Locking
+bogosort.gui.slot_lock.desc=Player slots can be locked to prevent any interaction by player with them. This includes sorting. Slots can be locked by hovering over a slot in any GUI and pressing %s (configurable).
+bogosort.gui.slot_lock.icon_scale=Icon scale
+bogosort.gui.slot_lock.icon_color=Icon color
+bogosort.gui.slot_lock.icon_align=Icon alignment
+bogosort.gui.slot_lock.icon_preview=Preview
+bogosort.gui.slot_lock.reset_style=Reset style
+bogosort.gui.slot_lock.unlock_all=Unlock all slots
+bogosort.gui.corner.tl=Top left
+bogosort.gui.corner.tr=Top right
+bogosort.gui.corner.bl=Bottom left
+bogosort.gui.corner.br=Bottom right
 
 bogosort.command.config_relaod.success=Reloaded sorting config
 

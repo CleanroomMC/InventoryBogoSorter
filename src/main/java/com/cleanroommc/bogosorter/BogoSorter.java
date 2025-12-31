@@ -8,6 +8,7 @@ import com.cleanroommc.bogosorter.common.config.BogoSortCommandTree;
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.config.Serializer;
 import com.cleanroommc.bogosorter.common.lock.LockSlotCapability;
+import com.cleanroommc.bogosorter.common.lock.SlotLock;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.network.UpdateSlotLock;
@@ -17,7 +18,10 @@ import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
 import com.cleanroommc.modularui.keybind.KeyBindAPI;
 
+import com.cleanroommc.modularui.theme.ThemeManager;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
@@ -86,6 +90,8 @@ public class BogoSorter {
             MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
             MinecraftForge.EVENT_BUS.register(ButtonHandler.class);
             MinecraftForge.EVENT_BUS.register(HotbarSwap.class);
+
+            ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new SlotLock());
         }
     }
 
