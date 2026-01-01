@@ -38,7 +38,7 @@ import java.util.function.Predicate;
         name = BogoSorter.NAME,
         version = BogoSorter.VERSION,
         dependencies =
-                "required-after-client:modularui@[3.0.6,4.0.0);" +
+                "required-after-client:modularui@[3.0.7,4.0.0);" +
                         "required-after-client:key_binding_patch@[1.3.3.3,);")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
