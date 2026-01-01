@@ -41,8 +41,6 @@ public class GuiSortingContext {
 
         if (container instanceof ISortableContainer sc) {
             sc.buildSortingContext(builder);
-        } else if (container instanceof ModularContainer mc) {
-            mc.buildSortingContext(builder);
         } else if (BogoSortAPI.isValidSortable(container)) {
             BogoSortAPI.INSTANCE.getBuilder(container).accept(container, builder);
         }

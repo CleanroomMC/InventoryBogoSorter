@@ -13,6 +13,7 @@ import com.cleanroommc.bogosorter.common.sort.ItemSortContainer;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.core.mixin.ItemStackAccessor;
 import com.cleanroommc.modularui.factory.ClientGUI;
+import com.cleanroommc.modularui.screen.ModularContainer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -173,6 +174,9 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     public <T extends Container> BiConsumer<T, ISortingContextBuilder> getBuilder(Container container) {
+        if (container instanceof ModularContainer mc) {
+            return (t, builder) -> mc.buildSortingContext(builder);
+        }
         BiConsumer<Container, ISortingContextBuilder> builder = COMPAT_MAP.get(container.getClass());
         return builder == null ? null : (BiConsumer<T, ISortingContextBuilder>) builder;
     }
@@ -270,7 +274,7 @@ public class BogoSortAPI implements IBogoSortAPI {
     }
 
     public static boolean isValidSortable(Container container) {
-        return container instanceof ISortableContainer || INSTANCE.COMPAT_MAP.containsKey(container.getClass());
+        return container instanceof ISortableContainer || container instanceof ModularContainer || INSTANCE.COMPAT_MAP.containsKey(container.getClass());
     }
 
     public static boolean isPlayerSlot(Slot slot) {

@@ -16,9 +16,12 @@ import com.cleanroommc.bogosorter.common.refill.RefillHandler;
 import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
+import com.cleanroommc.bogosorter.compat.ModularScreenOverlay;
+import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.keybind.KeyBindAPI;
-
-import com.cleanroommc.modularui.theme.ThemeManager;
+import com.cleanroommc.modularui.overlay.OverlayHandler;
+import com.cleanroommc.modularui.overlay.OverlayManager;
+import com.cleanroommc.modularui.screen.ModularScreen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -92,6 +95,11 @@ public class BogoSorter {
             MinecraftForge.EVENT_BUS.register(HotbarSwap.class);
 
             ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(new SlotLock());
+
+            // hacky way to fix shortcuts on mui screens
+            // mui intercepts inputs way earlier than bogo
+            // so we just add an invisible panel over the whole screen that just acts as a giant button
+            OverlayManager.register(new OverlayHandler(g -> g instanceof IMuiScreen, g -> new ModularScreen(new ModularScreenOverlay(g.getClass().getSimpleName() + "_bogo_overlay"))));
         }
     }
 

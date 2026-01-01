@@ -13,6 +13,7 @@ import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 import com.cleanroommc.bogosorter.common.sort.SlotGroup;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
 import com.cleanroommc.bogosorter.compat.screen.WarningScreen;
+import com.cleanroommc.modularui.api.IMuiScreen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -200,6 +201,7 @@ public class ClientEventHandler {
 
     private static void checkInput() {
         if (lastTickChecked != ticks) {
+            lastTickChecked = ticks;
             checkKey(moveAllSameIndex, moveAllSame);
             checkKey(moveAllIndex, moveAll);
             checkKey(moveSingleIndex, moveSingle);
@@ -214,7 +216,7 @@ public class ClientEventHandler {
     }
 
     private static void checkKey(int i, IPatchedKeyBinding key) {
-        if (key.getKeyBinding().isKeyDown()) {
+        if (isKeyDown(key)) {
             timeTracker[i]++;
         } else {
             timeTracker[i] = -1;
@@ -233,21 +235,18 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.KeyInputEvent event) {
-        checkInput();
         handleInput(null);
     }
 
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseInputEvent event) {
-        checkInput();
         handleInput(null);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onGuiKeyInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-        checkInput();
         if (!(event.getGui() instanceof GuiContainer gui)) return;
-        if (handleInput(gui) || SlotLock.onGuiKeyInput(gui)) {
+        if ((!(gui instanceof IMuiScreen) && handleInput(gui)) || SlotLock.onGuiKeyInput(gui)) {
             event.setCanceled(true);
             return;
         }
@@ -280,8 +279,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onGuiMouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
-        checkInput();
-        if (event.getGui() instanceof GuiContainer gui && (handleInput(gui) || SlotLock.onGuiMouseInput(gui))) {
+        if (event.getGui() instanceof GuiContainer gui && ((!(gui instanceof IMuiScreen) && handleInput(gui)) || SlotLock.onGuiMouseInput(gui))) {
             event.setCanceled(true);
         }
     }
@@ -291,6 +289,7 @@ public class ClientEventHandler {
         if (container != null && container.isFocused()) {
             return false;
         }
+        checkInput();
         if (container != null && canDoShortcutAction()) {
             if (isPressed(moveAllIndex) && ShortcutHandler.moveAllItems(container, false)) {
                 shortcutAction();
@@ -356,12 +355,12 @@ public class ClientEventHandler {
         return Mouse.getEventButtonState() && Mouse.getEventButton() == button;
     }
 
-    private static boolean isKeyDown(KeyBinding key) {
-        if (!key.getKeyModifier().isActive(null)) return false;
-        if (key.getKeyCode() < 0) {
-            return isButtonPressed(key.getKeyCode() + 100);
-        }
-        return Keyboard.getEventKeyState() && Keyboard.getEventKey() == key.getKeyCode();
+    private static boolean isKeyDown(IPatchedKeyBinding key) {
+        int k = key.getKeyBinding().getKeyCode();
+        if (k < 0) {
+            if (!Mouse.isButtonDown(k + 100)) return false;
+        } else if (!Keyboard.isKeyDown(k)) return false;
+        return key.getKeyBinding().isActiveAndMatches(k);
     }
 
     public static boolean isSortableContainer(GuiScreen screen) {
