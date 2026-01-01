@@ -23,11 +23,19 @@ import java.util.stream.Collectors;
 
 public class GuiSortingContext {
 
+    // Cache sorting context to avoid creating it multiple times while the container is open.
+    // On multiplayer everyone accesses this, so it can be recreated more than once when multiple players access any gui at the
+    // same time. However, this shouldn't be a problem since it's not multithreaded and the operation is usually not expensive.
     private static Container currentContainer;
     private static GuiSortingContext currentSortingContext;
 
+    public static void invalidateCurrent() {
+        currentSortingContext = null;
+        currentContainer = null;
+    }
+
     public static GuiSortingContext getOrCreate(Container container, EntityPlayer player) {
-        if (currentContainer != container) {
+        if (currentContainer != container || currentSortingContext == null) {
             currentSortingContext = create(container, player);
             currentContainer = container;
         }

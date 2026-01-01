@@ -52,6 +52,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -524,6 +526,7 @@ public class ConfigGui extends CustomModularScreen {
 
     private static class LockIconPreview extends ItemDisplayWidget {
 
+        @SideOnly(Side.CLIENT)
         @Override
         public void drawOverlay(ModularGuiContext context, WidgetThemeEntry<?> widgetTheme) {
             SlotLock.drawLock(1, 1, getArea().w() - 2, getArea().h() - 2);

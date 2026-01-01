@@ -2,8 +2,8 @@ package com.cleanroommc.bogosorter.common.lock;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
-
 import com.cleanroommc.bogosorter.api.ISlot;
+import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -88,6 +88,8 @@ public interface LockSlotCapability extends INBTSerializable<NBTTagLong> {
         @Override
         public void setLockedSlots(long lockedSlots) {
             this.lockedSlots = lockedSlots;
+            // force sorting context to be recreated to consider new locked slots
+            GuiSortingContext.invalidateCurrent();
         }
     }
 
@@ -116,7 +118,7 @@ public interface LockSlotCapability extends INBTSerializable<NBTTagLong> {
         }
     }
 
-    LockSlotCapability UNLOCKED = new  LockSlotCapability() {
+    LockSlotCapability UNLOCKED = new LockSlotCapability() {
         @Override
         public long getLockedSlots() {
             return 0L;
