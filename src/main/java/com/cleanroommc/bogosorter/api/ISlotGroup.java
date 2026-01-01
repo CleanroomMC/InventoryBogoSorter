@@ -12,12 +12,34 @@ import java.util.List;
 public interface ISlotGroup {
 
     /**
-     * An unmodifiable view of all the slots of this group.
+     * An unmodifiable view of all the unlocked slots of this group. This is the same as {@link #getAllSlots()} if the slot group
+     * is not a player inventory or when no slots are locked. For interaction this method should be used. For visual things like
+     * sort button placement, {@link #getAllSlots()} should be used.
      *
      * @return all slots
      */
     @UnmodifiableView
     List<ISlot> getSlots();
+
+    /**
+     * An unmodifiable view of all the slots (unlocked and locked) of this group. This is the same as {@link #getSlots()} if the slot group
+     * is not a player inventory or when no slots are locked. For interaction {@link #getSlots()} should be used. For visual things like
+     * sort button placement, this method should be used.
+     *
+     * @return all slots
+     */
+    @UnmodifiableView
+    List<ISlot> getAllSlots();
+
+    /**
+     * Returns if this slot group has any locked slots. Locked slots are not included in {@link #getSlots()}, but are included in
+     * {@link #getAllSlots()}.
+     *
+     * @return if this group has any locked slots
+     */
+    default boolean hasLockedSlots() {
+        return getAllSlots().size() != getSlots().size();
+    }
 
     /**
      * Returns how many slots are in row. This is mostly used to determine the button position with
@@ -63,5 +85,21 @@ public interface ISlotGroup {
 
     default boolean canBeSorted() {
         return getSlots().size() > 1;
+    }
+
+    default ISlot getTopLeftVisualSlot() {
+        return getAllSlots().get(0);
+    }
+
+    default ISlot getTopRightVisualSlot() {
+        return getAllSlots().get(getRowSize() - 1);
+    }
+
+    default ISlot getBottomLeftVisualSlot() {
+        return getAllSlots().get(getAllSlots().size() - getRowSize() - 1);
+    }
+
+    default ISlot getBottomRightVisualSlot() {
+        return getAllSlots().get(getAllSlots().size() - 1);
     }
 }

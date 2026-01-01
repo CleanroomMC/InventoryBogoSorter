@@ -17,18 +17,20 @@ public class SlotGroup implements ISlotGroup {
     private final boolean player;
     private final boolean hotbar;
     private final List<ISlot> slots;
+    private final List<ISlot> allSlots;
     private final int rowSize;
     private int priority;
     private IPosSetter posSetter;
 
     public SlotGroup(List<ISlot> slots, int rowSize) {
-        this(false, false, slots, rowSize);
+        this(false, false, slots, slots, rowSize);
     }
 
-    public SlotGroup(boolean player, boolean hotbar, List<ISlot> slots, int rowSize) {
+    public SlotGroup(boolean player, boolean hotbar, List<ISlot> slots, List<ISlot> allSlots, int rowSize) {
         this.player = player;
         this.hotbar = player && hotbar;
         this.slots = Collections.unmodifiableList(slots);
+        this.allSlots = Collections.unmodifiableList(allSlots);
         this.rowSize = rowSize;
         this.priority = 0;
         this.posSetter = IPosSetter.TOP_RIGHT_HORIZONTAL;
@@ -37,6 +39,11 @@ public class SlotGroup implements ISlotGroup {
     @Override
     public @UnmodifiableView List<ISlot> getSlots() {
         return this.slots;
+    }
+
+    @Override
+    public @UnmodifiableView List<ISlot> getAllSlots() {
+        return this.allSlots;
     }
 
     @Override

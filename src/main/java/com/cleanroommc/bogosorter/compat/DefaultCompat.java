@@ -145,7 +145,7 @@ public class DefaultCompat {
                 builder.addSlotGroup(0, 260, 26);
             });
             api.addPlayerSortButtonPosition(ContainerDraconiumChest.class, (slotGroup, buttonPos) -> {
-                ISlot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
+                ISlot topRight = slotGroup.getAllSlots().get(slotGroup.getRowSize() - 1);
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();
                 buttonPos.setPos(topRight.bogo$getX() + 17, topRight.bogo$getY() - 1);
@@ -303,7 +303,7 @@ public class DefaultCompat {
                 builder.addSlotGroupOf(slots, 8);
             });
             api.addPlayerSortButtonPosition(ContainerTravelersBackpack.class, (slotGroup, buttonPos) -> {
-                ISlot topRight = slotGroup.getSlots().get(slotGroup.getRowSize() - 1);
+                ISlot topRight = slotGroup.getTopRightVisualSlot();
                 buttonPos.setPos(topRight.bogo$getX() + 17, topRight.bogo$getY() - 1);
             });
         }
@@ -313,7 +313,7 @@ public class DefaultCompat {
                 List<Slot> chestSlots = ((ContainerColossalChestAccessor) container).getChestSlots();
                 builder.addSlotGroupOf(chestSlots, 9).buttonPosSetter((slotGroup, buttonPos) -> {
                     buttonPos.setPos(0, 1000);
-                    for (ISlot slot : slotGroup.getSlots()) {
+                    for (ISlot slot : slotGroup.getAllSlots()) {
                         if (slot.bogo$getX() >= 0 && slot.bogo$getY() >= 0 && slot.bogo$isEnabled()) {
                             buttonPos.setPos(Math.max(buttonPos.getX(), slot.bogo$getX() + 17), Math.min(buttonPos.getY(), slot.bogo$getY() - 2));
                         }
@@ -321,7 +321,7 @@ public class DefaultCompat {
                 });
             });
             api.addPlayerSortButtonPosition(ContainerColossalChest.class, (slotGroup, buttonPos) -> {
-                ISlot slot = slotGroup.getSlots().get(26);
+                ISlot slot = slotGroup.getAllSlots().get(26);
                 buttonPos.setPos(slot.bogo$getX() + 19, slot.bogo$getY() - 2);
                 buttonPos.setTopLeft();
                 buttonPos.setVertical();
@@ -344,7 +344,7 @@ public class DefaultCompat {
                 builder.addSlotGroup(0, 77, 11);
             });
             api.addPlayerSortButtonPosition(ContainerStorage.class, (slotGroup, buttonPos) -> {
-                ISlot topRight = slotGroup.getSlots().get(26);
+                ISlot topRight = slotGroup.getAllSlots().get(26);
                 buttonPos.setVertical();
                 buttonPos.setTopLeft();
                 buttonPos.setPos(topRight.bogo$getX() + 18, topRight.bogo$getY() + 3);
@@ -450,7 +450,7 @@ public class DefaultCompat {
             api.addCompat(ContainerStorageChest.class, (container, builder) -> {
                 builder.addGenericSlotGroup().buttonPosSetter((slotGroup, buttonPos) -> {
                     buttonPos.setPos(0, 1000);
-                    for (ISlot slot : slotGroup.getSlots()) {
+                    for (ISlot slot : slotGroup.getAllSlots()) {
                         if (slot.bogo$getX() >= 0 && slot.bogo$getY() >= 0 && slot.bogo$isEnabled()) {
                             buttonPos.setPos(Math.max(buttonPos.getX(), slot.bogo$getX() + 17), Math.min(buttonPos.getY(), slot.bogo$getY() - 2));
                         }
@@ -458,7 +458,7 @@ public class DefaultCompat {
                 });
             });
             api.addPlayerSortButtonPosition(ContainerStorageChest.class, (slotGroup, buttonPos) -> {
-                ISlot slot = slotGroup.getSlots().get(26);
+                ISlot slot = slotGroup.getAllSlots().get(26);
                 buttonPos.setPos(slot.bogo$getX() + 19, slot.bogo$getY() - 2);
                 buttonPos.setTopLeft();
                 buttonPos.setVertical();

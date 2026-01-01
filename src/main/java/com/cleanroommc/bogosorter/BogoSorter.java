@@ -99,6 +99,7 @@ public class BogoSorter {
             // hacky way to fix shortcuts on mui screens
             // mui intercepts inputs way earlier than bogo
             // so we just add an invisible panel over the whole screen that just acts as a giant button
+            // TODO proper fix on mui side?
             OverlayManager.register(new OverlayHandler(g -> g instanceof IMuiScreen, g -> new ModularScreen(new ModularScreenOverlay(g.getClass().getSimpleName() + "_bogo_overlay"))));
         }
     }

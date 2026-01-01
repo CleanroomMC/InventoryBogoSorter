@@ -7,7 +7,6 @@ import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
 import com.cleanroommc.bogosorter.common.lock.LockSlotCapability;
-import com.cleanroommc.modularui.screen.ModularContainer;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -169,25 +168,38 @@ public class GuiSortingContext {
         LockSlotCapability cap = LockSlotCapability.getForPlayer(player);
         for (Slot slot : container.inventorySlots) {
             if (BogoSortAPI.isPlayerMainInvSlot(slot)) {
-                if (!cap.isSlotLocked(slot.getSlotIndex())) {
-                    if (slot.getSlotIndex() < 9) hotbar.add(BogoSortAPI.INSTANCE.getSlot(slot));
-                    else slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
-                }
+                if (slot.getSlotIndex() < 9) hotbar.add(BogoSortAPI.INSTANCE.getSlot(slot));
+                else slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
             } else if (all) slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
         }
+        long mainInvMask = 0b000000000111111111111111111111111111L;
+        long hotbarMask = 0b111111111;
         if (!slots.isEmpty()) {
-            SlotGroup slotGroup = new SlotGroup(true, false, slots, Math.min(9, slots.size()));
+            SlotGroup slotGroup = new SlotGroup(true, false, getUnlockedSlots(slots, cap, mainInvMask), slots, Math.min(9, slots.size()));
             slotGroup.priority(-10000)
                     .buttonPosSetter(BogoSortAPI.INSTANCE.getPlayerButtonPos(container));
             builder.slots.add(slotGroup);
             builder.player++;
         }
         if (!hotbar.isEmpty()) {
-            SlotGroup slotGroup = new SlotGroup(true, true, hotbar, Math.min(9, hotbar.size()));
+            SlotGroup slotGroup = new SlotGroup(true, true, getUnlockedSlots(hotbar, cap, hotbarMask), hotbar, Math.min(9, hotbar.size()));
             slotGroup.priority(-10000)
                     .buttonPosSetter(null);
             builder.slots.add(slotGroup);
             builder.player++;
         }
+    }
+
+    private static List<ISlot> getUnlockedSlots(List<ISlot> slots, LockSlotCapability cap, long mask) {
+        if ((cap.getLockedSlots() & mask) == 0) {
+            return slots;
+        }
+        List<ISlot> unlockedSlots = new ArrayList<>();
+        for (ISlot slot : slots) {
+            if (!cap.isSlotLocked(slot.bogo$getSlotIndex())) {
+                unlockedSlots.add(slot);
+            }
+        }
+        return unlockedSlots;
     }
 }
