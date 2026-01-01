@@ -32,7 +32,7 @@ public class GuiContainerMixin extends GuiScreen implements IGuiContainerAccesso
         if (cap != null && BogoSortAPI.isPlayerSlot(slotIn) && cap.isSlotLocked(slotIn.getSlotIndex())) {
             GlStateManager.disableLighting();
             GlStateManager.disableDepth();
-            SlotLock.drawLock(slotIn.xPos, slotIn.yPos, 18, 18);
+            SlotLock.drawLock(slotIn.xPos, slotIn.yPos, 16, 16);
             GlStateManager.enableDepth();
             GlStateManager.enableLighting();
         }
