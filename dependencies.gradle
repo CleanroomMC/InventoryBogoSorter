@@ -40,7 +40,7 @@
 dependencies {
     implementation("com.cleanroommc:modularui:3.0.6") { transitive false }
     implementation rfg.deobf('curse.maven:key_binding_patch-928895:5951859')
-    implementation rfg.deobf("curse.maven:neverenoughanimation-1062347:6533650-sources-6533651")
+    runtimeOnly rfg.deobf("curse.maven:neverenoughanimation-1062347:6533650-sources-6533651")
     //implementation rfg.deobf("curse.maven:item-favorites-358194:3177845")
 
     compileOnly rfg.deobf('curse.maven:iron_chests-228756:2747935')
