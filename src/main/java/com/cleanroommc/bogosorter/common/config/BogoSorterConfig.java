@@ -99,10 +99,10 @@ public class BogoSorterConfig {
             ButtonHandler.buttonEnabled = JsonHelper.getBoolean(general, true, "buttonEnabled");
             SortHandler.enableHotbarSorting = JsonHelper.getBoolean(general, false, "enableHotbarSorting");
             SlotLock.alignment = Align.Corner.values()[MathUtils.clamp(JsonHelper.getInt(general, 0, "lockIconAlign"), 0, 3)];
-            SlotLock.iconColor = JsonHelper.getColor(general, Color.BLUE.main, "lockIconColor");
+            SlotLock.iconColor = JsonHelper.getColor(general, Color.BLUE.brighter(0), "lockIconColor");
             SlotLock.iconOffsetX = JsonHelper.getInt(general, -1, "lockIconX");
             SlotLock.iconOffsetY = JsonHelper.getInt(general, -1, "lockIconY");
-            SlotLock.iconScale = JsonHelper.getFloat(general, 0.5f, "lockIconScale");
+            SlotLock.iconScale = JsonHelper.getFloat(general, 0.65f, "lockIconScale");
         }
         sortRules.clear();
         if (json.has("ItemSortRules")) {

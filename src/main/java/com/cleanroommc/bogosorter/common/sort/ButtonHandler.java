@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.common.sort;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.ClientEventHandler;
+import com.cleanroommc.modularui.api.IMuiScreen;
 import com.cleanroommc.modularui.api.widget.Interactable;
 import com.cleanroommc.modularui.drawable.UITexture;
 import com.cleanroommc.modularui.screen.GuiScreenWrapper;
@@ -54,7 +55,7 @@ public class ButtonHandler {
 
     @SubscribeEvent
     public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (buttonEnabled && ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
+        if (buttonEnabled && ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof IMuiScreen)) {
             Container container = ((GuiContainer) event.getGui()).inventorySlots;
             GuiSortingContext context = GuiSortingContext.getOrCreate(container, Minecraft.getMinecraft().player);
             event.getButtonList().removeIf(guiButton -> guiButton instanceof SortButton);
@@ -69,7 +70,7 @@ public class ButtonHandler {
 
     @SubscribeEvent
     public static void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
-        if (buttonEnabled && ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof GuiScreenWrapper)) {
+        if (buttonEnabled && ClientEventHandler.isSortableContainer(event.getGui()) && !(event.getGui() instanceof IMuiScreen)) {
             GuiContainer gui = (GuiContainer) event.getGui();
             IGuiContainerAccessor guiAccess = (IGuiContainerAccessor) gui;
             GuiSortingContext context = GuiSortingContext.getOrCreate(gui.inventorySlots, Minecraft.getMinecraft().player);

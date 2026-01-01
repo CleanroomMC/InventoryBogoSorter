@@ -124,7 +124,7 @@ public class ConfigGui extends CustomModularScreen {
     public IWidget createGeneralConfigUI(ModularPanel mainPanel, ModularGuiContext context) {
         Row row = new Row();
         IPanelHandler buttonColorPicker = IPanelHandler.simple(mainPanel, (parent, player) ->
-                new ColorPickerDialog("button_color", val -> ButtonHandler.buttonColor = val, ButtonHandler.buttonColor, true)
+                new ColorPickerDialog("button_color", val -> ButtonHandler.buttonColor = val, ButtonHandler.buttonColor, false)
                         .setDraggable(true), true);
         IPanelHandler lockIconColorPicker = IPanelHandler.simple(mainPanel, (parent, player) ->
                 new ColorPickerDialog("lock_color", val -> SlotLock.iconColor = val, SlotLock.iconColor, false)
@@ -226,7 +226,6 @@ public class ConfigGui extends CustomModularScreen {
                                 .size(14).margin(8, 0)
                                 .background(((context1, x, y, width, height, widgetTheme) -> {
                                     GuiTextures.CHECKBOARD.draw(context, x, y, width, height, widgetTheme);
-                                    //GuiDraw.drawRect(0, 0, 14, 14, 0xFF000000);
                                     GuiDraw.drawRect(x + 1, y + 1, width - 2, height - 2, ButtonHandler.buttonColor);
                                 }))
                                 .disableHoverBackground()
@@ -252,10 +251,10 @@ public class ConfigGui extends CustomModularScreen {
                                 .overlay(IKey.lang("bogosort.gui.slot_lock.reset_style"))
                                 .onMousePressed(b -> {
                                     SlotLock.alignment = Align.Corner.TOP_LEFT;
-                                    SlotLock.iconColor = Color.BLUE.main;
+                                    SlotLock.iconColor = Color.BLUE.brighter(0);
                                     SlotLock.iconOffsetX = -1;
                                     SlotLock.iconOffsetY = -1;
-                                    SlotLock.iconScale = 0.5f;
+                                    SlotLock.iconScale = 0.65f;
                                     return true;
                                 }))
                         .child(new ButtonWidget<>()
@@ -287,7 +286,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .expanded()
                                 .fullHeight()
                                 .value(new FloatValue.Dynamic(() -> SlotLock.iconScale, val -> SlotLock.iconScale = val))
-                                .bounds(0.01, 10)
+                                .bounds(0.01, 5)
                                 .stopper(genLogStopper())
                                 .stopperTexture(null)
                                 .background(new Rectangle().color(Color.withAlpha(Color.WHITE.main, 0.5f)).asIcon().height(1))
@@ -300,7 +299,6 @@ public class ConfigGui extends CustomModularScreen {
                                 .size(14).margin(0, 0)
                                 .background(((context1, x, y, width, height, widgetTheme) -> {
                                     GuiTextures.CHECKBOARD.draw(context, x, y, width, height, widgetTheme);
-                                    //GuiDraw.drawRect(0, 0, 14, 14, 0xFF000000);
                                     GuiDraw.drawRect(x + 1, y + 1, width - 2, height - 2, SlotLock.iconColor);
                                 }))
                                 .disableHoverBackground()
@@ -322,7 +320,7 @@ public class ConfigGui extends CustomModularScreen {
         for (float f = 0.01f; f <= 2f; f += 0.01f) {
             d.add(f);
         }
-        for (float f = 2.1f; f <= 10f; f += 0.1f) {
+        for (float f = 2.1f; f <= 5; f += 0.1f) {
             d.add(f);
         }
         return d.elements();
