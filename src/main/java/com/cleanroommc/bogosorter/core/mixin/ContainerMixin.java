@@ -2,6 +2,7 @@ package com.cleanroommc.bogosorter.core.mixin;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
 
+import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.lock.LockSlotCapability;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -20,6 +21,9 @@ public class ContainerMixin {
 
     @WrapOperation(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Slot;canTakeStack(Lnet/minecraft/entity/player/EntityPlayer;)Z"))
     public boolean injectBlockLockedSlots(Slot instance, EntityPlayer playerIn, Operation<Boolean> original) {
-        return original.call(instance, playerIn) && (!BogoSortAPI.isPlayerSlot(instance) || !LockSlotCapability.getForPlayer(playerIn).isSlotLocked(instance.getSlotIndex()));
+        return original.call(instance, playerIn) &&
+                (!BogoSortAPI.isPlayerSlot(instance) ||
+                        PlayerConfig.get(playerIn).onlyBlockSorting ||
+                        !LockSlotCapability.getForPlayer(playerIn).isSlotLocked(instance.getSlotIndex()));
     }
 }

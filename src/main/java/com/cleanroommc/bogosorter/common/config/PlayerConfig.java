@@ -22,6 +22,7 @@ public class PlayerConfig {
 
     public boolean enableAutoRefill = true;
     public int autoRefillDamageThreshold = 1;
+    public boolean onlyBlockSorting = false;
 
     public static PlayerConfig get(@NotNull EntityPlayer player) {
         if (NetworkUtils.isDedicatedClient()) {
@@ -45,11 +46,13 @@ public class PlayerConfig {
     public void writePacket(PacketBuffer buffer) {
         buffer.writeBoolean(enableAutoRefill);
         buffer.writeVarInt(autoRefillDamageThreshold);
+        buffer.writeBoolean(onlyBlockSorting);
     }
 
     public void readPacket(PacketBuffer buffer) {
         enableAutoRefill = buffer.readBoolean();
         autoRefillDamageThreshold = buffer.readVarInt();
+        onlyBlockSorting = buffer.readBoolean();
     }
 
     @SideOnly(Side.CLIENT)

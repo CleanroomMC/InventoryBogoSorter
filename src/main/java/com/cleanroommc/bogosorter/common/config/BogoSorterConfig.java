@@ -54,6 +54,7 @@ public class BogoSorterConfig {
         general.addProperty("lockIconX", SlotLock.iconOffsetX);
         general.addProperty("lockIconY", SlotLock.iconOffsetY);
         general.addProperty("lockIconScale", SlotLock.iconScale);
+        general.addProperty("lockOnlyBlockSorting", playerConfig.onlyBlockSorting);
 
         // general.addProperty("_comment", "By setting the chance below to 0 you agree to have no humor and that you are boring.");
 
@@ -103,6 +104,7 @@ public class BogoSorterConfig {
             SlotLock.iconOffsetX = JsonHelper.getInt(general, -1, "lockIconX");
             SlotLock.iconOffsetY = JsonHelper.getInt(general, -1, "lockIconY");
             SlotLock.iconScale = JsonHelper.getFloat(general, 0.65f, "lockIconScale");
+            playerConfig.onlyBlockSorting = JsonHelper.getBoolean(general, false, "lockOnlyBlockSorting");
         }
         sortRules.clear();
         if (json.has("ItemSortRules")) {

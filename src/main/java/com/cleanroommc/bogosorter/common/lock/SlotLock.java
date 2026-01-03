@@ -4,6 +4,7 @@ import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.ClientEventHandler;
 import com.cleanroommc.bogosorter.common.Align;
+import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.UpdateSlotLock;
 import com.cleanroommc.modularui.drawable.ColorType;
@@ -110,9 +111,7 @@ public class SlotLock implements ISelectiveResourceReloadListener {
     public static boolean onGuiKeyInput(GuiContainer gui) {
         Slot slot = gui.getSlotUnderMouse();
         if (slot == null || !BogoSortAPI.isPlayerSlot(slot)) return false;
-        if (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop)) {
-            return getClientCap().isSlotLocked(slot.getSlotIndex());
-        } else if (GameSettings.isKeyDown(ClientEventHandler.keyLockSlot)) {
+        if (GameSettings.isKeyDown(ClientEventHandler.keyLockSlot)) {
             if (slot.getHasStack()) {
                 getClientCap().toggleLock(slot.getSlotIndex());
                 sendChangesToServer();
@@ -123,6 +122,10 @@ public class SlotLock implements ISelectiveResourceReloadListener {
                 sendChangesToServer();
                 return true;
             }
+        }
+        if (PlayerConfig.getClient().onlyBlockSorting) return false;
+        if (GameSettings.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindDrop)) {
+            return getClientCap().isSlotLocked(slot.getSlotIndex());
         }
         // handle cancellation of swapping with hotbar slot
         int[] zeroToNine = {Keyboard.KEY_1, Keyboard.KEY_2, Keyboard.KEY_3, Keyboard.KEY_4, Keyboard.KEY_5, Keyboard.KEY_6, Keyboard.KEY_7, Keyboard.KEY_8, Keyboard.KEY_9};
@@ -137,7 +140,7 @@ public class SlotLock implements ISelectiveResourceReloadListener {
     public static boolean onGuiMouseInput(GuiContainer gui) {
         if (Mouse.getEventButton() == 0 || Mouse.getEventButton() == 1) {
             Slot slot = gui.getSlotUnderMouse();
-            return slot != null && BogoSortAPI.isPlayerSlot(slot) && getClientCap().isSlotLocked(slot.getSlotIndex());
+            return slot != null && BogoSortAPI.isPlayerSlot(slot) && !PlayerConfig.getClient().onlyBlockSorting && getClientCap().isSlotLocked(slot.getSlotIndex());
         }
         return false;
     }

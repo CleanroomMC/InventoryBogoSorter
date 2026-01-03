@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter.core.mixin;
 
 import com.cleanroommc.bogosorter.BogoSortAPI;
+import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.lock.LockSlotCapability;
 import com.cleanroommc.bogosorter.common.lock.SlotLock;
 import com.cleanroommc.bogosorter.common.sort.IGuiContainerAccessor;
@@ -43,6 +44,6 @@ public class GuiContainerMixin extends GuiScreen implements IGuiContainerAccesso
 
     @WrapOperation(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Container;canDragIntoSlot(Lnet/minecraft/inventory/Slot;)Z"))
     public boolean injectDragCheck(Container instance, Slot slotIn, Operation<Boolean> original) {
-        return original.call(instance, slotIn) && !SlotLock.getClientCap().isSlotLocked(slotIn);
+        return original.call(instance, slotIn) && (PlayerConfig.getClient().onlyBlockSorting || !SlotLock.getClientCap().isSlotLocked(slotIn));
     }
 }
