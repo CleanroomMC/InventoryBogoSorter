@@ -38,7 +38,7 @@ bogosort.gui.slot_lock.icon_preview=预览
 bogosort.gui.slot_lock.reset_style=重置样式
 bogosort.gui.slot_lock.unlock_all=解锁所有槽位
 bogosort.gui.slot_lock.only_block_sort=仅阻止排序
-bogosort.gui.slot_lock.only_block_sort.desc=若启用该选项，玩家仍可与锁定的槽位进行交互操作，但排序功能会忽略锁定的槽位。
+bogosort.gui.slot_lock.only_block_sort.desc=若启用该选项，玩家与锁定槽位的交互操作不会被阻止，但排序功能仍会忽略锁定的槽位。
 bogosort.gui.corner.tl=左上角
 bogosort.gui.corner.tr=右上角
 bogosort.gui.corner.bl=左下角
@@ -98,3 +98,4 @@ bogosort.sortrules.nbt.enchantment_book.description=根据效果和等级对附�
 bogosort.sortrules.nbt.gt_circ_config.description=根据配置对格雷科技的编程电路排序
 
 bogosort.sortrules.nbt.gt_item_damage.description=根据损坏值对格雷科技的工具排序
+
