@@ -129,12 +129,14 @@ public interface IBogoSortAPI {
      * Opens the bogosort config gui
      */
     @SideOnly(Side.CLIENT)
-    default void openConfigGui() {
-        openConfigGui(null);
-    }
+    void openConfigGui();
 
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.7.0")
+    @Deprecated
     @SideOnly(Side.CLIENT)
-    void openConfigGui(GuiScreen old);
+    default void openConfigGui(GuiScreen old) {
+        openConfigGui();
+    }
 
     /**
      * Tries to sort a slot group with the given slot.

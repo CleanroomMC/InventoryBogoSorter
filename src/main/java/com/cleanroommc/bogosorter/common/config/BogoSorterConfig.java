@@ -3,11 +3,15 @@ package com.cleanroommc.bogosorter.common.config;
 import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.api.SortRule;
+import com.cleanroommc.bogosorter.common.Align;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
+import com.cleanroommc.bogosorter.common.lock.SlotLock;
 import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.NbtSortRule;
 import com.cleanroommc.bogosorter.common.sort.SortHandler;
+import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.utils.JsonHelper;
+import com.cleanroommc.modularui.utils.MathUtils;
 
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
@@ -42,8 +46,14 @@ public class BogoSorterConfig {
         general.addProperty("refillDmgThreshold", playerConfig.autoRefillDamageThreshold);
         general.addProperty("enableHotbarSwap", HotbarSwap.isEnabled());
         general.addProperty("sortSound", SortHandler.getSortSoundName());
-        general.addProperty("buttonColor", "#" + Integer.toHexString(ButtonHandler.buttonColor));
+        general.addProperty("buttonColor", "#" + Color.argbToFullHexString(ButtonHandler.buttonColor));
         general.addProperty("buttonEnabled", ButtonHandler.buttonEnabled);
+        general.addProperty("enableHotbarSorting", SortHandler.enableHotbarSorting);
+        general.addProperty("lockIconAlign", SlotLock.alignment.ordinal());
+        general.addProperty("lockIconColor", "#" + Color.argbToFullHexString(SlotLock.iconColor));
+        general.addProperty("lockIconX", SlotLock.iconOffsetX);
+        general.addProperty("lockIconY", SlotLock.iconOffsetY);
+        general.addProperty("lockIconScale", SlotLock.iconScale);
 
         // general.addProperty("_comment", "By setting the chance below to 0 you agree to have no humor and that you are boring.");
 
@@ -87,6 +97,12 @@ public class BogoSorterConfig {
             }, "sortSound");
             ButtonHandler.buttonColor = JsonHelper.getColor(general, 0xFFFFFFFF, "buttonColor");
             ButtonHandler.buttonEnabled = JsonHelper.getBoolean(general, true, "buttonEnabled");
+            SortHandler.enableHotbarSorting = JsonHelper.getBoolean(general, false, "enableHotbarSorting");
+            SlotLock.alignment = Align.Corner.values()[MathUtils.clamp(JsonHelper.getInt(general, 0, "lockIconAlign"), 0, 3)];
+            SlotLock.iconColor = JsonHelper.getColor(general, Color.BLUE.brighter(0), "lockIconColor");
+            SlotLock.iconOffsetX = JsonHelper.getInt(general, -1, "lockIconX");
+            SlotLock.iconOffsetY = JsonHelper.getInt(general, -1, "lockIconY");
+            SlotLock.iconScale = JsonHelper.getFloat(general, 0.65f, "lockIconScale");
         }
         sortRules.clear();
         if (json.has("ItemSortRules")) {

@@ -27,8 +27,11 @@ public class NetworkHandler {
         registerC2S(CConfigSync.class);
         registerC2S(CSort.class);
         registerC2S(CHotbarSwap.class);
+
         registerS2C(SReloadConfig.class);
         registerS2C(SRefillSound.class);
+
+        registerBoth(UpdateSlotLock.class);
     }
 
     private static void registerC2S(Class<? extends IPacket> clazz) {
@@ -37,6 +40,11 @@ public class NetworkHandler {
 
     private static void registerS2C(Class<? extends IPacket> clazz) {
         network.registerMessage(S2CHandler, clazz, packetId++, Side.CLIENT);
+    }
+
+    private static void registerBoth(Class<? extends IPacket> clazz) {
+        registerC2S(clazz);
+        registerS2C(clazz);
     }
 
     public static void sendToServer(IPacket packet) {

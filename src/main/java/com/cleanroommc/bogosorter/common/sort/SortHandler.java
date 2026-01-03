@@ -44,6 +44,8 @@ public class SortHandler {
     public static final AtomicReference<List<NbtSortRule>> currentNbtSortRules = new AtomicReference<>(Collections.emptyList());
 
     @Nullable public static SoundEvent sortSound = SoundEvents.UI_BUTTON_CLICK;
+    // only available on client
+    public static boolean enableHotbarSorting = false;
     private static List<SoundEvent> foolsSounds = null;
     private static long foolsBuildTime = 0;
 
@@ -81,8 +83,8 @@ public class SortHandler {
     private final Int2ObjectMap<ClientSortData> clientSortData;
     private final List<SortRule<ItemStack>> itemSortRules;
 
-    public SortHandler(EntityPlayer entityPlayer, Container container, Int2ObjectMap<ClientSortData> clientSortData) {
-        this(entityPlayer, container, GuiSortingContext.getOrCreate(container), clientSortData);
+    public SortHandler(EntityPlayer player, Container container, Int2ObjectMap<ClientSortData> clientSortData) {
+        this(player, container, GuiSortingContext.getOrCreate(container, player), clientSortData);
     }
 
     public SortHandler(EntityPlayer player, Container container, GuiSortingContext sortingContext,

@@ -6,7 +6,9 @@ import com.cleanroommc.bogosorter.api.ISlot;
 import com.cleanroommc.bogosorter.api.ISlotGroup;
 import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.ISortingContextBuilder;
+import com.cleanroommc.bogosorter.common.lock.LockSlotCapability;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 
@@ -21,23 +23,31 @@ import java.util.stream.Collectors;
 
 public class GuiSortingContext {
 
+    // Cache sorting context to avoid creating it multiple times while the container is open.
+    // On multiplayer everyone accesses this, so it can be recreated more than once when multiple players access any gui at the
+    // same time. However, this shouldn't be a problem since it's not multithreaded and the operation is usually not expensive.
     private static Container currentContainer;
     private static GuiSortingContext currentSortingContext;
 
-    public static GuiSortingContext getOrCreate(Container container) {
-        if (currentContainer != container) {
-            currentSortingContext = create(container);
+    public static void invalidateCurrent() {
+        currentSortingContext = null;
+        currentContainer = null;
+    }
+
+    public static GuiSortingContext getOrCreate(Container container, EntityPlayer player) {
+        if (currentContainer != container || currentSortingContext == null) {
+            currentSortingContext = create(container, player);
             currentContainer = container;
         }
         return currentSortingContext;
     }
 
-    public static GuiSortingContext create(Container container) {
+    public static GuiSortingContext create(Container container, EntityPlayer player) {
         GuiSortingContext.Builder builder = new GuiSortingContext.Builder(container);
-        addPlayerInventory(builder, container);
+        addPlayerInventory(builder, container, player);
 
-        if (container instanceof ISortableContainer) {
-            ((ISortableContainer) container).buildSortingContext(builder);
+        if (container instanceof ISortableContainer sc) {
+            sc.buildSortingContext(builder);
         } else if (BogoSortAPI.isValidSortable(container)) {
             BogoSortAPI.INSTANCE.getBuilder(container).accept(container, builder);
         }
@@ -46,13 +56,13 @@ public class GuiSortingContext {
 
     private final Container container;
     private final List<SlotGroup> slotGroups;
-    private final boolean hasPlayer;
+    private final int playerGroups;
 
-    public GuiSortingContext(Container container, List<SlotGroup> slotGroups, boolean hasPlayer) {
+    public GuiSortingContext(Container container, List<SlotGroup> slotGroups, int playerGroups) {
         slotGroups.sort(Comparator.comparingInt(SlotGroup::getPriority));
         this.container = container;
         this.slotGroups = slotGroups;
-        this.hasPlayer = hasPlayer;
+        this.playerGroups = playerGroups;
     }
 
     @Nullable
@@ -80,10 +90,7 @@ public class GuiSortingContext {
     }
 
     public int getNonPlayerSlotGroupAmount() {
-        if (this.hasPlayer) {
-            return this.slotGroups.size() - 1;
-        }
-        return this.slotGroups.size();
+        return this.slotGroups.size() - this.playerGroups;
     }
 
     public Container getContainer() {
@@ -95,7 +102,7 @@ public class GuiSortingContext {
     }
 
     public boolean hasPlayer() {
-        return hasPlayer;
+        return this.playerGroups > 0;
     }
 
     public boolean isEmpty() {
@@ -106,7 +113,7 @@ public class GuiSortingContext {
 
         private final Container container;
         private final List<SlotGroup> slots = new ArrayList<>();
-        private boolean player = false;
+        private int player = 0;
 
         public Builder(Container container) {
             this.container = container;
@@ -141,7 +148,7 @@ public class GuiSortingContext {
             IntArraySet xValues = new IntArraySet();
             for (Slot slot : this.container.inventorySlots) {
                 ISlot iSlot = BogoSortAPI.INSTANCE.getSlot(slot);
-                if (!BogoSortAPI.isPlayerSlot(iSlot)) {
+                if (!BogoSortAPI.isPlayerMainInvSlot(iSlot)) {
                     slots.add(iSlot);
                     xValues.add(iSlot.bogo$getX());
                 }
@@ -162,29 +169,45 @@ public class GuiSortingContext {
         }
     }
 
-    private static void addPlayerInventory(GuiSortingContext.Builder builder, Container container) {
+    private static void addPlayerInventory(Builder builder, Container container, EntityPlayer player) {
         List<ISlot> slots = new ArrayList<>();
         List<ISlot> hotbar = new ArrayList<>();
-        boolean all = BogoSorter.isExpandableInventoryLoaded() && container instanceof ContainerExpandedInventory;
+        boolean all = BogoSorter.Mods.EXPANDABLE_INVENTORY.isLoaded() && container instanceof ContainerExpandedInventory;
+        LockSlotCapability cap = LockSlotCapability.getForPlayer(player);
         for (Slot slot : container.inventorySlots) {
-            if (BogoSortAPI.isPlayerSlot(slot)) {
+            if (BogoSortAPI.isPlayerMainInvSlot(slot)) {
                 if (slot.getSlotIndex() < 9) hotbar.add(BogoSortAPI.INSTANCE.getSlot(slot));
                 else slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
             } else if (all) slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
         }
+        long mainInvMask = 0b000000000111111111111111111111111111L;
+        long hotbarMask = 0b111111111;
         if (!slots.isEmpty()) {
-            SlotGroup slotGroup = new SlotGroup(true, false, slots, Math.min(9, slots.size()));
+            SlotGroup slotGroup = new SlotGroup(true, false, getUnlockedSlots(slots, cap, mainInvMask), slots, Math.min(9, slots.size()));
             slotGroup.priority(-10000)
                     .buttonPosSetter(BogoSortAPI.INSTANCE.getPlayerButtonPos(container));
             builder.slots.add(slotGroup);
-            builder.player = true;
+            builder.player++;
         }
         if (!hotbar.isEmpty()) {
-            SlotGroup slotGroup = new SlotGroup(true, true, hotbar, Math.min(9, hotbar.size()));
+            SlotGroup slotGroup = new SlotGroup(true, true, getUnlockedSlots(hotbar, cap, hotbarMask), hotbar, Math.min(9, hotbar.size()));
             slotGroup.priority(-10000)
                     .buttonPosSetter(null);
             builder.slots.add(slotGroup);
-            builder.player = true;
+            builder.player++;
         }
+    }
+
+    private static List<ISlot> getUnlockedSlots(List<ISlot> slots, LockSlotCapability cap, long mask) {
+        if ((cap.getLockedSlots() & mask) == 0) {
+            return slots;
+        }
+        List<ISlot> unlockedSlots = new ArrayList<>();
+        for (ISlot slot : slots) {
+            if (!cap.isSlotLocked(slot.bogo$getSlotIndex())) {
+                unlockedSlots.add(slot);
+            }
+        }
+        return unlockedSlots;
     }
 }

@@ -29,8 +29,8 @@
  * To depend on obfuscated jars you can use `devOnlyNonPublishable(rfg.deobf("dep:spec:1.2.3"))` to fetch an obfuscated jar from maven,
  * or `devOnlyNonPublishable(rfg.deobf(project.files("libs/my-mod-jar.jar")))` to use a file.
  *
- * To add a mod with CurseMaven, replace '("g:n:v:c")' in the above with 'rfg.deobf("curse.maven:project_slug-project_id:file_id")'
- * Example: devOnlyNonPublishable(rfg.deobf("curse.maven:top-245211:2667280"))
+ * To add a mod with CurseMaven, replace '("g:n:v:c")' in the above with 'rfg.deobf("curse.cleanroommc.com:project_slug-project_id:file_id")'
+ * Example: devOnlyNonPublishable(rfg.deobf("curse.cleanroommc.com:top-245211:2667280"))
  *
  * Gradle names for some of the configuration can be misleading, compileOnlyApi and runtimeOnly both get published as dependencies in Maven, but compileOnly does not.
  * The buildscript adds runtimeOnlyNonPublishable to also have a runtime dependency that's not published.
@@ -38,9 +38,10 @@
  * For more details, see https://docs.gradle.org/8.4/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
-    implementation("com.cleanroommc:modularui:3.0.3") { transitive false }
+    implementation("com.cleanroommc:modularui:3.0.6") { transitive false }
     implementation rfg.deobf('curse.maven:key_binding_patch-928895:5951859')
-    runtimeOnly rfg.deobf("curse.maven:neverenoughanimation-1062347:6533650-sources-6533651")
+    implementation rfg.deobf("curse.maven:neverenoughanimation-1062347:6533650-sources-6533651")
+    //implementation rfg.deobf("curse.maven:item-favorites-358194:3177845")
 
     compileOnly rfg.deobf('curse.maven:iron_chests-228756:2747935')
     compileOnly rfg.deobf('curse.maven:cofh_core-69162:2920433')

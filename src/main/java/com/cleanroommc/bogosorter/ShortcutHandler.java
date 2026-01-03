@@ -1,6 +1,7 @@
 package com.cleanroommc.bogosorter;
 
 import com.cleanroommc.bogosorter.api.ISlot;
+import com.cleanroommc.bogosorter.common.lock.SlotLock;
 import com.cleanroommc.bogosorter.common.network.CShortcut;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.sort.GuiSortingContext;
@@ -23,7 +24,7 @@ public class ShortcutHandler {
     @SideOnly(Side.CLIENT)
     public static boolean moveSingleItem(GuiContainer guiContainer, boolean emptySlot) {
         Slot slot = guiContainer.getSlotUnderMouse();
-        if (slot == null || slot.getStack().isEmpty()) return false;
+        if (slot == null || slot.getStack().isEmpty() || SlotLock.getClientCap().isSlotLocked(slot)) return false;
         NetworkHandler.sendToServer(new CShortcut(emptySlot ? CShortcut.Type.MOVE_SINGLE_EMPTY : CShortcut.Type.MOVE_SINGLE, slot.slotNumber));
         return true;
     }
@@ -40,10 +41,10 @@ public class ShortcutHandler {
         toInsert.setCount(amount);
 
         if (BogoSortAPI.isValidSortable(container)) {
-            GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
+            GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container, player);
 
             SlotGroup slots = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
-            SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
+            SlotGroup otherSlots = BogoSortAPI.isPlayerMainInvSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
             if (otherSlots == null || slots == otherSlots) return;
 
             toInsert = emptySlot ?
@@ -51,9 +52,9 @@ public class ShortcutHandler {
                     BogoSortAPI.insert(container, otherSlots.getSlots(), toInsert);
         } else {
             List<ISlot> otherSlots = new ArrayList<>();
-            boolean isPlayer = BogoSortAPI.isPlayerSlot(slot);
+            boolean isPlayer = BogoSortAPI.isPlayerMainInvSlot(slot);
             for (Slot slot1 : container.inventorySlots) {
-                if (isPlayer != BogoSortAPI.isPlayerSlot(slot1)) {
+                if (isPlayer != BogoSortAPI.isPlayerMainInvSlot(slot1)) {
                     otherSlots.add(BogoSortAPI.INSTANCE.getSlot(slot1));
                 }
             }
@@ -90,10 +91,10 @@ public class ShortcutHandler {
         if (slot == null || !BogoSortAPI.isValidSortable(container)) return;
         ItemStack stack = slot.bogo$getStack().copy();
         if (sameItemOnly && stack.isEmpty()) return;
-        GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container);
+        GuiSortingContext sortingContext = GuiSortingContext.getOrCreate(container, player);
 
         SlotGroup slots = sortingContext.getSlotGroup(slot.bogo$getSlotNumber());
-        SlotGroup otherSlots = BogoSortAPI.isPlayerSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
+        SlotGroup otherSlots = BogoSortAPI.isPlayerMainInvSlot(slot) ? sortingContext.getNonPlayerSlotGroup() : sortingContext.getPlayerSlotGroup();
         if (slots == null || otherSlots == null || slots == otherSlots) return;
         for (ISlot slot1 : slots.getSlots()) {
             ItemStack stackInSlot = slot1.bogo$getStack();
@@ -112,7 +113,7 @@ public class ShortcutHandler {
     public static boolean dropItems(GuiContainer guiContainer, boolean onlySameType) {
         Slot slot = guiContainer.getSlotUnderMouse();
         if (slot == null || slot.getStack().isEmpty()) return false;
-        if (!BogoSortAPI.isPlayerSlot(slot) && !BogoSortAPI.isValidSortable(guiContainer.inventorySlots)) return false;
+        if (!BogoSortAPI.isPlayerMainInvSlot(slot) && !BogoSortAPI.isValidSortable(guiContainer.inventorySlots)) return false;
         NetworkHandler.sendToServer(new CShortcut(onlySameType ? CShortcut.Type.DROP_ALL_SAME : CShortcut.Type.DROP_ALL, slot.slotNumber));
         return true;
     }
@@ -120,7 +121,7 @@ public class ShortcutHandler {
     public static void dropItems(EntityPlayer player, Container container, ISlot slot, boolean onlySameType) {
         ItemStack stack = slot.bogo$getStack();
         if (onlySameType && stack.isEmpty()) return;
-        SlotGroup slots = GuiSortingContext.getOrCreate(container).getSlotGroup(slot.bogo$getSlotNumber());
+        SlotGroup slots = GuiSortingContext.getOrCreate(container, player).getSlotGroup(slot.bogo$getSlotNumber());
         if (slots == null) return;
         for (ISlot slot1 : slots.getSlots()) {
             ItemStack stackInSlot = slot1.bogo$getStack();

@@ -1,48 +1,45 @@
 package com.cleanroommc.bogosorter;
 
-import com.cleanroommc.bogosorter.common.HotbarSwap;
-import com.cleanroommc.bogosorter.common.OreDictHelper;
-import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
 import com.cleanroommc.bogosorter.common.XSTR;
 import com.cleanroommc.bogosorter.common.config.BogoSortCommandTree;
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
-import com.cleanroommc.bogosorter.common.config.Serializer;
+import com.cleanroommc.bogosorter.common.lock.LockSlotCapability;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
-import com.cleanroommc.bogosorter.common.network.NetworkUtils;
-import com.cleanroommc.bogosorter.common.refill.RefillHandler;
-import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
-import com.cleanroommc.bogosorter.common.sort.DefaultRules;
-import com.cleanroommc.bogosorter.compat.DefaultCompat;
-import com.cleanroommc.modularui.keybind.KeyBindAPI;
+import com.cleanroommc.bogosorter.common.network.UpdateSlotLock;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import gregtech.GregTechVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.function.Predicate;
 
 @Mod(modid = BogoSorter.ID,
         name = BogoSorter.NAME,
         version = BogoSorter.VERSION,
         dependencies =
-                "required-after-client:modularui@[3.0.3,4.0.0);" +
-                        "required-after-client:key_binding_patch@[1.3.3.3,);" +
-                        "required-after:mixinbooter@[8.0,)")
+                "required-after-client:modularui@[3.0.7,4.0.0);" +
+                        "required-after-client:key_binding_patch@[1.3.3.3,);")
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class BogoSorter {
 
@@ -54,56 +51,23 @@ public class BogoSorter {
 
     public static final XSTR RND = new XSTR();
 
-    private static boolean anyGtLoaded = false;
-    private static boolean tconstructLoaded = false;
-    private static boolean anyIc2Loaded = false;
-    private static boolean ic2ClassicLoaded = false;
-    private static boolean quarkLoaded = false;
-    private static boolean ae2Loaded = false;
-    private static boolean expandableInventoryLoaded = false;
+    @SidedProxy(
+            modId = ID,
+            clientSide = "com.cleanroommc.bogosorter.ClientProxy",
+            serverSide = "com.cleanroommc.bogosorter.CommonProxy")
+    public static CommonProxy proxy;
+
+    @CapabilityInject(LockSlotCapability.class)
+    public static Capability<LockSlotCapability> favoriteSlotCap = null;
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
-        anyGtLoaded = Loader.isModLoaded("gregtech");
-        tconstructLoaded = Loader.isModLoaded("tconstruct");
-        anyIc2Loaded = Loader.isModLoaded("ic2");
-        quarkLoaded = Loader.isModLoaded("quark");
-        ae2Loaded = Loader.isModLoaded("appliedenergistics2");
-        expandableInventoryLoaded = Loader.isModLoaded("expandableinventory");
-        if (anyIc2Loaded) {
-            ModContainer container = Loader.instance().getIndexedModList().get("ic2");
-            ic2ClassicLoaded = container.getName().endsWith("Classic");
-        }
-        NetworkHandler.init();
-        OreDictHelper.init();
-        BogoSortAPI.INSTANCE.remapSortRule("is_block", "block_type");
-        DefaultRules.init(BogoSortAPI.INSTANCE);
-        DefaultCompat.init(BogoSortAPI.INSTANCE);
-        Serializer.loadConfig();
-        MinecraftForge.EVENT_BUS.register(RefillHandler.class);
-        if (NetworkUtils.isDedicatedClient()) {
-            MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
-            MinecraftForge.EVENT_BUS.register(ClientEventHandler.class);
-            MinecraftForge.EVENT_BUS.register(ButtonHandler.class);
-            MinecraftForge.EVENT_BUS.register(HotbarSwap.class);
-        }
+        proxy.preInit();
     }
 
     @Mod.EventHandler
     public void onPostInit(FMLPostInitializationEvent event) {
-        if (NetworkUtils.isDedicatedClient()) {
-            ClientRegistry.registerKeyBinding(ClientEventHandler.configGuiKey);
-            ClientRegistry.registerKeyBinding(ClientEventHandler.sortKey);
-            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.configGuiKey);
-            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.sortKey);
-            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.moveAll.getKeyBinding());
-            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.moveAllSame.getKeyBinding());
-            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.moveSingle.getKeyBinding());
-            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.moveSingleEmpty.getKeyBinding());
-            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.throwAll.getKeyBinding());
-            KeyBindAPI.forceCheckKeyBind(ClientEventHandler.throwAllSame.getKeyBinding());
-            KeyBindAPI.setCompatible(ClientEventHandler.sortKey, Minecraft.getMinecraft().gameSettings.keyBindPickBlock);
-        }
+        proxy.postInit();
     }
 
     @Mod.EventHandler
@@ -125,50 +89,78 @@ public class BogoSorter {
         }
     }
 
-    public static boolean isAnyGtLoaded() {
-        return anyGtLoaded;
+    @SubscribeEvent
+    public static void onAttachCap(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof EntityPlayer) {
+            event.addCapability(LockSlotCapability.ID, new LockSlotCapability.Provider());
+        }
     }
 
-    @SuppressWarnings("all")
-    public static boolean isGTCELoaded() {
-        return anyGtLoaded && GregTechVersion.MAJOR == 1;
-    }
-
-    @SuppressWarnings("all")
-    public static boolean isGTCEuLoaded() {
-        return anyGtLoaded && GregTechVersion.MAJOR >= 2;
-    }
-
-    public static boolean isTConstructLoaded() {
-        return tconstructLoaded;
-    }
-
-    public static boolean isAnyIc2Loaded() {
-        return anyIc2Loaded;
-    }
-
-    public static boolean isIc2ClassicLoaded() {
-        return anyIc2Loaded && ic2ClassicLoaded;
-    }
-
-    public static boolean isIc2ExpLoaded() {
-        return anyIc2Loaded && !ic2ClassicLoaded;
-    }
-
-    public static boolean isQuarkLoaded() {
-        return quarkLoaded;
-    }
-
-    public static boolean isAe2Loaded() {
-        return ae2Loaded;
-    }
-
-    public static boolean isExpandableInventoryLoaded() {
-        return expandableInventoryLoaded;
+    @SubscribeEvent
+    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.player instanceof EntityPlayerMP player) {
+            NetworkHandler.sendToPlayer(new UpdateSlotLock(LockSlotCapability.getForPlayer(player).getLockedSlots()), player);
+        }
     }
 
     public static boolean isAprilFools() {
         LocalDate date = LocalDate.now();
         return date.getMonth() == Month.APRIL && date.getDayOfMonth() == 1;
+    }
+
+    public enum Mods {
+
+        AE2(ModIds.AE2),
+        EXPANDABLE_INVENTORY(ModIds.EXPANDABLE_INVENTORY),
+        GT_ANY(ModIds.GREGTECH),
+
+        @SuppressWarnings("ConstantValue")
+        GTCE(ModIds.GREGTECH, m -> GregTechVersion.MAJOR == 1),
+
+        @SuppressWarnings("ConstantValue")
+        GTCEu(ModIds.GREGTECH, m -> GregTechVersion.MAJOR >= 2),
+
+        IC2_ANY(ModIds.IC2),
+        IC2_CLASSIC(ModIds.IC2, m -> m.getName().endsWith("Classic")),
+        IC2_EXP(ModIds.IC2, m -> !m.getName().endsWith("Classic")),
+        ITEM_FAVORITES(ModIds.ITEM_FAVORITES),
+        QUARK(ModIds.QUARK),
+        T_CONSTRUCT(ModIds.T_CONSTRUCT);
+
+        public final String id;
+        private boolean loaded = false;
+        private boolean initialized = false;
+        private final Predicate<ModContainer> extraLoadedCheck;
+
+        Mods(String id) {
+            this(id, null);
+        }
+
+        Mods(String id, @Nullable Predicate<ModContainer> extraLoadedCheck) {
+            this.id = id;
+            this.extraLoadedCheck = extraLoadedCheck;
+        }
+
+        public boolean isLoaded() {
+            if (!this.initialized) {
+                this.loaded = Loader.isModLoaded(this.id);
+                if (this.loaded && this.extraLoadedCheck != null) {
+                    this.loaded = this.extraLoadedCheck.test(Loader.instance().getIndexedModList().get(this.id));
+                }
+                this.initialized = true;
+            }
+            return this.loaded;
+        }
+    }
+
+    public static class ModIds {
+
+        public static final String AE2 = "appliedenergistics2";
+        public static final String EXPANDABLE_INVENTORY = "expandableinventory";
+        public static final String GREGTECH = "gregtech";
+        public static final String IC2 = "ic2";
+        public static final String ITEM_FAVORITES = "itemfav";
+        public static final String QUARK = "quark";
+        public static final String T_CONSTRUCT = "tconstruct";
     }
 }
