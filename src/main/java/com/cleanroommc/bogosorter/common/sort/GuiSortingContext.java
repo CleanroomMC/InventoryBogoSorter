@@ -180,7 +180,7 @@ public class GuiSortingContext {
                 else slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
             } else if (all) slots.add(BogoSortAPI.INSTANCE.getSlot(slot));
         }
-        long mainInvMask = 0b000000000111111111111111111111111111L;
+        long mainInvMask = 0b111111111111111111111111111000000000L;
         long hotbarMask = 0b111111111;
         if (!slots.isEmpty()) {
             SlotGroup slotGroup = new SlotGroup(true, false, getUnlockedSlots(slots, cap, mainInvMask), slots, Math.min(9, slots.size()));
