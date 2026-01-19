@@ -82,6 +82,7 @@ public class SlotLock implements ISelectiveResourceReloadListener {
         int x = alignment.x.apply(slotX, slotW, iw, iconOffsetX);
         int y = alignment.y.apply(slotY, slotH, ih, iconOffsetY);
         lockTexture.draw(GuiContext.getDefault(), x, y, iw, ih, WidgetTheme.getDefault().getTheme());
+        GlStateManager.color(1f, 1f, 1f, 1f);
     }
 
     public static void drawHotbarOverlay() {
