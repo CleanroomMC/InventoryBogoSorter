@@ -135,6 +135,7 @@ public class ConfigGui extends CustomModularScreen {
         //.top(0)
         //.rightRel(1f), true);
         return new ListWidget<>()
+                .name("general_config_list")
                 .left(5).right(5).top(2).bottom(2)
                 .child(new Rectangle().color(0xFF606060).asWidget()
                         .top(1)
