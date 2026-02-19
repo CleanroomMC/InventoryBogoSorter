@@ -38,7 +38,7 @@
  * For more details, see https://docs.gradle.org/8.4/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
-    implementation("com.cleanroommc:modularui:3.1.1") { transitive false }
+    implementation("com.cleanroommc:modularui:3.1.3") { transitive false }
     implementation rfg.deobf('curse.maven:key_binding_patch-928895:5951859')
     compileOnlyApi rfg.deobf("curse.maven:neverenoughanimation-1062347:6533650-sources-6533651")
     //implementation rfg.deobf("curse.maven:item-favorites-358194:3177845")
