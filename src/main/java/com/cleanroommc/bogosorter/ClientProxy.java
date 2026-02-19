@@ -71,14 +71,13 @@ public class ClientProxy extends CommonProxy {
 
     private static KeyBinding replaceKeybind(KeyBinding old, KeyBinding newKey) {
         GameSettings s = Minecraft.getMinecraft().gameSettings;
-        // replace mc drop keybind with custom version
         int i = ArrayUtils.indexOf(s.keyBindings, old);
         if (i < 0) {
             s.keyBindings = ArrayUtils.add(s.keyBindings, newKey);
         } else {
-            s.keyBindings[i] = ClientEventHandler.keyDropReplacement;
+            s.keyBindings[i] = newKey;
         }
-        ClientEventHandler.keyDropReplacement.setKeyModifierAndCode(old.getKeyModifier(), old.getKeyCode());
+        newKey.setKeyModifierAndCode(old.getKeyModifier(), old.getKeyCode());
         return newKey;
     }
 }
