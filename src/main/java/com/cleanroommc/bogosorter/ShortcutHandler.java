@@ -153,7 +153,8 @@ public class ShortcutHandler {
             return stack.isEmpty() ? ItemStack.EMPTY : stack;
         }
         if (!stackInSlot.isEmpty() && ItemHandlerHelper.canItemStacksStack(stackInSlot, stack)) {
-            int amount = Math.min(slot.bogo$getItemStackLimit(stackInSlot), Math.min(stack.getCount(), slot.bogo$getMaxStackSize(stack) - stackInSlot.getCount()));
+            int limit = Math.min(slot.bogo$getMaxStackSize(stack), slot.bogo$getItemStackLimit(stack));
+            int amount = Math.min(limit - stackInSlot.getCount(), stack.getCount());
             if (amount <= 0) return stack;
             stack.shrink(amount);
             stackInSlot.grow(amount);

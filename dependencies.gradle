@@ -42,9 +42,14 @@ dependencies {
     implementation rfg.deobf('curse.maven:key_binding_patch-928895:5951859')
     compileOnlyApi rfg.deobf("curse.maven:neverenoughanimation-1062347:6533650-sources-6533651")
 
-    compileOnly rfg.deobf('curse.maven:iron_chests-228756:2747935')
+    compileOnly "codechicken:codechickenlib:3.2.3.358"
+    compileOnly rfg.deobf('curse.maven:redstone_flux-270789:2920436')
     compileOnly rfg.deobf('curse.maven:cofh_core-69162:2920433')
+    compileOnly rfg.deobf('curse.maven:cofh_world-271384:2920434')
     compileOnly rfg.deobf('curse.maven:thermal_expansion-69163:2926431')
+    compileOnly rfg.deobf('curse.maven:thermal_foundation-222880:2926428')
+
+    compileOnly rfg.deobf('curse.maven:iron_chests-228756:2747935')
     compileOnly rfg.deobf('curse.maven:actually_additions-228404:3117927')
     compileOnly rfg.deobf('curse.maven:ender_storage_1_8-245174:2755787')
     compileOnly rfg.deobf('curse.maven:ae2_extended_life-570458:3811277')
