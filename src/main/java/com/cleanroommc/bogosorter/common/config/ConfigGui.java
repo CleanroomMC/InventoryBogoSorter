@@ -45,7 +45,6 @@ import com.cleanroommc.modularui.widgets.SortableListWidget;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.layout.Flow;
 import com.cleanroommc.modularui.widgets.layout.Grid;
-import com.cleanroommc.modularui.widgets.layout.Row;
 import com.cleanroommc.modularui.widgets.textfield.TextFieldWidget;
 
 import net.minecraft.init.Blocks;
@@ -90,8 +89,7 @@ public class ConfigGui extends CustomModularScreen {
     public @NotNull ModularPanel buildUI(ModularGuiContext context) {
         this.availableElements = new Reference2ObjectOpenHashMap<>();
         this.availableElementsNbt = new Reference2ObjectOpenHashMap<>();
-        ModularPanel panel = new ModularPanel("bogo_config")
-                .size(300, 250).align(Alignment.Center);
+        ModularPanel panel = new ModularPanel("bogo_config").size(300, 250);
 
         PagedWidget.Controller controller = new PagedWidget.Controller();
 
@@ -109,7 +107,7 @@ public class ConfigGui extends CustomModularScreen {
                         .top(35).bottom(4)
                         .addPage(createGeneralConfigUI(panel, context))
                         .addPage(createProfilesConfig(panel, context)))
-                .child(new Row()
+                .child(Flow.row()
                         .left(4).right(4)
                         .height(16).top(18)
                         .child(new PageButton(0, controller)
@@ -124,7 +122,7 @@ public class ConfigGui extends CustomModularScreen {
     }
 
     public IWidget createGeneralConfigUI(ModularPanel mainPanel, ModularGuiContext context) {
-        Row row = new Row();
+        Flow row = Flow.row();
         IPanelHandler buttonColorPicker = IPanelHandler.simple(mainPanel, (parent, player) ->
                 new ColorPickerDialog("button_color", val -> ButtonHandler.buttonColor = val, ButtonHandler.buttonColor, false)
                         .setDraggable(true), true);
@@ -138,6 +136,7 @@ public class ConfigGui extends CustomModularScreen {
                 .name("general_config_list")
                 .left(5).right(5).top(2).bottom(2)
                 .child(new Rectangle().color(0xFF606060).asWidget()
+                        .name("vertical_divider")
                         .top(1)
                         .left(32)
                         .size(1, 106))
@@ -148,6 +147,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .value(new BoolValue.Dynamic(() -> SortHandler.enableHotbarSorting, val -> SortHandler.enableHotbarSorting = val))
                                 .stateOverlay(TOGGLE_BUTTON)
                                 .disableHoverBackground()
+                                .disableHoverThemeBackground(true)
                                 .addTooltipLine(IKey.lang("bogosort.gui.hotbar_sorting.enabled"))
                                 .tooltipShowUpTimer(10)
                                 .size(14, 14)
@@ -156,13 +156,14 @@ public class ConfigGui extends CustomModularScreen {
                         .child(IKey.lang("bogosort.gui.hotbar_sorting.enabled").asWidget()
                                 .marginLeft(10)
                                 .height(14)))
-                .child(new Row()
+                .child(Flow.row()
                         .widthRel(1f).height(14)
                         .margin(0, 2)
                         .child(new CycleButtonWidget()
                                 .value(new BoolValue.Dynamic(() -> PlayerConfig.getClient().enableAutoRefill, val -> PlayerConfig.getClient().enableAutoRefill = val))
                                 .stateOverlay(TOGGLE_BUTTON)
                                 .disableHoverBackground()
+                                .disableHoverThemeBackground(true)
                                 .size(14, 14)
                                 .margin(8, 0)
                                 .background(IDrawable.EMPTY))
@@ -173,7 +174,7 @@ public class ConfigGui extends CustomModularScreen {
                         .childIf(BogoSorter.Mods.QUARK.isLoaded(), () -> new ColoredIcon(GuiTextures.EXCLAMATION, Color.RED.main).asWidget()
                                 .size(14)
                                 .tooltip(tooltip -> tooltip.addLine(IKey.lang("bogosort.gui.refill_comment")))))
-                .child(new Row()
+                .child(Flow.row()
                         .widthRel(1f).height(14)
                         .margin(0, 2)
                         .child(new TextFieldWidget()
@@ -197,6 +198,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .value(new BoolValue.Dynamic(HotbarSwap::isEnabled, HotbarSwap::setEnabled))
                                 .stateOverlay(TOGGLE_BUTTON)
                                 .disableHoverBackground()
+                                .disableHoverThemeBackground(true)
                                 .addTooltipLine(IKey.lang("bogosort.gui.hotbar_scrolling.tooltip"))
                                 .tooltipShowUpTimer(10)
                                 .size(14, 14)
@@ -214,6 +216,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .value(new BoolValue.Dynamic(() -> ButtonHandler.buttonEnabled, val -> ButtonHandler.buttonEnabled = val))
                                 .stateOverlay(TOGGLE_BUTTON)
                                 .disableHoverBackground()
+                                .disableHoverThemeBackground(true)
                                 .addTooltipLine(IKey.lang("bogosort.gui.button.enabled"))
                                 .tooltipShowUpTimer(10)
                                 .size(14, 14)
@@ -242,6 +245,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .addTooltipLine(IKey.lang("bogosort.gui.button.color"))
                                 .tooltipShowUpTimer(10)))
                 .child(new Rectangle().color(0xFF606060).asWidget()
+                        .name("horizontal_divider")
                         .fullWidth()
                         .height(1)
                         .margin(2, 4))
@@ -279,6 +283,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .value(new BoolValue.Dynamic(() -> PlayerConfig.getClient().onlyBlockSorting, val -> PlayerConfig.getClient().onlyBlockSorting = val))
                                 .stateOverlay(TOGGLE_BUTTON)
                                 .disableHoverBackground()
+                                .disableHoverThemeBackground(true)
                                 .addTooltipLine(IKey.lang("bogosort.gui.slot_lock.only_block_sort.desc"))
                                 .tooltipShowUpTimer(10)
                                 .size(14, 14)
@@ -297,6 +302,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .stateOverlay(Align.Corner.BOTTOM_LEFT, IKey.lang("bogosort.gui.corner.bl"))
                                 .stateOverlay(Align.Corner.BOTTOM_RIGHT, IKey.lang("bogosort.gui.corner.br"))
                                 .disableHoverBackground()
+                                .disableHoverThemeBackground(true)
                                 .size(100, 14)))
                 .child(Flow.row()
                         .fullWidth().height(14)
@@ -363,7 +369,7 @@ public class ConfigGui extends CustomModularScreen {
                                 .overlay(IKey.str("Profile 1")))
                         .child(IKey.str("Profiles are not yet implemented. They will come in one of the next versions.").asWidget()
                                 .top(20).width(81)))
-                .child(new Row()
+                .child(Flow.row()
                         .left(92).right(2)
                         .height(16).top(2)
                         .child(new PageButton(0, controller)
@@ -385,7 +391,7 @@ public class ConfigGui extends CustomModularScreen {
     private static <T extends SortRule<?>> Map<T, SortableListWidget.Item<T>> getSortListItemMap(Iterable<T> it) {
         final Map<T, SortableListWidget.Item<T>> items = new Object2ObjectOpenHashMap<>();
         for (T sortRule : it) {
-            items.put(sortRule, new SortableListWidget.Item<>(sortRule).child(item -> new Row()
+            items.put(sortRule, new SortableListWidget.Item<>(sortRule).child(item -> Flow.row()
                     .child(new Widget<>()
                             .addTooltipLine(IKey.lang(sortRule.getDescriptionLangKey()))
                             .widgetTheme(IThemeApi.BUTTON)
@@ -412,7 +418,7 @@ public class ConfigGui extends CustomModularScreen {
         SortableListWidget<SortRule<ItemStack>> sortableListWidget = new SortableListWidget<SortRule<ItemStack>>()
                 .children(BogoSorterConfig.sortRules, items::get)
                 .name("sortable item list");
-        List<List<AvailableElement>> availableMatrix = Grid.mapToMatrix(2, allValues, (index, value) -> {
+        List<List<AvailableElement>> availableMatrix = Grid.createGridOfWidthElements(2, allValues, (x, y, index, value) -> {
             AvailableElement availableElement = new AvailableElement()
                     .overlay(IKey.lang(value.getNameLangKey()))
                     .tooltip(tooltip -> tooltip.addLine(IKey.lang(value.getDescriptionLangKey())).showUpTimer(4))
@@ -435,7 +441,7 @@ public class ConfigGui extends CustomModularScreen {
             ModularPanel panel = ModularPanel.defaultPanel("choose_item_rules", 200, 140);
             return panel.child(ButtonWidget.panelCloseButton())
                     .child(new Grid()
-                            .matrix(availableMatrix)
+                            .grid(availableMatrix)
                             .scrollable()
                             .pos(7, 7).right(17).bottom(7));
         }, true);
@@ -466,7 +472,7 @@ public class ConfigGui extends CustomModularScreen {
         SortableListWidget<NbtSortRule> sortableListWidget = new SortableListWidget<NbtSortRule>()
                 .children(BogoSorterConfig.nbtSortRules, items::get)
                 .name("sortable nbt list");
-        List<List<AvailableElement>> availableMatrix = Grid.mapToMatrix(2, allValues, (index, value) -> {
+        List<List<AvailableElement>> availableMatrix = Grid.createGridOfWidthElements(2, allValues, (x, y, index, value) -> {
             AvailableElement availableElement = new AvailableElement()
                     .overlay(IKey.lang(value.getNameLangKey()))
                     .tooltip(tooltip -> tooltip.addLine(IKey.lang(value.getDescriptionLangKey())).showUpTimer(4))
@@ -489,7 +495,7 @@ public class ConfigGui extends CustomModularScreen {
             ModularPanel panel = ModularPanel.defaultPanel("choose_nbt_rules", 200, 140);
             return panel.child(ButtonWidget.panelCloseButton())
                     .child(new Grid()
-                            .matrix(availableMatrix)
+                            .grid(availableMatrix)
                             .scrollable()
                             .pos(7, 7).right(17).bottom(7));
         }, true);
