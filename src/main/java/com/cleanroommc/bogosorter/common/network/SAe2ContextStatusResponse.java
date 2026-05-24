@@ -12,28 +12,32 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class SAe2ContextStatusResponse implements IPacket {
 
-    private boolean available;
+    private int status;
 
     public SAe2ContextStatusResponse() {}
 
     public SAe2ContextStatusResponse(boolean available) {
-        this.available = available;
+        this(available ? SAe2AmountResponse.STATUS_OK : SAe2AmountResponse.STATUS_NO_SYSTEM);
+    }
+
+    public SAe2ContextStatusResponse(int status) {
+        this.status = status;
     }
 
     @Override
     public void encode(PacketBuffer buf) throws IOException {
-        buf.writeBoolean(this.available);
+        buf.writeInt(this.status);
     }
 
     @Override
     public void decode(PacketBuffer buf) throws IOException {
-        this.available = buf.readBoolean();
+        this.status = buf.readInt();
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public IPacket executeClient(NetHandlerPlayClient handler) {
-        Ae2TooltipClient.setAe2ContextAvailable(this.available);
+        Ae2TooltipClient.setAe2ContextStatus(this.status);
         return null;
     }
 }

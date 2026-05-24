@@ -28,13 +28,13 @@ public class CAe2ContextRefresh implements IPacket {
     public IPacket executeServer(NetHandlerPlayServer handler) {
         if (handler != null && handler.playerEntity != null) {
             if (!TooltipFeatureConfig.isTooltipEnabled()) {
-                return new SAe2ContextStatusResponse(false);
+                return new SAe2ContextStatusResponse(SAe2AmountResponse.STATUS_NO_SYSTEM);
             }
-            boolean available = CAe2AmountRequest.hasKnownAeContext(handler.playerEntity);
+            int status = CAe2AmountRequest.getWirelessContextStatus(handler.playerEntity);
             if (tryAcquire(handler.playerEntity)) {
-                available = CAe2AmountRequest.refreshPlayerAeContext(handler.playerEntity);
+                status = CAe2AmountRequest.getWirelessContextStatus(handler.playerEntity);
             }
-            return new SAe2ContextStatusResponse(available);
+            return new SAe2ContextStatusResponse(status);
         }
         return null;
     }

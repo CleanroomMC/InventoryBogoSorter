@@ -16,6 +16,7 @@ public class SAe2AmountResponse implements IPacket {
     public static final int STATUS_NO_SYSTEM = 1;
     public static final int STATUS_THROTTLED = 2;
     public static final int STATUS_ERROR = 3;
+    public static final int STATUS_OUT_OF_RANGE = 4;
 
     private int requestId;
     private int status;

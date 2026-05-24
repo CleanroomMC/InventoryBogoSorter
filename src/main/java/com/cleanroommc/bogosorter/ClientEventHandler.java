@@ -72,6 +72,7 @@ public class ClientEventHandler {
     private static final long AE2_CONTEXT_WARMUP_REFRESH_MS = 1000L;
     private static final long AE2_CONTEXT_MIN_THROTTLE_MS = 250L;
     private static final long AE2_LOGIN_WARMUP_MS = 30000L;
+    private static final long AE2_PENDING_SEARCH_TTL_MS = 5000L;
     private static final int MIN_SEARCH_RESULT_COUNT = 1;
     private static final Class<?>[] NO_PARAMETERS = new Class<?>[0];
     private static final Class<?>[] STRING_PARAMETER = new Class<?>[] { String.class };
@@ -82,6 +83,7 @@ public class ClientEventHandler {
     private static GuiScreen nextGui = null;
     private static GuiContainer pendingAe2SearchGui = null;
     private static String pendingAe2SearchText = null;
+    private static long pendingAe2SearchUntil = 0L;
 
     public static void openNextTick(GuiScreen screen) {
         ClientEventHandler.nextGui = screen;
@@ -285,10 +287,6 @@ public class ClientEventHandler {
         if (!Keyboard.getEventKeyState() || Keyboard.getEventKey() != Keyboard.KEY_T) {
             return false;
         }
-        if (!Ae2TooltipClient.isAe2ContextAvailable()) {
-            requestAe2ContextRefresh(0L);
-            return false;
-        }
         GuiContainer ae2Gui = getAe2SearchTargetGui(gui);
         if (ae2Gui == null) {
             return false;
@@ -331,8 +329,7 @@ public class ClientEventHandler {
             }
 
             if (gui != ae2Gui) {
-                pendingAe2SearchGui = ae2Gui;
-                pendingAe2SearchText = searchText;
+                queuePendingAe2Search(ae2Gui, searchText);
                 Minecraft.getMinecraft()
                     .displayGuiScreen(ae2Gui);
                 return true;
@@ -349,6 +346,7 @@ public class ClientEventHandler {
     private static void refreshAe2ContextIfNeeded() {
         if (!TooltipFeatureConfig.isTooltipEnabled() || !Mods.Ae2.isLoaded()) {
             Ae2TooltipClient.setAe2ContextAvailable(false);
+            clearPendingAe2Search();
             return;
         }
 
@@ -364,6 +362,7 @@ public class ClientEventHandler {
     private static void updateAe2LoginWarmup() {
         if (!TooltipFeatureConfig.isTooltipEnabled() || !Mods.Ae2.isLoaded()) {
             Ae2TooltipClient.setAe2ContextAvailable(false);
+            clearPendingAe2Search();
             return;
         }
 
@@ -374,6 +373,7 @@ public class ClientEventHandler {
             ae2LoginWarmupUntil = now + AE2_LOGIN_WARMUP_MS;
             nextAe2ContextRefresh = 0L;
             Ae2TooltipClient.setAe2ContextAvailable(false);
+            clearPendingAe2Search();
         }
         hadClientWorld = hasWorld;
     }
@@ -381,6 +381,7 @@ public class ClientEventHandler {
     private static void requestAe2ContextRefresh(long throttleMillis) {
         if (!TooltipFeatureConfig.isTooltipEnabled()) {
             Ae2TooltipClient.setAe2ContextAvailable(false);
+            clearPendingAe2Search();
             return;
         }
         long now = Minecraft.getSystemTime();
@@ -462,11 +463,14 @@ public class ClientEventHandler {
 
     private static void applyPendingAe2Search() {
         if (!TooltipFeatureConfig.isTooltipEnabled()) {
-            pendingAe2SearchGui = null;
-            pendingAe2SearchText = null;
+            clearPendingAe2Search();
             return;
         }
         if (pendingAe2SearchGui == null || pendingAe2SearchText == null) {
+            return;
+        }
+        if (Minecraft.getSystemTime() > pendingAe2SearchUntil) {
+            clearPendingAe2Search();
             return;
         }
 
@@ -487,9 +491,20 @@ public class ClientEventHandler {
             invokeMethod(searchField, "setText", STRING_PARAMETER, pendingAe2SearchText);
             invokeMethod(searchField, "setCursorPositionEnd");
         } catch (Throwable ignored) {} finally {
-            pendingAe2SearchGui = null;
-            pendingAe2SearchText = null;
+            clearPendingAe2Search();
         }
+    }
+
+    private static void queuePendingAe2Search(GuiContainer gui, String searchText) {
+        pendingAe2SearchGui = gui;
+        pendingAe2SearchText = searchText;
+        pendingAe2SearchUntil = Minecraft.getSystemTime() + AE2_PENDING_SEARCH_TTL_MS;
+    }
+
+    private static void clearPendingAe2Search() {
+        pendingAe2SearchGui = null;
+        pendingAe2SearchText = null;
+        pendingAe2SearchUntil = 0L;
     }
 
     @Nullable

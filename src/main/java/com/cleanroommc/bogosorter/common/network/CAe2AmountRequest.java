@@ -25,15 +25,20 @@ import com.cleanroommc.bogosorter.compat.ThaumicEnergisticsHelper;
 import appeng.api.AEApi;
 import appeng.api.features.ILocatable;
 import appeng.api.features.IWirelessTermHandler;
+import appeng.api.implementations.tiles.IWirelessAccessPoint;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.IMachineSet;
+import appeng.api.networking.security.IActionHost;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.util.DimensionalCoord;
 import appeng.api.util.IConfigManager;
+import appeng.container.implementations.ContainerMEMonitorable;
 import appeng.util.item.AEFluidStack;
 import appeng.util.item.AEItemStack;
 
@@ -57,6 +62,7 @@ public class CAe2AmountRequest implements IPacket {
     private static final int WIRELESS_CONTEXT_X = 0;
     private static final int WIRELESS_CONTEXT_Y = 0;
     private static final int WIRELESS_CONTEXT_Z = 0;
+    private static final String OPEN_TERMINAL_CONTEXT_PREFIX = "open|";
     private static final long EMPTY_AMOUNT = 0L;
     private static final int MAX_ASPECT_TAG_LENGTH = 64;
     private static final int HOT_CACHE_HIT_THRESHOLD = 10;
@@ -68,6 +74,7 @@ public class CAe2AmountRequest implements IPacket {
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_FLUID = 1;
     private static final int TYPE_ESSENTIA = 2;
+    private static final String WIRELESS_ACCESS_POINT_CLASS = "appeng.tile.networking.TileWireless";
 
     private static final Map<String, RateLimit> PLAYER_LIMITS = new HashMap<>();
     private static final Map<String, RateLimit> NETWORK_LIMITS = new HashMap<>();
@@ -202,13 +209,13 @@ public class CAe2AmountRequest implements IPacket {
             return AmountLookupResult.error();
         }
 
-        PlayerAeContext context = getPlayerAeContext(player);
-        if (context == null || context.host == null) {
-            return AmountLookupResult.noSystem();
+        WirelessContextResult contextResult = getPlayerAeContext(player);
+        if (contextResult.context == null || contextResult.context.host == null) {
+            return AmountLookupResult.fromStatus(contextResult.status);
         }
 
         boolean degraded = isServerUnderLoad();
-        String cacheKey = context.networkKey + '|' + lookupKey;
+        String cacheKey = contextResult.context.networkKey + '|' + lookupKey;
         LookupCacheEntry cached = LOOKUP_CACHE.get(cacheKey);
         if (cached != null && now - cached.createdAt <= lookupCacheTtl(cached, degraded)) {
             cached.lastAccess = now;
@@ -224,7 +231,7 @@ public class CAe2AmountRequest implements IPacket {
 
         int perSecond = degraded ? DEGRADED_NETWORK_LOOKUPS_PER_SECOND : NETWORK_LOOKUPS_PER_SECOND;
         int burst = degraded ? DEGRADED_NETWORK_LOOKUP_BURST : NETWORK_LOOKUP_BURST;
-        if (!rateLimit(NETWORK_LIMITS, context.networkKey, perSecond, burst, now)) {
+        if (!rateLimit(NETWORK_LIMITS, contextResult.context.networkKey, perSecond, burst, now)) {
             if (cached != null) {
                 cached.lastAccess = now;
                 cached.hits++;
@@ -237,9 +244,10 @@ public class CAe2AmountRequest implements IPacket {
             return AmountLookupResult.throttled();
         }
 
-        long amount = essentiaAspectTag != null ? getTerminalEssentiaAmount(context.host, essentiaAspectTag)
-            : fluidStack == null ? getTerminalItemAmount(context.host, stack)
-                : getTerminalFluidAmount(context.host, fluidStack);
+        long amount = essentiaAspectTag != null
+            ? getTerminalEssentiaAmount(contextResult.context.host, essentiaAspectTag)
+            : fluidStack == null ? getTerminalItemAmount(contextResult.context.host, stack)
+                : getTerminalFluidAmount(contextResult.context.host, fluidStack);
         putLookupCache(cacheKey, amount, now);
         return AmountLookupResult.ok(amount);
     }
@@ -309,29 +317,60 @@ public class CAe2AmountRequest implements IPacket {
         }
     }
 
-    private static PlayerAeContext getPlayerAeContext(EntityPlayerMP player) {
-        PlayerAeContext wirelessContext = getWirelessTerminalContext(player);
-        if (wirelessContext != null) {
-            return wirelessContext;
+    private static WirelessContextResult getPlayerAeContext(EntityPlayerMP player) {
+        WirelessContextResult openTerminalContext = getOpenTerminalContext(player);
+        if (openTerminalContext.context != null) {
+            return openTerminalContext;
         }
-        return null;
+        return getWirelessTerminalContext(player);
     }
 
     static boolean refreshPlayerAeContext(EntityPlayerMP player) {
-        if (player == null) {
-            return false;
-        }
-
-        PlayerAeContext wirelessContext = getWirelessTerminalContext(player);
-        return wirelessContext != null;
+        return getWirelessContextStatus(player) == SAe2AmountResponse.STATUS_OK;
     }
 
     static boolean hasKnownAeContext(EntityPlayerMP player) {
+        return TooltipFeatureConfig.isTooltipEnabled()
+            && getWirelessContextStatus(player) == SAe2AmountResponse.STATUS_OK;
+    }
+
+    static int getWirelessContextStatus(EntityPlayerMP player) {
         if (player == null) {
-            return false;
+            return SAe2AmountResponse.STATUS_NO_SYSTEM;
+        }
+        WirelessContextResult result = getWirelessTerminalContext(player);
+        return result.status;
+    }
+
+    private static WirelessContextResult getOpenTerminalContext(EntityPlayerMP player) {
+        if (player == null || !(player.openContainer instanceof ContainerMEMonitorable)) {
+            return WirelessContextResult.noSystem();
         }
 
-        return TooltipFeatureConfig.isTooltipEnabled() && getWirelessTerminalContext(player) != null;
+        ContainerMEMonitorable container = (ContainerMEMonitorable) player.openContainer;
+        if (!container.canInteractWith(player)) {
+            return WirelessContextResult.noSystem();
+        }
+
+        Object target = container.getTarget();
+        if (!(target instanceof ITerminalHost)) {
+            return WirelessContextResult.noSystem();
+        }
+
+        ITerminalHost host = (ITerminalHost) target;
+        IGridNode node = container.getNetworkNode();
+        IGrid grid = node == null ? getGrid(host) : node.getGrid();
+        String networkKey = grid == null ? OPEN_TERMINAL_CONTEXT_PREFIX + System.identityHashCode(host)
+            : networkKeyOf(player.getEntityWorld(), grid);
+        return WirelessContextResult.ok(
+            new PlayerAeContext(
+                player,
+                host,
+                WIRELESS_CONTEXT_X,
+                WIRELESS_CONTEXT_Y,
+                WIRELESS_CONTEXT_Z,
+                ForgeDirection.UNKNOWN,
+                networkKey));
     }
 
     static Ae2SearchTarget getSearchTargetForStack(EntityPlayerMP player, ItemStack stack) {
@@ -339,7 +378,8 @@ public class CAe2AmountRequest implements IPacket {
             return null;
         }
 
-        PlayerAeContext context = getPlayerAeContext(player);
+        WirelessContextResult contextResult = getPlayerAeContext(player);
+        PlayerAeContext context = contextResult.context;
         if (context == null || context.host == null) {
             return null;
         }
@@ -365,69 +405,96 @@ public class CAe2AmountRequest implements IPacket {
             amount);
     }
 
-    private static PlayerAeContext getWirelessTerminalContext(EntityPlayerMP player) {
+    private static WirelessContextResult getWirelessTerminalContext(EntityPlayerMP player) {
+        WirelessContextResult fallback = null;
         IInventory baubles = getBaublesInventory(player);
         if (baubles != null) {
             int slotCount = baubles.getSizeInventory();
             for (int slot = 0; slot < slotCount; slot++) {
-                PlayerAeContext context = createWirelessTerminalContext(player, baubles.getStackInSlot(slot));
-                if (context != null) {
-                    return context;
+                WirelessContextResult result = createWirelessTerminalContext(player, baubles.getStackInSlot(slot));
+                if (result == null) {
+                    continue;
                 }
+                if (result.context != null) {
+                    return result;
+                }
+                fallback = preferredWirelessFailure(fallback, result);
             }
         }
 
         for (ItemStack inventoryStack : player.inventory.mainInventory) {
-            PlayerAeContext context = createWirelessTerminalContext(player, inventoryStack);
-            if (context != null) {
-                return context;
+            WirelessContextResult result = createWirelessTerminalContext(player, inventoryStack);
+            if (result == null) {
+                continue;
             }
+            if (result.context != null) {
+                return result;
+            }
+            fallback = preferredWirelessFailure(fallback, result);
         }
 
-        return null;
+        return fallback == null ? WirelessContextResult.noSystem() : fallback;
     }
 
-    private static PlayerAeContext createWirelessTerminalContext(EntityPlayerMP player, ItemStack wirelessTerminal) {
+    private static WirelessContextResult preferredWirelessFailure(WirelessContextResult current,
+        WirelessContextResult candidate) {
+        if (current == null || candidate.status == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
+            return candidate;
+        }
+        return current;
+    }
+
+    private static WirelessContextResult createWirelessTerminalContext(EntityPlayerMP player,
+        ItemStack wirelessTerminal) {
         try {
             if (!isWirelessTerminal(wirelessTerminal)) {
                 return null;
             }
 
             IWirelessTermHandler wirelessHandler = getWirelessTerminalHandler(wirelessTerminal);
-            if (wirelessHandler == null || !hasWirelessTerminalPower(player, wirelessHandler, wirelessTerminal)) {
-                return null;
+            if (wirelessHandler == null) {
+                return WirelessContextResult.noSystem();
             }
 
             ILocatable locatable = getLinkedWirelessTerminalHost(wirelessHandler, wirelessTerminal);
             if (!(locatable instanceof IGridHost)) {
-                return null;
+                return WirelessContextResult.noSystem();
             }
 
             IGridNode node = ((IGridHost) locatable).getGridNode(ForgeDirection.UNKNOWN);
             if (node == null) {
-                return null;
+                return WirelessContextResult.noSystem();
             }
 
             IGrid grid = node.getGrid();
             if (grid == null || !Ae2AccessHelper.canPlayerUseGrid(player, grid, node)) {
-                return null;
+                return WirelessContextResult.noSystem();
+            }
+
+            if (!isWirelessTerminalInRange(player, wirelessHandler, wirelessTerminal, grid)) {
+                return WirelessContextResult.outOfRange();
+            }
+
+            if (!hasWirelessTerminalPower(player, wirelessHandler, wirelessTerminal)) {
+                return WirelessContextResult.noSystem();
             }
 
             IStorageGrid storageGrid = grid.getCache(IStorageGrid.class);
             if (storageGrid == null) {
-                return null;
+                return WirelessContextResult.noSystem();
             }
 
-            return new PlayerAeContext(
-                player,
-                new StorageGridTerminalHost(storageGrid, wirelessHandler.getConfigManager(wirelessTerminal), grid),
-                WIRELESS_CONTEXT_X,
-                WIRELESS_CONTEXT_Y,
-                WIRELESS_CONTEXT_Z,
-                ForgeDirection.UNKNOWN,
-                networkKeyOf(player.getEntityWorld(), grid));
+            return WirelessContextResult.ok(
+                new PlayerAeContext(
+                    player,
+                    new StorageGridTerminalHost(storageGrid, wirelessHandler.getConfigManager(wirelessTerminal), grid),
+                    WIRELESS_CONTEXT_X,
+                    WIRELESS_CONTEXT_Y,
+                    WIRELESS_CONTEXT_Z,
+                    ForgeDirection.UNKNOWN,
+                    networkKeyOf(player.getEntityWorld(), grid)));
         } catch (Throwable ignored) {
-            return null;
+            return WirelessContextResult.noSystem();
         }
     }
 
@@ -467,6 +534,46 @@ public class CAe2AmountRequest implements IPacket {
         } catch (Throwable ignored) {
             return false;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static boolean isWirelessTerminalInRange(EntityPlayerMP player, IWirelessTermHandler wirelessHandler,
+        ItemStack wirelessTerminal, IGrid grid) {
+        try {
+            if (wirelessHandler.hasInfinityRange(wirelessTerminal)) {
+                return true;
+            }
+
+            Class<?> tileWireless = Class.forName(WIRELESS_ACCESS_POINT_CLASS);
+            IMachineSet accessPoints = grid.getMachines((Class<? extends IGridHost>) tileWireless);
+            for (IGridNode accessPointNode : accessPoints) {
+                Object machine = accessPointNode.getMachine();
+                if (machine instanceof IWirelessAccessPoint
+                    && isWirelessAccessPointInRange(player, (IWirelessAccessPoint) machine)) {
+                    return true;
+                }
+            }
+        } catch (Throwable ignored) {}
+
+        return false;
+    }
+
+    private static boolean isWirelessAccessPointInRange(EntityPlayerMP player, IWirelessAccessPoint accessPoint) {
+        if (!accessPoint.isActive()) {
+            return false;
+        }
+
+        DimensionalCoord location = accessPoint.getLocation();
+        if (location == null || location.getWorld() != player.worldObj) {
+            return false;
+        }
+
+        double range = accessPoint.getRange();
+        double dx = location.x - player.posX;
+        double dy = location.y - player.posY;
+        double dz = location.z - player.posZ;
+        double distanceSq = dx * dx + dy * dy + dz * dz;
+        return distanceSq < range * range;
     }
 
     private static IInventory getBaublesInventory(EntityPlayerMP player) {
@@ -511,6 +618,14 @@ public class CAe2AmountRequest implements IPacket {
     private static IGrid getGrid(ITerminalHost host) {
         if (host instanceof StorageGridTerminalHost) {
             return ((StorageGridTerminalHost) host).grid;
+        }
+        if (host instanceof IGridHost) {
+            IGridNode node = ((IGridHost) host).getGridNode(ForgeDirection.UNKNOWN);
+            return node == null ? null : node.getGrid();
+        }
+        if (host instanceof IActionHost) {
+            IGridNode node = ((IActionHost) host).getActionableNode();
+            return node == null ? null : node.getGrid();
         }
         return null;
     }
@@ -646,6 +761,29 @@ public class CAe2AmountRequest implements IPacket {
         }
     }
 
+    private static final class WirelessContextResult {
+
+        private final PlayerAeContext context;
+        private final int status;
+
+        private WirelessContextResult(PlayerAeContext context, int status) {
+            this.context = context;
+            this.status = status;
+        }
+
+        private static WirelessContextResult ok(PlayerAeContext context) {
+            return new WirelessContextResult(context, SAe2AmountResponse.STATUS_OK);
+        }
+
+        private static WirelessContextResult noSystem() {
+            return new WirelessContextResult(null, SAe2AmountResponse.STATUS_NO_SYSTEM);
+        }
+
+        private static WirelessContextResult outOfRange() {
+            return new WirelessContextResult(null, SAe2AmountResponse.STATUS_OUT_OF_RANGE);
+        }
+    }
+
     private static final class StorageGridTerminalHost implements ITerminalHost {
 
         private final IStorageGrid storageGrid;
@@ -712,6 +850,13 @@ public class CAe2AmountRequest implements IPacket {
 
         static AmountLookupResult error() {
             return new AmountLookupResult(SAe2AmountResponse.STATUS_ERROR, 0L);
+        }
+
+        static AmountLookupResult fromStatus(int status) {
+            if (status == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
+                return new AmountLookupResult(SAe2AmountResponse.STATUS_OUT_OF_RANGE, 0L);
+            }
+            return noSystem();
         }
     }
 

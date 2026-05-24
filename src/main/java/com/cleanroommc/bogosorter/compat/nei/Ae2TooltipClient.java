@@ -37,15 +37,16 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 
 public final class Ae2TooltipClient {
 
-    private static final long CACHE_TTL_MS = 5000L;
-    private static final long MISS_TTL_MS = 2000L;
-    private static final long NO_SYSTEM_TTL_MS = 7500L;
-    private static final long REQUEST_RETRY_MS = 3000L;
+    private static final long CACHE_TTL_MS = 3000L;
+    private static final long MISS_TTL_MS = 1500L;
+    private static final long NO_SYSTEM_TTL_MS = 5000L;
+    private static final long REQUEST_RETRY_MS = 2000L;
     private static final long FLUID_CONTAINER_TTL_MS = 60000L;
     private static final long BATCH_FLUSH_MS = 100L;
     private static final long REQUEST_TIMEOUT_MS = 15000L;
     private static final long CLIENT_CACHE_CLEANUP_MS = 30000L;
     private static final long CONTEXT_REFRESH_INTERVAL_MS = 30000L;
+    private static final long TOOLTIP_CONTEXT_REFRESH_MS = 1500L;
     private static final int CLIENT_REQUESTS_PER_SECOND = 8;
     private static final int CLIENT_REQUEST_BURST = 16;
     private static final int MAX_BATCH_SIZE = 32;
@@ -71,7 +72,8 @@ public final class Ae2TooltipClient {
     private static long lastRequestRefillTime;
     private static long nextBatchFlushTime;
     private static long nextClientCacheCleanupTime;
-    private static boolean ae2ContextAvailable;
+    private static long nextTooltipContextRefreshTime;
+    private static int ae2ContextStatus = SAe2AmountResponse.STATUS_NO_SYSTEM;
 
     private Ae2TooltipClient() {}
 
@@ -87,13 +89,14 @@ public final class Ae2TooltipClient {
     }
 
     public static void appendAmountTooltip(ItemStack stack, List<String> tooltip) {
+        appendAmountTooltip(stack, tooltip, false);
+    }
+
+    public static void appendAmountTooltip(ItemStack stack, List<String> tooltip, boolean allowOpenTerminal) {
         if (!TooltipFeatureConfig.isTooltipEnabled()) {
             return;
         }
         if (stack == null || stack.getItem() == null || !Mods.Ae2.isLoaded()) {
-            return;
-        }
-        if (!ae2ContextAvailable) {
             return;
         }
         Minecraft mc = Minecraft.getMinecraft();
@@ -102,6 +105,16 @@ public final class Ae2TooltipClient {
         }
 
         long now = Minecraft.getSystemTime();
+        if (!allowOpenTerminal && ae2ContextStatus == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
+            requestContextRefresh(now, TOOLTIP_CONTEXT_REFRESH_MS);
+            addOutOfRangeLine(tooltip);
+            return;
+        }
+        if (!allowOpenTerminal && ae2ContextStatus != SAe2AmountResponse.STATUS_OK) {
+            requestContextRefresh(now, TOOLTIP_CONTEXT_REFRESH_MS);
+            return;
+        }
+
         FluidStack fluidStack = fluidOf(stack, now);
         String essentiaAspectTag = fluidStack == null ? ThaumicEnergisticsHelper.getAspectTag(stack) : null;
         int amountKind = fluidStack != null ? KIND_FLUID : essentiaAspectTag != null ? KIND_ESSENTIA : KIND_ITEM;
@@ -118,7 +131,7 @@ public final class Ae2TooltipClient {
         cleanupClientCaches(now);
 
         if (entry.hasResponse && now - entry.responseTime <= ttlFor(entry)) {
-            addAmountLine(tooltip, entry.amount, entry.amountKind);
+            addResponseLine(tooltip, entry);
             return;
         }
 
@@ -127,7 +140,7 @@ public final class Ae2TooltipClient {
         }
 
         if (entry.hasResponse) {
-            addAmountLine(tooltip, entry.amount, entry.amountKind);
+            addResponseLine(tooltip, entry);
         } else {
             addCheckingLine(tooltip);
         }
@@ -154,6 +167,14 @@ public final class Ae2TooltipClient {
         if (status == SAe2AmountResponse.STATUS_THROTTLED) {
             return;
         }
+        if (status == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
+            entry.hasResponse = true;
+            entry.status = status;
+            entry.amount = 0L;
+            entry.responseTime = entry.requestTime;
+            ae2ContextStatus = status;
+            return;
+        }
         if (status == SAe2AmountResponse.STATUS_NO_SYSTEM) {
             resetAe2State();
             return;
@@ -173,18 +194,37 @@ public final class Ae2TooltipClient {
     }
 
     public static void setAe2ContextAvailable(boolean available) {
-        ae2ContextAvailable = TooltipFeatureConfig.isTooltipEnabled() && available;
+        setAe2ContextStatus(available ? SAe2AmountResponse.STATUS_OK : SAe2AmountResponse.STATUS_NO_SYSTEM);
+    }
+
+    public static void setAe2ContextStatus(int status) {
+        ae2ContextStatus = TooltipFeatureConfig.isTooltipEnabled() ? status : SAe2AmountResponse.STATUS_NO_SYSTEM;
+        if (ae2ContextStatus != SAe2AmountResponse.STATUS_OK) {
+            clearRequestState();
+        }
     }
 
     public static boolean isAe2ContextAvailable() {
-        return TooltipFeatureConfig.isTooltipEnabled() && ae2ContextAvailable;
+        return TooltipFeatureConfig.isTooltipEnabled() && ae2ContextStatus == SAe2AmountResponse.STATUS_OK;
     }
 
     public static void resetAe2State() {
-        ae2ContextAvailable = false;
+        ae2ContextStatus = SAe2AmountResponse.STATUS_NO_SYSTEM;
+        clearRequestState();
+    }
+
+    private static void clearRequestState() {
         CACHE.clear();
         REQUEST_KEYS.clear();
         BATCH_QUEUE.clear();
+    }
+
+    private static void requestContextRefresh(long now, long interval) {
+        if (now < nextTooltipContextRefreshTime) {
+            return;
+        }
+        nextTooltipContextRefreshTime = now + interval;
+        NetworkHandler.sendToServer(new CAe2ContextRefresh());
     }
 
     private static void requestAmount(String key, ItemStack stack, FluidStack fluidStack, String essentiaAspectTag,
@@ -323,13 +363,27 @@ public final class Ae2TooltipClient {
                 + suffixFor(amountKind));
     }
 
+    private static void addResponseLine(List<String> tooltip, Entry entry) {
+        if (entry.status == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
+            addOutOfRangeLine(tooltip);
+            return;
+        }
+        addAmountLine(tooltip, entry.amount, entry.amountKind);
+    }
+
     private static void addCheckingLine(List<String> tooltip) {
         tooltip.add("");
         tooltip.add(EnumChatFormatting.DARK_GRAY + "Amount in System: checking...");
     }
 
+    private static void addOutOfRangeLine(List<String> tooltip) {
+        tooltip.add("");
+        tooltip.add(EnumChatFormatting.RED + "Amount in System: Out Of Range");
+    }
+
     private static long ttlFor(Entry entry) {
-        if (entry.status == SAe2AmountResponse.STATUS_NO_SYSTEM) {
+        if (entry.status == SAe2AmountResponse.STATUS_NO_SYSTEM
+            || entry.status == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
             return NO_SYSTEM_TTL_MS;
         }
         if (entry.amount <= 0L || entry.status == SAe2AmountResponse.STATUS_ERROR) {
@@ -417,6 +471,34 @@ public final class Ae2TooltipClient {
         return false;
     }
 
+    private static boolean isAe2TerminalContextGui(GuiContainer gui) {
+        if (isAe2TerminalGui(gui)) {
+            return true;
+        }
+        Object firstGui = getRelatedGui(gui, "firstGui");
+        if (isAe2TerminalGui(firstGui)) {
+            return true;
+        }
+        return isAe2TerminalGui(getRelatedGui(gui, "getFirstScreen"));
+    }
+
+    private static Object getRelatedGui(GuiContainer gui, String memberName) {
+        try {
+            if (memberName.startsWith("get")) {
+                return RecipeTooltipHandler.invokeMethod(gui, memberName);
+            }
+
+            Field field = RecipeTooltipHandler.findField(gui.getClass(), memberName);
+            if (field == null) {
+                return null;
+            }
+            field.setAccessible(true);
+            return field.get(gui);
+        } catch (ReflectiveOperationException ignored) {
+            return null;
+        }
+    }
+
     public static final class Ae2GuiWatcher {
 
         private Object lastGui;
@@ -450,7 +532,7 @@ public final class Ae2TooltipClient {
             this.nextRefreshTime = now + CONTEXT_REFRESH_INTERVAL_MS;
             CACHE.clear();
             REQUEST_KEYS.clear();
-            NetworkHandler.sendToServer(new CAe2ContextRefresh());
+            requestContextRefresh(now, 0L);
         }
     }
 
@@ -476,10 +558,10 @@ public final class Ae2TooltipClient {
             List<String> currenttip) {
             if (gui instanceof GuiRecipe) {
                 if (!appendForHoveredRecipeStack(gui, itemstack, mousex, mousey, currenttip)) {
-                    appendAmountTooltip(itemstack, currenttip);
+                    appendAmountTooltip(itemstack, currenttip, isAe2TerminalContextGui(gui));
                 }
             } else if (!isAe2TerminalStorageHover(gui)) {
-                appendAmountTooltip(itemstack, currenttip);
+                appendAmountTooltip(itemstack, currenttip, isAe2TerminalContextGui(gui));
             }
             return currenttip;
         }
@@ -530,7 +612,7 @@ public final class Ae2TooltipClient {
                 return false;
             }
 
-            appendAmountTooltip(hovered.item, currenttip);
+            appendAmountTooltip(hovered.item, currenttip, isAe2TerminalContextGui(gui));
             return true;
         }
 
