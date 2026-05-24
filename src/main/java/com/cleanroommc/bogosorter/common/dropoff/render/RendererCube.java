@@ -32,6 +32,14 @@ public class RendererCube {
         this.currentTime = System.currentTimeMillis();
     }
 
+    public void drawMerged(List<RendererCubeTarget> rendererCubeTargets) {
+        List<RendererCubeTarget> mergedTargets = new ArrayList<>();
+        for (RendererCubeTarget target : rendererCubeTargets) {
+            mergeTarget(mergedTargets, target);
+        }
+        draw(mergedTargets);
+    }
+
     /**
      * This method is called by the RenderWorldLastEvent handler.
      */
@@ -397,5 +405,26 @@ public class RendererCube {
         GL11.glVertex3f(maxX, maxY, maxZ);
         GL11.glVertex3f(minX, minY, maxZ);
         GL11.glVertex3f(minX, maxY, maxZ);
+    }
+
+    private static void mergeTarget(List<RendererCubeTarget> targets, RendererCubeTarget target) {
+        for (int i = 0; i < targets.size(); i++) {
+            RendererCubeTarget existing = targets.get(i);
+            if (!existing.getBlockPos()
+                .equals(target.getBlockPos())) {
+                continue;
+            }
+
+            if (!isRed(existing.getColor()) && isRed(target.getColor())) {
+                targets.set(i, target);
+            }
+            return;
+        }
+
+        targets.add(target);
+    }
+
+    private static boolean isRed(Color color) {
+        return color.getRed() > 200 && color.getGreen() < 80 && color.getBlue() < 80;
     }
 }

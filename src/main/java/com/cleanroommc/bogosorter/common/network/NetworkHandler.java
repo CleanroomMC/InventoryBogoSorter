@@ -45,6 +45,15 @@ public class NetworkHandler {
         registerS2C(SDropOffMessage.class);
         registerS2C(SDropOffThrottled.class);
         registerC2S(CRefill.class);
+        registerC2S(CSearchAe2Terminal.class);
+        registerS2C(SSearchAe2TerminalResult.class);
+        registerC2S(CAe2ContextRefresh.class);
+        registerC2S(CAe2AmountRequest.class);
+        registerS2C(SAe2AmountResponse.class);
+        registerC2S(CAe2AmountBatchRequest.class);
+        registerS2C(SAe2AmountBatchResponse.class);
+        registerS2C(SAe2ContextStatusResponse.class);
+        registerS2C(STooltipFeatureState.class);
     }
 
     private static void registerC2S(Class<? extends IPacket> clazz) {
@@ -61,6 +70,10 @@ public class NetworkHandler {
 
     public static void sendToWorld(IPacket packet, World world) {
         network.sendToDimension(packet, world.provider.dimensionId);
+    }
+
+    public static void sendToAll(IPacket packet) {
+        network.sendToAll(packet);
     }
 
     public static void sendToPlayer(IPacket packet, EntityPlayerMP player) {

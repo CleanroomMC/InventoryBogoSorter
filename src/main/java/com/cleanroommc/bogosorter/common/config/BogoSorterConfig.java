@@ -13,6 +13,9 @@ public class BogoSorterConfig {
     @Config.Comment("Usage Ticker Configuration")
     public static final UsageTicker usageTicker = new UsageTicker();
 
+    @Config.Comment("AE2 and Thaumic tooltip/search integration.")
+    public static final Ae2Integration ae2Integration = new Ae2Integration();
+
     @Config.DefaultString("gui.button.press")
     @Config.Comment("Sound played when the sort button is pressed.")
     @Config.LangKey("bogosorter.config.sort.sound")
@@ -69,6 +72,15 @@ public class BogoSorterConfig {
     @Config.LangKey("bogosorter.config.debug_tools.enable")
     @Config.Sync
     public static boolean enableDebugTools;
+
+    @Config.LangKey("bogosorter.config.ae2")
+    public static class Ae2Integration {
+
+        @Config.DefaultBoolean(true)
+        @Config.Comment("Enable AE2/Thaumic inventory tooltips and terminal search.")
+        @Config.LangKey("bogosorter.config.ae2.tooltip")
+        public boolean enableTooltipSearch;
+    }
 
     @Config.LangKey("bogosorter.config.usage_ticker")
     public static class UsageTicker {

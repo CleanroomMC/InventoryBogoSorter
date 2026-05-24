@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter;
 import java.time.LocalDate;
 import java.time.Month;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,14 +16,18 @@ import com.cleanroommc.bogosorter.common.SortConfigChangeEvent;
 import com.cleanroommc.bogosorter.common.XSTR;
 import com.cleanroommc.bogosorter.common.config.BogoSortCommandTree;
 import com.cleanroommc.bogosorter.common.config.Serializer;
+import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
 import com.cleanroommc.bogosorter.common.dropoff.DropOffButtonHandler;
 import com.cleanroommc.bogosorter.common.dropoff.DropOffScheduler;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
+import com.cleanroommc.bogosorter.common.network.STooltipFeatureState;
 import com.cleanroommc.bogosorter.common.refill.RefillHandler;
 import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
+import com.cleanroommc.bogosorter.compat.Mods;
+import com.cleanroommc.bogosorter.compat.nei.Ae2TooltipClient;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -31,6 +36,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 
 @Mod(
@@ -57,6 +63,7 @@ public class BogoSorter {
         FMLCommonHandler.instance()
             .bus()
             .register(NetworkHandler.INSTANCE);
+        TooltipFeatureConfig.load();
         OreDictHelper.init();
         BogoSortAPI.INSTANCE.remapSortRule("is_block", "block_type");
         DefaultRules.init(BogoSortAPI.INSTANCE);
@@ -79,6 +86,9 @@ public class BogoSorter {
                 .register(new HotbarSwap());
             MinecraftForge.EVENT_BUS.register(new HotbarSwap());
             BSKeybinds.init(event.getSuggestedConfigurationFile());
+            if (Mods.Nei.isLoaded() && Mods.CodeChickenCore.isLoaded()) {
+                Ae2TooltipClient.init();
+            }
         }
     }
 
@@ -95,7 +105,17 @@ public class BogoSorter {
 
     @Mod.EventHandler
     public void onServerLoad(FMLServerStartingEvent event) {
+        TooltipFeatureConfig.load();
         event.registerServerCommand(new BogoSortCommandTree());
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.player instanceof EntityPlayerMP) {
+            NetworkHandler.sendToPlayer(
+                new STooltipFeatureState(TooltipFeatureConfig.isTooltipEnabled()),
+                (EntityPlayerMP) event.player);
+        }
     }
 
     @SubscribeEvent

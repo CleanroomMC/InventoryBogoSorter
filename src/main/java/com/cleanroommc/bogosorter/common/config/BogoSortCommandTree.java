@@ -1,5 +1,8 @@
 package com.cleanroommc.bogosorter.common.config;
 
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -16,6 +19,7 @@ public class BogoSortCommandTree extends CommandTreeBase {
 
     public BogoSortCommandTree() {
         addSubcommand(new ConfigReloadCommand());
+        addSubcommand(new TooltipCommand());
         addSubcommand(new CommandBase() {
 
             @Override
@@ -49,7 +53,12 @@ public class BogoSortCommandTree extends CommandTreeBase {
     }
 
     @Override
+    public @NotNull List<String> getCommandAliases() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public @NotNull String getCommandUsage(@NotNull ICommandSender sender) {
-        return "/bogosorter [reload]";
+        return "/bogosorter <reload|tooltip|hand>";
     }
 }

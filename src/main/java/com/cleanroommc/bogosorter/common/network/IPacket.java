@@ -24,19 +24,14 @@ public interface IPacket extends IMessage {
     default void fromBytes(ByteBuf buf) {
         try {
             decode(new PacketBuffer(buf));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException ignored) {}
     }
 
     @Override
     default void toBytes(ByteBuf buf) {
         try {
             encode(new PacketBuffer(buf));
-        } catch (IOException e) {
-            System.out.println(e.getCause());
-            e.printStackTrace();
-        }
+        } catch (IOException ignored) {}
     }
 
     @SideOnly(Side.CLIENT)
