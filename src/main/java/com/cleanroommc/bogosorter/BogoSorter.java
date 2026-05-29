@@ -60,6 +60,7 @@ public class BogoSorter {
             .bus()
             .register(this);
         NetworkHandler.init();
+        
         FMLCommonHandler.instance()
             .bus()
             .register(NetworkHandler.INSTANCE);
@@ -70,22 +71,30 @@ public class BogoSorter {
         DefaultCompat.init(BogoSortAPI.INSTANCE);
         Serializer.loadConfig();
         MinecraftForge.EVENT_BUS.register(new RefillHandler());
+
         FMLCommonHandler.instance()
             .bus()
             .register(DropOffScheduler.INSTANCE);
+
         if (NetworkUtils.isDedicatedClient()) {
             MinecraftForge.EVENT_BUS.post(new SortConfigChangeEvent());
+
             FMLCommonHandler.instance()
                 .bus()
                 .register(new ClientEventHandler());
+
             MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
             MinecraftForge.EVENT_BUS.register(new DropOffButtonHandler());
             MinecraftForge.EVENT_BUS.register(new ButtonHandler());
+
             FMLCommonHandler.instance()
                 .bus()
                 .register(new HotbarSwap());
+
             MinecraftForge.EVENT_BUS.register(new HotbarSwap());
+
             BSKeybinds.init(event.getSuggestedConfigurationFile());
+
             if (Mods.Nei.isLoaded() && Mods.CodeChickenCore.isLoaded()) {
                 Ae2TooltipClient.init();
             }
