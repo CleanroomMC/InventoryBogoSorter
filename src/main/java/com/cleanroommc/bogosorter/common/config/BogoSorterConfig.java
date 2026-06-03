@@ -148,13 +148,6 @@ public class BogoSorterConfig {
         @Config.Sync
         public int dropoffRadius;
 
-        @Config.DefaultBoolean(false)
-        @Config.Comment({ "Enable the debug clear/randomize inventory tools (numpad 1/2 in a container GUI).",
-            "These overwrite inventory contents, so they are restricted to server operators even when enabled." })
-        @Config.LangKey("bogosorter.config.debug_tools.enable")
-        @Config.Sync
-        public static boolean enableDebugTools;
-
         @Config.DefaultBoolean(true)
         @Config.Comment("Enable the drop-off button in the player inventory.")
         @Config.LangKey("bogosorter.config.dropoff.enable")

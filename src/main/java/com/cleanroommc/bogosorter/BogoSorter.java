@@ -60,7 +60,7 @@ public class BogoSorter {
             .bus()
             .register(this);
         NetworkHandler.init();
-        
+
         FMLCommonHandler.instance()
             .bus()
             .register(NetworkHandler.INSTANCE);
