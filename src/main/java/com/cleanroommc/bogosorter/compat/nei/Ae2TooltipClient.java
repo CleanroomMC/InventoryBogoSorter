@@ -23,6 +23,7 @@ import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.SAe2AmountResponse;
 import com.cleanroommc.bogosorter.compat.Mods;
 import com.cleanroommc.bogosorter.compat.ThaumicEnergisticsHelper;
+import com.github.bsideup.jabel.Desugar;
 
 import codechicken.nei.PositionedStack;
 import codechicken.nei.Widget;
@@ -89,10 +90,6 @@ public final class Ae2TooltipClient {
         FMLCommonHandler.instance()
             .bus()
             .register(new Ae2GuiWatcher());
-    }
-
-    public static void appendAmountTooltip(ItemStack stack, List<String> tooltip) {
-        appendAmountTooltip(stack, tooltip, false);
     }
 
     public static void appendAmountTooltip(ItemStack stack, List<String> tooltip, boolean allowOpenTerminal) {
@@ -186,7 +183,7 @@ public final class Ae2TooltipClient {
             entry.responseTime = entry.requestTime;
             return;
         }
-        if (status == SAe2AmountResponse.STATUS_NO_SYSTEM || status == SAe2AmountResponse.STATUS_ERROR) {
+        if (status == SAe2AmountResponse.STATUS_ERROR) {
             return;
         }
 
@@ -205,10 +202,6 @@ public final class Ae2TooltipClient {
         if (ae2ContextStatus != SAe2AmountResponse.STATUS_OK) {
             clearRequestState();
         }
-    }
-
-    public static boolean isAe2ContextAvailable() {
-        return TooltipFeatureConfig.isTooltipEnabled() && ae2ContextStatus == SAe2AmountResponse.STATUS_OK;
     }
 
     public static void resetAe2State() {
@@ -311,14 +304,9 @@ public final class Ae2TooltipClient {
         }
 
         if (FLUID_CONTAINER_CACHE.size() > MAX_FLUID_CACHE_ENTRIES) {
-            Iterator<Map.Entry<String, FluidEntry>> iterator = FLUID_CONTAINER_CACHE.entrySet()
-                .iterator();
-            while (iterator.hasNext()) {
-                if (now - iterator.next()
-                    .getValue().createdAt > FLUID_CONTAINER_TTL_MS) {
-                    iterator.remove();
-                }
-            }
+            FLUID_CONTAINER_CACHE.entrySet()
+                .removeIf(
+                    stringFluidEntryEntry -> now - stringFluidEntryEntry.getValue().createdAt > FLUID_CONTAINER_TTL_MS);
         }
 
         Iterator<Map.Entry<Integer, String>> requestIterator = REQUEST_KEYS.entrySet()
@@ -362,7 +350,7 @@ public final class Ae2TooltipClient {
         tooltip.add(
             EnumChatFormatting.GRAY + StatCollector.translateToLocalFormatted(
                 "bogosorter.tooltip.amount_in_system",
-                EnumChatFormatting.AQUA.toString() + ReadableNumberConverter.INSTANCE.toWideReadableForm(amount)
+                EnumChatFormatting.AQUA + ReadableNumberConverter.INSTANCE.toWideReadableForm(amount)
                     + suffixFor(amountKind)));
     }
 
@@ -549,12 +537,7 @@ public final class Ae2TooltipClient {
                 return currenttip;
             }
 
-            appendForHoveredRecipeStack(gui, null, mousex, mousey, currenttip);
-            return currenttip;
-        }
-
-        @Override
-        public List<String> handleItemDisplayName(GuiContainer gui, ItemStack itemstack, List<String> currenttip) {
+            appendForHoveredRecipeStack(gui, mousex, mousey, currenttip);
             return currenttip;
         }
 
@@ -562,7 +545,7 @@ public final class Ae2TooltipClient {
         public List<String> handleItemTooltip(GuiContainer gui, ItemStack itemstack, int mousex, int mousey,
             List<String> currenttip) {
             if (gui instanceof GuiRecipe) {
-                if (!appendForHoveredRecipeStack(gui, itemstack, mousex, mousey, currenttip)) {
+                if (!appendForHoveredRecipeStack(gui, mousex, mousey, currenttip)) {
                     appendAmountTooltip(itemstack, currenttip, isAe2TerminalContextGui(gui));
                 }
             } else if (!isAe2TerminalStorageHover(gui)) {
@@ -595,14 +578,8 @@ public final class Ae2TooltipClient {
             return false;
         }
 
-        @Override
-        public Map<String, String> handleHotkeys(GuiContainer gui, int mousex, int mousey,
-            Map<String, String> hotkeys) {
-            return hotkeys;
-        }
-
-        private static boolean appendForHoveredRecipeStack(GuiContainer gui, ItemStack itemstack, int mousex,
-            int mousey, List<String> currenttip) {
+        private static boolean appendForHoveredRecipeStack(GuiContainer gui, int mousex, int mousey,
+            List<String> currenttip) {
             if (!(gui instanceof GuiRecipe)) {
                 return false;
             }
@@ -683,19 +660,9 @@ public final class Ae2TooltipClient {
         private int hits;
     }
 
-    private static final class PendingRequest {
+    @Desugar
+    private record PendingRequest(int requestId, ItemStack stack, FluidStack fluidStack, String essentiaAspectTag) {
 
-        private final int requestId;
-        private final ItemStack stack;
-        private final FluidStack fluidStack;
-        private final String essentiaAspectTag;
-
-        private PendingRequest(int requestId, ItemStack stack, FluidStack fluidStack, String essentiaAspectTag) {
-            this.requestId = requestId;
-            this.stack = stack;
-            this.fluidStack = fluidStack;
-            this.essentiaAspectTag = essentiaAspectTag;
-        }
     }
 
     private static final class FluidEntry {

@@ -31,7 +31,6 @@ import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.IMachineSet;
-import appeng.api.networking.security.IActionHost;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEMonitor;
 import appeng.api.storage.ITerminalHost;
@@ -90,8 +89,10 @@ public class CAe2AmountRequest implements IPacket {
     private FluidStack fluidStack;
     private String essentiaAspectTag;
 
+    @SuppressWarnings("unused") // Required for packet deserialization
     public CAe2AmountRequest() {}
 
+    @SuppressWarnings("unused")
     public CAe2AmountRequest(int requestId, ItemStack stack, FluidStack fluidStack) {
         this(requestId, stack, fluidStack, null);
     }
@@ -151,7 +152,7 @@ public class CAe2AmountRequest implements IPacket {
         if (!TooltipFeatureConfig.isTooltipEnabled()) {
             return response(SAe2AmountResponse.STATUS_NO_SYSTEM, EMPTY_AMOUNT);
         }
-        if (!allowPlayerRequests(player, now, SINGLE_REQUEST)) {
+        if (arePlayerRequestsLimited(player, now, SINGLE_REQUEST)) {
             return response(SAe2AmountResponse.STATUS_THROTTLED, EMPTY_AMOUNT);
         }
 
@@ -179,23 +180,20 @@ public class CAe2AmountRequest implements IPacket {
         return new SAe2AmountResponse(this.requestId, status, amount);
     }
 
-    private static boolean rateLimit(Map<String, RateLimit> limits, String key, int perSecond, int burst, long now) {
-        RateLimit limit = limits.get(key);
-        if (limit == null) {
-            limit = new RateLimit(perSecond, burst, now);
-            limits.put(key, limit);
-        }
-        return limit.tryAcquire(now);
+    private static boolean isRateLimited(Map<String, RateLimit> limits, String key, int perSecond, int burst,
+        long now) {
+        RateLimit limit = limits.computeIfAbsent(key, ignored -> new RateLimit(perSecond, burst, now));
+        return !limit.tryAcquire(now);
     }
 
-    static boolean allowPlayerRequests(EntityPlayerMP player, long now, int count) {
+    static boolean arePlayerRequestsLimited(EntityPlayerMP player, long now, int count) {
         String key = playerKey(player);
         for (int i = 0; i < count; i++) {
-            if (!rateLimit(PLAYER_LIMITS, key, PLAYER_REQUESTS_PER_SECOND, PLAYER_REQUEST_BURST, now)) {
-                return false;
+            if (isRateLimited(PLAYER_LIMITS, key, PLAYER_REQUESTS_PER_SECOND, PLAYER_REQUEST_BURST, now)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     static AmountLookupResult lookupAmount(EntityPlayerMP player, ItemStack stack, FluidStack fluidStack,
@@ -233,7 +231,7 @@ public class CAe2AmountRequest implements IPacket {
 
         int perSecond = degraded ? DEGRADED_NETWORK_LOOKUPS_PER_SECOND : NETWORK_LOOKUPS_PER_SECOND;
         int burst = degraded ? DEGRADED_NETWORK_LOOKUP_BURST : NETWORK_LOOKUP_BURST;
-        if (!rateLimit(NETWORK_LIMITS, contextResult.context.networkKey, perSecond, burst, now)) {
+        if (isRateLimited(NETWORK_LIMITS, contextResult.context.networkKey, perSecond, burst, now)) {
             if (cached != null) {
                 cached.lastAccess = now;
                 cached.hits++;
@@ -302,7 +300,7 @@ public class CAe2AmountRequest implements IPacket {
         nextServerLoadCheckTime = now + SERVER_LOAD_CACHE_MS;
         try {
             MinecraftServer server = MinecraftServer.getServer();
-            if (server == null || server.tickTimeArray == null || server.tickTimeArray.length == 0) {
+            if (server == null || server.tickTimeArray.length == 0) {
                 cachedServerUnderLoad = false;
                 return cachedServerUnderLoad;
             }
@@ -327,8 +325,8 @@ public class CAe2AmountRequest implements IPacket {
         return getWirelessTerminalContext(player);
     }
 
-    static boolean refreshPlayerAeContext(EntityPlayerMP player) {
-        return getWirelessContextStatus(player) == SAe2AmountResponse.STATUS_OK;
+    static void refreshPlayerAeContext(EntityPlayerMP player) {
+        getWirelessContextStatus(player);
     }
 
     static boolean hasKnownAeContext(EntityPlayerMP player) {
@@ -364,11 +362,10 @@ public class CAe2AmountRequest implements IPacket {
         }
 
         Object target = container.getTarget();
-        if (!(target instanceof ITerminalHost)) {
+        if (!(target instanceof ITerminalHost host)) {
             return WirelessContextResult.noSystem();
         }
 
-        ITerminalHost host = (ITerminalHost) target;
         IGridNode node = container.getNetworkNode();
         IGrid grid = node == null ? getGrid(host) : node.getGrid();
         String networkKey = grid == null ? OPEN_TERMINAL_CONTEXT_PREFIX + System.identityHashCode(host)
@@ -385,13 +382,12 @@ public class CAe2AmountRequest implements IPacket {
     }
 
     private static WirelessContextResult getOpenAe2FcTerminalContext(EntityPlayerMP player, Container container) {
-        if (container == null || !isInstanceOf(container, AE2FC_BASE_CONTAINER_CLASS)
-            || !container.canInteractWith(player)) {
+        if (container == null || !isAe2FcBaseContainer(container) || !container.canInteractWith(player)) {
             return WirelessContextResult.noSystem();
         }
 
         try {
-            Object host = invokeNoArg(container, "getHost");
+            Object host = invokeGetHost(container);
             if (!(host instanceof ITerminalHost terminalHost)) {
                 return WirelessContextResult.noSystem();
             }
@@ -651,10 +647,10 @@ public class CAe2AmountRequest implements IPacket {
         }
     }
 
-    private static boolean isInstanceOf(Object instance, String className) {
+    private static boolean isAe2FcBaseContainer(Object instance) {
         Class<?> current = instance.getClass();
         while (current != null) {
-            if (className.equals(current.getName())) {
+            if (AE2FC_BASE_CONTAINER_CLASS.equals(current.getName())) {
                 return true;
             }
             current = current.getSuperclass();
@@ -662,18 +658,18 @@ public class CAe2AmountRequest implements IPacket {
         return false;
     }
 
-    private static Object invokeNoArg(Object instance, String methodName) throws ReflectiveOperationException {
+    private static Object invokeGetHost(Object instance) throws ReflectiveOperationException {
         Class<?> current = instance.getClass();
         while (current != null) {
             try {
-                Method method = current.getDeclaredMethod(methodName);
+                Method method = current.getDeclaredMethod("getHost");
                 method.setAccessible(true);
                 return method.invoke(instance);
             } catch (NoSuchMethodException ignored) {
                 current = current.getSuperclass();
             }
         }
-        throw new NoSuchMethodException(methodName);
+        throw new NoSuchMethodException("getHost");
     }
 
     private static String networkKeyOf(World world, IGrid grid) {
@@ -686,10 +682,6 @@ public class CAe2AmountRequest implements IPacket {
         }
         if (host instanceof IGridHost) {
             IGridNode node = ((IGridHost) host).getGridNode(ForgeDirection.UNKNOWN);
-            return node == null ? null : node.getGrid();
-        }
-        if (host instanceof IActionHost) {
-            IGridNode node = ((IActionHost) host).getActionableNode();
             return node == null ? null : node.getGrid();
         }
         return null;
@@ -777,26 +769,16 @@ public class CAe2AmountRequest implements IPacket {
         }
         nextCleanupTime = now + CACHE_CLEANUP_INTERVAL_MS;
 
-        for (Iterator<Map.Entry<String, LookupCacheEntry>> iterator = LOOKUP_CACHE.entrySet()
-            .iterator(); iterator.hasNext();) {
-            if (now - iterator.next()
-                .getValue().createdAt > CACHE_RETAIN_MS) {
-                iterator.remove();
-            }
-        }
+        LOOKUP_CACHE.entrySet()
+            .removeIf(entry -> now - entry.getValue().createdAt > CACHE_RETAIN_MS);
 
         cleanupRateLimits(PLAYER_LIMITS, now);
         cleanupRateLimits(NETWORK_LIMITS, now);
     }
 
     private static void cleanupRateLimits(Map<String, RateLimit> limits, long now) {
-        for (Iterator<Map.Entry<String, RateLimit>> iterator = limits.entrySet()
-            .iterator(); iterator.hasNext();) {
-            if (now - iterator.next()
-                .getValue().lastRefillTime > CACHE_RETAIN_MS) {
-                iterator.remove();
-            }
-        }
+        limits.entrySet()
+            .removeIf(entry -> now - entry.getValue().lastRefillTime > CACHE_RETAIN_MS);
     }
 
     private static final class PlayerAeContext {
@@ -806,8 +788,8 @@ public class CAe2AmountRequest implements IPacket {
         private final int y;
         private final int z;
         private final ForgeDirection side;
-        private ITerminalHost host;
-        private String networkKey;
+        private final ITerminalHost host;
+        private final String networkKey;
 
         private PlayerAeContext(EntityPlayerMP player, ITerminalHost host, int x, int y, int z, ForgeDirection side,
             String networkKey) {
@@ -826,56 +808,39 @@ public class CAe2AmountRequest implements IPacket {
         }
     }
 
-    private static final class WirelessContextResult {
-
-        private final PlayerAeContext context;
-        private final int status;
-
-        private WirelessContextResult(PlayerAeContext context, int status) {
-            this.context = context;
-            this.status = status;
-        }
+    private record WirelessContextResult(PlayerAeContext context, int status) {
 
         private static WirelessContextResult ok(PlayerAeContext context) {
-            return new WirelessContextResult(context, SAe2AmountResponse.STATUS_OK);
+                return new WirelessContextResult(context, SAe2AmountResponse.STATUS_OK);
+            }
+
+            private static WirelessContextResult noSystem() {
+                return new WirelessContextResult(null, SAe2AmountResponse.STATUS_NO_SYSTEM);
+            }
+
+            private static WirelessContextResult outOfRange() {
+                return new WirelessContextResult(null, SAe2AmountResponse.STATUS_OUT_OF_RANGE);
+            }
         }
 
-        private static WirelessContextResult noSystem() {
-            return new WirelessContextResult(null, SAe2AmountResponse.STATUS_NO_SYSTEM);
-        }
-
-        private static WirelessContextResult outOfRange() {
-            return new WirelessContextResult(null, SAe2AmountResponse.STATUS_OUT_OF_RANGE);
-        }
-    }
-
-    private static final class StorageGridTerminalHost implements ITerminalHost {
-
-        private final IStorageGrid storageGrid;
-        private final IConfigManager configManager;
-        private final IGrid grid;
-
-        private StorageGridTerminalHost(IStorageGrid storageGrid, IConfigManager configManager, IGrid grid) {
-            this.storageGrid = storageGrid;
-            this.configManager = configManager;
-            this.grid = grid;
-        }
+    private record StorageGridTerminalHost(IStorageGrid storageGrid, IConfigManager configManager,
+                                           IGrid grid) implements ITerminalHost {
 
         @Override
-        public IMEMonitor<IAEItemStack> getItemInventory() {
-            return this.storageGrid.getItemInventory();
-        }
+            public IMEMonitor<IAEItemStack> getItemInventory() {
+                return this.storageGrid.getItemInventory();
+            }
 
-        @Override
-        public IMEMonitor<IAEFluidStack> getFluidInventory() {
-            return this.storageGrid.getFluidInventory();
-        }
+            @Override
+            public IMEMonitor<IAEFluidStack> getFluidInventory() {
+                return this.storageGrid.getFluidInventory();
+            }
 
-        @Override
-        public IConfigManager getConfigManager() {
-            return this.configManager;
+            @Override
+            public IConfigManager getConfigManager() {
+                return this.configManager;
+            }
         }
-    }
 
     private static final class LookupCacheEntry {
 

@@ -23,6 +23,7 @@ public class CAe2AmountBatchRequest implements IPacket {
 
     private final List<Entry> entries = new ArrayList<>();
 
+    @SuppressWarnings("unused")
     public CAe2AmountBatchRequest() {}
 
     public CAe2AmountBatchRequest(List<Entry> entries) {
@@ -80,7 +81,7 @@ public class CAe2AmountBatchRequest implements IPacket {
             addResponses(responses, SAe2AmountResponse.STATUS_NO_SYSTEM);
             return new SAe2AmountBatchResponse(responses);
         }
-        if (!CAe2AmountRequest.allowPlayerRequests(player, now, this.entries.size())) {
+        if (CAe2AmountRequest.arePlayerRequestsLimited(player, now, this.entries.size())) {
             addResponses(responses, SAe2AmountResponse.STATUS_THROTTLED);
             return new SAe2AmountBatchResponse(responses);
         }
