@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -75,6 +76,7 @@ public class CAe2AmountRequest implements IPacket {
     private static final int TYPE_FLUID = 1;
     private static final int TYPE_ESSENTIA = 2;
     private static final String WIRELESS_ACCESS_POINT_CLASS = "appeng.tile.networking.TileWireless";
+    private static final String AE2FC_BASE_CONTAINER_CLASS = "com.glodblock.github.client.gui.container.base.FCBaseContainer";
 
     private static final Map<String, RateLimit> PLAYER_LIMITS = new HashMap<>();
     private static final Map<String, RateLimit> NETWORK_LIMITS = new HashMap<>();
@@ -343,11 +345,20 @@ public class CAe2AmountRequest implements IPacket {
     }
 
     private static WirelessContextResult getOpenTerminalContext(EntityPlayerMP player) {
-        if (player == null || !(player.openContainer instanceof ContainerMEMonitorable)) {
+        if (player == null) {
             return WirelessContextResult.noSystem();
         }
 
-        ContainerMEMonitorable container = (ContainerMEMonitorable) player.openContainer;
+        Container container = player.openContainer;
+        if (container instanceof ContainerMEMonitorable monitorableContainer) {
+            return getOpenAe2TerminalContext(player, monitorableContainer);
+        }
+
+        return getOpenAe2FcTerminalContext(player, container);
+    }
+
+    private static WirelessContextResult getOpenAe2TerminalContext(EntityPlayerMP player,
+        ContainerMEMonitorable container) {
         if (!container.canInteractWith(player)) {
             return WirelessContextResult.noSystem();
         }
@@ -371,6 +382,35 @@ public class CAe2AmountRequest implements IPacket {
                 WIRELESS_CONTEXT_Z,
                 ForgeDirection.UNKNOWN,
                 networkKey));
+    }
+
+    private static WirelessContextResult getOpenAe2FcTerminalContext(EntityPlayerMP player, Container container) {
+        if (container == null || !isInstanceOf(container, AE2FC_BASE_CONTAINER_CLASS)
+            || !container.canInteractWith(player)) {
+            return WirelessContextResult.noSystem();
+        }
+
+        try {
+            Object host = invokeNoArg(container, "getHost");
+            if (!(host instanceof ITerminalHost terminalHost)) {
+                return WirelessContextResult.noSystem();
+            }
+
+            IGrid grid = getGrid(terminalHost);
+            String networkKey = grid == null ? OPEN_TERMINAL_CONTEXT_PREFIX + System.identityHashCode(terminalHost)
+                : networkKeyOf(player.getEntityWorld(), grid);
+            return WirelessContextResult.ok(
+                new PlayerAeContext(
+                    player,
+                    terminalHost,
+                    WIRELESS_CONTEXT_X,
+                    WIRELESS_CONTEXT_Y,
+                    WIRELESS_CONTEXT_Z,
+                    ForgeDirection.UNKNOWN,
+                    networkKey));
+        } catch (Throwable ignored) {
+            return WirelessContextResult.noSystem();
+        }
     }
 
     static Ae2SearchTarget getSearchTargetForStack(EntityPlayerMP player, ItemStack stack) {
@@ -609,6 +649,31 @@ public class CAe2AmountRequest implements IPacket {
         } catch (Throwable ignored) {
             return false;
         }
+    }
+
+    private static boolean isInstanceOf(Object instance, String className) {
+        Class<?> current = instance.getClass();
+        while (current != null) {
+            if (className.equals(current.getName())) {
+                return true;
+            }
+            current = current.getSuperclass();
+        }
+        return false;
+    }
+
+    private static Object invokeNoArg(Object instance, String methodName) throws ReflectiveOperationException {
+        Class<?> current = instance.getClass();
+        while (current != null) {
+            try {
+                Method method = current.getDeclaredMethod(methodName);
+                method.setAccessible(true);
+                return method.invoke(instance);
+            } catch (NoSuchMethodException ignored) {
+                current = current.getSuperclass();
+            }
+        }
+        throw new NoSuchMethodException(methodName);
     }
 
     private static String networkKeyOf(World world, IGrid grid) {

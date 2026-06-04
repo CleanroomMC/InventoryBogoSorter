@@ -62,6 +62,8 @@ public final class Ae2TooltipClient {
     private static final double REQUEST_TOKEN_COST = 1.0D;
     private static final int SINGLE_STACK_SIZE = 1;
     private static final int SINGLE_FLUID_AMOUNT = 1;
+    private static final String AE2_MONITORABLE_GUI_CLASS = "appeng.client.gui.implementations.GuiMEMonitorable";
+    private static final String AE2FC_BASE_ME_GUI_CLASS = "com.glodblock.github.client.gui.base.FCBaseMEGui";
 
     private static final Map<String, Entry> CACHE = new HashMap<>();
     private static final Map<String, FluidEntry> FLUID_CONTAINER_CACHE = new HashMap<>();
@@ -464,7 +466,8 @@ public final class Ae2TooltipClient {
 
         Class<?> current = gui.getClass();
         while (current != null) {
-            if ("appeng.client.gui.implementations.GuiMEMonitorable".equals(current.getName())) {
+            if (AE2_MONITORABLE_GUI_CLASS.equals(current.getName())
+                || AE2FC_BASE_ME_GUI_CLASS.equals(current.getName())) {
                 return true;
             }
             current = current.getSuperclass();
