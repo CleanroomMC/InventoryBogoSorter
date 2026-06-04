@@ -22,6 +22,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
 import com.cleanroommc.bogosorter.compat.ThaumicEnergisticsHelper;
+import com.github.bsideup.jabel.Desugar;
 
 import appeng.api.AEApi;
 import appeng.api.features.ILocatable;
@@ -808,39 +809,41 @@ public class CAe2AmountRequest implements IPacket {
         }
     }
 
+    @Desugar
     private record WirelessContextResult(PlayerAeContext context, int status) {
 
         private static WirelessContextResult ok(PlayerAeContext context) {
-                return new WirelessContextResult(context, SAe2AmountResponse.STATUS_OK);
-            }
-
-            private static WirelessContextResult noSystem() {
-                return new WirelessContextResult(null, SAe2AmountResponse.STATUS_NO_SYSTEM);
-            }
-
-            private static WirelessContextResult outOfRange() {
-                return new WirelessContextResult(null, SAe2AmountResponse.STATUS_OUT_OF_RANGE);
-            }
+            return new WirelessContextResult(context, SAe2AmountResponse.STATUS_OK);
         }
 
-    private record StorageGridTerminalHost(IStorageGrid storageGrid, IConfigManager configManager,
-                                           IGrid grid) implements ITerminalHost {
+        private static WirelessContextResult noSystem() {
+            return new WirelessContextResult(null, SAe2AmountResponse.STATUS_NO_SYSTEM);
+        }
+
+        private static WirelessContextResult outOfRange() {
+            return new WirelessContextResult(null, SAe2AmountResponse.STATUS_OUT_OF_RANGE);
+        }
+    }
+
+    @Desugar
+    private record StorageGridTerminalHost(IStorageGrid storageGrid, IConfigManager configManager, IGrid grid)
+        implements ITerminalHost {
 
         @Override
-            public IMEMonitor<IAEItemStack> getItemInventory() {
-                return this.storageGrid.getItemInventory();
-            }
-
-            @Override
-            public IMEMonitor<IAEFluidStack> getFluidInventory() {
-                return this.storageGrid.getFluidInventory();
-            }
-
-            @Override
-            public IConfigManager getConfigManager() {
-                return this.configManager;
-            }
+        public IMEMonitor<IAEItemStack> getItemInventory() {
+            return this.storageGrid.getItemInventory();
         }
+
+        @Override
+        public IMEMonitor<IAEFluidStack> getFluidInventory() {
+            return this.storageGrid.getFluidInventory();
+        }
+
+        @Override
+        public IConfigManager getConfigManager() {
+            return this.configManager;
+        }
+    }
 
     private static final class LookupCacheEntry {
 
