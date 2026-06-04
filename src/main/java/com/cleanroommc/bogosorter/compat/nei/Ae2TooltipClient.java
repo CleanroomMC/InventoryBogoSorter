@@ -12,6 +12,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.cleanroommc.bogosorter.common.ReadableNumberConverter;
@@ -357,10 +358,12 @@ public final class Ae2TooltipClient {
     private static void addAmountLine(List<String> tooltip, long amount, int amountKind) {
         tooltip.add("");
         tooltip.add(
-            EnumChatFormatting.GRAY + "Amount in System: "
-                + EnumChatFormatting.AQUA
+            EnumChatFormatting.GRAY
+                + StatCollector.translateToLocalFormatted("bogosorter.tooltip.amount_in_system", EnumChatFormatting.AQUA.toString()
                 + ReadableNumberConverter.INSTANCE.toWideReadableForm(amount)
-                + suffixFor(amountKind));
+                + suffixFor(amountKind)
+            )
+        );
     }
 
     private static void addResponseLine(List<String> tooltip, Entry entry) {
@@ -373,12 +376,16 @@ public final class Ae2TooltipClient {
 
     private static void addCheckingLine(List<String> tooltip) {
         tooltip.add("");
-        tooltip.add(EnumChatFormatting.DARK_GRAY + "Amount in System: checking...");
+        tooltip.add(
+            EnumChatFormatting.DARK_GRAY
+                + StatCollector.translateToLocal(
+                "bogosorter.tooltip.amount_checking")
+            );
     }
 
     private static void addOutOfRangeLine(List<String> tooltip) {
         tooltip.add("");
-        tooltip.add(EnumChatFormatting.RED + "Amount in System: Out Of Range");
+        tooltip.add(EnumChatFormatting.RED + StatCollector.translateToLocal("bogosorter.tooltip.amount_out_of_range"));
     }
 
     private static long ttlFor(Entry entry) {

@@ -69,3 +69,7 @@ bogosort.sortrules.nbt.enchantment.description=Classifica itens encantados por e
 bogosort.sortrules.nbt.enchantment_book.description=Classifica livros encantados por efeito e nível
 bogosort.sortrules.nbt.gt_circ_config.description=Classifica os circuitos programáveis GregTech por sua configuração
 bogosort.sortrules.nbt.gt_item_damage.description=Classifica as ferramentas GregTech por seu dano
+
+bogosorter.tooltip.amount_in_system=Valor no sistema: %s
+bogosorter.tooltip.amount_out_of_range=Valor no sistema: Fora de alcance!
+bogosorter.tooltip.amount_checking=Valor no sistema: Verificando...
