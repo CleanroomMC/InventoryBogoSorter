@@ -358,12 +358,10 @@ public final class Ae2TooltipClient {
     private static void addAmountLine(List<String> tooltip, long amount, int amountKind) {
         tooltip.add("");
         tooltip.add(
-            EnumChatFormatting.GRAY
-                + StatCollector.translateToLocalFormatted("bogosorter.tooltip.amount_in_system", EnumChatFormatting.AQUA.toString()
-                + ReadableNumberConverter.INSTANCE.toWideReadableForm(amount)
-                + suffixFor(amountKind)
-            )
-        );
+            EnumChatFormatting.GRAY + StatCollector.translateToLocalFormatted(
+                "bogosorter.tooltip.amount_in_system",
+                EnumChatFormatting.AQUA.toString() + ReadableNumberConverter.INSTANCE.toWideReadableForm(amount)
+                    + suffixFor(amountKind)));
     }
 
     private static void addResponseLine(List<String> tooltip, Entry entry) {
@@ -376,11 +374,8 @@ public final class Ae2TooltipClient {
 
     private static void addCheckingLine(List<String> tooltip) {
         tooltip.add("");
-        tooltip.add(
-            EnumChatFormatting.DARK_GRAY
-                + StatCollector.translateToLocal(
-                "bogosorter.tooltip.amount_checking")
-            );
+        tooltip
+            .add(EnumChatFormatting.DARK_GRAY + StatCollector.translateToLocal("bogosorter.tooltip.amount_checking"));
     }
 
     private static void addOutOfRangeLine(List<String> tooltip) {
