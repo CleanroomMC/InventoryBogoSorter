@@ -77,6 +77,7 @@ public class ClientEventHandler {
     private static final Class<?>[] NO_PARAMETERS = new Class<?>[0];
     private static final Class<?>[] STRING_PARAMETER = new Class<?>[] { String.class };
     private static final String AE2_MONITORABLE_GUI_CLASS = "appeng.client.gui.implementations.GuiMEMonitorable";
+    private static final String AE2_NEI_MODULES_CLASS = "appeng.integration.modules.NEI";
     private static final String NEI_CONTAINER_MANAGER_CLASS = "codechicken.nei.guihook.GuiContainerManager";
     private static final String NEI_SEARCH_FIELD_CLASS = "codechicken.nei.SearchField";
 
@@ -304,8 +305,7 @@ public class ClientEventHandler {
                 return false;
             }
 
-            Object focused = invokeMethod(searchField, "isFocused");
-            if (focused instanceof Boolean && (Boolean) focused) {
+            if (isAe2SearchActive(searchField)) {
                 return false;
             }
 
@@ -322,7 +322,7 @@ public class ClientEventHandler {
             invokeMethod(repo, "updateView");
 
             Object size = invokeMethod(repo, "size");
-            if (!(size instanceof Integer) || ((Integer) size).intValue() < MIN_SEARCH_RESULT_COUNT) {
+            if (!(size instanceof Integer) || (Integer) size < MIN_SEARCH_RESULT_COUNT) {
                 invokeMethod(repo, "setSearchString", STRING_PARAMETER, previousText);
                 invokeMethod(repo, "updateView");
                 return false;
@@ -427,6 +427,22 @@ public class ClientEventHandler {
         return false;
     }
 
+    private static boolean isAe2SearchActive(Object searchField) {
+        try {
+            if (Boolean.TRUE.equals(invokeMethod(searchField, "isFocused"))) {
+                return true;
+            }
+
+            Class<?> nei = Class.forName(AE2_NEI_MODULES_CLASS);
+            Object ae2NeiSearchField = getAe2NeiSearchField(nei);
+            return ae2NeiSearchField != null
+                && Boolean.TRUE.equals(invokeMethod(ae2NeiSearchField, "existsSearchField"))
+                && Boolean.TRUE.equals(invokeMethod(ae2NeiSearchField, "focused"));
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
     @Nullable
     private static ItemStack getHoveredStackForAe2Search(GuiContainer gui) {
         if (Loader.isModLoaded("NotEnoughItems")) {
@@ -523,6 +539,21 @@ public class ClientEventHandler {
     }
 
     @Nullable
+    private static Object getAe2NeiSearchField(Class<?> type) throws ReflectiveOperationException {
+        Class<?> current = type;
+        while (current != null) {
+            try {
+                Field field = current.getDeclaredField("searchField");
+                field.setAccessible(true);
+                return field.get(null);
+            } catch (NoSuchFieldException ignored) {
+                current = current.getSuperclass();
+            }
+        }
+        return null;
+    }
+
+    @Nullable
     private static Object invokeMethod(Object instance, String methodName) throws ReflectiveOperationException {
         return invokeMethod(instance, methodName, NO_PARAMETERS);
     }
@@ -551,19 +582,6 @@ public class ClientEventHandler {
         return !Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode
             || (Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null
                 && (slot == null || slot.callGetStack() == null));
-    }
-
-    private static boolean isButtonPressed(int button) {
-        return Mouse.getEventButtonState() && Mouse.getEventButton() == button;
-    }
-
-    private static boolean isKeyDown(KeyBinding key) {
-        if (key.getKeyCode() == 0) return false;
-
-        if (key.getKeyCode() < 0) {
-            return isButtonPressed(key.getKeyCode() + 100);
-        }
-        return Keyboard.getEventKeyState() && Keyboard.getEventKey() == key.getKeyCode();
     }
 
     public static boolean isSortableContainer(GuiScreen screen) {
