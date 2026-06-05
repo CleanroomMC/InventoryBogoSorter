@@ -584,6 +584,19 @@ public class ClientEventHandler {
                 && (slot == null || slot.callGetStack() == null));
     }
 
+    private static boolean isButtonPressed(int button) {
+        return Mouse.getEventButtonState() && Mouse.getEventButton() == button;
+    }
+
+    private static boolean isKeyDown(KeyBinding key) {
+        if (key.getKeyCode() == 0) return false;
+
+        if (key.getKeyCode() < 0) {
+            return isButtonPressed(key.getKeyCode() + 100);
+        }
+        return Keyboard.getEventKeyState() && Keyboard.getEventKey() == key.getKeyCode();
+    }
+
     public static boolean isSortableContainer(GuiScreen screen) {
         return screen instanceof GuiContainer && BogoSortAPI.isValidSortable(((GuiContainer) screen).inventorySlots);
     }
