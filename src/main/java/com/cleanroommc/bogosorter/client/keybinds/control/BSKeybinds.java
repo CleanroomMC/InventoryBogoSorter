@@ -56,6 +56,10 @@ public class BSKeybinds {
         "key.dropoff",
         Keyboard.KEY_NONE,
         "key.categories.bogosorter");
+    public static final KeyBinding ae2TerminalSearchKey = new KeyBinding(
+        "key.ae2_terminal_search",
+        Keyboard.KEY_T,
+        "key.categories.bogosorter");
     /**
      * A "dummy" keybinding that will be found and replaced with a button.
      */

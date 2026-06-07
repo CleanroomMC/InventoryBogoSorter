@@ -13,6 +13,7 @@ key.bogosorter.move_single=Переместить один
 key.bogosorter.move_single_empty=Переместить один в свободный слот
 key.bogosorter.throw_all_same=Сбросить всё одинаковое
 key.bogosorter.throw_all=Сбросить всё
+key.ae2_terminal_search=Поиск в терминале AE2 по предмету под курсором
 
 bogosort.gui.title=Конфигурация сортировки
 bogosort.gui.tab.general.name=Общие
@@ -127,6 +128,12 @@ bogosorter.config.usage_ticker.arrow=Настройки стрелок
 bogosorter.config.usage_ticker.arrow.enable=Включить использование стрелок
 bogosorter.config.usage_ticker.arrow.arrowItems=Предметная стрелка
 bogosorter.config.usage_ticker.arrow.bowItems=Предметные скобки
+
+bogosorter.config.ae2=Интеграция с AE2
+bogosorter.config.ae2.amount_tooltips=Всплывающие подсказки с количеством для AE2
+bogosorter.config.ae2.thaumic_essentia=Всплывающие подсказки с количеством таумической эссенции
+bogosorter.config.ae2.terminal_search=AE2: поиск при наведении курсора на терминал
+bogosorter.config.ae2.debug_logging=Отладочное протоколирование интеграции с AE2
 
 bogosorter.config.sort.sound=Звук нажатия кнопки сортировки 
 bogosorter.config.hotbarsort.enable=Включить сортировку панели быстрого доступа

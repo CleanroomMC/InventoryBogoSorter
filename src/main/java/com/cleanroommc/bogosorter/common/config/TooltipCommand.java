@@ -10,8 +10,7 @@ import net.minecraft.util.ChatComponentText;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.cleanroommc.bogosorter.common.network.CAe2AmountRequest;
-import com.cleanroommc.bogosorter.common.network.CSearchAe2Terminal;
+import com.cleanroommc.bogosorter.common.network.Ae2AmountService;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.STooltipFeatureState;
 
@@ -36,9 +35,11 @@ public class TooltipCommand extends CommandBase {
         boolean enabled = "on".equalsIgnoreCase(args[0]);
         TooltipFeatureConfig.setTooltipEnabled(enabled);
         TooltipFeatureConfig.save();
-        CAe2AmountRequest.clearAe2Caches();
-        CSearchAe2Terminal.clearSearchCaches();
-        NetworkHandler.sendToAll(new STooltipFeatureState(enabled));
+        Ae2AmountService.clearCaches();
+        NetworkHandler.sendToAll(
+            new STooltipFeatureState(
+                TooltipFeatureConfig.isAmountTooltipEnabled(),
+                TooltipFeatureConfig.isThaumicEnabled()));
         sender.addChatMessage(
             new ChatComponentText("Bogo tooltip querying is now " + (enabled ? "enabled" : "disabled") + "."));
     }

@@ -77,9 +77,24 @@ public class BogoSorterConfig {
     public static class Ae2Integration {
 
         @Config.DefaultBoolean(true)
-        @Config.Comment("Enable AE2/Thaumic inventory tooltips and terminal search.")
-        @Config.LangKey("bogosorter.config.ae2.tooltip")
-        public boolean enableTooltipSearch;
+        @Config.Comment("Enable AE2 item/fluid amount lines in NEI and inventory tooltips.")
+        @Config.LangKey("bogosorter.config.ae2.amount_tooltips")
+        public boolean enableAmountTooltips;
+
+        @Config.DefaultBoolean(true)
+        @Config.Comment("Enable Thaumic Energistics essentia amount lookups in AE2 amount tooltips.")
+        @Config.LangKey("bogosorter.config.ae2.thaumic_essentia")
+        public boolean enableThaumicEssentia;
+
+        @Config.DefaultBoolean(true)
+        @Config.Comment("Enable searching an AE2 terminal from the configured hover-search key.")
+        @Config.LangKey("bogosorter.config.ae2.terminal_search")
+        public boolean enableTerminalHoverSearch;
+
+        @Config.DefaultBoolean(false)
+        @Config.Comment("Log optional AE2/NEI/Thaumic integration diagnostics.")
+        @Config.LangKey("bogosorter.config.ae2.debug_logging")
+        public boolean enableIntegrationDebugLogging;
     }
 
     @Config.LangKey("bogosorter.config.usage_ticker")

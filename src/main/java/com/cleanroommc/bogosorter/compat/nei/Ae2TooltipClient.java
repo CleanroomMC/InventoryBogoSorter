@@ -2,28 +2,29 @@ package com.cleanroommc.bogosorter.compat.nei;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fluids.FluidStack;
 
+import com.cleanroommc.bogosorter.client.ae2.Ae2ClientBridge;
 import com.cleanroommc.bogosorter.common.ReadableNumberConverter;
 import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
+import com.cleanroommc.bogosorter.common.network.Ae2Status;
 import com.cleanroommc.bogosorter.common.network.CAe2AmountBatchRequest;
-import com.cleanroommc.bogosorter.common.network.CAe2ContextRefresh;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
-import com.cleanroommc.bogosorter.common.network.SAe2AmountResponse;
 import com.cleanroommc.bogosorter.compat.Mods;
 import com.cleanroommc.bogosorter.compat.ThaumicEnergisticsHelper;
-import com.github.bsideup.jabel.Desugar;
 
 import codechicken.nei.PositionedStack;
 import codechicken.nei.Widget;
@@ -42,13 +43,10 @@ public final class Ae2TooltipClient {
     private static final long CACHE_TTL_MS = 3000L;
     private static final long MISS_TTL_MS = 1500L;
     private static final long NO_SYSTEM_TTL_MS = 5000L;
-    private static final long REQUEST_RETRY_MS = 2000L;
     private static final long FLUID_CONTAINER_TTL_MS = 60000L;
     private static final long BATCH_FLUSH_MS = 100L;
     private static final long REQUEST_TIMEOUT_MS = 15000L;
     private static final long CLIENT_CACHE_CLEANUP_MS = 30000L;
-    private static final long CONTEXT_REFRESH_INTERVAL_MS = 30000L;
-    private static final long TOOLTIP_CONTEXT_REFRESH_MS = 1500L;
     private static final int CLIENT_REQUESTS_PER_SECOND = 8;
     private static final int CLIENT_REQUEST_BURST = 16;
     private static final int MAX_BATCH_SIZE = 32;
@@ -66,18 +64,20 @@ public final class Ae2TooltipClient {
     private static final String AE2_MONITORABLE_GUI_CLASS = "appeng.client.gui.implementations.GuiMEMonitorable";
     private static final String AE2FC_BASE_ME_GUI_CLASS = "com.glodblock.github.client.gui.base.FCBaseMEGui";
 
-    private static final Map<String, Entry> CACHE = new HashMap<>();
-    private static final Map<String, FluidEntry> FLUID_CONTAINER_CACHE = new HashMap<>();
-    private static final Map<Integer, String> REQUEST_KEYS = new HashMap<>();
-    private static final Map<String, PendingRequest> BATCH_QUEUE = new HashMap<>();
+    private static final Map<CacheKey, Entry> CACHE = new BoundedEntryCache();
+    private static final Map<CacheKey, FluidEntry> FLUID_CONTAINER_CACHE = new BoundedFluidCache();
+    private static final Map<Integer, CacheKey> REQUEST_KEYS = new LinkedHashMap<>();
+    private static final Map<CacheKey, PendingRequest> BATCH_QUEUE = new LinkedHashMap<>();
     private static int nextRequestId = 1;
     private static boolean initialized;
+    private static boolean serverAmountTooltipsAllowed = true;
+    private static boolean serverThaumicAllowed = true;
     private static double requestTokens = CLIENT_REQUEST_BURST;
     private static long lastRequestRefillTime;
     private static long nextBatchFlushTime;
     private static long nextClientCacheCleanupTime;
-    private static long nextTooltipContextRefreshTime;
-    private static int ae2ContextStatus = SAe2AmountResponse.STATUS_NO_SYSTEM;
+    private static long nextContextRetryAt;
+    private static int ae2ContextStatus = Ae2Status.NO_SYSTEM;
 
     private Ae2TooltipClient() {}
 
@@ -86,6 +86,7 @@ public final class Ae2TooltipClient {
             return;
         }
         initialized = true;
+        Ae2ClientBridge.register(new ClientBridgeHandler());
         GuiContainerManager.addTooltipHandler(new RecipeTooltipHandler());
         FMLCommonHandler.instance()
             .bus()
@@ -93,7 +94,7 @@ public final class Ae2TooltipClient {
     }
 
     public static void appendAmountTooltip(ItemStack stack, List<String> tooltip, boolean allowOpenTerminal) {
-        if (!TooltipFeatureConfig.isTooltipEnabled()) {
+        if (!isAmountTooltipEnabled()) {
             return;
         }
         if (stack == null || stack.getItem() == null || !Mods.Ae2.isLoaded()) {
@@ -105,21 +106,18 @@ public final class Ae2TooltipClient {
         }
 
         long now = Minecraft.getSystemTime();
-        if (!allowOpenTerminal && ae2ContextStatus == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
-            requestContextRefresh(now, TOOLTIP_CONTEXT_REFRESH_MS);
+        if (!allowOpenTerminal && ae2ContextStatus == Ae2Status.OUT_OF_RANGE && now < nextContextRetryAt) {
             addOutOfRangeLine(tooltip);
-            return;
-        }
-        if (!allowOpenTerminal && ae2ContextStatus != SAe2AmountResponse.STATUS_OK) {
-            requestContextRefresh(now, TOOLTIP_CONTEXT_REFRESH_MS);
             return;
         }
 
         FluidStack fluidStack = fluidOf(stack, now);
-        String essentiaAspectTag = fluidStack == null ? ThaumicEnergisticsHelper.getAspectTag(stack) : null;
+        String essentiaAspectTag = fluidStack == null && isThaumicTooltipEnabled()
+            ? ThaumicEnergisticsHelper.getAspectTag(stack)
+            : null;
         int amountKind = fluidStack != null ? KIND_FLUID : essentiaAspectTag != null ? KIND_ESSENTIA : KIND_ITEM;
-        String key = amountKind == KIND_FLUID ? fluidKeyOf(fluidStack)
-            : amountKind == KIND_ESSENTIA ? essentiaKeyOf(essentiaAspectTag) : itemKeyOf(stack);
+        CacheKey key = amountKind == KIND_FLUID ? new FluidKey(fluidStack)
+            : amountKind == KIND_ESSENTIA ? new EssentiaKey(essentiaAspectTag) : new ItemKey(stack);
         Entry entry = CACHE.get(key);
         if (entry == null) {
             entry = new Entry();
@@ -135,7 +133,7 @@ public final class Ae2TooltipClient {
             return;
         }
 
-        if (!entry.pending || now - entry.requestTime > REQUEST_RETRY_MS) {
+        if ((!entry.pending || now - entry.requestTime > REQUEST_TIMEOUT_MS) && now >= entry.nextRetryAt) {
             requestAmount(key, stack, fluidStack, essentiaAspectTag, amountKind, entry, now);
         }
 
@@ -146,11 +144,11 @@ public final class Ae2TooltipClient {
         }
     }
 
-    public static void handleAmountResponse(int requestId, int status, long amount) {
-        if (!TooltipFeatureConfig.isTooltipEnabled()) {
+    private static void handleAmountResponse(int requestId, int status, long amount, int retryAfterMs) {
+        if (!isAmountTooltipEnabled()) {
             return;
         }
-        String key = REQUEST_KEYS.remove(requestId);
+        CacheKey key = REQUEST_KEYS.remove(requestId);
         if (key == null) {
             return;
         }
@@ -160,14 +158,14 @@ public final class Ae2TooltipClient {
             entry = new Entry();
             CACHE.put(key, entry);
         }
-        entry.amountKind = amountKindOf(key);
-
+        entry.amountKind = key.amountKind();
         entry.pending = false;
         entry.requestTime = Minecraft.getSystemTime();
-        if (status == SAe2AmountResponse.STATUS_THROTTLED) {
+        entry.nextRetryAt = entry.requestTime + Math.max(retryAfterMs, status == Ae2Status.OK ? 0 : 500);
+        if (status == Ae2Status.THROTTLED) {
             return;
         }
-        if (status == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
+        if (status == Ae2Status.OUT_OF_RANGE) {
             entry.hasResponse = true;
             entry.status = status;
             entry.amount = 0L;
@@ -175,15 +173,18 @@ public final class Ae2TooltipClient {
             ae2ContextStatus = status;
             return;
         }
-        if (status == SAe2AmountResponse.STATUS_NO_SYSTEM) {
-            resetAe2State();
-            return;
-        }
-        if (status == SAe2AmountResponse.STATUS_ERROR && entry.hasResponse) {
+        if (status == Ae2Status.NO_SYSTEM || status == Ae2Status.UNSUPPORTED) {
+            entry.hasResponse = true;
+            entry.status = status;
+            entry.amount = 0L;
             entry.responseTime = entry.requestTime;
             return;
         }
-        if (status == SAe2AmountResponse.STATUS_ERROR) {
+        if (status == Ae2Status.ERROR && entry.hasResponse) {
+            entry.responseTime = entry.requestTime;
+            return;
+        }
+        if (status == Ae2Status.ERROR) {
             return;
         }
 
@@ -193,19 +194,13 @@ public final class Ae2TooltipClient {
         entry.responseTime = entry.requestTime;
     }
 
-    public static void setAe2ContextAvailable(boolean available) {
-        setAe2ContextStatus(available ? SAe2AmountResponse.STATUS_OK : SAe2AmountResponse.STATUS_NO_SYSTEM);
+    private static void setAe2ContextStatus(int status) {
+        ae2ContextStatus = isAmountTooltipEnabled() ? status : Ae2Status.NO_SYSTEM;
     }
 
-    public static void setAe2ContextStatus(int status) {
-        ae2ContextStatus = TooltipFeatureConfig.isTooltipEnabled() ? status : SAe2AmountResponse.STATUS_NO_SYSTEM;
-        if (ae2ContextStatus != SAe2AmountResponse.STATUS_OK) {
-            clearRequestState();
-        }
-    }
-
-    public static void resetAe2State() {
-        ae2ContextStatus = SAe2AmountResponse.STATUS_NO_SYSTEM;
+    private static void resetAe2State() {
+        ae2ContextStatus = Ae2Status.NO_SYSTEM;
+        nextContextRetryAt = 0L;
         clearRequestState();
     }
 
@@ -215,20 +210,13 @@ public final class Ae2TooltipClient {
         BATCH_QUEUE.clear();
     }
 
-    private static void requestContextRefresh(long now, long interval) {
-        if (now < nextTooltipContextRefreshTime) {
-            return;
-        }
-        nextTooltipContextRefreshTime = now + interval;
-        NetworkHandler.sendToServer(new CAe2ContextRefresh());
-    }
-
-    private static void requestAmount(String key, ItemStack stack, FluidStack fluidStack, String essentiaAspectTag,
+    private static void requestAmount(CacheKey key, ItemStack stack, FluidStack fluidStack, String essentiaAspectTag,
         int amountKind, Entry entry, long now) {
-        if (!TooltipFeatureConfig.isTooltipEnabled()) {
+        if (!isAmountTooltipEnabled()) {
             return;
         }
         if (!tryConsumeRequestToken(now)) {
+            entry.nextRetryAt = now + 250L;
             return;
         }
 
@@ -251,12 +239,13 @@ public final class Ae2TooltipClient {
         entry.pending = true;
         entry.amountKind = amountKind;
         entry.requestTime = now;
+        entry.nextRetryAt = now + REQUEST_TIMEOUT_MS;
 
         BATCH_QUEUE.put(key, new PendingRequest(requestId, requestStack, requestFluidStack, essentiaAspectTag));
     }
 
     private static void flushPendingRequests(long now) {
-        if (!TooltipFeatureConfig.isTooltipEnabled()) {
+        if (!isAmountTooltipEnabled()) {
             resetAe2State();
             return;
         }
@@ -266,7 +255,7 @@ public final class Ae2TooltipClient {
 
         nextBatchFlushTime = now + BATCH_FLUSH_MS;
         List<CAe2AmountBatchRequest.Entry> entries = new ArrayList<>(Math.min(BATCH_QUEUE.size(), MAX_BATCH_SIZE));
-        Iterator<Map.Entry<String, PendingRequest>> iterator = BATCH_QUEUE.entrySet()
+        Iterator<Map.Entry<CacheKey, PendingRequest>> iterator = BATCH_QUEUE.entrySet()
             .iterator();
         while (iterator.hasNext() && entries.size() < MAX_BATCH_SIZE) {
             PendingRequest request = iterator.next()
@@ -291,28 +280,16 @@ public final class Ae2TooltipClient {
         }
         nextClientCacheCleanupTime = now + CLIENT_CACHE_CLEANUP_MS;
 
-        if (CACHE.size() > MAX_CLIENT_CACHE_ENTRIES) {
-            Iterator<Map.Entry<String, Entry>> iterator = CACHE.entrySet()
-                .iterator();
-            while (iterator.hasNext()) {
-                Entry entry = iterator.next()
-                    .getValue();
-                if (!entry.pending && now - entry.lastAccess > CLIENT_CACHE_CLEANUP_MS) {
-                    iterator.remove();
-                }
-            }
-        }
+        CACHE.entrySet()
+            .removeIf(
+                entry -> !entry.getValue().pending && now - entry.getValue().lastAccess > CLIENT_CACHE_CLEANUP_MS);
+        FLUID_CONTAINER_CACHE.entrySet()
+            .removeIf(entry -> now - entry.getValue().createdAt > FLUID_CONTAINER_TTL_MS);
 
-        if (FLUID_CONTAINER_CACHE.size() > MAX_FLUID_CACHE_ENTRIES) {
-            FLUID_CONTAINER_CACHE.entrySet()
-                .removeIf(
-                    stringFluidEntryEntry -> now - stringFluidEntryEntry.getValue().createdAt > FLUID_CONTAINER_TTL_MS);
-        }
-
-        Iterator<Map.Entry<Integer, String>> requestIterator = REQUEST_KEYS.entrySet()
+        Iterator<Map.Entry<Integer, CacheKey>> requestIterator = REQUEST_KEYS.entrySet()
             .iterator();
         while (requestIterator.hasNext()) {
-            String key = requestIterator.next()
+            CacheKey key = requestIterator.next()
                 .getValue();
             Entry entry = CACHE.get(key);
             if (entry == null || now - entry.requestTime > REQUEST_TIMEOUT_MS) {
@@ -355,8 +332,12 @@ public final class Ae2TooltipClient {
     }
 
     private static void addResponseLine(List<String> tooltip, Entry entry) {
-        if (entry.status == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
+        if (entry.status == Ae2Status.OUT_OF_RANGE) {
             addOutOfRangeLine(tooltip);
+            return;
+        }
+        if (entry.status == Ae2Status.NO_SYSTEM || entry.status == Ae2Status.UNSUPPORTED
+            || entry.status == Ae2Status.ERROR) {
             return;
         }
         addAmountLine(tooltip, entry.amount, entry.amountKind);
@@ -374,52 +355,17 @@ public final class Ae2TooltipClient {
     }
 
     private static long ttlFor(Entry entry) {
-        if (entry.status == SAe2AmountResponse.STATUS_NO_SYSTEM
-            || entry.status == SAe2AmountResponse.STATUS_OUT_OF_RANGE) {
+        if (entry.status == Ae2Status.NO_SYSTEM || entry.status == Ae2Status.OUT_OF_RANGE
+            || entry.status == Ae2Status.UNSUPPORTED) {
             return NO_SYSTEM_TTL_MS;
         }
-        if (entry.amount <= 0L || entry.status == SAe2AmountResponse.STATUS_ERROR) {
+        if (entry.amount <= 0L || entry.status == Ae2Status.ERROR) {
             return MISS_TTL_MS;
         }
         if (entry.hits >= HOT_CACHE_HIT_THRESHOLD) {
             return CACHE_TTL_MS * HOT_CACHE_TTL_MULTIPLIER;
         }
         return CACHE_TTL_MS;
-    }
-
-    private static String itemKeyOf(ItemStack stack) {
-        String itemName = String.valueOf(Item.itemRegistry.getNameForObject(stack.getItem()));
-        String tag = stack.getTagCompound() == null ? ""
-            : Integer.toHexString(
-                stack.getTagCompound()
-                    .toString()
-                    .hashCode());
-        return "item|" + itemName + '|' + stack.getItemDamage() + '|' + tag;
-    }
-
-    private static String fluidKeyOf(FluidStack fluidStack) {
-        String fluidName = fluidStack.getFluid() == null ? "null"
-            : fluidStack.getFluid()
-                .getName();
-        String tag = fluidStack.tag == null ? ""
-            : Integer.toHexString(
-                fluidStack.tag.toString()
-                    .hashCode());
-        return "fluid|" + fluidName + '|' + tag;
-    }
-
-    private static String essentiaKeyOf(String aspectTag) {
-        return "essentia|" + aspectTag;
-    }
-
-    private static int amountKindOf(String key) {
-        if (key != null && key.startsWith("fluid|")) {
-            return KIND_FLUID;
-        }
-        if (key != null && key.startsWith("essentia|")) {
-            return KIND_ESSENTIA;
-        }
-        return KIND_ITEM;
     }
 
     private static String suffixFor(int amountKind) {
@@ -430,7 +376,7 @@ public final class Ae2TooltipClient {
     }
 
     private static FluidStack fluidOf(ItemStack stack, long now) {
-        String containerKey = itemKeyOf(stack);
+        CacheKey containerKey = new ItemKey(stack);
         FluidEntry cached = FLUID_CONTAINER_CACHE.get(containerKey);
         if (cached != null && now - cached.createdAt <= FLUID_CONTAINER_TTL_MS) {
             return cached.fluidStack == null ? null : cached.fluidStack.copy();
@@ -441,7 +387,7 @@ public final class Ae2TooltipClient {
         try {
             FluidStack fluidStack = StackInfo.getFluid(stack);
             entry.fluidStack = fluidStack == null ? null : fluidStack.copy();
-        } catch (Throwable ignored) {}
+        } catch (RuntimeException | LinkageError ignored) {}
 
         FLUID_CONTAINER_CACHE.put(containerKey, entry);
         return entry.fluidStack == null ? null : entry.fluidStack.copy();
@@ -492,10 +438,49 @@ public final class Ae2TooltipClient {
         }
     }
 
+    private static boolean isAmountTooltipEnabled() {
+        return TooltipFeatureConfig.isAmountTooltipEnabled() && serverAmountTooltipsAllowed;
+    }
+
+    private static boolean isThaumicTooltipEnabled() {
+        return TooltipFeatureConfig.isThaumicEnabled() && serverThaumicAllowed;
+    }
+
+    private static final class ClientBridgeHandler implements Ae2ClientBridge.Handler {
+
+        @Override
+        public void handleBatchResponse(int contextStatus, List<Ae2ClientBridge.Response> responses) {
+            setAe2ContextStatus(contextStatus);
+            int contextRetryAfterMs = 0;
+            for (Ae2ClientBridge.Response response : responses) {
+                contextRetryAfterMs = Math.max(contextRetryAfterMs, response.retryAfterMs());
+                handleAmountResponse(
+                    response.requestId(),
+                    response.status(),
+                    response.amount(),
+                    response.retryAfterMs());
+            }
+            nextContextRetryAt = Minecraft.getSystemTime() + contextRetryAfterMs;
+        }
+
+        @Override
+        public void setServerFeatures(boolean amountTooltipsAllowed, boolean thaumicAllowed) {
+            serverAmountTooltipsAllowed = amountTooltipsAllowed;
+            serverThaumicAllowed = thaumicAllowed;
+            if (!amountTooltipsAllowed) {
+                resetAe2State();
+            }
+        }
+
+        @Override
+        public void reset() {
+            resetAe2State();
+        }
+    }
+
     public static final class Ae2GuiWatcher {
 
         private Object lastGui;
-        private long nextRefreshTime;
 
         @SubscribeEvent
         public void onClientTick(TickEvent.ClientTickEvent event) {
@@ -505,7 +490,7 @@ public final class Ae2TooltipClient {
 
             long now = Minecraft.getSystemTime();
             flushPendingRequests(now);
-            if (!TooltipFeatureConfig.isTooltipEnabled()) {
+            if (!isAmountTooltipEnabled()) {
                 this.lastGui = null;
                 return;
             }
@@ -517,15 +502,120 @@ public final class Ae2TooltipClient {
                 return;
             }
 
-            if (gui == this.lastGui && now < this.nextRefreshTime) {
+            if (gui == this.lastGui) {
                 return;
             }
 
             this.lastGui = gui;
-            this.nextRefreshTime = now + CONTEXT_REFRESH_INTERVAL_MS;
             CACHE.clear();
             REQUEST_KEYS.clear();
-            requestContextRefresh(now, 0L);
+        }
+    }
+
+    private interface CacheKey {
+
+        int amountKind();
+    }
+
+    private static final class ItemKey implements CacheKey {
+
+        private final String itemName;
+        private final int damage;
+        private final NBTTagCompound tag;
+
+        private ItemKey(ItemStack stack) {
+            this.itemName = String.valueOf(Item.itemRegistry.getNameForObject(stack.getItem()));
+            this.damage = stack.getItemDamage();
+            this.tag = copyTag(stack.getTagCompound());
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (this == object) return true;
+            if (!(object instanceof ItemKey other)) return false;
+            return this.damage == other.damage && this.itemName.equals(other.itemName)
+                && Objects.equals(this.tag, other.tag);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.itemName, this.damage, this.tag);
+        }
+
+        @Override
+        public int amountKind() {
+            return KIND_ITEM;
+        }
+    }
+
+    private static final class FluidKey implements CacheKey {
+
+        private final String fluidName;
+        private final NBTTagCompound tag;
+
+        private FluidKey(FluidStack fluidStack) {
+            this.fluidName = fluidStack.getFluid() == null ? "null"
+                : fluidStack.getFluid()
+                    .getName();
+            this.tag = copyTag(fluidStack.tag);
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (this == object) return true;
+            if (!(object instanceof FluidKey other)) return false;
+            return this.fluidName.equals(other.fluidName) && Objects.equals(this.tag, other.tag);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(this.fluidName, this.tag);
+        }
+
+        @Override
+        public int amountKind() {
+            return KIND_FLUID;
+        }
+    }
+
+    private record EssentiaKey(String aspectTag) implements CacheKey {
+
+        @Override
+            public boolean equals(Object object) {
+                return object instanceof EssentiaKey && this.aspectTag.equals(((EssentiaKey) object).aspectTag);
+            }
+
+        @Override
+            public int amountKind() {
+                return KIND_ESSENTIA;
+            }
+        }
+
+    private static NBTTagCompound copyTag(NBTTagCompound tag) {
+        return tag == null ? null : (NBTTagCompound) tag.copy();
+    }
+
+    private static final class BoundedEntryCache extends LinkedHashMap<CacheKey, Ae2TooltipClient.Entry> {
+
+        private BoundedEntryCache() {
+            super(64, 0.75F, true);
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<CacheKey, Ae2TooltipClient.Entry> eldest) {
+            return size() > MAX_CLIENT_CACHE_ENTRIES;
+        }
+    }
+
+    private static final class BoundedFluidCache extends LinkedHashMap<CacheKey, FluidEntry> {
+
+        private BoundedFluidCache() {
+            super(64, 0.75F, true);
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<CacheKey, FluidEntry> eldest) {
+            return size() > MAX_FLUID_CACHE_ENTRIES;
         }
     }
 
@@ -651,16 +741,16 @@ public final class Ae2TooltipClient {
 
         private boolean pending;
         private boolean hasResponse;
-        private int status = SAe2AmountResponse.STATUS_OK;
+        private int status = Ae2Status.OK;
         private int amountKind;
         private long amount;
         private long requestTime;
         private long responseTime;
         private long lastAccess;
+        private long nextRetryAt;
         private int hits;
     }
 
-    @Desugar
     private record PendingRequest(int requestId, ItemStack stack, FluidStack fluidStack, String essentiaAspectTag) {
 
     }

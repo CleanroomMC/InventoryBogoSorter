@@ -1,6 +1,7 @@
 key.categories.bogosorter=物品栏 Bogo 排序整理
 key.sort_config=打开排序配置
 key.sort=排序物品栏
+key.ae2_terminal_search=根据悬停物品搜索 AE2 终端
 
 bogosort.gui.title=整理配置
 bogosort.gui.tab.general.name=常规
@@ -74,3 +75,9 @@ bogosort.sortrules.nbt.gt_item_damage.description=根据耐久对格雷科技的
 bogosorter.tooltip.amount_in_system=系统中金额: %s
 bogosorter.tooltip.amount_out_of_range=系统中金额: 超出范围!
 bogosorter.tooltip.amount_checking=系统中金额: 检查...
+
+bogosorter.config.ae2=AE2 集成
+bogosorter.config.ae2.amount_tooltips=AE2 数量提示信息
+bogosorter.config.ae2.thaumic_essentia=神秘要素数量提示信息
+bogosorter.config.ae2.terminal_search=AE2 终端悬停搜索
+bogosorter.config.ae2.debug_logging=AE2 集成调试日志记录

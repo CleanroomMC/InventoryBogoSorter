@@ -5,47 +5,40 @@ import java.io.IOException;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.PacketBuffer;
 
-import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
+import com.cleanroommc.bogosorter.client.ae2.Ae2ClientBridge;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class STooltipFeatureState implements IPacket {
 
-    private boolean enabled;
+    private boolean amountTooltipsAllowed;
+    private boolean thaumicAllowed;
 
+    @SuppressWarnings("unused")
     public STooltipFeatureState() {}
 
-    public STooltipFeatureState(boolean enabled) {
-        this.enabled = enabled;
+    public STooltipFeatureState(boolean amountTooltipsAllowed, boolean thaumicAllowed) {
+        this.amountTooltipsAllowed = amountTooltipsAllowed;
+        this.thaumicAllowed = thaumicAllowed;
     }
 
     @Override
     public void encode(PacketBuffer buf) throws IOException {
-        buf.writeBoolean(this.enabled);
+        buf.writeBoolean(this.amountTooltipsAllowed);
+        buf.writeBoolean(this.thaumicAllowed);
     }
 
     @Override
     public void decode(PacketBuffer buf) throws IOException {
-        this.enabled = buf.readBoolean();
+        this.amountTooltipsAllowed = buf.readBoolean();
+        this.thaumicAllowed = buf.readBoolean();
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public IPacket executeClient(NetHandlerPlayClient handler) {
-        TooltipFeatureConfig.setTooltipEnabled(this.enabled);
-        if (!this.enabled) {
-            resetAe2TooltipClient();
-        }
+        Ae2ClientBridge.setServerFeatures(this.amountTooltipsAllowed, this.thaumicAllowed);
         return null;
-    }
-
-    @SideOnly(Side.CLIENT)
-    private static void resetAe2TooltipClient() {
-        try {
-            Class<?> tooltipClient = Class.forName("com.cleanroommc.bogosorter.compat.nei.Ae2TooltipClient");
-            tooltipClient.getMethod("resetAe2State")
-                .invoke(null);
-        } catch (Throwable ignored) {}
     }
 }

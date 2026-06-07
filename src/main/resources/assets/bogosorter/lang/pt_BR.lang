@@ -1,6 +1,7 @@
 key.categories.bogosorter=Classificador Bogo de Inventário
 key.sort_config=Abrir configuração de classificação
 key.sort=Classificação do Inventário
+key.ae2_terminal_search=Pesquisar no Terminal AE2 a partir do item sob o cursor
 
 bogosort.gui.title=Configuração da Classificação
 bogosort.gui.tab.general.name=Geral
@@ -73,3 +74,9 @@ bogosort.sortrules.nbt.gt_item_damage.description=Classifica as ferramentas Greg
 bogosorter.tooltip.amount_in_system=Valor no sistema: %s
 bogosorter.tooltip.amount_out_of_range=Valor no sistema: Fora de alcance!
 bogosorter.tooltip.amount_checking=Valor no sistema: Verificando...
+
+bogosorter.config.ae2=Integração com o AE2
+bogosorter.config.ae2.amount_tooltips=Dicas de ferramenta de quantidade do AE2
+bogosorter.config.ae2.thaumic_essentia=Dicas de ferramentas para a quantidade de essência Thaumic
+bogosorter.config.ae2.terminal_search=Pesquisa ao passar o rato no terminal do AE2
+bogosorter.config.ae2.debug_logging=Registo de depuração da integração com o AE2

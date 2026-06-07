@@ -27,9 +27,15 @@ public class CAe2AmountBatchRequest implements IPacket {
     public CAe2AmountBatchRequest() {}
 
     public CAe2AmountBatchRequest(List<Entry> entries) {
-        int count = Math.min(entries.size(), MAX_BATCH_SIZE);
-        for (int i = 0; i < count; i++) {
-            this.entries.add(entries.get(i));
+        if (entries == null) {
+            throw new IllegalArgumentException("entries");
+        }
+        if (entries.size() > MAX_BATCH_SIZE) {
+            throw new IllegalArgumentException("AE2 request batch exceeds " + MAX_BATCH_SIZE + " entries");
+        }
+        for (Entry entry : entries) {
+            entry.validate();
+            this.entries.add(entry);
         }
     }
 
@@ -37,6 +43,7 @@ public class CAe2AmountBatchRequest implements IPacket {
     public void encode(PacketBuffer buf) throws IOException {
         buf.writeVarIntToBuffer(this.entries.size());
         for (Entry entry : this.entries) {
+            entry.validate();
             buf.writeInt(entry.requestId);
             if (entry.fluidStack != null) {
                 buf.writeByte(TYPE_FLUID);
@@ -54,16 +61,33 @@ public class CAe2AmountBatchRequest implements IPacket {
     @Override
     public void decode(PacketBuffer buf) throws IOException {
         this.entries.clear();
-        int count = Math.min(buf.readVarIntFromBuffer(), MAX_BATCH_SIZE);
+        int count = buf.readVarIntFromBuffer();
+        if (count < 0 || count > MAX_BATCH_SIZE) {
+            throw new IOException("Invalid AE2 request batch size " + count);
+        }
         for (int i = 0; i < count; i++) {
             int requestId = buf.readInt();
-            int type = buf.readByte();
+            int type = buf.readUnsignedByte();
             if (type == TYPE_FLUID) {
-                this.entries.add(new Entry(requestId, null, NetworkUtils.readFluidStack(buf), null));
+                FluidStack fluidStack = NetworkUtils.readFluidStack(buf);
+                if (fluidStack == null || fluidStack.getFluid() == null) {
+                    throw new IOException("Missing fluid payload");
+                }
+                this.entries.add(new Entry(requestId, null, fluidStack, null));
             } else if (type == TYPE_ESSENTIA) {
-                this.entries.add(new Entry(requestId, null, null, buf.readStringFromBuffer(MAX_ASPECT_TAG_LENGTH)));
+                String aspectTag = buf.readStringFromBuffer(MAX_ASPECT_TAG_LENGTH);
+                if (aspectTag.isEmpty()) {
+                    throw new IOException("Missing essentia aspect");
+                }
+                this.entries.add(new Entry(requestId, null, null, aspectTag));
+            } else if (type == TYPE_ITEM) {
+                ItemStack stack = buf.readItemStackFromBuffer();
+                if (stack == null || stack.getItem() == null) {
+                    throw new IOException("Missing item payload");
+                }
+                this.entries.add(new Entry(requestId, stack, null, null));
             } else {
-                this.entries.add(new Entry(requestId, buf.readItemStackFromBuffer(), null, null));
+                throw new IOException("Unknown AE2 request type " + type);
             }
         }
     }
@@ -78,32 +102,36 @@ public class CAe2AmountBatchRequest implements IPacket {
         long now = System.currentTimeMillis();
         List<SAe2AmountBatchResponse.Entry> responses = new ArrayList<>(this.entries.size());
         if (!TooltipFeatureConfig.isTooltipEnabled()) {
-            addResponses(responses, SAe2AmountResponse.STATUS_NO_SYSTEM);
-            return new SAe2AmountBatchResponse(responses);
+            addResponses(responses, Ae2Status.NO_SYSTEM, 1500);
+            return new SAe2AmountBatchResponse(Ae2Status.NO_SYSTEM, responses);
         }
-        if (CAe2AmountRequest.arePlayerRequestsLimited(player, now, this.entries.size())) {
-            addResponses(responses, SAe2AmountResponse.STATUS_THROTTLED);
-            return new SAe2AmountBatchResponse(responses);
+        if (Ae2AmountService.arePlayerRequestsLimited(player, now, this.entries.size())) {
+            addResponses(responses, Ae2Status.THROTTLED, 1000);
+            return new SAe2AmountBatchResponse(Ae2Status.THROTTLED, responses);
         }
 
+        Ae2AmountService.ContextResult contextResult = Ae2AmountService.resolvePlayerContext(player, now);
+        if (!contextResult.isAvailable()) {
+            addResponses(responses, contextResult.getStatus(), contextResult.getRetryAfterMs());
+            return new SAe2AmountBatchResponse(contextResult.getStatus(), responses);
+        }
         for (Entry entry : this.entries) {
-            if (entry.stack == null && entry.fluidStack == null && entry.essentiaAspectTag == null) {
-                responses.add(
-                    new SAe2AmountBatchResponse.Entry(entry.requestId, SAe2AmountResponse.STATUS_ERROR, EMPTY_AMOUNT));
-                continue;
-            }
-
-            CAe2AmountRequest.AmountLookupResult result = CAe2AmountRequest
-                .lookupAmount(player, entry.stack, entry.fluidStack, entry.essentiaAspectTag, null, now);
-            responses.add(new SAe2AmountBatchResponse.Entry(entry.requestId, result.status, result.amount));
+            Ae2AmountService.AmountLookupResult result = Ae2AmountService
+                .lookupAmount(contextResult.getContext(), entry.stack, entry.fluidStack, entry.essentiaAspectTag, now);
+            responses.add(
+                new SAe2AmountBatchResponse.Entry(
+                    entry.requestId,
+                    result.getStatus(),
+                    result.getAmount(),
+                    result.getRetryAfterMs()));
         }
 
-        return new SAe2AmountBatchResponse(responses);
+        return new SAe2AmountBatchResponse(Ae2Status.OK, responses);
     }
 
-    private void addResponses(List<SAe2AmountBatchResponse.Entry> responses, int status) {
+    private void addResponses(List<SAe2AmountBatchResponse.Entry> responses, int status, int retryAfterMs) {
         for (Entry entry : this.entries) {
-            responses.add(new SAe2AmountBatchResponse.Entry(entry.requestId, status, EMPTY_AMOUNT));
+            responses.add(new SAe2AmountBatchResponse.Entry(entry.requestId, status, EMPTY_AMOUNT, retryAfterMs));
         }
     }
 
@@ -120,6 +148,23 @@ public class CAe2AmountBatchRequest implements IPacket {
             this.fluidStack = fluidStack;
             this.essentiaAspectTag = essentiaAspectTag == null || essentiaAspectTag.isEmpty() ? null
                 : essentiaAspectTag;
+        }
+
+        private void validate() {
+            int payloads = (this.stack == null ? 0 : 1) + (this.fluidStack == null ? 0 : 1)
+                + (this.essentiaAspectTag == null ? 0 : 1);
+            if (payloads != 1) {
+                throw new IllegalArgumentException("AE2 request entries require exactly one payload");
+            }
+            if (this.stack != null && this.stack.getItem() == null) {
+                throw new IllegalArgumentException("Invalid AE2 item payload");
+            }
+            if (this.fluidStack != null && this.fluidStack.getFluid() == null) {
+                throw new IllegalArgumentException("Invalid AE2 fluid payload");
+            }
+            if (this.essentiaAspectTag != null && this.essentiaAspectTag.length() > MAX_ASPECT_TAG_LENGTH) {
+                throw new IllegalArgumentException("AE2 aspect tag is too long");
+            }
         }
     }
 }

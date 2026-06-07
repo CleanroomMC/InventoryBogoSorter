@@ -9,6 +9,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.cleanroommc.bogosorter.client.ae2.Ae2ClientBridge;
 import com.cleanroommc.bogosorter.client.keybinds.control.BSKeybinds;
 import com.cleanroommc.bogosorter.common.HotbarSwap;
 import com.cleanroommc.bogosorter.common.OreDictHelper;
@@ -19,6 +20,7 @@ import com.cleanroommc.bogosorter.common.config.Serializer;
 import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
 import com.cleanroommc.bogosorter.common.dropoff.DropOffButtonHandler;
 import com.cleanroommc.bogosorter.common.dropoff.DropOffScheduler;
+import com.cleanroommc.bogosorter.common.network.Ae2AmountService;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.network.STooltipFeatureState;
@@ -27,7 +29,6 @@ import com.cleanroommc.bogosorter.common.sort.ButtonHandler;
 import com.cleanroommc.bogosorter.common.sort.DefaultRules;
 import com.cleanroommc.bogosorter.compat.DefaultCompat;
 import com.cleanroommc.bogosorter.compat.Mods;
-import com.cleanroommc.bogosorter.compat.nei.Ae2TooltipClient;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -64,7 +65,6 @@ public class BogoSorter {
         FMLCommonHandler.instance()
             .bus()
             .register(NetworkHandler.INSTANCE);
-        TooltipFeatureConfig.load();
         OreDictHelper.init();
         BogoSortAPI.INSTANCE.remapSortRule("is_block", "block_type");
         DefaultRules.init(BogoSortAPI.INSTANCE);
@@ -96,7 +96,7 @@ public class BogoSorter {
             BSKeybinds.init(event.getSuggestedConfigurationFile());
 
             if (Mods.Nei.isLoaded() && Mods.CodeChickenCore.isLoaded()) {
-                Ae2TooltipClient.init();
+                Ae2ClientBridge.initializeOptionalNeiIntegration();
             }
         }
     }
@@ -108,13 +108,13 @@ public class BogoSorter {
             ClientRegistry.registerKeyBinding(BSKeybinds.sortKeyOutsideGUI);
             ClientRegistry.registerKeyBinding(BSKeybinds.sortKeyInGUI);
             ClientRegistry.registerKeyBinding(BSKeybinds.dropoffKey);
+            ClientRegistry.registerKeyBinding(BSKeybinds.ae2TerminalSearchKey);
             ClientRegistry.registerKeyBinding(BSKeybinds.BOGO_SORTER_CONTROLS_BUTTON);
         }
     }
 
     @Mod.EventHandler
     public void onServerLoad(FMLServerStartingEvent event) {
-        TooltipFeatureConfig.load();
         event.registerServerCommand(new BogoSortCommandTree());
     }
 
@@ -122,8 +122,17 @@ public class BogoSorter {
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.player instanceof EntityPlayerMP) {
             NetworkHandler.sendToPlayer(
-                new STooltipFeatureState(TooltipFeatureConfig.isTooltipEnabled()),
+                new STooltipFeatureState(
+                    TooltipFeatureConfig.isAmountTooltipEnabled(),
+                    TooltipFeatureConfig.isThaumicEnabled()),
                 (EntityPlayerMP) event.player);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.player instanceof EntityPlayerMP) {
+            Ae2AmountService.clearPlayer((EntityPlayerMP) event.player);
         }
     }
 
