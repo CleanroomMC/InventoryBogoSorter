@@ -3,8 +3,8 @@ package com.cleanroommc.bogosorter.client.ae2;
 import java.util.List;
 
 import com.cleanroommc.bogosorter.BogoSorter;
-
 import com.github.bsideup.jabel.Desugar;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-import com.github.bsideup.jabel.Desugar;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -22,6 +21,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
 import com.cleanroommc.bogosorter.compat.ThaumicEnergisticsHelper;
+import com.github.bsideup.jabel.Desugar;
 
 import appeng.api.AEApi;
 import appeng.api.features.ILocatable;
@@ -693,9 +693,9 @@ public final class Ae2AmountService {
     private record EssentiaKey(String aspectTag) implements LookupKey {
 
         @Override
-            public boolean equals(Object object) {
-                return object instanceof EssentiaKey && this.aspectTag.equals(((EssentiaKey) object).aspectTag);
-            }
+        public boolean equals(Object object) {
+            return object instanceof EssentiaKey && this.aspectTag.equals(((EssentiaKey) object).aspectTag);
+        }
 
     }
 
@@ -729,7 +729,7 @@ public final class Ae2AmountService {
 
     @Desugar
     private record ContextCacheEntry(ContextResult result, int dimension, int signature, int blockX, int blockY,
-                                     int blockZ, long expiresAt) {
+        int blockZ, long expiresAt) {
 
     }
 
@@ -760,22 +760,22 @@ public final class Ae2AmountService {
     }
 
     @Desugar
-    private record StorageGridTerminalHost(IStorageGrid storageGrid, IConfigManager configManager,
-                                           IGrid grid) implements ITerminalHost {
+    private record StorageGridTerminalHost(IStorageGrid storageGrid, IConfigManager configManager, IGrid grid)
+        implements ITerminalHost {
 
         @Override
-            public IMEMonitor<IAEItemStack> getItemInventory() {
-                return this.storageGrid.getItemInventory();
-            }
-
-            @Override
-            public IMEMonitor<IAEFluidStack> getFluidInventory() {
-                return this.storageGrid.getFluidInventory();
-            }
-
-            @Override
-            public IConfigManager getConfigManager() {
-                return this.configManager;
-            }
+        public IMEMonitor<IAEItemStack> getItemInventory() {
+            return this.storageGrid.getItemInventory();
         }
+
+        @Override
+        public IMEMonitor<IAEFluidStack> getFluidInventory() {
+            return this.storageGrid.getFluidInventory();
+        }
+
+        @Override
+        public IConfigManager getConfigManager() {
+            return this.configManager;
+        }
+    }
 }

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.github.bsideup.jabel.Desugar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.Item;
@@ -26,6 +25,7 @@ import com.cleanroommc.bogosorter.common.network.CAe2AmountBatchRequest;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.compat.Mods;
 import com.cleanroommc.bogosorter.compat.ThaumicEnergisticsHelper;
+import com.github.bsideup.jabel.Desugar;
 
 import codechicken.nei.PositionedStack;
 import codechicken.nei.Widget;
@@ -583,15 +583,15 @@ public final class Ae2TooltipClient {
     private record EssentiaKey(String aspectTag) implements CacheKey {
 
         @Override
-            public boolean equals(Object object) {
-                return object instanceof EssentiaKey && this.aspectTag.equals(((EssentiaKey) object).aspectTag);
-            }
+        public boolean equals(Object object) {
+            return object instanceof EssentiaKey && this.aspectTag.equals(((EssentiaKey) object).aspectTag);
+        }
 
         @Override
-            public int amountKind() {
-                return KIND_ESSENTIA;
-            }
+        public int amountKind() {
+            return KIND_ESSENTIA;
         }
+    }
 
     private static NBTTagCompound copyTag(NBTTagCompound tag) {
         return tag == null ? null : (NBTTagCompound) tag.copy();

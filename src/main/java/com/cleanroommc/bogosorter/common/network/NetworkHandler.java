@@ -6,12 +6,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.github.bsideup.jabel.Desugar;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.github.bsideup.jabel.Desugar;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -151,29 +151,29 @@ public class NetworkHandler {
 
     @Desugar
     private record ServerTask(IPacket message, NetHandlerPlayServer handler, String playerKey,
-                              AtomicInteger playerQueueSize) implements Runnable {
+        AtomicInteger playerQueueSize) implements Runnable {
 
         @Override
-            public void run() {
-                try {
-                    if (this.handler.playerEntity == null) return;
-                    IPacket reply = this.message.executeServer(this.handler);
-                    if (reply != null) {
-                        sendToPlayer(reply, this.handler.playerEntity);
-                    }
-                } catch (RuntimeException e) {
-                    BogoSorter.LOGGER.error(
-                        "Failed to handle {} from {}",
-                        this.message.getClass()
-                            .getName(),
-                        this.playerKey,
-                        e);
-                } finally {
-                    serverQueueSize.decrementAndGet();
-                    if (this.playerQueueSize.decrementAndGet() == 0) {
-                        playerQueueSizes.remove(this.playerKey, this.playerQueueSize);
-                    }
+        public void run() {
+            try {
+                if (this.handler.playerEntity == null) return;
+                IPacket reply = this.message.executeServer(this.handler);
+                if (reply != null) {
+                    sendToPlayer(reply, this.handler.playerEntity);
+                }
+            } catch (RuntimeException e) {
+                BogoSorter.LOGGER.error(
+                    "Failed to handle {} from {}",
+                    this.message.getClass()
+                        .getName(),
+                    this.playerKey,
+                    e);
+            } finally {
+                serverQueueSize.decrementAndGet();
+                if (this.playerQueueSize.decrementAndGet() == 0) {
+                    playerQueueSizes.remove(this.playerKey, this.playerQueueSize);
                 }
             }
         }
+    }
 }
