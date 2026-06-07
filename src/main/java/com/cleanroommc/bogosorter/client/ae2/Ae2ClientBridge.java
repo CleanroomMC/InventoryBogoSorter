@@ -31,7 +31,6 @@ public final class Ae2ClientBridge {
         handler.setServerFeatures(amountTooltipsAllowed, thaumicAllowed);
     }
 
-
     public static void resetConnectionState() {
         serverAmountTooltipsAllowed = true;
         serverThaumicAllowed = true;

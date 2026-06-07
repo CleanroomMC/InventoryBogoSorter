@@ -37,8 +37,7 @@ public class STooltipFeatureState implements IPacket {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public IPacket executeClient(NetHandlerPlayClient handler) {
+    public void executeClient(NetHandlerPlayClient handler) {
         Ae2ClientBridge.setServerFeatures(this.amountTooltipsAllowed, this.thaumicAllowed);
-        return null;
     }
 }

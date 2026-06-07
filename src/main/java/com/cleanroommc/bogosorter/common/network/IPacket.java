@@ -42,9 +42,7 @@ public interface IPacket extends IMessage {
     }
 
     @SideOnly(Side.CLIENT)
-    default IPacket executeClient(NetHandlerPlayClient handler) {
-        return null;
-    }
+    default void executeClient(NetHandlerPlayClient handler) {}
 
     default IPacket executeServer(NetHandlerPlayServer handler) {
         return null;

@@ -202,12 +202,12 @@ public final class ThaumicEnergisticsHelper {
     private static Object findEssentiaStackType(Object candidate) {
         if (candidate == null) return null;
         if (isEssentiaStackType(candidate)) return candidate;
-        if (candidate instanceof Map<?, ?> map) {
+        if (candidate instanceof Map<?, ?>map) {
             for (Object value : map.values()) {
                 Object found = findEssentiaStackType(value);
                 if (found != null) return found;
             }
-        } else if (candidate instanceof Iterable<?> iterable) {
+        } else if (candidate instanceof Iterable<?>iterable) {
             for (Object value : iterable) {
                 Object found = findEssentiaStackType(value);
                 if (found != null) return found;
@@ -256,6 +256,7 @@ public final class ThaumicEnergisticsHelper {
                 current = current.getSuperclass();
             }
         }
+        assert type != null;
         Method method = type.getMethod(name, parameterTypes);
         method.setAccessible(true);
         return method;

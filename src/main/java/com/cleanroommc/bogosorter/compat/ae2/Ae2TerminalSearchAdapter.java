@@ -127,7 +127,7 @@ public final class Ae2TerminalSearchAdapter {
                 return true;
             }
             Class<?> nei = Class.forName(AE2_NEI_MODULES_CLASS);
-            Object ae2NeiSearchField = getStaticFieldValue(nei, "searchField");
+            Object ae2NeiSearchField = getStaticFieldValue(nei);
             return ae2NeiSearchField != null
                 && Boolean.TRUE.equals(invokeMethod(ae2NeiSearchField, "existsSearchField"))
                 && Boolean.TRUE.equals(invokeMethod(ae2NeiSearchField, "focused"));
@@ -184,11 +184,11 @@ public final class Ae2TerminalSearchAdapter {
     }
 
     @Nullable
-    private static Object getStaticFieldValue(Class<?> type, String fieldName) throws ReflectiveOperationException {
+    private static Object getStaticFieldValue(Class<?> type) throws ReflectiveOperationException {
         Class<?> current = type;
         while (current != null) {
             try {
-                Field field = current.getDeclaredField(fieldName);
+                Field field = current.getDeclaredField("searchField");
                 field.setAccessible(true);
                 return field.get(null);
             } catch (NoSuchFieldException ignored) {

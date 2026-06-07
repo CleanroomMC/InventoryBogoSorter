@@ -78,14 +78,13 @@ public class SAe2AmountBatchResponse implements IPacket {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public IPacket executeClient(NetHandlerPlayClient handler) {
+    public void executeClient(NetHandlerPlayClient handler) {
         List<Ae2ClientBridge.Response> responses = new ArrayList<>(this.entries.size());
         for (Entry entry : entries) {
             responses
                 .add(new Ae2ClientBridge.Response(entry.requestId, entry.status, entry.amount, entry.retryAfterMs));
         }
         Ae2ClientBridge.handleBatchResponse(this.contextStatus, responses);
-        return null;
     }
 
     public static final class Entry {

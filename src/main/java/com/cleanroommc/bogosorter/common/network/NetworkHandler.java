@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
-import net.minecraft.world.World;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 
@@ -70,10 +69,6 @@ public class NetworkHandler {
 
     public static void sendToServer(IPacket packet) {
         network.sendToServer(packet);
-    }
-
-    public static void sendToWorld(IPacket packet, World world) {
-        network.sendToDimension(packet, world.provider.dimensionId);
     }
 
     public static void sendToAll(IPacket packet) {
