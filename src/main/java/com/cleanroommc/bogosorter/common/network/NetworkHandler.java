@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.github.bsideup.jabel.Desugar;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -148,6 +149,7 @@ public class NetworkHandler {
         }
     }
 
+    @Desugar
     private record ServerTask(IPacket message, NetHandlerPlayServer handler, String playerKey,
                               AtomicInteger playerQueueSize) implements Runnable {
 

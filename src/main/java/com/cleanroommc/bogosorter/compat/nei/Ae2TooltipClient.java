@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.github.bsideup.jabel.Desugar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.Item;
@@ -578,6 +579,7 @@ public final class Ae2TooltipClient {
         }
     }
 
+    @Desugar
     private record EssentiaKey(String aspectTag) implements CacheKey {
 
         @Override
@@ -751,6 +753,7 @@ public final class Ae2TooltipClient {
         private int hits;
     }
 
+    @Desugar
     private record PendingRequest(int requestId, ItemStack stack, FluidStack fluidStack, String essentiaAspectTag) {
 
     }

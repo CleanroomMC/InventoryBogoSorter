@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
+import com.github.bsideup.jabel.Desugar;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -688,6 +689,7 @@ public final class Ae2AmountService {
         }
     }
 
+    @Desugar
     private record EssentiaKey(String aspectTag) implements LookupKey {
 
         @Override
@@ -725,6 +727,7 @@ public final class Ae2AmountService {
         }
     }
 
+    @Desugar
     private record ContextCacheEntry(ContextResult result, int dimension, int signature, int blockX, int blockY,
                                      int blockZ, long expiresAt) {
 
@@ -756,6 +759,7 @@ public final class Ae2AmountService {
         }
     }
 
+    @Desugar
     private record StorageGridTerminalHost(IStorageGrid storageGrid, IConfigManager configManager,
                                            IGrid grid) implements ITerminalHost {
 

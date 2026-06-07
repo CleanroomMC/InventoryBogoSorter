@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 
+import com.github.bsideup.jabel.Desugar;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -69,6 +70,7 @@ public final class Ae2ClientBridge {
         void reset();
     }
 
+    @Desugar
     public record Response(int requestId, int status, long amount, int retryAfterMs) {
 
     }
