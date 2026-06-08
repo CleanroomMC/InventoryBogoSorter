@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cleanroommc.bogosorter.common.network.IPacket;
-import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -13,6 +11,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fluids.FluidStack;
 
 import com.cleanroommc.bogosorter.common.config.ae2.TooltipFeatureConfig;
+import com.cleanroommc.bogosorter.common.network.IPacket;
+import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 
 public class CAe2AmountBatchRequest implements IPacket {
 
@@ -109,7 +109,8 @@ public class CAe2AmountBatchRequest implements IPacket {
         }
         List<Ae2AmountService.BatchLookupEntry> batchEntries = new ArrayList<>(this.entries.size());
         for (Entry entry : this.entries) {
-            batchEntries.add(new Ae2AmountService.BatchLookupEntry(entry.stack, entry.fluidStack, entry.essentiaAspectTag));
+            batchEntries
+                .add(new Ae2AmountService.BatchLookupEntry(entry.stack, entry.fluidStack, entry.essentiaAspectTag));
         }
 
         int distinctLookups = Ae2AmountService.countDistinctLookupKeys(batchEntries);

@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.cleanroommc.bogosorter.common.network.ae2.Ae2Status;
-import com.cleanroommc.bogosorter.common.network.ae2.CAe2AmountBatchRequest;
-import com.cleanroommc.bogosorter.common.network.ae2.SAe2AmountBatchResponse;
 import net.minecraft.network.PacketBuffer;
 
 import org.junit.Test;
+
+import com.cleanroommc.bogosorter.common.network.ae2.Ae2Status;
+import com.cleanroommc.bogosorter.common.network.ae2.CAe2AmountBatchRequest;
+import com.cleanroommc.bogosorter.common.network.ae2.SAe2AmountBatchResponse;
 
 import io.netty.buffer.Unpooled;
 

@@ -9,24 +9,21 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 
 import org.jetbrains.annotations.Nullable;
 
-//class for attempting at terminal detection for ae2
+// class for attempting at terminal detection for ae2
 public final class Ae2TerminalGuiDetector {
 
     private static final Class<?>[] NO_PARAMETERS = new Class<?>[0];
     private static final Class<?>[] STRING_PARAMETER = new Class<?>[] { String.class };
 
-    //just known
+    // just known
     private static final String[] KNOWN_SEARCHABLE_TERMINAL_CLASSES = {
-        "appeng.client.gui.implementations.GuiMEMonitorable",
-        "appeng.client.gui.implementations.GuiWirelessTerm",
-        "appeng.client.gui.implementations.GuiCraftingTerm",
-        "appeng.client.gui.implementations.GuiPatternTerm",
+        "appeng.client.gui.implementations.GuiMEMonitorable", "appeng.client.gui.implementations.GuiWirelessTerm",
+        "appeng.client.gui.implementations.GuiCraftingTerm", "appeng.client.gui.implementations.GuiPatternTerm",
         "appeng.client.gui.implementations.GuiCraftingCPU",
         // Thaumic
         "thaumicenergistics.client.gui.GuiArcaneCraftingTerminal",
         // AE2FC
-        "com.glodblock.github.client.gui.base.FCBaseMEGui",
-    };
+        "com.glodblock.github.client.gui.base.FCBaseMEGui", };
 
     private static final Map<Class<?>, Boolean> SEARCH_CAPABILITY_CACHE = new ConcurrentHashMap<>();
 

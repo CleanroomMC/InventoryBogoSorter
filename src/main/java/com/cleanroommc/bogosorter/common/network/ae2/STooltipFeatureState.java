@@ -2,11 +2,11 @@ package com.cleanroommc.bogosorter.common.network.ae2;
 
 import java.io.IOException;
 
-import com.cleanroommc.bogosorter.common.network.IPacket;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.PacketBuffer;
 
 import com.cleanroommc.bogosorter.client.ae2.Ae2ClientBridge;
+import com.cleanroommc.bogosorter.common.network.IPacket;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

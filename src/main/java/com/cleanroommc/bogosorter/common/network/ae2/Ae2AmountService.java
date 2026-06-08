@@ -586,6 +586,7 @@ public final class Ae2AmountService {
         }
     }
 
+    @Desugar
     public record BatchLookupEntry(ItemStack stack, FluidStack fluidStack, String essentiaAspectTag) {
 
     }
