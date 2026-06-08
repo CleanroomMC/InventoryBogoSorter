@@ -25,6 +25,7 @@ import com.cleanroommc.bogosorter.common.network.ae2.CAe2AmountBatchRequest;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.compat.Mods;
 import com.cleanroommc.bogosorter.compat.ThaumicEnergisticsHelper;
+import com.cleanroommc.bogosorter.compat.ae2.Ae2TerminalGuiDetector;
 import com.github.bsideup.jabel.Desugar;
 
 import codechicken.nei.PositionedStack;
@@ -62,9 +63,6 @@ public final class Ae2TooltipClient {
     private static final double REQUEST_TOKEN_COST = 1.0D;
     private static final int SINGLE_STACK_SIZE = 1;
     private static final int SINGLE_FLUID_AMOUNT = 1;
-    private static final String AE2_MONITORABLE_GUI_CLASS = "appeng.client.gui.implementations.GuiMEMonitorable";
-    private static final String AE2FC_BASE_ME_GUI_CLASS = "com.glodblock.github.client.gui.base.FCBaseMEGui";
-
     private static final Map<CacheKey, Entry> CACHE = new BoundedEntryCache();
     private static final Map<CacheKey, FluidEntry> FLUID_CONTAINER_CACHE = new BoundedFluidCache();
     private static final Map<Integer, CacheKey> REQUEST_KEYS = new LinkedHashMap<>();
@@ -395,48 +393,11 @@ public final class Ae2TooltipClient {
     }
 
     private static boolean isAe2TerminalGui(Object gui) {
-        if (gui == null) {
-            return false;
-        }
-
-        Class<?> current = gui.getClass();
-        while (current != null) {
-            if (AE2_MONITORABLE_GUI_CLASS.equals(current.getName())
-                || AE2FC_BASE_ME_GUI_CLASS.equals(current.getName())) {
-                return true;
-            }
-            current = current.getSuperclass();
-        }
-
-        return false;
+        return Ae2TerminalGuiDetector.isSearchableTerminal(gui);
     }
 
     private static boolean isAe2TerminalContextGui(GuiContainer gui) {
-        if (isAe2TerminalGui(gui)) {
-            return true;
-        }
-        Object firstGui = getRelatedGui(gui, "firstGui");
-        if (isAe2TerminalGui(firstGui)) {
-            return true;
-        }
-        return isAe2TerminalGui(getRelatedGui(gui, "getFirstScreen"));
-    }
-
-    private static Object getRelatedGui(GuiContainer gui, String memberName) {
-        try {
-            if (memberName.startsWith("get")) {
-                return RecipeTooltipHandler.invokeMethod(gui, memberName);
-            }
-
-            Field field = RecipeTooltipHandler.findField(gui.getClass(), memberName);
-            if (field == null) {
-                return null;
-            }
-            field.setAccessible(true);
-            return field.get(gui);
-        } catch (ReflectiveOperationException ignored) {
-            return null;
-        }
+        return Ae2TerminalGuiDetector.resolveSearchTarget(gui) != null;
     }
 
     private static boolean isAmountTooltipEnabled() {
@@ -653,7 +614,7 @@ public final class Ae2TooltipClient {
 
         private static Object getAe2VirtualSlotUnderMouse(GuiContainer gui) {
             try {
-                return invokeMethod(gui, "getVirtualMESlotUnderMouse");
+                return invokeMethod(gui);
             } catch (ReflectiveOperationException ignored) {
                 return null;
             }
@@ -692,7 +653,7 @@ public final class Ae2TooltipClient {
 
         private static NEIRecipeWidget getRecipeWidget(GuiRecipe<?> gui, int mousex, int mousey) {
             try {
-                Field containerField = findField(gui.getClass(), "container");
+                Field containerField = findField(gui.getClass());
                 if (containerField == null) {
                     return null;
                 }
@@ -710,11 +671,11 @@ public final class Ae2TooltipClient {
             }
         }
 
-        private static Field findField(Class<?> type, String fieldName) {
+        private static Field findField(Class<?> type) {
             Class<?> current = type;
             while (current != null) {
                 try {
-                    return current.getDeclaredField(fieldName);
+                    return current.getDeclaredField("container");
                 } catch (NoSuchFieldException ignored) {
                     current = current.getSuperclass();
                 }
@@ -723,11 +684,11 @@ public final class Ae2TooltipClient {
             return null;
         }
 
-        private static Object invokeMethod(Object instance, String methodName) throws ReflectiveOperationException {
+        private static Object invokeMethod(Object instance) throws ReflectiveOperationException {
             Class<?> current = instance.getClass();
             while (current != null) {
                 try {
-                    java.lang.reflect.Method method = current.getDeclaredMethod(methodName);
+                    java.lang.reflect.Method method = current.getDeclaredMethod("getVirtualMESlotUnderMouse");
                     method.setAccessible(true);
                     return method.invoke(instance);
                 } catch (NoSuchMethodException ignored) {
@@ -735,7 +696,7 @@ public final class Ae2TooltipClient {
                 }
             }
 
-            throw new NoSuchMethodException(methodName);
+            throw new NoSuchMethodException("getVirtualMESlotUnderMouse");
         }
     }
 

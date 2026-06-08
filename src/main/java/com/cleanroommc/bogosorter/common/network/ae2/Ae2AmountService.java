@@ -1,10 +1,15 @@
 package com.cleanroommc.bogosorter.common.network.ae2;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
@@ -190,6 +195,50 @@ public final class Ae2AmountService {
             cache.put(lookupKey, new LookupCacheEntry(result.amount, now));
         }
         return result;
+    }
+
+    /**
+     * Resolves many tooltip lookups for one player context. Duplicate item/fluid/essentia keys within the
+     * batch hit {@link #lookupAmount} only once, which keeps large ME networks responsive when NEI shows
+     * repeated stacks in a recipe view.
+     */
+    public static List<AmountLookupResult> lookupAmountBatch(PlayerAeContext context, List<BatchLookupEntry> entries,
+        long now) {
+        if (context == null || entries == null || entries.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Map<LookupKey, AmountLookupResult> shared = new LinkedHashMap<>();
+        List<AmountLookupResult> results = new ArrayList<>(entries.size());
+        for (BatchLookupEntry entry : entries) {
+            LookupKey key = lookupKeyOf(entry.stack, entry.fluidStack, entry.essentiaAspectTag);
+            if (key == null) {
+                results.add(AmountLookupResult.error());
+                continue;
+            }
+            AmountLookupResult result = shared.get(key);
+            if (result == null) {
+                result = lookupAmount(context, entry.stack, entry.fluidStack, entry.essentiaAspectTag, now);
+                shared.put(key, result);
+            }
+            results.add(result);
+        }
+        return results;
+    }
+
+    /** Distinct lookup keys in a batch — used for fair per-player rate limiting. */
+    public static int countDistinctLookupKeys(List<BatchLookupEntry> entries) {
+        if (entries == null || entries.isEmpty()) {
+            return 0;
+        }
+        Set<LookupKey> keys = new HashSet<>();
+        for (BatchLookupEntry entry : entries) {
+            LookupKey key = lookupKeyOf(entry.stack, entry.fluidStack, entry.essentiaAspectTag);
+            if (key != null) {
+                keys.add(key);
+            }
+        }
+        return keys.size();
     }
 
     public static void clearCaches() {
@@ -535,6 +584,10 @@ public final class Ae2AmountService {
             iterator.next();
             iterator.remove();
         }
+    }
+
+    public record BatchLookupEntry(ItemStack stack, FluidStack fluidStack, String essentiaAspectTag) {
+
     }
 
     public static final class ContextResult {

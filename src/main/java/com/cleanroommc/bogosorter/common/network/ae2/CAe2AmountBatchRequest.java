@@ -107,7 +107,17 @@ public class CAe2AmountBatchRequest implements IPacket {
             addResponses(responses, Ae2Status.NO_SYSTEM, 1500);
             return new SAe2AmountBatchResponse(Ae2Status.NO_SYSTEM, responses);
         }
-        if (Ae2AmountService.arePlayerRequestsLimited(player, now, this.entries.size())) {
+        List<Ae2AmountService.BatchLookupEntry> batchEntries = new ArrayList<>(this.entries.size());
+        for (Entry entry : this.entries) {
+            batchEntries.add(new Ae2AmountService.BatchLookupEntry(entry.stack, entry.fluidStack, entry.essentiaAspectTag));
+        }
+
+        int distinctLookups = Ae2AmountService.countDistinctLookupKeys(batchEntries);
+        if (distinctLookups == 0) {
+            addResponses(responses, Ae2Status.ERROR, 5000);
+            return new SAe2AmountBatchResponse(Ae2Status.ERROR, responses);
+        }
+        if (Ae2AmountService.arePlayerRequestsLimited(player, now, distinctLookups)) {
             addResponses(responses, Ae2Status.THROTTLED, 1000);
             return new SAe2AmountBatchResponse(Ae2Status.THROTTLED, responses);
         }
@@ -117,9 +127,12 @@ public class CAe2AmountBatchRequest implements IPacket {
             addResponses(responses, contextResult.getStatus(), contextResult.getRetryAfterMs());
             return new SAe2AmountBatchResponse(contextResult.getStatus(), responses);
         }
-        for (Entry entry : this.entries) {
-            Ae2AmountService.AmountLookupResult result = Ae2AmountService
-                .lookupAmount(contextResult.getContext(), entry.stack, entry.fluidStack, entry.essentiaAspectTag, now);
+
+        List<Ae2AmountService.AmountLookupResult> lookupResults = Ae2AmountService
+            .lookupAmountBatch(contextResult.getContext(), batchEntries, now);
+        for (int i = 0; i < this.entries.size(); i++) {
+            Entry entry = this.entries.get(i);
+            Ae2AmountService.AmountLookupResult result = lookupResults.get(i);
             responses.add(
                 new SAe2AmountBatchResponse.Entry(
                     entry.requestId,

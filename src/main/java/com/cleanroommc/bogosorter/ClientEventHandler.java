@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import com.cleanroommc.bogosorter.api.ISortableContainer;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.client.keybinds.KeyBind;
 import com.cleanroommc.bogosorter.client.keybinds.control.BSKeybinds;
@@ -75,6 +74,7 @@ public class ClientEventHandler {
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             NetworkHandler.drainClientTasks();
+            Ae2TerminalSearchAdapter.applyPendingSearch();
         }
         if (event.phase == TickEvent.Phase.START) {
             ticks++;
@@ -87,6 +87,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent ignored) {
+        Ae2TerminalSearchAdapter.clearPendingSearch();
         com.cleanroommc.bogosorter.client.ae2.Ae2ClientBridge.resetConnectionState();
     }
 
@@ -284,10 +285,6 @@ public class ClientEventHandler {
 
     public static boolean isSortableContainer(GuiScreen screen) {
         return screen instanceof GuiContainer && BogoSortAPI.isValidSortable(((GuiContainer) screen).inventorySlots);
-    }
-
-    public static <T extends Container & ISortableContainer> T getSortableContainer(GuiScreen screen) {
-        return (T) ((GuiContainer) screen).inventorySlots;
     }
 
     @Nullable

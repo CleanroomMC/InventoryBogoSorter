@@ -29,12 +29,15 @@ public final class Ae2TerminalSearchAdapter {
 
     private static final Class<?>[] NO_PARAMETERS = new Class<?>[0];
     private static final Class<?>[] STRING_PARAMETER = new Class<?>[] { String.class };
-    private static final String AE2_MONITORABLE_GUI_CLASS = "appeng.client.gui.implementations.GuiMEMonitorable";
     private static final String AE2_NEI_MODULES_CLASS = "appeng.integration.modules.NEI";
     private static final String NEI_CONTAINER_MANAGER_CLASS = "codechicken.nei.guihook.GuiContainerManager";
     private static final String NEI_SEARCH_FIELD_CLASS = "codechicken.nei.SearchField";
-    private static final int MIN_SEARCH_RESULT_COUNT = 1;
     private static final Set<String> LOGGED_FAILURES = new HashSet<>();
+
+    @Nullable
+    private static GuiContainer pendingSearchGui;
+    @Nullable
+    private static String pendingSearchText;
 
     private Ae2TerminalSearchAdapter() {}
 
@@ -46,7 +49,7 @@ public final class Ae2TerminalSearchAdapter {
             return false;
         }
 
-        GuiContainer ae2Gui = getAe2SearchTargetGui(gui);
+        GuiContainer ae2Gui = Ae2TerminalGuiDetector.resolveSearchTarget(gui);
         if (ae2Gui == null) {
             return false;
         }
@@ -66,36 +69,18 @@ public final class Ae2TerminalSearchAdapter {
             String searchText = getEscapedNeiSearchText(displayName);
 
             Object searchField = getFieldValue(ae2Gui, "searchField");
-            Object repo = getFieldValue(ae2Gui, "repo");
-            if (searchField == null || repo == null || isAe2SearchActive(searchField)) {
-                return false;
-            }
-
-            String previousText = (String) invokeMethod(searchField, "getText");
-
-            invokeMethod(repo, "setSearchString", STRING_PARAMETER, searchText);
-            invokeMethod(repo, "updateView");
-            Object size = invokeMethod(repo, "size");
-            if (!(size instanceof Integer) || (Integer) size < MIN_SEARCH_RESULT_COUNT) {
-                invokeMethod(repo, "setSearchString", STRING_PARAMETER, previousText);
-                invokeMethod(repo, "updateView");
+            if (searchField == null || isAe2SearchActive(searchField)) {
                 return false;
             }
 
             if (gui != ae2Gui) {
+                queuePendingSearch(ae2Gui, searchText);
                 Minecraft.getMinecraft()
                     .displayGuiScreen(ae2Gui);
-                searchField = getFieldValue(ae2Gui, "searchField");
-                repo = getFieldValue(ae2Gui, "repo");
-                if (searchField == null || repo == null) {
-                    return false;
-                }
+                return true;
             }
 
-            invokeMethod(repo, "setSearchString", STRING_PARAMETER, searchText);
-            invokeMethod(repo, "updateView");
-            invokeMethod(searchField, "setText", STRING_PARAMETER, searchText);
-            invokeMethod(searchField, "setCursorPositionEnd");
+            applySearch(ae2Gui, searchText);
             return true;
         } catch (ReflectiveOperationException | ClassCastException | LinkageError e) {
             logFailureOnce("terminal-search", e);
@@ -103,38 +88,53 @@ public final class Ae2TerminalSearchAdapter {
         }
     }
 
-    @Nullable
-    private static GuiContainer getAe2SearchTargetGui(GuiContainer gui) {
-        if (isAe2MonitorableGui(gui)) {
-            return gui;
+    /**
+     * Applies a queued terminal search after the target GUI has opened (next client tick).
+     */
+    public static void applyPendingSearch() {
+        if (pendingSearchGui == null || pendingSearchText == null) {
+            return;
+        }
+
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.currentScreen != pendingSearchGui) {
+            return;
         }
 
         try {
-            Object firstGui = getFieldValue(gui, "firstGui");
-            if (firstGui instanceof GuiContainer && isAe2MonitorableGui((GuiContainer) firstGui)) {
-                return (GuiContainer) firstGui;
+            if (!Ae2TerminalGuiDetector.isSearchableTerminal(pendingSearchGui)) {
+                clearPendingSearch();
+                return;
             }
-        } catch (ReflectiveOperationException e) {
-            logFailureOnce("firstGui-field", e);
+            applySearch(pendingSearchGui, pendingSearchText);
+        } catch (ReflectiveOperationException | ClassCastException | LinkageError e) {
+            logFailureOnce("terminal-search-pending", e);
+        } finally {
+            clearPendingSearch();
         }
-
-        Object firstGui = invokeOptionalNoArgMethod(gui);
-        if (firstGui instanceof GuiContainer && isAe2MonitorableGui((GuiContainer) firstGui)) {
-            return (GuiContainer) firstGui;
-        }
-
-        return null;
     }
 
-    private static boolean isAe2MonitorableGui(GuiContainer gui) {
-        Class<?> current = gui.getClass();
-        while (current != null) {
-            if (AE2_MONITORABLE_GUI_CLASS.equals(current.getName())) {
-                return true;
-            }
-            current = current.getSuperclass();
+    public static void clearPendingSearch() {
+        pendingSearchGui = null;
+        pendingSearchText = null;
+    }
+
+    private static void queuePendingSearch(GuiContainer gui, String searchText) {
+        pendingSearchGui = gui;
+        pendingSearchText = searchText;
+    }
+
+    private static void applySearch(GuiContainer ae2Gui, String searchText) throws ReflectiveOperationException {
+        Object searchField = getFieldValue(ae2Gui, "searchField");
+        Object repo = getFieldValue(ae2Gui, "repo");
+        if (searchField == null || repo == null) {
+            return;
         }
-        return false;
+
+        invokeMethod(repo, "setSearchString", STRING_PARAMETER, searchText);
+        invokeMethod(repo, "updateView");
+        invokeMethod(searchField, "setText", STRING_PARAMETER, searchText);
+        invokeMethod(searchField, "setCursorPositionEnd");
     }
 
     private static boolean isAe2SearchActive(Object searchField) {
@@ -258,17 +258,6 @@ public final class Ae2TerminalSearchAdapter {
     @Nullable
     private static Object invokeMethod(Object instance, String methodName) throws ReflectiveOperationException {
         return invokeMethod(instance, methodName, NO_PARAMETERS);
-    }
-
-    @Nullable
-    private static Object invokeOptionalNoArgMethod(Object instance) {
-        try {
-            Method method = findMethod(instance.getClass(), "getFirstScreen", NO_PARAMETERS);
-            return method == null ? null : method.invoke(instance);
-        } catch (ReflectiveOperationException | LinkageError e) {
-            logFailureOnce("getFirstScreen" + "-method", e);
-            return null;
-        }
     }
 
     @Nullable
