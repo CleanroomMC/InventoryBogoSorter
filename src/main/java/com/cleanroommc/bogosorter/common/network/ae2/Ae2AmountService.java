@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -75,10 +75,13 @@ public final class Ae2AmountService {
     private static final String WIRELESS_ACCESS_POINT_CLASS = "appeng.tile.networking.TileWireless";
     private static final String AE2FC_BASE_CONTAINER_CLASS = "com.glodblock.github.client.gui.container.base.FCBaseContainer";
 
-    private static final Map<String, RateLimit> PLAYER_LIMITS = new LinkedHashMap<>(16, 0.75F, true);
+    // player limits and context cache use concurrent hashmap now
+    private static final Map<String, RateLimit> PLAYER_LIMITS = new ConcurrentHashMap<>();
     private static final Map<Object, RateLimit> NETWORK_LIMITS = new WeakHashMap<>();
     private static final Map<Object, BoundedLookupCache> LOOKUP_CACHES = new WeakHashMap<>();
-    private static final Map<UUID, ContextCacheEntry> CONTEXT_CACHE = new LinkedHashMap<>(16, 0.75F, true);
+    private static final Map<UUID, ContextCacheEntry> CONTEXT_CACHE = new ConcurrentHashMap<>();
+    // baubles reflection gets cached so we dont look it up every time
+    private static final Map<String, BaublesAccessor> BAUBLES_ACCESSORS = new ConcurrentHashMap<>();
     private static long nextCleanupTime;
     private static long nextServerLoadCheckTime;
     private static boolean cachedServerUnderLoad;
@@ -90,11 +93,10 @@ public final class Ae2AmountService {
         String key = playerKey(player);
         RateLimit limit = PLAYER_LIMITS
             .computeIfAbsent(key, ignored -> new RateLimit(PLAYER_REQUESTS_PER_SECOND, PLAYER_REQUEST_BURST, now));
-        for (int i = 0; i < count; i++) {
-            if (limit.isExceeded(now)) {
-                IntegrationDiagnostics.recordThrottle();
-                return true;
-            }
+        // rate limit checks all tokens at once now
+        if (limit.isThrottled(now, count)) {
+            IntegrationDiagnostics.recordThrottle();
+            return true;
         }
         trimPlayerLimits();
         return false;
@@ -170,7 +172,7 @@ public final class Ae2AmountService {
         int burst = degraded ? DEGRADED_NETWORK_LOOKUP_BURST : NETWORK_LOOKUP_BURST;
         RateLimit networkLimit = NETWORK_LIMITS
             .computeIfAbsent(cacheOwner, ignored -> new RateLimit(perSecond, burst, now));
-        if (networkLimit.isExceeded(now)) {
+        if (networkLimit.isThrottled(now, 1)) {
             IntegrationDiagnostics.recordThrottle();
             return cached == null ? AmountLookupResult.throttled() : AmountLookupResult.ok(cached.amount);
         }
@@ -432,13 +434,14 @@ public final class Ae2AmountService {
     }
 
     private static IInventory getBaublesInventory(String className, String methodName, EntityPlayerMP player) {
-        try {
-            Class<?> provider = Class.forName(className);
-            Object inventory = provider.getMethod(methodName, EntityPlayer.class)
-                .invoke(null, player);
-            return inventory instanceof IInventory ? (IInventory) inventory : null;
-        } catch (ClassNotFoundException ignored) {
+        BaublesAccessor accessor = BAUBLES_ACCESSORS
+            .computeIfAbsent(className + '#' + methodName, ignored -> BaublesAccessor.resolve(className, methodName));
+        if (!accessor.available()) {
             return null;
+        }
+        try {
+            Object inventory = accessor.method.invoke(null, player);
+            return inventory instanceof IInventory ? (IInventory) inventory : null;
         } catch (ReflectiveOperationException | LinkageError e) {
             IntegrationDiagnostics.logCapabilityFailureOnce(className + '#' + methodName, e);
             return null;
@@ -578,11 +581,20 @@ public final class Ae2AmountService {
     }
 
     private static void trimPlayerLimits() {
-        Iterator<Map.Entry<String, RateLimit>> iterator = PLAYER_LIMITS.entrySet()
-            .iterator();
-        while (PLAYER_LIMITS.size() > MAX_PLAYER_LIMITS && iterator.hasNext()) {
-            iterator.next();
-            iterator.remove();
+        while (PLAYER_LIMITS.size() > MAX_PLAYER_LIMITS) {
+            String oldestKey = null;
+            long oldestTime = Long.MAX_VALUE;
+            for (Map.Entry<String, RateLimit> entry : PLAYER_LIMITS.entrySet()) {
+                long lastRefillTime = entry.getValue().lastRefillTime;
+                if (lastRefillTime < oldestTime) {
+                    oldestTime = lastRefillTime;
+                    oldestKey = entry.getKey();
+                }
+            }
+            if (oldestKey == null) {
+                return;
+            }
+            PLAYER_LIMITS.remove(oldestKey);
         }
     }
 
@@ -787,6 +799,27 @@ public final class Ae2AmountService {
 
     }
 
+    private record BaublesAccessor(Method method) {
+
+            private static final BaublesAccessor UNAVAILABLE = new BaublesAccessor(null);
+
+        private boolean available() {
+                return this.method != null;
+            }
+
+            private static BaublesAccessor resolve(String className, String methodName) {
+                try {
+                    Class<?> provider = Class.forName(className);
+                    return new BaublesAccessor(provider.getMethod(methodName, EntityPlayer.class));
+                } catch (ClassNotFoundException ignored) {
+                    return UNAVAILABLE;
+                } catch (ReflectiveOperationException | LinkageError e) {
+                    IntegrationDiagnostics.logCapabilityFailureOnce(className + '#' + methodName, e);
+                    return UNAVAILABLE;
+                }
+            }
+        }
+
     private static final class RateLimit {
 
         private final int perSecond;
@@ -801,15 +834,24 @@ public final class Ae2AmountService {
             this.lastRefillTime = now;
         }
 
-        private boolean isExceeded(long now) {
+        private boolean isThrottled(long now, int count) {
+            if (count <= 0) {
+                return false;
+            }
+            refill(now);
+            if (this.tokens < count) {
+                return true;
+            }
+            this.tokens -= count;
+            return false;
+        }
+
+        private void refill(long now) {
             long elapsed = now - this.lastRefillTime;
             if (elapsed > 0L) {
                 this.tokens = Math.min(this.burst, this.tokens + elapsed * this.perSecond / MILLIS_PER_SECOND);
                 this.lastRefillTime = now;
             }
-            if (this.tokens < 1.0D) return true;
-            this.tokens -= 1.0D;
-            return false;
         }
     }
 

@@ -19,6 +19,10 @@ bogosort.gui.enabled=Habilitado
 
 bogosort.command.config_relaod.success=Configuração de classificação recarregada
 
+bogosorter.command.tooltip.usage=/bogosorter tooltip <on|off>
+bogosorter.command.tooltip.enabled=A consulta de dicas do Bogo agora está ativada.
+bogosorter.command.tooltip.disabled=A consulta de dicas do Bogo agora está desativada.
+
 bogosort.sortrules.item.mod.name=Nome do Mod
 bogosort.sortrules.item.id.name=Nome do registro
 bogosort.sortrules.item.meta.name=Metavalor

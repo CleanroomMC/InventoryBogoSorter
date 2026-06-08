@@ -6,23 +6,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 
 import com.cleanroommc.bogosorter.BogoSorter;
+import com.cleanroommc.bogosorter.client.network.ClientNetworkHandler;
 import com.cleanroommc.bogosorter.common.network.ae2.CAe2AmountBatchRequest;
 import com.cleanroommc.bogosorter.common.network.ae2.SAe2AmountBatchResponse;
 import com.cleanroommc.bogosorter.common.network.ae2.STooltipFeatureState;
+import com.cleanroommc.bogosorter.compat.Mods;
 import com.github.bsideup.jabel.Desugar;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Joinked from Multiblocked
@@ -33,16 +34,14 @@ public class NetworkHandler {
     public static final SimpleNetworkWrapper network = NetworkRegistry.INSTANCE.newSimpleChannel(BogoSorter.ID);
     private static final int MAX_SERVER_QUEUE_SIZE = 4096;
     private static final int MAX_SERVER_QUEUE_SIZE_PER_PLAYER = 256;
-    private static final int MAX_CLIENT_QUEUE_SIZE = 4096;
     private static final int MAX_TASKS_PER_TICK = 256;
     private static final long MAX_TASK_TIME_NS = 5_000_000L;
     private static int packetId = 0;
 
     private static final Queue<ServerTask> serverTasks = new ConcurrentLinkedQueue<>();
-    private static final Queue<Runnable> clientTasks = new ConcurrentLinkedQueue<>();
     private static final AtomicInteger serverQueueSize = new AtomicInteger();
-    private static final AtomicInteger clientQueueSize = new AtomicInteger();
     private static final Map<String, AtomicInteger> playerQueueSizes = new ConcurrentHashMap<>();
+    private static final IMessageHandler<IPacket, IPacket> SERVER_S2C_STUB = (message, ctx) -> null;
 
     public static void init() {
         // CSlotSync backs the debug clear/randomize tools. It is fully server-authoritative and gated in
@@ -58,9 +57,12 @@ public class NetworkHandler {
         registerS2C(SDropOffMessage.class);
         registerS2C(SDropOffThrottled.class);
         registerC2S(CRefill.class);
-        registerC2S(CAe2AmountBatchRequest.class);
-        registerS2C(SAe2AmountBatchResponse.class);
-        registerS2C(STooltipFeatureState.class);
+        // only register ae2 packets when ae2 is loaded
+        if (Mods.Ae2.isLoaded()) {
+            registerC2S(CAe2AmountBatchRequest.class);
+            registerS2C(SAe2AmountBatchResponse.class);
+            registerS2C(STooltipFeatureState.class);
+        }
     }
 
     private static void registerC2S(Class<? extends IPacket> clazz) {
@@ -68,7 +70,14 @@ public class NetworkHandler {
     }
 
     private static void registerS2C(Class<? extends IPacket> clazz) {
-        network.registerMessage(S2CHandler, clazz, packetId++, Side.CLIENT);
+        int id = packetId++;
+        if (FMLCommonHandler.instance()
+            .getSide()
+            .isClient()) {
+            ClientNetworkHandler.registerMessage(network, clazz, id);
+        } else {
+            network.registerMessage(SERVER_S2C_STUB, clazz, id, Side.CLIENT);
+        }
     }
 
     public static void sendToServer(IPacket packet) {
@@ -83,26 +92,13 @@ public class NetworkHandler {
         network.sendTo(packet, player);
     }
 
-    final static IMessageHandler<IPacket, IPacket> S2CHandler = (message, ctx) -> {
-        NetHandlerPlayClient handler = ctx.getClientHandler();
-        if (clientQueueSize.incrementAndGet() > MAX_CLIENT_QUEUE_SIZE) {
-            clientQueueSize.decrementAndGet();
-            BogoSorter.LOGGER.warn(
-                "Dropping {} because the client packet queue is full",
-                message.getClass()
-                    .getName());
+    final static IMessageHandler<IPacket, IPacket> C2SHandler = (message, ctx) -> {
+        // skip packets that failed to decode
+        if (message.isRejected()) {
+            message.acknowledge();
             return null;
         }
-        clientTasks.add(() -> {
-            try {
-                message.executeClient(handler);
-            } finally {
-                clientQueueSize.decrementAndGet();
-            }
-        });
-        return null;
-    };
-    final static IMessageHandler<IPacket, IPacket> C2SHandler = (message, ctx) -> {
+
         NetHandlerPlayServer handler = ctx.getServerHandler();
         EntityPlayerMP player = handler == null ? null : handler.playerEntity;
         if (player == null) return null;
@@ -141,17 +137,6 @@ public class NetworkHandler {
         }
     }
 
-    @SideOnly(Side.CLIENT)
-    public static void drainClientTasks() {
-        long deadline = System.nanoTime() + MAX_TASK_TIME_NS;
-        int processed = 0;
-        Runnable task;
-        while (processed < MAX_TASKS_PER_TICK && System.nanoTime() < deadline && (task = clientTasks.poll()) != null) {
-            task.run();
-            processed++;
-        }
-    }
-
     @Desugar
     private record ServerTask(IPacket message, NetHandlerPlayServer handler, String playerKey,
         AtomicInteger playerQueueSize) implements Runnable {
@@ -172,6 +157,7 @@ public class NetworkHandler {
                     this.playerKey,
                     e);
             } finally {
+                this.message.acknowledge();
                 serverQueueSize.decrementAndGet();
                 if (this.playerQueueSize.decrementAndGet() == 0) {
                     playerQueueSizes.remove(this.playerKey, this.playerQueueSize);

@@ -20,6 +20,10 @@ bogosort.gui.enabled=启用
 
 bogosort.command.config_relaod.success=重新加载排序配置
 
+bogosorter.command.tooltip.usage=/bogosorter tooltip <on|off>
+bogosorter.command.tooltip.enabled=Bogo 提示查询已启用。
+bogosorter.command.tooltip.disabled=Bogo 提示查询已禁用。
+
 bogosort.sortrules.item.mod.name=模组名称
 bogosort.sortrules.item.id.name=注册名称
 bogosort.sortrules.item.meta.name=元数据

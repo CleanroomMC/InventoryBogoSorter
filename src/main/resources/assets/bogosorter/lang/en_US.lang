@@ -47,6 +47,10 @@ bogosort.gui.usageticker_arrow=Enable Usage Ticker Arrows
 
 bogosort.command.config_relaod.success=Reloaded sorting config
 
+bogosorter.command.tooltip.usage=/bogosorter tooltip <on|off>
+bogosorter.command.tooltip.enabled=Bogo tooltip querying is now enabled.
+bogosorter.command.tooltip.disabled=Bogo tooltip querying is now disabled.
+
 bogosort.message.dropoff.items_moved=%s items moved to %s containers of %s checked in total.
 bogosort.message.dropoff.quota_reached_times= (Quota reached %s times)
 bogosort.message.dropoff.throttled=Dropoff throttled

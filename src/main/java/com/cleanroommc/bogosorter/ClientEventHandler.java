@@ -26,6 +26,7 @@ import org.lwjgl.input.Mouse;
 import com.cleanroommc.bogosorter.api.SortRule;
 import com.cleanroommc.bogosorter.client.keybinds.KeyBind;
 import com.cleanroommc.bogosorter.client.keybinds.control.BSKeybinds;
+import com.cleanroommc.bogosorter.client.network.ClientNetworkHandler;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.cleanroommc.bogosorter.common.config.ConfigGui;
 import com.cleanroommc.bogosorter.common.config.SortRulesConfig;
@@ -73,7 +74,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            NetworkHandler.drainClientTasks();
+            ClientNetworkHandler.drainClientTasks();
             Ae2TerminalSearchAdapter.applyPendingSearch();
         }
         if (event.phase == TickEvent.Phase.START) {

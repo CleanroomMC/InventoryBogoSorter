@@ -219,6 +219,8 @@ public final class Ae2TooltipClient {
             return;
         }
 
+        // request id cleanup so stale keys dont stick around
+        removeRequestIdsFor(key);
         int requestId = nextRequestId++;
         if (nextRequestId <= 0) {
             nextRequestId = 1;
@@ -285,20 +287,31 @@ public final class Ae2TooltipClient {
         FLUID_CONTAINER_CACHE.entrySet()
             .removeIf(entry -> now - entry.getValue().createdAt > FLUID_CONTAINER_TTL_MS);
 
-        Iterator<Map.Entry<Integer, CacheKey>> requestIterator = REQUEST_KEYS.entrySet()
-            .iterator();
-        while (requestIterator.hasNext()) {
-            CacheKey key = requestIterator.next()
-                .getValue();
-            Entry entry = CACHE.get(key);
-            if (entry == null || now - entry.requestTime > REQUEST_TIMEOUT_MS) {
-                requestIterator.remove();
-                BATCH_QUEUE.remove(key);
-                if (entry != null) {
-                    entry.pending = false;
+        REQUEST_KEYS.entrySet()
+            .removeIf(requestEntry -> {
+                int requestId = requestEntry.getKey();
+                CacheKey key = requestEntry.getValue();
+                Entry entry = CACHE.get(key);
+                PendingRequest pending = BATCH_QUEUE.get(key);
+                if (entry == null) {
+                    BATCH_QUEUE.remove(key);
+                    return true;
                 }
-            }
-        }
+                if (pending != null && pending.requestId == requestId) {
+                    if (now - entry.requestTime > REQUEST_TIMEOUT_MS) {
+                        BATCH_QUEUE.remove(key);
+                        entry.pending = false;
+                        return true;
+                    }
+                    return false;
+                }
+                return true;
+            });
+    }
+
+    private static void removeRequestIdsFor(CacheKey key) {
+        REQUEST_KEYS.entrySet()
+            .removeIf(entry -> key.equals(entry.getValue()));
     }
 
     private static boolean tryConsumeRequestToken(long now) {
