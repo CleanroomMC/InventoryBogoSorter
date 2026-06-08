@@ -64,10 +64,6 @@ public final class Ae2TerminalSearchAdapter {
             }
 
             String searchText = getEscapedNeiSearchText(displayName);
-            if (gui != ae2Gui) {
-                Minecraft.getMinecraft()
-                    .displayGuiScreen(ae2Gui);
-            }
 
             Object searchField = getFieldValue(ae2Gui, "searchField");
             Object repo = getFieldValue(ae2Gui, "repo");
@@ -86,6 +82,18 @@ public final class Ae2TerminalSearchAdapter {
                 return false;
             }
 
+            if (gui != ae2Gui) {
+                Minecraft.getMinecraft()
+                    .displayGuiScreen(ae2Gui);
+                searchField = getFieldValue(ae2Gui, "searchField");
+                repo = getFieldValue(ae2Gui, "repo");
+                if (searchField == null || repo == null) {
+                    return false;
+                }
+            }
+
+            invokeMethod(repo, "setSearchString", STRING_PARAMETER, searchText);
+            invokeMethod(repo, "updateView");
             invokeMethod(searchField, "setText", STRING_PARAMETER, searchText);
             invokeMethod(searchField, "setCursorPositionEnd");
             return true;
@@ -110,7 +118,7 @@ public final class Ae2TerminalSearchAdapter {
             logFailureOnce("firstGui-field", e);
         }
 
-        Object firstGui = invokeOptionalNoArgMethod(gui, "getFirstScreen");
+        Object firstGui = invokeOptionalNoArgMethod(gui);
         if (firstGui instanceof GuiContainer && isAe2MonitorableGui((GuiContainer) firstGui)) {
             return (GuiContainer) firstGui;
         }
@@ -253,12 +261,12 @@ public final class Ae2TerminalSearchAdapter {
     }
 
     @Nullable
-    private static Object invokeOptionalNoArgMethod(Object instance, String methodName) {
+    private static Object invokeOptionalNoArgMethod(Object instance) {
         try {
-            Method method = findMethod(instance.getClass(), methodName, NO_PARAMETERS);
+            Method method = findMethod(instance.getClass(), "getFirstScreen", NO_PARAMETERS);
             return method == null ? null : method.invoke(instance);
         } catch (ReflectiveOperationException | LinkageError e) {
-            logFailureOnce(methodName + "-method", e);
+            logFailureOnce("getFirstScreen" + "-method", e);
             return null;
         }
     }
@@ -286,6 +294,7 @@ public final class Ae2TerminalSearchAdapter {
             }
         }
         try {
+            assert type != null;
             Method method = type.getMethod(methodName, paramTypes);
             method.setAccessible(true);
             return method;
