@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.client.network.ClientNetworkHandler;
 import com.cleanroommc.bogosorter.common.network.ae2.CAe2AmountBatchRequest;
 import com.cleanroommc.bogosorter.common.network.ae2.SAe2AmountBatchResponse;
 import com.cleanroommc.bogosorter.common.network.ae2.STooltipFeatureState;
@@ -29,6 +28,8 @@ import cpw.mods.fml.relauncher.Side;
  * Joinked from Multiblocked
  */
 public class NetworkHandler {
+
+    private static final String CLIENT_NETWORK_HANDLER = "com.cleanroommc.bogosorter.client.network.ClientNetworkHandler";
 
     public static final NetworkHandler INSTANCE = new NetworkHandler();
     public static final SimpleNetworkWrapper network = NetworkRegistry.INSTANCE.newSimpleChannel(BogoSorter.ID);
@@ -74,9 +75,19 @@ public class NetworkHandler {
         if (FMLCommonHandler.instance()
             .getSide()
             .isClient()) {
-            ClientNetworkHandler.registerMessage(network, clazz, id);
+            registerS2COnClient(clazz, id);
         } else {
             network.registerMessage(SERVER_S2C_STUB, clazz, id, Side.CLIENT);
+        }
+    }
+
+    private static void registerS2COnClient(Class<? extends IPacket> clazz, int id) {
+        try {
+            Class<?> handlerClass = Class.forName(CLIENT_NETWORK_HANDLER, false, NetworkHandler.class.getClassLoader());
+            handlerClass.getMethod("registerMessage", SimpleNetworkWrapper.class, Class.class, int.class)
+                .invoke(null, network, clazz, id);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to register client packet handler for " + clazz.getName(), e);
         }
     }
 
