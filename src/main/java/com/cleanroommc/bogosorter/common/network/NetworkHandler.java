@@ -6,6 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.cleanroommc.bogosorter.common.network.ae2.CAe2AmountBatchRequest;
+import com.cleanroommc.bogosorter.common.network.ae2.SAe2AmountBatchResponse;
+import com.cleanroommc.bogosorter.common.network.ae2.STooltipFeatureState;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;

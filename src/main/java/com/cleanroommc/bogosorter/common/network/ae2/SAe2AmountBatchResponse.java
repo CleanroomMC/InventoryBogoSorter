@@ -1,9 +1,10 @@
-package com.cleanroommc.bogosorter.common.network;
+package com.cleanroommc.bogosorter.common.network.ae2;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cleanroommc.bogosorter.common.network.IPacket;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.PacketBuffer;
 

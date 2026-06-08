@@ -19,9 +19,9 @@ import net.minecraftforge.fluids.FluidStack;
 
 import com.cleanroommc.bogosorter.client.ae2.Ae2ClientBridge;
 import com.cleanroommc.bogosorter.common.ReadableNumberConverter;
-import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
-import com.cleanroommc.bogosorter.common.network.Ae2Status;
-import com.cleanroommc.bogosorter.common.network.CAe2AmountBatchRequest;
+import com.cleanroommc.bogosorter.common.config.ae2.TooltipFeatureConfig;
+import com.cleanroommc.bogosorter.common.network.ae2.Ae2Status;
+import com.cleanroommc.bogosorter.common.network.ae2.CAe2AmountBatchRequest;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.compat.Mods;
 import com.cleanroommc.bogosorter.compat.ThaumicEnergisticsHelper;

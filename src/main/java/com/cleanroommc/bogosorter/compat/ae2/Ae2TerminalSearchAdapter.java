@@ -15,7 +15,7 @@ import org.lwjgl.input.Mouse;
 
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.client.keybinds.control.BSKeybinds;
-import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
+import com.cleanroommc.bogosorter.common.config.ae2.TooltipFeatureConfig;
 import com.cleanroommc.bogosorter.compat.Mods;
 
 import codechicken.nei.PositionedStack;

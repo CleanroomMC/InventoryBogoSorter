@@ -1,5 +1,6 @@
-package com.cleanroommc.bogosorter.common.config;
+package com.cleanroommc.bogosorter.common.config.ae2;
 
+import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 import com.gtnewhorizon.gtnhlib.config.ConfigurationManager;
 
 public final class TooltipFeatureConfig {

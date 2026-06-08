@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.common.network;
+package com.cleanroommc.bogosorter.common.network.ae2;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 

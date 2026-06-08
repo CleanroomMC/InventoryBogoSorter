@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.common.network;
+package com.cleanroommc.bogosorter.common.network.ae2;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -19,7 +19,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
-import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
+import com.cleanroommc.bogosorter.common.config.ae2.TooltipFeatureConfig;
 import com.cleanroommc.bogosorter.compat.ThaumicEnergisticsHelper;
 import com.github.bsideup.jabel.Desugar;
 

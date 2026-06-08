@@ -3,6 +3,7 @@ package com.cleanroommc.bogosorter.common.config;
 import java.util.Collections;
 import java.util.List;
 
+import com.cleanroommc.bogosorter.common.config.ae2.TooltipCommand;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

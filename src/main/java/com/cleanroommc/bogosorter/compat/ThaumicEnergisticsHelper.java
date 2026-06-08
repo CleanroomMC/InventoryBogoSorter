@@ -10,7 +10,7 @@ import java.util.WeakHashMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import com.cleanroommc.bogosorter.common.network.IntegrationDiagnostics;
+import com.cleanroommc.bogosorter.common.network.ae2.IntegrationDiagnostics;
 
 import appeng.api.networking.IGrid;
 import appeng.api.networking.storage.IStorageGrid;

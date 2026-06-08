@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.common.network;
+package com.cleanroommc.bogosorter.common.network.ae2;
 
 public final class Ae2Status {
 

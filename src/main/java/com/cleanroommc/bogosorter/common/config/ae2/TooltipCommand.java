@@ -1,4 +1,4 @@
-package com.cleanroommc.bogosorter.common.config;
+package com.cleanroommc.bogosorter.common.config.ae2;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,9 +10,9 @@ import net.minecraft.util.ChatComponentText;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.cleanroommc.bogosorter.common.network.Ae2AmountService;
+import com.cleanroommc.bogosorter.common.network.ae2.Ae2AmountService;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
-import com.cleanroommc.bogosorter.common.network.STooltipFeatureState;
+import com.cleanroommc.bogosorter.common.network.ae2.STooltipFeatureState;
 
 public class TooltipCommand extends CommandBase {
 

@@ -1,11 +1,11 @@
-package com.cleanroommc.bogosorter.common.network;
+package com.cleanroommc.bogosorter.common.network.ae2;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.cleanroommc.bogosorter.BogoSorter;
-import com.cleanroommc.bogosorter.common.config.TooltipFeatureConfig;
+import com.cleanroommc.bogosorter.common.config.ae2.TooltipFeatureConfig;
 
 public final class IntegrationDiagnostics {
 
