@@ -5,26 +5,25 @@ import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
-import gregtech.api.items.toolitem.IGTTool;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import slimeknights.tconstruct.library.tinkering.IMaterialItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+
+import static com.cleanroommc.bogosorter.compat.gtce.GTCompat.getGtToolMaterial;
+import static com.cleanroommc.bogosorter.compat.gtce.GTCompat.isGTTool;
 
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class OreDictHelper {
@@ -81,26 +80,13 @@ public class OreDictHelper {
     }
 
     public static String getMaterial(ItemStack item) {
-        if (BogoSorter.Mods.GTCEu.isLoaded() && item.getItem() instanceof IGTTool) {
+        if (isGTTool(item)) {
             return getGtToolMaterial(item);
         }
-        if (BogoSorter.Mods.T_CONSTRUCT.isLoaded() && item.getItem() instanceof IMaterialItem) {
-            return ((IMaterialItem) item.getItem()).getMaterialID(item);
+        if (BogoSorter.Mods.T_CONSTRUCT.isLoaded() && item.getItem() instanceof IMaterialItem materialItem) {
+            return materialItem.getMaterialID(item);
         }
         return MATERIALS.get(item);
-    }
-
-    @Optional.Method(modid = "gregtech")
-    @NotNull
-    public static String getGtToolMaterial(ItemStack itemStack) {
-        NBTTagCompound statsTag = itemStack.getSubCompound("GT.Tool");
-        if (statsTag == null) {
-            return "";
-        }
-        if (statsTag.hasKey("Material")) {
-            return statsTag.getString("Material");
-        }
-        return "";
     }
 
     public static String getOrePrefix(ItemStack item) {

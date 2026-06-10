@@ -7,6 +7,7 @@ import com.cleanroommc.bogosorter.common.lock.LockSlotCapability;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.UpdateSlotLock;
 
+import com.cleanroommc.bogosorter.compat.gtce.GTCompat;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,7 +26,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import gregtech.GregTechVersion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -113,12 +113,9 @@ public class BogoSorter {
         AE2(ModIds.AE2),
         EXPANDABLE_INVENTORY(ModIds.EXPANDABLE_INVENTORY),
         GT_ANY(ModIds.GREGTECH),
-
-        @SuppressWarnings("ConstantValue")
-        GTCE(ModIds.GREGTECH, m -> GregTechVersion.MAJOR == 1),
-
-        @SuppressWarnings("ConstantValue")
-        GTCEu(ModIds.GREGTECH, m -> GregTechVersion.MAJOR >= 2),
+        GTCE(ModIds.GREGTECH, GTCompat::isGTCE),
+        GTNE(ModIds.GREGTECH, GTCompat::isGTNE),
+        GTCEu(ModIds.GREGTECH, GTCompat::isGTCEu),
 
         IC2_ANY(ModIds.IC2),
         IC2_CLASSIC(ModIds.IC2, m -> m.getName().endsWith("Classic")),
