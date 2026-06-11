@@ -1,11 +1,11 @@
 package com.cleanroommc.bogosorter.common.refill;
 
-import com.cleanroommc.bogosorter.common.OreDictHelper;
 import com.cleanroommc.bogosorter.common.config.PlayerConfig;
 import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.network.SRefillSound;
 
+import com.cleanroommc.bogosorter.compat.gtce.GTCompat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -16,7 +16,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import gregtech.api.items.toolitem.IGTTool;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
@@ -30,18 +29,6 @@ public class RefillHandler {
      * A marker index for the offhand.
      */
     public static final int OFFHAND_INDEX = 40;
-
-    private static final Class<?> gtToolClass;
-
-    static {
-        Class<?> clazz;
-        try {
-            clazz = Class.forName("gregtech.api.items.toolitem.IGTTool", false, RefillHandler.class.getClassLoader());
-        } catch (Exception ignored) {
-            clazz = null;
-        }
-        gtToolClass = clazz;
-    }
 
     // a hotbar slot index to proximity slot indices list map
     // this is used to find similar items to the one being replaced, favoring the ones closed to the hotbar slot
@@ -125,11 +112,11 @@ public class RefillHandler {
         if (brokenItem.getItem() instanceof ItemBlock) {
             return findItem(false);
         } else if (brokenItem.isItemStackDamageable()) {
-            if (gtToolClass != null && isGTCEuTool(brokenItem)) {
+            if (GTCompat.isGTTool(brokenItem)) {
                 exactItemMatcher = (stack, stack2) -> {
                     if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
                     if (!stack.hasTagCompound()) return true;
-                    return OreDictHelper.getGtToolMaterial(stack).equals(OreDictHelper.getGtToolMaterial(stack2));
+                    return GTCompat.getGtToolMaterial(stack).equals(GTCompat.getGtToolMaterial(stack2));
                 };
             } else {
                 similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem();
@@ -139,10 +126,6 @@ public class RefillHandler {
         } else {
             return findItem(true);
         }
-    }
-
-    private static boolean isGTCEuTool(ItemStack itemStack) {
-        return itemStack.getItem() instanceof IGTTool;
     }
 
     private boolean findItem(boolean exactOnly) {
