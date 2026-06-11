@@ -5,6 +5,7 @@ import com.cleanroommc.bogosorter.common.network.NetworkHandler;
 import com.cleanroommc.bogosorter.common.network.NetworkUtils;
 import com.cleanroommc.bogosorter.common.network.SRefillSound;
 
+import com.cleanroommc.bogosorter.compat.gtce.GTCompat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -21,9 +22,6 @@ import it.unimi.dsi.fastutil.ints.IntListIterator;
 
 import java.util.Set;
 import java.util.function.BiPredicate;
-
-import static com.cleanroommc.bogosorter.compat.gtce.GTCompat.getGtToolMaterial;
-import static com.cleanroommc.bogosorter.compat.gtce.GTCompat.isGTTool;
 
 public class RefillHandler {
 
@@ -114,11 +112,11 @@ public class RefillHandler {
         if (brokenItem.getItem() instanceof ItemBlock) {
             return findItem(false);
         } else if (brokenItem.isItemStackDamageable()) {
-            if (isGTTool(brokenItem)) {
+            if (GTCompat.isGTTool(brokenItem)) {
                 exactItemMatcher = (stack, stack2) -> {
                     if (stack.hasTagCompound() != stack2.hasTagCompound()) return false;
                     if (!stack.hasTagCompound()) return true;
-                    return getGtToolMaterial(stack).equals(getGtToolMaterial(stack2));
+                    return GTCompat.getGtToolMaterial(stack).equals(GTCompat.getGtToolMaterial(stack2));
                 };
             } else {
                 similarItemMatcher = (stack, stack2) -> stack.getItem() == stack2.getItem();

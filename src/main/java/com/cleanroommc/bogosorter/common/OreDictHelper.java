@@ -4,6 +4,7 @@ import com.cleanroommc.bogosorter.BogoSortAPI;
 import com.cleanroommc.bogosorter.BogoSorter;
 import com.cleanroommc.bogosorter.common.config.BogoSorterConfig;
 
+import com.cleanroommc.bogosorter.compat.gtce.GTCompat;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -21,9 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
-import static com.cleanroommc.bogosorter.compat.gtce.GTCompat.getGtToolMaterial;
-import static com.cleanroommc.bogosorter.compat.gtce.GTCompat.isGTTool;
 
 @Mod.EventBusSubscriber(modid = BogoSorter.ID)
 public class OreDictHelper {
@@ -80,8 +78,8 @@ public class OreDictHelper {
     }
 
     public static String getMaterial(ItemStack item) {
-        if (isGTTool(item)) {
-            return getGtToolMaterial(item);
+        if (GTCompat.isGTTool(item)) {
+            return GTCompat.getGtToolMaterial(item);
         }
         if (BogoSorter.Mods.T_CONSTRUCT.isLoaded() && item.getItem() instanceof IMaterialItem materialItem) {
             return materialItem.getMaterialID(item);
