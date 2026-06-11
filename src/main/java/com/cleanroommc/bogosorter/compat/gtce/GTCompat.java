@@ -54,7 +54,7 @@ public class GTCompat {
                 // GTNE started with 1.18 and commits to staying on major version 1
                 if (major == 1 && minor > 17)
                     detected = GTNE;
-                // GTCE reached EOL on version 1.17.10
+                // GTCE reached EOL on version 1.17.1.770
                 else if(major <= 1)
                     detected = GTCE;
                 else // GTCEu uses 2.0+
