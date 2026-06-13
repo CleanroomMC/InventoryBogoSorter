@@ -44,6 +44,7 @@ plugins {
     id 'org.jetbrains.kotlin.kapt' version '1.8.0' apply false
     id 'com.google.devtools.ksp' version '1.8.0-1.0.9' apply false
     id 'de.undercouch.download' version '5.6.0' apply false
+    id('xyz.wagyourtail.jvmdowngrader').version('1.3.3').apply(false)
 }
 
 def out = services.get(StyledTextOutputFactory).create('an-output')
@@ -277,6 +278,9 @@ if (usesShadowedDependencies.toBoolean()) {
     apply plugin: 'com.github.johnrengelman.shadow'
 }
 
+if (enableModernJavaSyntax.toBoolean()) {
+    apply(plugin: 'xyz.wagyourtail.jvmdowngrader')
+}
 
 // Configure Java
 
@@ -304,12 +308,14 @@ tasks.withType(JavaCompile).configureEach {
         }
 
         sourceCompatibility = 17
+        /* Disabled because we're using JVMDG instead of Jabel now
         options.release.set(8)
 
         javaCompiler.set(javaToolchains.compilerFor {
             languageVersion.set(JavaLanguageVersion.of(17))
             vendor.set(JvmVendorSpec.AZUL)
         })
+         */
     }
 }
 
@@ -548,20 +554,24 @@ dependencies {
     }
 
     if (enableModernJavaSyntax.toBoolean()) {
+        /* Disabled because we're using JVMDG instead of Jabel now
         annotationProcessor 'com.github.bsideup.jabel:jabel-javac-plugin:1.0.1'
         compileOnly('com.github.bsideup.jabel:jabel-javac-plugin:1.0.1') {
             transitive = false
         }
         // workaround for https://github.com/bsideup/jabel/issues/174
         annotationProcessor 'net.java.dev.jna:jna-platform:5.13.0'
+         */
         // Allow jdk.unsupported classes like sun.misc.Unsafe, workaround for JDK-8206937 and fixes Forge crashes in tests.
         patchedMinecraft 'me.eigenraven.java8unsupported:java-8-unsupported-shim:1.0.0'
 
         // allow Jabel to work in tests
+        /* Disabled because we're using JVMDG instead of Jabel now
         testAnnotationProcessor "com.github.bsideup.jabel:jabel-javac-plugin:1.0.1"
         testCompileOnly("com.github.bsideup.jabel:jabel-javac-plugin:1.0.1") {
             transitive = false // We only care about the 1 annotation class
         }
+         */
         testCompileOnly "me.eigenraven.java8unsupported:java-8-unsupported-shim:1.0.0"
     }
 
@@ -751,6 +761,22 @@ jar {
         include "pack.mcmeta"
         if (accessTransformersFile) {
             include "META-INF/${accessTransformersFile}"
+        }
+    }
+}
+
+if (enableModernJavaSyntax.toBoolean()) {
+    // downgrade code for build
+    tasks.named('reobfJar', ReobfuscatedJar) {
+        inputJar.set((shadeDowngradedApi as Jar).archiveFile)
+        dependsOn(shadeDowngradedApi)
+    }
+    // downgrade code for runClient/runServer
+    // modern run task, e.g. runClient17, are left as-is, to allow dev to test raw (before downgrading) logic
+    for (runTask in ['runClient', 'runServer']) {
+        tasks.named(runTask, RunMinecraftTask) {
+            classpath = classpath - layout.files(jar) + layout.files(shadeDowngradedApi)
+            dependsOn(shadeDowngradedApi)
         }
     }
 }
